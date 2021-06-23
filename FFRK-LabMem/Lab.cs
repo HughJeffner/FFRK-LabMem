@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAdbClient;
 using Stateless;
+using Stateless.Graph;
 
 namespace FFRK_LabMem
 {
@@ -13,10 +14,16 @@ namespace FFRK_LabMem
     {
         public enum Trigger
         {
-            Start,
-            PaintingPicked,
-            PaintingConfirmed,
-            BattleCompleted,
+            Started,
+            ResetState,
+            PickPainting,
+            PickPaintingConfirm,
+            OpenDoor,
+            DontOpenDoor,
+            MoveOn,
+            BattleConfirm,
+            PartySelect,
+            BattleSuccess,
             BattleFailed
         }
 
@@ -24,18 +31,16 @@ namespace FFRK_LabMem
         {
             Starting,
             Unknown,
-            PickPainting,
+            Ready,
             PickConfirm,
-            ExploreItem,
-            Treasure,
-            Buffed,
-            CombatConfirm,
-            Party,
-            FatigueWarning,
+            FoundItem,
+            FoundTreasure,
+            FoundBuffs,
+            FoundSealedDoor,
+            FoundBattle,
+            PreBattle,
             Battle,
-            BattleSuccess,
-            BattleSuccessLoot,
-            BattleFailed
+            Failed
         }
 
         public DeviceData Device;
@@ -48,21 +53,50 @@ namespace FFRK_LabMem
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
 
             this.StateMachine.Configure(State.Starting)
-                .Permit(Trigger.Start, State.Unknown);
+                .Permit(Trigger.Started, State.Unknown);
 
             this.StateMachine.Configure(State.Unknown)
-                .OnEntry(t => DetermineState());
+                .OnEntry(t => DetermineState())
+                .Permit(Trigger.ResetState, State.Ready);
 
-            this.StateMachine.Configure(State.PickPainting)
-                .Permit(Trigger.PaintingPicked, State.PickConfirm);
+            this.StateMachine.Configure(State.Ready)
+                .Permit(Trigger.PickPainting, State.PickConfirm);
 
             this.StateMachine.Configure(State.PickConfirm)
-                .SubstateOf(State.PickPainting)
-                .Permit(Trigger.PaintingConfirmed, State.ExploreItem)
-                .Permit(Trigger.PaintingConfirmed, State.Treasure);
+                .SubstateOf(State.Ready)
+                .Permit(Trigger.PickPaintingConfirm, State.FoundItem)
+                .Permit(Trigger.PickPaintingConfirm, State.FoundBuffs)
+                .Permit(Trigger.PickPaintingConfirm, State.FoundTreasure)
+                .Permit(Trigger.PickPaintingConfirm, State.FoundBattle)
+                .Permit(Trigger.PickPaintingConfirm, State.FoundSealedDoor);
 
+            this.StateMachine.Configure(State.FoundItem)
+                .Permit(Trigger.MoveOn, State.Ready);
 
-            this.StateMachine.Fire(Trigger.Start);
+            this.StateMachine.Configure(State.FoundBuffs)
+                .Permit(Trigger.MoveOn, State.Ready);
+
+            this.StateMachine.Configure(State.FoundTreasure)
+                .Permit(Trigger.MoveOn, State.Ready);
+
+            this.StateMachine.Configure(State.FoundSealedDoor)
+                .Permit(Trigger.DontOpenDoor, State.Ready)
+                .Permit(Trigger.OpenDoor, State.PreBattle)
+                .Permit(Trigger.OpenDoor, State.FoundItem)
+                .Permit(Trigger.OpenDoor, State.FoundTreasure);
+
+            this.StateMachine.Configure(State.FoundBattle)
+               .Permit(Trigger.BattleConfirm, State.PreBattle);
+            
+            this.StateMachine.Configure(State.PreBattle)
+                .Permit(Trigger.PartySelect, State.Battle);
+
+            this.StateMachine.Configure(State.Battle)
+                .Permit(Trigger.BattleSuccess, State.Ready)
+                .Permit(Trigger.BattleFailed, State.Failed);
+
+            this.StateMachine.Fire(Trigger.Started);
+            string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
 
         }
 
