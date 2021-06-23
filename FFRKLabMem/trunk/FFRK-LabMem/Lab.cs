@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace FFRK_LabMem
     {
         public enum Trigger
         {
+            Start,
             PaintingPicked,
             PaintingConfirmed,
             BattleCompleted,
@@ -20,6 +22,7 @@ namespace FFRK_LabMem
 
         public enum State
         {
+            Starting,
             Unknown,
             PickPainting,
             PickConfirm,
@@ -40,8 +43,13 @@ namespace FFRK_LabMem
 
         public Lab(DeviceData device)
         {
-           
-            this.StateMachine = new StateMachine<State, Trigger>(State.Unknown);
+
+            this.Device = device;
+            this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
+
+            this.StateMachine.Configure(State.Starting)
+                .Permit(Trigger.Start, State.Unknown);
+
             this.StateMachine.Configure(State.Unknown)
                 .OnEntry(t => DetermineState());
 
@@ -54,10 +62,21 @@ namespace FFRK_LabMem
                 .Permit(Trigger.PaintingConfirmed, State.Treasure);
 
 
+            this.StateMachine.Fire(Trigger.Start);
+
         }
 
         private void DetermineState()
         {
+
+            using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
+            {
+                using (Bitmap b = new Bitmap(framebuffer))
+                {
+                    Console.WriteLine(b.GetPixel(100, 200).ToString());
+                }
+
+            }
 
         }
 
