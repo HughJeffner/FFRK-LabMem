@@ -20,8 +20,8 @@ namespace FFRK_LabMem
             var result = server.StartServer(@"C:\Users\JLingis\SDK\android\platform-tools\adb.exe", restartServerIfNewer: false);
             Console.WriteLine(result);
             AdbClient.Instance.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 7555));
-            var device = AdbClient.Instance.GetDevices().First();
-            if (device != null)
+            var device = AdbClient.Instance.GetDevices().FirstOrDefault();
+            if (device != null && device.State==DeviceState.Online)
             {
                 Console.WriteLine("Connected to " + device.Name);
                 var lab = new Lab(device);
@@ -41,10 +41,11 @@ namespace FFRK_LabMem
                 // Useful when certificate trust is not required by proxy clients
                 //GenericCertificate = new X509Certificate2(Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "genericcert.pfx"), "password")
             };
-
+          
             // An explicit endpoint is where the client knows about the existence of a proxy
             // So client sends request in a proxy friendly manner
             proxyServer.AddEndPoint(explicitEndPoint);
+            proxyServer.DisableAllSystemProxies();
             proxyServer.Start();
 
             // Only explicit proxies can be set as system proxy!
