@@ -17,7 +17,7 @@ namespace FFRK_LabMem
         {
 
             AdbServer server = new AdbServer();
-            var result = server.StartServer(@"C:\Users\JLingis\SDK\android\platform-tools\adb.exe", restartServerIfNewer: false);
+            var result = server.StartServer(@"adb.exe", restartServerIfNewer: false);
             Console.WriteLine(result);
             AdbClient.Instance.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 7555));
             var device = AdbClient.Instance.GetDevices().FirstOrDefault();
@@ -45,7 +45,6 @@ namespace FFRK_LabMem
             // An explicit endpoint is where the client knows about the existence of a proxy
             // So client sends request in a proxy friendly manner
             proxyServer.AddEndPoint(explicitEndPoint);
-            proxyServer.DisableAllSystemProxies();
             proxyServer.Start();
 
             // Only explicit proxies can be set as system proxy!
