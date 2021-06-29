@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
@@ -43,8 +44,8 @@ namespace FFRK_LabMem
             Failed
         }
 
-        public DeviceData Device;
-        public StateMachine<State, Trigger> StateMachine;
+        public DeviceData Device { get; set; }
+        public StateMachine<State, Trigger> StateMachine { get; set; }
 
         public Lab(DeviceData device)
         {
@@ -103,14 +104,23 @@ namespace FFRK_LabMem
         private void DetermineState()
         {
 
-            using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
-            {
-                using (Bitmap b = new Bitmap(framebuffer))
-                {
-                    Console.WriteLine(b.GetPixel(100, 200).ToString());
-                }
+            // For now we just wait
+            //using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
+            //{
+            //    using (Bitmap b = new Bitmap(framebuffer))
+            //    {
+            //        Console.WriteLine(b.GetPixel(100, 200).ToString());
+            //    }
 
-            }
+            //}
+
+        }
+
+        public void OnPaintingsLoaded(JArray paintings)
+        {
+
+            this.StateMachine = new StateMachine<State, Trigger>(State.Ready);
+
 
         }
 
