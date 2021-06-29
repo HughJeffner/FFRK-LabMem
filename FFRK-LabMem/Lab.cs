@@ -46,6 +46,8 @@ namespace FFRK_LabMem
 
         public DeviceData Device { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
+        public int ScreenWidth { get; set; }
+        public int ScreenHeight { get; set; }
 
         public Lab(DeviceData device)
         {
@@ -104,15 +106,17 @@ namespace FFRK_LabMem
         private void DetermineState()
         {
 
-            // For now we just wait
-            //using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
-            //{
-            //    using (Bitmap b = new Bitmap(framebuffer))
-            //    {
-            //        Console.WriteLine(b.GetPixel(100, 200).ToString());
-            //    }
+            // Get screen dimensions
+            using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
+            {
+                using (Bitmap b = new Bitmap(framebuffer))
+                {
+                    this.ScreenWidth = b.Width;
+                    this.ScreenHeight = b.Height;
+                    Console.WriteLine("Detected display: {0}x{1}", this.ScreenWidth, this.ScreenHeight);
+                }
 
-            //}
+            }
 
         }
 
