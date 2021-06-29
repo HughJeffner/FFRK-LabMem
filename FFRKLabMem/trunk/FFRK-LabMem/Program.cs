@@ -26,7 +26,7 @@ namespace FFRK_LabMem
             if (adb.Connect())
             {
                 lab = new Lab(adb.Device);
-                controller = new Controller(lab, proxy);
+                controller = new Controller(lab, proxy, adb);
             }         
                        
             // Ad-hoc command loop
