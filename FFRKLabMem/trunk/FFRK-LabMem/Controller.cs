@@ -14,9 +14,9 @@ namespace FFRK_LabMem
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
 
-        public Controller(Lab lab, Proxy proxy, Adb adb)
+        public Controller(Proxy proxy, Adb adb)
         {
-            this.Lab = lab;
+            this.Lab = new Lab(adb.Device);
             this.Proxy = proxy;
             this.Adb = adb;
             this.Proxy.OnPaintingsLoaded += Proxy_OnPaintingsLoaded;

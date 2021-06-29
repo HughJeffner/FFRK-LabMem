@@ -13,9 +13,8 @@ namespace FFRK_LabMem
         static void Main(string[] args)
         {
 
-            // Controller & State machine
+            // Controller
             Controller controller = null;
-            Lab lab = null;
 
             // Proxy Server
             Proxy proxy = new Proxy();
@@ -25,8 +24,7 @@ namespace FFRK_LabMem
             Adb adb = new Adb();
             if (adb.Connect())
             {
-                lab = new Lab(adb.Device);
-                controller = new Controller(lab, proxy, adb);
+                controller = new Controller(proxy, adb);
             }         
                        
             // Ad-hoc command loop
