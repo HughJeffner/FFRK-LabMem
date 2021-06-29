@@ -72,11 +72,11 @@ namespace FFRK_LabMem.Services
                         {
                             try
                             {
-                                await Task.Factory.StartNew(() =>
+                                Task.Factory.StartNew(() =>
                                 {
                                     var data = JObject.Parse(body.Substring(1));
                                     OnPaintingsLoaded((JArray)data["labyrinth_dungeon_session"]["display_paintings"]);
-                                }).ConfigureAwait(false);
+                                });
                                                               
                             }
                             catch (Exception ex)

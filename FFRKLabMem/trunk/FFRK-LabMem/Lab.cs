@@ -48,6 +48,7 @@ namespace FFRK_LabMem
         public StateMachine<State, Trigger> StateMachine { get; set; }
         public int ScreenWidth { get; set; }
         public int ScreenHeight { get; set; }
+        public JArray Paintings { get; set; }
 
         public Lab(DeviceData device)
         {
@@ -63,7 +64,9 @@ namespace FFRK_LabMem
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Ready)
-                .Permit(Trigger.PickPainting, State.PickConfirm);
+                .OnEntry(t => PickPainting())
+                .Permit(Trigger.PickPainting, State.PickConfirm)
+                .PermitReentry(Trigger.ResetState);
 
             this.StateMachine.Configure(State.PickConfirm)
                 .SubstateOf(State.Ready)
@@ -120,12 +123,19 @@ namespace FFRK_LabMem
 
         }
 
+        private void PickPainting()
+        {
+            Task.Delay(1000);
+            Console.WriteLine("Picking painting");
+
+        }
+
         public void OnPaintingsLoaded(JArray paintings)
         {
 
-            this.StateMachine = new StateMachine<State, Trigger>(State.Ready);
-
-
+            this.Paintings = paintings;
+            this.StateMachine.Fire(Trigger.ResetState);
+            
         }
 
     }
