@@ -1,3 +1,6 @@
 ﻿explore_painting_event	type
 Door					7
 Fatigue					10		user_buddy_memory_abrasion_map
+Buffs					6
+Item					3		given_unsettled_items
+Spring					5		user_buddy_memory_abrasion_map
