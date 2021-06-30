@@ -106,8 +106,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller.cs" />
+    <Compile Include="Machines\Machine.cs" />
     <Compile Include="Services\Adb.cs" />
-    <Compile Include="Lab.cs" />
+    <Compile Include="Machines\Lab.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Proxy.cs" />

@@ -4,14 +4,15 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FFRK_LabMem.Services;
 using Newtonsoft.Json.Linq;
 using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
 
-namespace FFRK_LabMem
+namespace FFRK_LabMem.Machines
 {
-    public class Lab
+    public class Lab : Machine
     {
         public enum Trigger
         {
@@ -44,16 +45,15 @@ namespace FFRK_LabMem
             Failed
         }
 
-        public DeviceData Device { get; set; }
+        public Adb Adb { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
-        public int ScreenWidth { get; set; }
-        public int ScreenHeight { get; set; }
         public JArray Paintings { get; set; }
+        public JObject CurrentPainting { get; set; }
 
-        public Lab(DeviceData device)
+        public Lab(Adb adb)
         {
 
-            this.Device = device;
+            this.Adb = adb;
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
 
             this.StateMachine.Configure(State.Starting)
@@ -64,12 +64,13 @@ namespace FFRK_LabMem
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Ready)
-                .OnEntry(t => PickPainting())
+                .OnEntryAsync(t => PickPainting())
                 .Permit(Trigger.PickPainting, State.PickConfirm)
                 .PermitReentry(Trigger.ResetState);
 
             this.StateMachine.Configure(State.PickConfirm)
                 .SubstateOf(State.Ready)
+                .OnEntryAsync(t => PickPaintingConfirm())
                 .Permit(Trigger.PickPaintingConfirm, State.FoundItem)
                 .Permit(Trigger.PickPaintingConfirm, State.FoundBuffs)
                 .Permit(Trigger.PickPaintingConfirm, State.FoundTreasure)
@@ -106,37 +107,51 @@ namespace FFRK_LabMem
 
         }
 
+        public override void RegisterWithProxy(Proxy Proxy)
+        {
+            Proxy.AddRegistration("get_display_paintings", this);
+        }
+
+        public override void PassFromProxy(string UrlContained, JObject data)
+        {
+            switch (UrlContained)
+            {
+                case "get_display_paintings":
+                    this.Paintings = (JArray)data["labyrinth_dungeon_session"]["display_paintings"];
+                    this.StateMachine.Fire(Trigger.ResetState);
+                    break;
+
+            }
+        }
+
         private void DetermineState()
         {
 
             // Get screen dimensions
-            using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
-            {
-                using (Bitmap b = new Bitmap(framebuffer))
-                {
-                    this.ScreenWidth = b.Width;
-                    this.ScreenHeight = b.Height;
-                    Console.WriteLine("Detected display: {0}x{1}", this.ScreenWidth, this.ScreenHeight);
-                }
+            Console.WriteLine("Detected display size: {0}x{1}", this.Adb.ScreenSize.Width, this.Adb.ScreenSize.Height);
 
-            }
-
+           
         }
 
-        private void PickPainting()
-        {
-            Task.Delay(1000);
-            Console.WriteLine("Picking painting");
-
-        }
-
-        public void OnPaintingsLoaded(JArray paintings)
+        private async Task PickPainting()
         {
 
-            this.Paintings = paintings;
-            this.StateMachine.Fire(Trigger.ResetState);
+            // Logic to determine painting here
             
+            await Task.Delay(1000);
+            Console.WriteLine("Picking painting 2");
+            this.CurrentPainting = (JObject)this.Paintings[2];
+            await this.Adb.TapPct(50, 50);
+
         }
 
+        private async Task PickPaintingConfirm()
+        {
+            await Task.Delay(1000);
+            int num = (int)this.CurrentPainting["num"];
+            Console.WriteLine("Confirm painting {0}", num);
+            await this.Adb.TapPct(17 + (33 * (num-1)), 50);
+        }
+                
     }
 }
