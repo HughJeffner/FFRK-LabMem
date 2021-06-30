@@ -67,7 +67,7 @@ namespace FFRK_LabMem.Services
         public async Task TapPct(double X, double Y)
         {
             var size = this.ScreenSize;
-            await TapXY((int)(size.Width * X), (int)(size.Height * Y));
+            await TapXY((int)(size.Width * X/100), (int)(size.Height * Y/100));
         }
 
         private Size GetScreenSize()

@@ -30,7 +30,7 @@ namespace FFRK_LabMem.Services
             proxyServer = new ProxyServer();
             proxyServer.BeforeResponse += OnResponse;
             
-            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8081, false)
+            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8080, false)
             {
                 // Use self-issued generic certificate on all https requests
                 // Optimizes performance by not creating a certificate for each https-enabled domain
@@ -93,7 +93,8 @@ namespace FFRK_LabMem.Services
                                     var data = JObject.Parse(body.Substring(1));
                                     foreach (var r in registrations)
                                     {
-                                        r.Machine.PassFromProxy(r.UrlContains, data);
+                                        if (e.HttpClient.Request.Url.Contains(r.UrlContains))
+                                            r.Machine.PassFromProxy(r.UrlContains, data);
                                     }
                                 }
                                 catch (Exception ex)
@@ -116,11 +117,11 @@ namespace FFRK_LabMem.Services
             //writeToConsole("Tunnel to: " + hostname);
             Console.WriteLine("Tunnel to: " + hostname);
 
-            //var clientLocalIp = e.ClientLocalEndPoint.Address;
-            //if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
-            //{
-            //    e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
-            //}
+            var clientLocalIp = e.ClientLocalEndPoint.Address;
+            if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
+            {
+                e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
+            }
 
             //if (hostname.Contains("dropbox.com"))
             //{

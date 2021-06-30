@@ -1,0 +1,3 @@
+﻿explore_painting_event	type
+Door					7
+Fatigue					10		user_buddy_memory_abrasion_map
