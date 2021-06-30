@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using FFRK_LabMem.Machines;
 using Newtonsoft.Json.Linq;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
@@ -11,14 +12,19 @@ using Titanium.Web.Proxy.Models;
 
 namespace FFRK_LabMem.Services
 {
-    class Proxy
+    public class Proxy
     {
 
-        public delegate void PaintingsLoaded(JArray paintings);
-        public event PaintingsLoaded OnPaintingsLoaded;
-
+        public class Registration
+        {
+            public String UrlContains { get; set; }
+            public Machine Machine { get; set; }
+        }
+               
         ProxyServer proxyServer = null;
         ExplicitProxyEndPoint explicitEndPoint = null;
+        List<Registration> registrations = new List<Registration>();
+
         public Proxy()
         {
             proxyServer = new ProxyServer();
@@ -53,7 +59,15 @@ namespace FFRK_LabMem.Services
             proxyServer.Stop();
         }
 
-        public async Task OnResponse(object sender, SessionEventArgs e)
+        public void AddRegistration(String UrlContains, Machine Machine)
+        {
+            this.registrations.Add(new Registration(){ 
+                UrlContains = UrlContains,
+                Machine = Machine
+            });
+        }
+
+        private async Task OnResponse(object sender, SessionEventArgs e)
         {
             // read response headers
             var responseHeaders = e.HttpClient.Response.Headers;
@@ -65,31 +79,34 @@ namespace FFRK_LabMem.Services
                 {
                     if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("application/json"))
                     {
-                        string body = await e.GetResponseBodyAsString();
-                        System.Diagnostics.Debug.Print(body);
 
-                        if (e.HttpClient.Request.Url.Contains("get_display_paintings"))
+                        //string d = await e.GetResponseBodyAsString();
+                        //System.Diagnostics.Debug.Print(d);
+
+                        if (registrations.Any(r => e.HttpClient.Request.Url.Contains(r.UrlContains)))
                         {
-                            try
+                            string body = await e.GetResponseBodyAsString();
+                            var forget = Task.Factory.StartNew(() =>
                             {
-                                Task.Factory.StartNew(() =>
+                                try
                                 {
                                     var data = JObject.Parse(body.Substring(1));
-                                    OnPaintingsLoaded((JArray)data["labyrinth_dungeon_session"]["display_paintings"]);
-                                });
-                                                              
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex);
-                            }
-                            
-                        }
+                                    foreach (var r in registrations)
+                                    {
+                                        r.Machine.PassFromProxy(r.UrlContains, data);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex);
+                                }
+                                
+                            });
 
+                        }
                     }
                 }
             }
-
         }
 
         private async Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
@@ -99,11 +116,11 @@ namespace FFRK_LabMem.Services
             //writeToConsole("Tunnel to: " + hostname);
             Console.WriteLine("Tunnel to: " + hostname);
 
-            var clientLocalIp = e.ClientLocalEndPoint.Address;
-            if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
-            {
-                e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
-            }
+            //var clientLocalIp = e.ClientLocalEndPoint.Address;
+            //if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
+            //{
+            //    e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
+            //}
 
             //if (hostname.Contains("dropbox.com"))
             //{
