@@ -48,7 +48,8 @@ namespace FFRK_LabMem.Machines
         public Adb Adb { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
         public JArray Paintings { get; set; }
-        public JObject CurrentPainting { get; set; }
+        public int CurrentPaintingIndex { get; set; }
+               
 
         public Lab(Adb adb)
         {
@@ -103,22 +104,26 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Fire(Trigger.Started);
-            string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
+            //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
+
+            var assignTrigger = this.StateMachine.SetTriggerParameters<string>(Trigger.PickPainting);
 
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
         {
-            Proxy.AddRegistration("get_display_paintings", this);
+            //Proxy.AddRegistration("get_display_paintings", this);
+            Proxy.AddRegistration("select_painting", this);
+            Proxy.AddRegistration("choose_explore_painting", this);
         }
 
-        public override void PassFromProxy(string UrlContained, JObject data)
+        public override async Task PassFromProxy(string UrlContained, JObject data)
         {
             switch (UrlContained)
             {
                 case "get_display_paintings":
                     this.Paintings = (JArray)data["labyrinth_dungeon_session"]["display_paintings"];
-                    this.StateMachine.Fire(Trigger.ResetState);
+                    await this.StateMachine.FireAsync(Trigger.ResetState);
                     break;
 
             }
@@ -140,17 +145,17 @@ namespace FFRK_LabMem.Machines
             
             await Task.Delay(1000);
             Console.WriteLine("Picking painting 2");
-            this.CurrentPainting = (JObject)this.Paintings[2];
-            await this.Adb.TapPct(50, 50);
+            this.CurrentPaintingIndex = 1;
+            await this.Adb.TapPct(17 + (33 * (this.CurrentPaintingIndex)), 50);
+            await this.StateMachine.FireAsync(Trigger.PickPainting);
 
         }
 
         private async Task PickPaintingConfirm()
         {
             await Task.Delay(1000);
-            int num = (int)this.CurrentPainting["num"];
-            Console.WriteLine("Confirm painting {0}", num);
-            await this.Adb.TapPct(17 + (33 * (num-1)), 50);
+            Console.WriteLine("Confirm painting {0}", this.CurrentPaintingIndex);
+            await this.Adb.TapPct(17 + (33 * (this.CurrentPaintingIndex)), 50);
         }
                 
     }
