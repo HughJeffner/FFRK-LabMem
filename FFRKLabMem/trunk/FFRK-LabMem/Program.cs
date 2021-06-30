@@ -14,19 +14,8 @@ namespace FFRK_LabMem
         {
 
             // Controller
-            Controller controller = null;
+            Controller controller = new Controller();
 
-            // Proxy Server
-            Proxy proxy = new Proxy();
-            proxy.Start();
-
-            // Adb
-            Adb adb = new Adb();
-            if (adb.Connect())
-            {
-                controller = new Controller(proxy, adb);
-            }         
-                       
             // Ad-hoc command loop
             Console.WriteLine("Press 'E' to Exit");
             while (true)
@@ -35,8 +24,8 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.E) break;
             }
             
-            // Stop proxy
-            proxy.Stop();
+            // Stop
+            controller.Stop();
 
         }
 
