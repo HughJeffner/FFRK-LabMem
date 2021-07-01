@@ -66,6 +66,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.Unknown)
                 .OnEntry(t => DetermineState())
                 .Permit(Trigger.ResetState, State.Ready)
+                .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
@@ -118,9 +119,8 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => ConfirmPortal())
                 .Permit(Trigger.ResetState, State.Ready);
 
-            this.StateMachine.Fire(Trigger.Started);
-
             this.StateMachine.OnTransitioned((state) => { Console.WriteLine("Entering state: {0}", state.Destination); });
+            this.StateMachine.Fire(Trigger.Started);
             //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
 
         }
@@ -180,6 +180,7 @@ namespace FFRK_LabMem.Machines
                     if (status != null && (int)status == 0 && total==20) // Fresh floor
                     {
                         await this.StateMachine.FireAsync(Trigger.ResetState);
+                        break;
                     }
                     if (status != null && (int)status == 1)
                     {
@@ -308,7 +309,7 @@ namespace FFRK_LabMem.Machines
             if (selectedPainting != null) selectedPaintingIndex = paintings.IndexOf(selectedPainting);
            
             Console.WriteLine("Picking painting {0}", selectedPaintingIndex+1);
-            await Task.Delay(10000);
+            await Task.Delay(5000);
             if (total >= 3)
             {
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50);
@@ -379,6 +380,8 @@ namespace FFRK_LabMem.Machines
         private async Task PickTreasures()
         {
 
+            //TODO: The move on button is shifted downward when you take an item
+
             /*
              * 200001 = 6*, rainbow crystal
              * 300001 = 6* Mote, Key
@@ -410,6 +413,7 @@ namespace FFRK_LabMem.Machines
 
                     // Click chest
                     Console.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
+                    await Task.Delay(5000);
                     await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
                     await Task.Delay(1000);
 
@@ -429,18 +433,21 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    // Move On
-                    Console.WriteLine("Moving On...");
-                    await Task.Delay(1000);
-                    await this.Adb.TapPct(50, 70);
-                    await Task.Delay(1000);
-                    await this.Adb.TapPct(70, 64);
-                    await Task.Delay(1000);
-                    this.StateMachine.Fire(Trigger.MoveOn);
+
+                    break;
 
                 }
 
             } while (picked < 2);
+
+            // Move On
+            Console.WriteLine("Moving On...");
+            await Task.Delay(1000);
+            await this.Adb.TapPct(50, 70);
+            await Task.Delay(1000);
+            await this.Adb.TapPct(70, 64);
+            await Task.Delay(1000);
+            this.StateMachine.Fire(Trigger.MoveOn);
 
         }
 
@@ -448,7 +455,7 @@ namespace FFRK_LabMem.Machines
         {
 
             Console.WriteLine("Opening Door...");
-            await Task.Delay(10000);
+            await Task.Delay(5000);
             await this.Adb.TapPct(70, 74);
             await Task.Delay(1000);
 
@@ -457,7 +464,7 @@ namespace FFRK_LabMem.Machines
         private async Task MoveOn()
         {
             Console.WriteLine("Moving On...");
-            await Task.Delay(10000);
+            await Task.Delay(5000);
             await this.Adb.TapPct(50, 74);
             await Task.Delay(1000);
             this.StateMachine.Fire(Trigger.MoveOn);
@@ -474,7 +481,7 @@ namespace FFRK_LabMem.Machines
         private async Task StartBattle()
         {
             Console.WriteLine("Starting Battle");
-            await Task.Delay(10000);
+            await Task.Delay(5000);
             await this.Adb.TapPct(50, 93);
             await Task.Delay(250);
             var c = await this.Adb.GetPixelColorPct(56, 62);

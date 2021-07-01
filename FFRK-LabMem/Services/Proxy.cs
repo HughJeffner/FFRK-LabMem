@@ -72,7 +72,7 @@ namespace FFRK_LabMem.Services
         {
             // read response headers
             var responseHeaders = e.HttpClient.Response.Headers;
-            Console.WriteLine(e.HttpClient.Request.Url);
+            System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
             {
