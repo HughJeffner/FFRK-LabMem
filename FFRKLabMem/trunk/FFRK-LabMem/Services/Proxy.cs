@@ -110,7 +110,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        private async Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
+        private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
             string hostname = e.HttpClient.Request.RequestUri.Host;
            // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
@@ -130,6 +130,7 @@ namespace FFRK_LabMem.Services
                 // for example dropbox.com
                 e.DecryptSsl = false;
             //}
+            return Task.FromResult(false);
         }
            
     }
