@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FFRK_LabMem.Machines;
 using Newtonsoft.Json.Linq;
@@ -17,7 +18,7 @@ namespace FFRK_LabMem.Services
 
         public class Registration
         {
-            public String UrlContains { get; set; }
+            public Regex UrlMatch { get; set; }
             public Machine Machine { get; set; }
         }
                
@@ -59,10 +60,10 @@ namespace FFRK_LabMem.Services
             proxyServer.Stop();
         }
 
-        public void AddRegistration(String UrlContains, Machine Machine)
+        public void AddRegistration(String UrlMatch, Machine Machine)
         {
             this.registrations.Add(new Registration(){ 
-                UrlContains = UrlContains,
+                UrlMatch = new Regex(UrlMatch),
                 Machine = Machine
             });
         }
@@ -83,18 +84,21 @@ namespace FFRK_LabMem.Services
                         //string d = await e.GetResponseBodyAsString();
                         //System.Diagnostics.Debug.Print(d);
 
-                        if (registrations.Any(r => e.HttpClient.Request.Url.Contains(r.UrlContains)))
+                        if (registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
                         {
                             string body = await e.GetResponseBodyAsString();
-                            var forget = Task.Factory.StartNew(() =>
+                            var forget = Task.Factory.StartNew(async () =>
                             {
                                 try
                                 {
                                     var data = JObject.Parse(body.Substring(1));
+                                    int i = 0;
                                     foreach (var r in registrations)
                                     {
-                                        if (e.HttpClient.Request.Url.Contains(r.UrlContains))
-                                            r.Machine.PassFromProxy(r.UrlContains, data);
+                                        var match = r.UrlMatch.Match(e.HttpClient.Request.Url);
+                                        if (match.Success)
+                                            await r.Machine.PassFromProxy(i, match.Value, data);
+                                        i++;
                                     }
                                 }
                                 catch (Exception ex)
@@ -112,10 +116,10 @@ namespace FFRK_LabMem.Services
 
         private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
-            string hostname = e.HttpClient.Request.RequestUri.Host;
-           // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
+            //string hostname = e.HttpClient.Request.RequestUri.Host;
+            // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
             //writeToConsole("Tunnel to: " + hostname);
-            Console.WriteLine("Tunnel to: " + hostname);
+            //Console.WriteLine("Tunnel to: " + hostname);
 
             var clientLocalIp = e.ClientLocalEndPoint.Address;
             if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
