@@ -21,6 +21,6 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         /// <param name="UrlContains"></param>
         /// <param name="data"></param>
-        public abstract Task PassFromProxy(String UrlContained, JObject data);
+        public abstract Task PassFromProxy(int id, String urlMatch, JObject data);
     }
 }

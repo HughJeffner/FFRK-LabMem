@@ -116,7 +116,7 @@ namespace FFRK_LabMem.Services
             return color.First();
         }
 
-        private async Task<Size> GetScreenSize()
+        public async Task<Size> GetScreenSize()
         {
             // Get screen dimensions
             using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None))

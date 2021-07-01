@@ -1,0 +1,28 @@
+﻿explore_painting_event	type
+Door					7			
+Fatigue					10		user_buddy_memory_abrasion_map		Move On
+Buffs					6											Move On
+Item					3		given_unsettled_items				Move On
+Spring					5		user_buddy_memory_abrasion_map		Move On
+Nothing					1											Move On
+Battle					4		current_painting_status: 3
+Portal					8											Move On
+
+current_painting_status
+0		Normal
+1		Door
+2		Treasure
+3		Battle
+
+display_paintings.type
+1	Combatant
+2	????
+3	Treasure
+4	Explore
+5	Onslaught
+6	Portal
+7	Restoration
+
+
+
+538 x 958
