@@ -13,6 +13,7 @@ current_painting_status
 1		Door
 2		Treasure
 3		Battle
+4		Treasure
 
 display_paintings.type
 1	Combatant
