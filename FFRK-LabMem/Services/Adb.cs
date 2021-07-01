@@ -11,22 +11,14 @@ namespace FFRK_LabMem.Services
     public class Adb
     {
 
-        public struct Size {
-            public int Width;
-            public int Height;
+        public class Size {
+            public int Width {get; set;}
+            public int Height { get; set; }
         }
 
         public DeviceData Device { get; set; }
-        private Size _screenSize;
-        public Size ScreenSize {
-            get
-            {
-                if (_screenSize.Width == 0) _screenSize = GetScreenSize();
-                return _screenSize;
-            }
+        private Size screenSize = null;
         
-        }
-
         public Adb()
         {
 
@@ -66,20 +58,76 @@ namespace FFRK_LabMem.Services
 
         public async Task TapPct(double X, double Y)
         {
-            var size = this.ScreenSize;
-            await TapXY((int)(size.Width * X/100), (int)(size.Height * Y/100));
+            if (screenSize == null) screenSize = await GetScreenSize();
+            await TapXY((int)(screenSize.Width * X / 100), (int)(screenSize.Height * Y / 100));
         }
 
-        private Size GetScreenSize()
+        public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords)
         {
-            // Get screen dimensions
-            using (var framebuffer = AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None).Result)
+
+            var ret = new List<Color>();
+
+            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None))
             {
                 using (Bitmap b = new Bitmap(framebuffer))
                 {
-                    var size = new Size();
-                    size.Width = b.Width;
-                    size.Height = b.Height;
+
+                    foreach (var item in coords)
+                    {
+                        ret.Add(b.GetPixel(item.Item1, item.Item2));
+                    }
+
+                }
+
+            }
+
+            return ret;
+
+        }
+
+        public async Task<List<Color>> GetPixelColorPct(List<Tuple<double, double>> coordsPct)
+        {
+            if (screenSize == null) screenSize = await GetScreenSize();
+
+            // Convert to XY
+            var coords = new List<Tuple<int, int>>();
+            foreach (var item in coordsPct)
+            {
+                coords.Add(new Tuple<int, int>((int)(screenSize.Width * item.Item1 / 100), (int)(screenSize.Height * item.Item2 / 100)));
+            }
+
+            return await GetPixelColorXY(coords);
+
+        }
+
+        public async Task<Color> GetPixelColorXY(int X, int Y)
+        {
+            var color = await GetPixelColorXY(new List<Tuple<int, int>>() { 
+                new Tuple<int, int>(X, Y) 
+            });
+            return color.First();
+        }
+
+        public async Task<Color> GetPixelColorPct(double X, double Y)
+        {
+            var color = await GetPixelColorPct(new List<Tuple<double, double>>() { 
+                new Tuple<double, double>(X, Y) 
+            });
+            return color.First();
+        }
+
+        private async Task<Size> GetScreenSize()
+        {
+            // Get screen dimensions
+            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None))
+            {
+                using (Bitmap b = new Bitmap(framebuffer))
+                {
+                    var size = new Size()
+                    {
+                        Width = b.Width,
+                        Height = b.Height
+                    };
                     return size;
                 }
 
