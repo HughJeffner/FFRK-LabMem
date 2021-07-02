@@ -15,34 +15,30 @@ namespace FFRK_LabMem
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
 
-        public Controller()
+        public Controller(String adbPath, String adbHost, int proxyPort, Lab.LabPriorityStrategy priorityStrategy)
         {
 
             // Proxy Server
-            this.Proxy = new Proxy();
+            this.Proxy = new Proxy(proxyPort);
             this.Proxy.Start();
 
             // Adb
-            this.Adb = new Adb();
+            this.Adb = new Adb(adbPath, adbHost);
 
             // Start if connected
             if (this.Adb.Connect())
             {
-                this.Lab = new Lab(this.Adb);
+                this.Lab = new Lab(this.Adb, priorityStrategy);
                 this.Lab.RegisterWithProxy(this.Proxy);
-            }         
+            }
 
         }
 
         public void Stop()
         {
-            Proxy.Stop();
-        }
-
-        public void Disable()
-        {
             Proxy.Registrations.Clear();
-            Console.WriteLine("Disabled");
+            this.Lab = null;
+            ColorConsole.WriteLine(ConsoleColor.Red, "Disabled");
         }
 
     }
