@@ -19,29 +19,31 @@ namespace FFRK_LabMem.Services
 
         public DeviceData Device { get; set; }
         private Size screenSize = null;
+        private String host;
         
-        public Adb()
+        public Adb(string path, string host)
         {
 
             AdbServer server = new AdbServer();
-            var result = server.StartServer(@"adb.exe", restartServerIfNewer: false);
-            Console.WriteLine("Adb status: {0}", result);
+            var result = server.StartServer(path, restartServerIfNewer: false);
+            this.host = host;
+            ColorConsole.WriteLine("Adb status: {0}", result);
 
         }
 
         public bool Connect()
         {
-            AdbClient.Instance.Connect("127.0.0.1:7555");
+            AdbClient.Instance.Connect(this.host);
             //AdbClient.Instance.Connect("127.0.0.1:62001");
             this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
-                Console.WriteLine("Connected to " + this.Device.Name);
+                ColorConsole.WriteLine("Connected to " + this.Device.Name);
                 return true;
             }
             else
             {
-                Console.WriteLine("Could not connect");
+                ColorConsole.WriteLine("Could not connect");
                 return false;
             }
 

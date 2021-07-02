@@ -15,6 +15,14 @@ namespace FFRK_LabMem.Machines
 {
     public class Lab : Machine
     {
+
+        public enum LabPriorityStrategy
+        {
+            Balanced = 0,
+            Quick = 1,
+            Full = 2
+        }
+
         public enum Trigger
         {
             Started,
@@ -29,7 +37,7 @@ namespace FFRK_LabMem.Machines
             DontOpenDoor,
             MoveOn,
             StartBattle,
-            EnterBattle,
+            EnterDungeon,
             BattleSuccess,
             BattleFailed,
             FoundBoss
@@ -55,14 +63,65 @@ namespace FFRK_LabMem.Machines
         public Adb Adb { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
         public JObject Data { get; set; }
+        public Dictionary<String, int> PaintingPriorityMap { get; set; }
+        public LabPriorityStrategy PriorityStrategy { get; set; }
         private Random rng = new Random();
 
-        public Lab(Adb adb)
+        public Lab(Adb adb, LabPriorityStrategy priorityStrategy)
         {
 
+            // Setup
             this.Adb = adb;
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
+            this.PriorityStrategy = priorityStrategy;
+            ColorConsole.WriteLine("Setting up Lab with priority: {0}", priorityStrategy);
 
+            // painting priority map
+            if (priorityStrategy == LabPriorityStrategy.Balanced)
+            {
+                this.PaintingPriorityMap = new Dictionary<string, int>(){
+                   {"3", 1},   //Treasure
+                   {"4", 2},   //Explore
+                   {"7", 3},   //Restoration
+                   {"5", 4},   //Onslaught
+                   {"6", 5},   //Portal
+                   {"1.3", 6}, //Red
+                   {"1.2", 7}, //Orange
+                   {"1.1", 8}, //Green
+                   {"2", 9},   //Master
+                };
+            }
+            else if (priorityStrategy == LabPriorityStrategy.Quick)
+            {
+                this.PaintingPriorityMap = new Dictionary<string, int>(){
+                   {"3", 1},   //Treasure
+                   {"7", 3},   //Restoration
+                   {"5", 4},   //Onslaught
+                   {"6", 5},   //Portal
+                   {"4", 2},   //Explore
+                   {"1.3", 6}, //Red
+                   {"1.2", 7}, //Orange
+                   {"1.1", 8}, //Green
+                   {"2", 9},   //Master
+                };
+            }
+            else
+            {
+                this.PaintingPriorityMap = new Dictionary<string, int>(){
+                   {"3", 1},   //Treasure
+                   {"4", 2},   //Explore
+                   {"1.3", 3}, //Red
+                   {"1.2", 4}, //Orange
+                   {"1.1", 5}, //Green
+                   {"7", 6},   //Restoration
+                   {"5", 7},   //Onslaught
+                   {"6", 8},   //Portal
+                   {"2", 9},   //Master
+                };
+            }
+            
+
+            // State machine config
             this.StateMachine.Configure(State.Starting)
                 .Permit(Trigger.Started, State.Unknown);
 
@@ -91,7 +150,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.MoveOn, State.Ready);
 
             this.StateMachine.Configure(State.FoundTreasure)
-                .OnEntryAsync(t => PickTreasures())
+                .OnEntryAsync(t => SelectTreasures())
                 .PermitReentry(Trigger.FoundTreasure)
                 .Permit(Trigger.MoveOn, State.Ready);
 
@@ -103,8 +162,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
 
             this.StateMachine.Configure(State.BattleInfo)
-                .OnEntryAsync(t => EnterBattle())
-                .Permit(Trigger.EnterBattle, State.EquipParty);
+                .OnEntryAsync(t => EnterDungeon())
+                .Permit(Trigger.EnterDungeon, State.EquipParty);
 
             this.StateMachine.Configure(State.EquipParty)
                 .OnEntryAsync(t => StartBattle())
@@ -123,14 +182,21 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => ConfirmPortal())
                 .Permit(Trigger.ResetState, State.Ready);
 
-            this.StateMachine.Configure(State.Finished);
+            this.StateMachine.Configure(State.Finished)
+                .OnEntryAsync(t => FinishLab())
+                .Ignore(Trigger.ResetState)
+                .Ignore(Trigger.BattleSuccess)
+                .Ignore(Trigger.PickedCombatant);
             
-            this.StateMachine.OnTransitioned((state) => { Console.WriteLine("Entering state: {0}", state.Destination); });
+            // Console output
+            this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            
+            // Activate
             this.StateMachine.Fire(Trigger.Started);
             //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
 
         }
-
+        
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", this);
@@ -278,7 +344,7 @@ namespace FFRK_LabMem.Machines
 
         private void DetermineState()
         {
-       
+            
         }
 
         private async Task SelectPainting()
@@ -337,14 +403,25 @@ namespace FFRK_LabMem.Machines
             int selectedPaintingIndex = 0;
             if (selectedPainting != null) selectedPaintingIndex = paintings.IndexOf(selectedPainting);
            
-            Console.WriteLine("Picking painting {0}", selectedPaintingIndex+1);
-            await Task.Delay(5000);
-
+            // Master painting check
             if ((int)selectedPainting["type"] == 2)
             {
                 await this.StateMachine.FireAsync(Trigger.FoundBoss);
+                return;
             }
 
+            // Do Pick
+            ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, selectedPainting["name"]);
+            if ((int)selectedPainting["type"] == 1)
+            {
+                ColorConsole.Write(": ");
+                ColorConsole.Write(ConsoleColor.Yellow, "{0}", selectedPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
+            }
+            ColorConsole.WriteLine("");
+            await Task.Delay(5000);
+            
+            // TODO: clean this painting placement handling up
+            // 2 or less paintings remaining change position
             if (total >= 3)
             {
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50);
@@ -378,41 +455,26 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private int GetPaintingPriority(JToken s)
+        private int GetPaintingPriority(JToken painting)
         {
-            /*
-             *  1	Combatant
-             *  2	????
-             *  3	Treasure
-             *  4	Explore
-             *  5	Onslaught
-             *  6	Portal
-             *  7	Restoration
-             */
 
-            switch ((int)s["type"]){
-                case 3:
-                    return 1;
-                case 4:
-                    return 2;
-                case 1:
-                    if ((int)s["display_type"] == 3) return 3;
-                    if ((int)s["display_type"] == 2) return 7;
-                    return 8;
-                case 7:
-                    return 4;
-                case 5:
-                    return 5;
-                case 6:
-                    return 6;
-                case 2:
-                    return 9;
-                default:
-                    return 99;
+            var type = painting["type"].ToString();
+
+            // Subtype for combatant (1)
+            if (type.Equals("1"))
+            {
+                type += "." + painting["display_type"].ToString();
             }
+
+            if (this.PaintingPriorityMap.ContainsKey(type)){
+                return this.PaintingPriorityMap[type];
+            } else {
+                return 99;
+            }
+
         }
 
-        private async Task PickTreasures()
+        private async Task SelectTreasures()
         {
 
             //TODO: The move on button is shifted downward when you take an item
@@ -429,9 +491,6 @@ namespace FFRK_LabMem.Machines
             // Already picked this many
             int picked = treasures.Where(t => (int)t == 0).Count();
 
-            // Button shifts down if we got an item
-            bool gotItem = false;
-
             // Select a random treasure
             JToken treasureToPick = treasures
                 .Select(t => t)
@@ -447,7 +506,7 @@ namespace FFRK_LabMem.Machines
                 selectedTreasureIndex = treasures.IndexOf(treasureToPick);
 
                 // Click chest
-                Console.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
+                ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
                 await Task.Delay(5000);
                 await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
                 await Task.Delay(1000);
@@ -461,7 +520,6 @@ namespace FFRK_LabMem.Machines
 
                 // Confirm
                 await this.Adb.TapPct(70, 64);
-                gotItem = true;
 
                 // Pick counter
                 picked++;
@@ -470,7 +528,7 @@ namespace FFRK_LabMem.Machines
            {
 
                 // Move On
-                Console.WriteLine("Moving On...");
+                ColorConsole.WriteLine("Moving On...");
                 var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 62, 80, 10);
                 if (b)
                 {
@@ -487,16 +545,26 @@ namespace FFRK_LabMem.Machines
         private async Task OpenSealedDoor()
         {
 
-            Console.WriteLine("Opening Door...");
-            await Task.Delay(5000);
-            await this.Adb.TapPct(70, 74);
-            await Task.Delay(1000);
+            if (this.PriorityStrategy != LabPriorityStrategy.Quick)
+            {
+                ColorConsole.WriteLine("Opening Door...");
+                await Task.Delay(5000);
+                await this.Adb.TapPct(70, 74);
+                await Task.Delay(1000);
+            }
+            else
+            {
+                ColorConsole.WriteLine("Leaving Door...");
+                await Task.Delay(5000);
+                await this.Adb.TapPct(30, 74);
+                await Task.Delay(1000);
+            }
 
         }
 
         private async Task MoveOn()
         {
-            Console.WriteLine("Moving On...");
+            ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
             var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 69.4, 80.8, 20);
@@ -510,17 +578,17 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task EnterBattle()
+        private async Task EnterDungeon()
         {
-            Console.WriteLine("Enter Battle");
+            ColorConsole.WriteLine("Enter Dungeon");
             await Task.Delay(2000);
             await this.Adb.TapPct(70, 86);
-            this.StateMachine.Fire(Trigger.EnterBattle);
+            this.StateMachine.Fire(Trigger.EnterDungeon);
         }
 
         private async Task StartBattle()
         {
-            Console.WriteLine("Starting Battle");
+            ColorConsole.WriteLine("Starting Battle");
             var b = await Adb.FindButtonAndTap(-14655282, 2000, 50, 90, 95, 20);
             if (b)
             {
@@ -534,7 +602,7 @@ namespace FFRK_LabMem.Machines
         private async Task FinishBattle()
         {
 
-            Console.WriteLine("Battle Won!");
+            ColorConsole.WriteLine("Battle Won!");
             await Task.Delay(5000);
             await this.Adb.TapPct(85, 85);
             await Task.Delay(1000);
@@ -545,9 +613,23 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            Console.WriteLine("Next Level");
+            ColorConsole.WriteLine("Next Level");
             await Task.Delay(2000);
             await this.Adb.TapPct(71, 62);
+
+        }
+
+        private async Task FinishLab()
+        {
+
+            ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Please restart the app for next time.");
+            // Notification?
+
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Beep();
+                await Task.Delay(1000);
+            }
 
         }
 

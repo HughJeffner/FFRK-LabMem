@@ -26,13 +26,13 @@ namespace FFRK_LabMem.Services
         ExplicitProxyEndPoint explicitEndPoint = null;
         public List<Registration> Registrations {get; set;}
 
-        public Proxy()
+        public Proxy(int port)
         {
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer();
             proxyServer.BeforeResponse += OnResponse;
             
-            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8080, false)
+            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, false)
             {
                 // Use self-issued generic certificate on all https requests
                 // Optimizes performance by not creating a certificate for each https-enabled domain
@@ -49,15 +49,15 @@ namespace FFRK_LabMem.Services
 
         public void Start()
         {
-            Console.WriteLine("Starting proxy server on {0}:{1}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port);
+            ColorConsole.WriteLine("Starting proxy server on {0}:{1}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port);
             proxyServer.Start();
             
         }
 
         public void Stop()
         {
-            proxyServer.BeforeResponse -= OnResponse;
-            explicitEndPoint.BeforeTunnelConnectRequest -= onBeforeTunnelConnectRequest;
+            //proxyServer.BeforeResponse -= OnResponse;
+            //explicitEndPoint.BeforeTunnelConnectRequest -= onBeforeTunnelConnectRequest;
             proxyServer.Stop();
         }
 
@@ -104,7 +104,7 @@ namespace FFRK_LabMem.Services
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine(ex);
+                                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
                                 }
                                 
                             });
@@ -120,7 +120,7 @@ namespace FFRK_LabMem.Services
             //string hostname = e.HttpClient.Request.RequestUri.Host;
             // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
             //writeToConsole("Tunnel to: " + hostname);
-            //Console.WriteLine("Tunnel to: " + hostname);
+            //ColorConsole.WriteLine("Tunnel to: " + hostname);
 
             var clientLocalIp = e.ClientLocalEndPoint.Address;
             if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
