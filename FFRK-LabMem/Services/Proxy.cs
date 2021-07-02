@@ -24,10 +24,11 @@ namespace FFRK_LabMem.Services
                
         ProxyServer proxyServer = null;
         ExplicitProxyEndPoint explicitEndPoint = null;
-        List<Registration> registrations = new List<Registration>();
+        public List<Registration> Registrations {get; set;}
 
         public Proxy()
         {
+            this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer();
             proxyServer.BeforeResponse += OnResponse;
             
@@ -62,7 +63,7 @@ namespace FFRK_LabMem.Services
 
         public void AddRegistration(String UrlMatch, Machine Machine)
         {
-            this.registrations.Add(new Registration(){ 
+            this.Registrations.Add(new Registration(){ 
                 UrlMatch = new Regex(UrlMatch),
                 Machine = Machine
             });
@@ -84,7 +85,7 @@ namespace FFRK_LabMem.Services
                         //string d = await e.GetResponseBodyAsString();
                         //System.Diagnostics.Debug.Print(d);
 
-                        if (registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
+                        if (Registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
                         {
                             string body = await e.GetResponseBodyAsString();
                             var forget = Task.Factory.StartNew(async () =>
@@ -93,7 +94,7 @@ namespace FFRK_LabMem.Services
                                 {
                                     var data = JObject.Parse(body.Substring(1));
                                     int i = 0;
-                                    foreach (var r in registrations)
+                                    foreach (var r in Registrations)
                                     {
                                         var match = r.UrlMatch.Match(e.HttpClient.Request.Url);
                                         if (match.Success)

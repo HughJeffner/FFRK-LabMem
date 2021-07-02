@@ -22,6 +22,7 @@ namespace FFRK_LabMem
             {
                 var key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.E) break;
+                if (key.Key == ConsoleKey.D) controller.Disable();
             }
             
             // Stop
