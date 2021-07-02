@@ -229,6 +229,7 @@ namespace FFRK_LabMem.Machines
                     break;
 
                 case 3:
+                    this.Data = data;
                     await this.StateMachine.FireAsync(Trigger.FoundTreasure);
                     break;
         
@@ -388,66 +389,62 @@ namespace FFRK_LabMem.Machines
              * 500103 = HE
              */
 
-            // Pick treasure
+            // Treasure list
             var treasures = (JArray)this.Data["labyrinth_dungeon_session"]["treasure_chest_ids"];
+
+            // Already picked this many
             int picked = treasures.Where(t => (int)t == 0).Count();
 
-            do
-            {
+            // Button shifts down if we got an item
+            bool gotItem = false;
 
-                // Select treasure
-                JToken selectedTreasure = treasures
-                    .Select(t => t)
-                    .Where(t => (int)t >= 300001)
-                    .FirstOrDefault();
+            // Select a random treasure
+            JToken treasureToPick = treasures
+                .Select(t => t)
+                .Where(t => (int)t >= 300001)
+                .OrderBy(t => rng.Next())
+                .FirstOrDefault();
 
-                // Get selected treasure index and pick it
+            // Pick if we got something good, limited to 2
+            if (treasureToPick != null && picked < 2) {
+
+                // Get item index
                 int selectedTreasureIndex = 0;
+                selectedTreasureIndex = treasures.IndexOf(treasureToPick);
 
-                // Did we already pick 2 or select a valid treasure?, if not then move on
-                if (selectedTreasure != null)
+                // Click chest
+                Console.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
+                await Task.Delay(5000);
+                await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
+                await Task.Delay(1000);
+
+                // Check if key needed
+                if (picked > 0)
                 {
-
-                    selectedTreasureIndex = treasures.IndexOf(selectedTreasure);
+                    await this.Adb.TapPct(58, 44);
                     await Task.Delay(1000);
-
-                    // Click chest
-                    Console.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                    await Task.Delay(5000);
-                    await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
-                    await Task.Delay(1000);
-
-                    // Check if key needed
-                    if (picked > 0)
-                    {
-                        await this.Adb.TapPct(58, 44);
-                        await Task.Delay(1000);
-                    }
-
-                    // Confirm
-                    await this.Adb.TapPct(70, 64);
-
-                    // Pick counter
-                    picked++;
-
-                }
-                else
-                {
-
-                    break;
-
                 }
 
-            } while (picked < 2);
+                // Confirm
+                await this.Adb.TapPct(70, 64);
+                gotItem = true;
 
-            // Move On
-            Console.WriteLine("Moving On...");
-            await Task.Delay(1000);
-            await this.Adb.TapPct(50, 70);
-            await Task.Delay(1000);
-            await this.Adb.TapPct(70, 64);
-            await Task.Delay(1000);
-            this.StateMachine.Fire(Trigger.MoveOn);
+                // Pick counter
+                picked++;
+           }
+           else
+           {
+
+               // Move On
+               Console.WriteLine("Moving On...");
+               await Task.Delay(1000);
+               await this.Adb.TapPct(50, 70 + (gotItem ? 10 : 0));
+               await Task.Delay(1000);
+               await this.Adb.TapPct(70, 64);
+               await Task.Delay(1000);
+               this.StateMachine.Fire(Trigger.MoveOn);
+
+           }
 
         }
 
