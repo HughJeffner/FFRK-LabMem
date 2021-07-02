@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
+using FFRK_LabMem.Extensions;
 using Newtonsoft.Json.Linq;
 using SharpAdbClient;
 using Stateless;
@@ -30,7 +31,8 @@ namespace FFRK_LabMem.Machines
             StartBattle,
             EnterBattle,
             BattleSuccess,
-            BattleFailed
+            BattleFailed,
+            FoundBoss
         }
 
         public enum State
@@ -46,7 +48,8 @@ namespace FFRK_LabMem.Machines
             EquipParty,
             Battle,
             BattleFinished,
-            Failed
+            Failed,
+            Finished
         }
 
         public Adb Adb { get; set; }
@@ -80,6 +83,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.PickedPortal, State.PortalConfirm)
+                .Permit(Trigger.FoundBoss, State.Finished)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor);
 
             this.StateMachine.Configure(State.FoundThing)
@@ -119,6 +123,8 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => ConfirmPortal())
                 .Permit(Trigger.ResetState, State.Ready);
 
+            this.StateMachine.Configure(State.Finished);
+            
             this.StateMachine.OnTransitioned((state) => { Console.WriteLine("Entering state: {0}", state.Destination); });
             this.StateMachine.Fire(Trigger.Started);
             //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
@@ -209,23 +215,42 @@ namespace FFRK_LabMem.Machines
                     {
                         switch ((int)eventdata["type"])
                         {
-                            case 1:
-                            case 3:
-                            case 5:
-                            case 6:
-                            case 10:
+                            case 1:  // Nothing
+                            case 3:  // Item
+                            case 5:  // Spring
+
+                            case 6:  // Buffs
+                            case 8:  // Portal
+                            case 10: // Fatigue
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
-                            case 7:
+                            case 7:  // Door
                                 await this.StateMachine.FireAsync(Trigger.FoundDoor);
                                 break;
-                            case 4:
+                            case 4:  // Battle
                                 await this.StateMachine.FireAsync(Trigger.FoundBattle);
                                 break;
 
                         }
+                        break;
                     }
-                   
+
+                    // Abrasion map presence
+                    var abrasionMap = data["user_buddy_memory_abrasion_map"];
+                    if (abrasionMap != null)
+                    {
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    }
+
+                    // Last buffs presence
+                    var lastAddonRM = data["labyrinth_dungeon_session"]["last_addon_record_materia"];
+                    if (lastAddonRM != null)
+                    {
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    }
+
                     break;
 
                 case 3:
@@ -250,8 +275,7 @@ namespace FFRK_LabMem.Machines
 
         private void DetermineState()
         {
-   
-           
+       
         }
 
         private async Task SelectPainting()
@@ -274,9 +298,10 @@ namespace FFRK_LabMem.Machines
 
             // Select top 1 priority from the first 3
             selectedPainting = paintings
-                .Take(3)
+                .Take(3)                            // Only from the first 3
                 .Select(p => p)
-                .OrderBy(p => (int)p["priority"])
+                .OrderBy(p => (int)p["priority"])   // Priority ordering
+                .ThenBy(p => rng.Next())            // Random for matching priority
                 .FirstOrDefault();
 
             // There's a treasure visible but picked a explore
@@ -311,6 +336,12 @@ namespace FFRK_LabMem.Machines
            
             Console.WriteLine("Picking painting {0}", selectedPaintingIndex+1);
             await Task.Delay(5000);
+
+            if ((int)selectedPainting["type"] == 2)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundBoss);
+            }
+
             if (total >= 3)
             {
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50);
@@ -438,7 +469,7 @@ namespace FFRK_LabMem.Machines
                // Move On
                Console.WriteLine("Moving On...");
                await Task.Delay(1000);
-               await this.Adb.TapPct(50, 70 + (gotItem ? 10 : 0));
+               await this.Adb.TapPct(50, 70 + (gotItem ? 20 : 0));
                await Task.Delay(1000);
                await this.Adb.TapPct(70, 64);
                await Task.Delay(1000);
@@ -462,9 +493,16 @@ namespace FFRK_LabMem.Machines
         {
             Console.WriteLine("Moving On...");
             await Task.Delay(5000);
-            await this.Adb.TapPct(50, 74);
-            await Task.Delay(1000);
-            this.StateMachine.Fire(Trigger.MoveOn);
+
+            var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 69.4, 80.8, 5);
+            if (b)
+            {
+                await Task.Delay(1000);
+                this.StateMachine.Fire(Trigger.MoveOn);
+            }
+            
+            // Failed
+
         }
 
         private async Task EnterBattle()
@@ -478,12 +516,14 @@ namespace FFRK_LabMem.Machines
         private async Task StartBattle()
         {
             Console.WriteLine("Starting Battle");
-            await Task.Delay(5000);
-            await this.Adb.TapPct(50, 93);
-            await Task.Delay(250);
-            var c = await this.Adb.GetPixelColorPct(56, 62);
-            if (GetDistance(c, Color.FromArgb(-14655282)) < 1000) await this.Adb.TapPct(66, 62);
-            this.StateMachine.Fire(Trigger.StartBattle);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 50, 90, 95, 5);
+            if (b)
+            {
+                await Task.Delay(500);
+                await Adb.FindButtonAndTap(-14655282, 2000, 56, 60, 64, 5);
+                this.StateMachine.Fire(Trigger.StartBattle);
+            }
+           
         }
 
         private async Task FinishBattle()
@@ -506,18 +546,5 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private static int GetDistance(Color current, Color match)
-        {
-            int redDifference;
-            int greenDifference;
-            int blueDifference;
-
-            redDifference = current.R - match.R;
-            greenDifference = current.G - match.G;
-            blueDifference = current.B - match.B;
-
-            return redDifference * redDifference + greenDifference * greenDifference + blueDifference * blueDifference;
-        }
-    
     }
 }

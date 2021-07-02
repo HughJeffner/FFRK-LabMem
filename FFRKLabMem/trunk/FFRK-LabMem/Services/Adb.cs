@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAdbClient;
+using FFRK_LabMem.Extensions;
 
 namespace FFRK_LabMem.Services
 {
@@ -30,9 +31,8 @@ namespace FFRK_LabMem.Services
 
         public bool Connect()
         {
-            //AdbClient.Instance.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 7555));
-            //AdbClient.Instance.Connect("127.0.0.1:7555");
-            AdbClient.Instance.Connect("127.0.0.1:62001");
+            AdbClient.Instance.Connect("127.0.0.1:7555");
+            //AdbClient.Instance.Connect("127.0.0.1:62001");
             this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
@@ -133,6 +133,54 @@ namespace FFRK_LabMem.Services
                 }
 
             }
+        }
+
+        public async Task<Tuple<double, double>> FindButton(int argbButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
+        {
+
+            // Hold result
+            Tuple<double, double> ret = null;
+
+            // Build input for pixel colors
+            var coords = new List<Tuple<double, double>>();
+            for (double i = yPctStart; i < yPctEnd; i++)
+            {
+                coords.Add(new Tuple<double, double>(xPct, i));
+            }
+            var results = await GetPixelColorPct(coords);
+
+            // Iterate color and get distance
+            foreach (var item in results)
+            {
+                var d = item.GetDistance(Color.FromArgb(argbButtonColor));
+                if (d < threshold) { 
+                    ret = coords[results.IndexOf(item)];
+                    break;
+                }
+            }
+
+            return ret;
+
+        }
+
+        public async Task<Boolean> FindButtonAndTap(int argbButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries)
+        {
+
+            int tries = 0;
+            do
+            {
+                var b = await FindButton(argbButtonColor, threshold, xPct, yPctStart, yPctEnd);
+                if (b != null)
+                {
+                    await TapPct(b.Item1, b.Item2);
+                    return true;
+                }
+                tries++;
+                await Task.Delay(1000);
+            } while (tries < retries);
+
+            return false;
+
         }
 
     }

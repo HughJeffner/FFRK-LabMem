@@ -39,5 +39,11 @@ namespace FFRK_LabMem
             Proxy.Stop();
         }
 
+        public void Disable()
+        {
+            Proxy.Registrations.Clear();
+            Console.WriteLine("Disabled");
+        }
+
     }
 }
