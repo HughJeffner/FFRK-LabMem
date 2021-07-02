@@ -31,7 +31,8 @@ namespace FFRK_LabMem.Services
         public bool Connect()
         {
             //AdbClient.Instance.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 7555));
-            AdbClient.Instance.Connect("127.0.0.1:7555");
+            //AdbClient.Instance.Connect("127.0.0.1:7555");
+            AdbClient.Instance.Connect("127.0.0.1:62001");
             this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
