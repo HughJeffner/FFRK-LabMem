@@ -179,7 +179,9 @@ namespace FFRK_LabMem.Machines
                 case 2:
 
                     this.Data = data;
-                    int total = (int)this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
+                    int total = 0;
+                    var t = this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
+                    if (t != null) total = (int)t;
 
                     // Status
                     status = data["labyrinth_dungeon_session"]["current_painting_status"];
@@ -216,7 +218,8 @@ namespace FFRK_LabMem.Machines
                         switch ((int)eventdata["type"])
                         {
                             case 1:  // Nothing
-                            case 3:  // Item
+                            case 2:  // Item
+                            case 3:  // Lab Item?
                             case 5:  // Spring
 
                             case 6:  // Buffs
@@ -466,14 +469,16 @@ namespace FFRK_LabMem.Machines
            else
            {
 
-               // Move On
-               Console.WriteLine("Moving On...");
-               await Task.Delay(1000);
-               await this.Adb.TapPct(50, 70 + (gotItem ? 20 : 0));
-               await Task.Delay(1000);
-               await this.Adb.TapPct(70, 64);
-               await Task.Delay(1000);
-               this.StateMachine.Fire(Trigger.MoveOn);
+                // Move On
+                Console.WriteLine("Moving On...");
+                var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 62, 80, 10);
+                if (b)
+                {
+                    await Task.Delay(1000);
+                    await this.Adb.TapPct(70, 64);
+                    await Task.Delay(1000);
+                    this.StateMachine.Fire(Trigger.MoveOn);
+                }
 
            }
 
@@ -494,7 +499,7 @@ namespace FFRK_LabMem.Machines
             Console.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 69.4, 80.8, 5);
+            var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 69.4, 80.8, 20);
             if (b)
             {
                 await Task.Delay(1000);
@@ -516,7 +521,7 @@ namespace FFRK_LabMem.Machines
         private async Task StartBattle()
         {
             Console.WriteLine("Starting Battle");
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 50, 90, 95, 5);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 50, 90, 95, 20);
             if (b)
             {
                 await Task.Delay(500);

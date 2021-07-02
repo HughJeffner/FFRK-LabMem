@@ -2,7 +2,8 @@
 Door					7			
 Fatigue					10		user_buddy_memory_abrasion_map		Move On
 Buffs					6											Move On
-Item					3		given_unsettled_items				Move On
+Lab Item				3		given_unsettled_items				Move On
+Other Item				2
 Spring					5		user_buddy_memory_abrasion_map		Move On
 Nothing					1											Move On
 Battle					4		current_painting_status: 3
