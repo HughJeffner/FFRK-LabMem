@@ -30,12 +30,13 @@ namespace FFRK_LabMem
             );
 
             // Ad-hoc command loop
-            Console.WriteLine("Press 'E' to Exit");
+            Console.WriteLine("Press 'X' to Exit");
             while (true)
             {
                 var key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.E) break;
-                if (key.Key == ConsoleKey.T) controller.Stop();
+                if (key.Key == ConsoleKey.X) break;
+                if (key.Key == ConsoleKey.E) controller.Enable();
+                if (key.Key == ConsoleKey.D) controller.Disable();
             }
             
             // Stop

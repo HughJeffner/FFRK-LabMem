@@ -5,40 +5,100 @@ using System.Text;
 using System.Threading.Tasks;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
+using System.Collections.Concurrent;
+using System.Threading;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
+
 
 namespace FFRK_LabMem
 {
     class Controller
     {
 
+        private bool enabled = true;
         public Lab Lab { get; set; }
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
+        private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
 
         public Controller(String adbPath, String adbHost, int proxyPort, Lab.LabPriorityStrategy priorityStrategy)
         {
 
             // Proxy Server
             this.Proxy = new Proxy(proxyPort);
+            this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             this.Proxy.Start();
-
+            
             // Adb
             this.Adb = new Adb(adbPath, adbHost);
 
             // Start if connected
             if (this.Adb.Connect())
             {
-                this.Lab = new Lab(this.Adb, priorityStrategy);
+                this.Lab = new Lab(this.Adb, priorityStrategy, true);
                 this.Lab.RegisterWithProxy(this.Proxy);
+            }
+
+            // Consumer queue
+            var cts = new CancellationTokenSource();
+            var consumerTask = Task.Run(async() =>
+            {
+                foreach (var item in queue.GetConsumingEnumerable())
+                {
+                    try
+                    {
+                        var data = JObject.Parse(item.Body.Substring(1));
+                        int i = 0;
+                        foreach (var r in this.Proxy.Registrations)
+                        {
+                            var match = r.UrlMatch.Match(item.Url);
+                            if (match.Success)
+                                await r.Machine.PassFromProxy(i, match.Value, data);
+                            i++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                    }
+
+                }
+            });
+
+        }
+
+        void Proxy_ProxyEvent(object sender, Proxy.ProxyEventArgs e)
+        {
+            queue.Add(e);
+        }
+
+        public void Enable()
+        {
+            if (!enabled)
+            {
+                this.Proxy.ProxyEvent += Proxy_ProxyEvent;
+                enabled = true;
+                ColorConsole.WriteLine(ConsoleColor.Green, "Enabled");
             }
 
         }
 
+        public void Disable()
+        {
+
+            if (enabled)
+            {
+                this.Proxy.ProxyEvent -= Proxy_ProxyEvent;
+                enabled = false;
+                ColorConsole.WriteLine(ConsoleColor.Red, "Disabled");
+            }
+        }
+
         public void Stop()
         {
-            Proxy.Registrations.Clear();
-            this.Lab = null;
-            ColorConsole.WriteLine(ConsoleColor.Red, "Disabled");
+            Disable();
+            this.Proxy.Stop();
         }
 
     }
