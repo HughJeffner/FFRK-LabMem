@@ -37,6 +37,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.X) break;
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
+                if (key.Key == ConsoleKey.H) Tray.MinimizeTo();
             }
             
             // Stop

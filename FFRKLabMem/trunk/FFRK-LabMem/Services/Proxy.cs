@@ -38,7 +38,7 @@ namespace FFRK_LabMem.Services
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer();
             proxyServer.EnableConnectionPool = false;
-            proxyServer.ThreadPoolWorkerThread = 64;
+            //proxyServer.ThreadPoolWorkerThread = 64;
             proxyServer.BeforeResponse += OnResponse;
             
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, false)
