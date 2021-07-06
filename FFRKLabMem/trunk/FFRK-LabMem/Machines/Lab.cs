@@ -67,7 +67,7 @@ namespace FFRK_LabMem.Machines
         public LabPriorityStrategy PriorityStrategy { get; set; }
         private Random rng = new Random();
 
-        public Lab(Adb adb, LabPriorityStrategy priorityStrategy)
+        public Lab(Adb adb, LabPriorityStrategy priorityStrategy, bool debug)
         {
 
             // Setup
@@ -156,7 +156,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(t => OpenSealedDoor())
-                .Permit(Trigger.DontOpenDoor, State.Ready)
+                .Permit(Trigger.DontOpenDoor, State.FoundThing)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
@@ -189,7 +189,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.PickedCombatant);
             
             // Console output
-            this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            if (debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
             
             // Activate
             this.StateMachine.Fire(Trigger.Started);
@@ -498,8 +498,8 @@ namespace FFRK_LabMem.Machines
                 .OrderBy(t => rng.Next())
                 .FirstOrDefault();
 
-            // Pick if we got something good, limited to 2
-            if (treasureToPick != null && picked < 2) {
+            // Pick if we got something good
+            if (treasureToPick != null) {
 
                 // Get item index
                 int selectedTreasureIndex = 0;
@@ -521,8 +521,6 @@ namespace FFRK_LabMem.Machines
                 // Confirm
                 await this.Adb.TapPct(70, 64);
 
-                // Pick counter
-                picked++;
            }
            else
            {
@@ -533,8 +531,11 @@ namespace FFRK_LabMem.Machines
                 if (b)
                 {
                     await Task.Delay(1000);
-                    await this.Adb.TapPct(70, 64);
-                    await Task.Delay(1000);
+                    if (picked != 3)
+                    {
+                        await this.Adb.TapPct(70, 64);
+                        await Task.Delay(1000);
+                    }
                     this.StateMachine.Fire(Trigger.MoveOn);
                 }
 
@@ -558,6 +559,7 @@ namespace FFRK_LabMem.Machines
                 await Task.Delay(5000);
                 await this.Adb.TapPct(30, 74);
                 await Task.Delay(1000);
+                await this.StateMachine.FireAsync(Trigger.DontOpenDoor);
             }
 
         }
@@ -616,6 +618,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Next Level");
             await Task.Delay(2000);
             await this.Adb.TapPct(71, 62);
+            await Task.Delay(2000);
 
         }
 

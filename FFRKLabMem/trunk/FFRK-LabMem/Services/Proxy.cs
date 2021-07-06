@@ -16,10 +16,17 @@ namespace FFRK_LabMem.Services
     public class Proxy
     {
 
+        public event EventHandler<ProxyEventArgs> ProxyEvent;
+
         public class Registration
         {
             public Regex UrlMatch { get; set; }
             public Machine Machine { get; set; }
+        }
+
+        public class ProxyEventArgs{
+            public String Url { get; set; }
+            public String Body { get; set; }
         }
                
         ProxyServer proxyServer = null;
@@ -30,6 +37,8 @@ namespace FFRK_LabMem.Services
         {
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer();
+            proxyServer.EnableConnectionPool = false;
+            proxyServer.ThreadPoolWorkerThread = 64;
             proxyServer.BeforeResponse += OnResponse;
             
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, false)
@@ -72,7 +81,7 @@ namespace FFRK_LabMem.Services
         private async Task OnResponse(object sender, SessionEventArgs e)
         {
             // read response headers
-            var responseHeaders = e.HttpClient.Response.Headers;
+            //var responseHeaders = e.HttpClient.Response.Headers;
             System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
@@ -88,32 +97,14 @@ namespace FFRK_LabMem.Services
                         if (Registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
                         {
                             string body = await e.GetResponseBodyAsString();
-                            var forget = Task.Factory.StartNew(async () =>
-                            {
-                                try
-                                {
-                                    var data = JObject.Parse(body.Substring(1));
-                                    int i = 0;
-                                    foreach (var r in Registrations)
-                                    {
-                                        var match = r.UrlMatch.Match(e.HttpClient.Request.Url);
-                                        if (match.Success)
-                                            await r.Machine.PassFromProxy(i, match.Value, data);
-                                        i++;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                                }
-                                
-                            });
+                            ProxyEvent(sender, new ProxyEventArgs() { Body = body, Url = e.HttpClient.Request.Url });
 
                         }
                     }
                 }
             }
         }
+
 
         private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
