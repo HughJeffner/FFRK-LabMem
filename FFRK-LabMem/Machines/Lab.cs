@@ -352,6 +352,7 @@ namespace FFRK_LabMem.Machines
 
             // Logic to determine painting
             int total = (int)this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
+            int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             JToken selectedPainting = null;
 
@@ -373,8 +374,9 @@ namespace FFRK_LabMem.Machines
                 .ThenBy(p => rng.Next())            // Random for matching priority
                 .FirstOrDefault();
 
-            // There's a treasure visible but picked a explore
-            if (isTreasure && (int)selectedPainting["type"] == 4)
+            // There's a treasure visible but picked a explore (unless last floor)
+            // TODO: Determine if the last floor
+            if (isTreasure && (int)selectedPainting["type"] == 4 && (floor != 15 || floor !=20))
             {
                 selectedPainting = paintings
                 .Take(3)

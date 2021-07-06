@@ -70,14 +70,13 @@ namespace FFRK_LabMem
 
         void Proxy_ProxyEvent(object sender, Proxy.ProxyEventArgs e)
         {
-            queue.Add(e);
+            if (enabled) queue.Add(e);
         }
 
         public void Enable()
         {
             if (!enabled)
             {
-                this.Proxy.ProxyEvent += Proxy_ProxyEvent;
                 enabled = true;
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled");
             }
@@ -89,7 +88,6 @@ namespace FFRK_LabMem
 
             if (enabled)
             {
-                this.Proxy.ProxyEvent -= Proxy_ProxyEvent;
                 enabled = false;
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled");
             }
