@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAdbClient;
 using FFRK_LabMem.Extensions;
+using System.Diagnostics;
 
 namespace FFRK_LabMem.Services
 {
@@ -31,10 +32,16 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public bool Connect()
+        public async Task<bool> Connect()
         {
+
+            this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
+            if (this.Device == null)
+            {
+                await RunProcessAsync("cmd.exe", "/c adb connect " + this.host);
+            }
+
             AdbClient.Instance.Connect(this.host);
-            //AdbClient.Instance.Connect("127.0.0.1:62001");
             this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
@@ -183,6 +190,27 @@ namespace FFRK_LabMem.Services
 
             return false;
 
+        }
+
+        static Task<int> RunProcessAsync(string fileName, string arguments)
+        {
+            var tcs = new TaskCompletionSource<int>();
+
+            var process = new Process
+            {
+                StartInfo = { FileName = fileName, Arguments = arguments },
+                EnableRaisingEvents = true
+            };
+
+            process.Exited += (sender, args) =>
+            {
+                tcs.SetResult(process.ExitCode);
+                process.Dispose();
+            };
+
+            process.Start();
+
+            return tcs.Task;
         }
 
     }
