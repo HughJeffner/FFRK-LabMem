@@ -26,7 +26,8 @@ namespace FFRK_LabMem
                 adbPath: config["adb.path"],
                 adbHost: config["adb.host"],
                 proxyPort: config.GetInt("proxy.port"),
-                priorityStrategy: config.GetEnum<FFRK_LabMem.Machines.Lab.LabPriorityStrategy>("lab.priorityStrategy")
+                priorityStrategy: config.GetEnum<FFRK_LabMem.Machines.Lab.LabPriorityStrategy>("lab.priorityStrategy"),
+                debug: config.GetBool("console.debug")
             );
 
             // Ad-hoc command loop

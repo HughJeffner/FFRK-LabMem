@@ -22,7 +22,7 @@ namespace FFRK_LabMem
         public Adb Adb { get; set; }
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
 
-        public Controller(String adbPath, String adbHost, int proxyPort, Lab.LabPriorityStrategy priorityStrategy)
+        public Controller(String adbPath, String adbHost, int proxyPort, Lab.LabPriorityStrategy priorityStrategy, bool debug)
         {
 
             // Proxy Server
@@ -36,7 +36,7 @@ namespace FFRK_LabMem
             // Start if connected
             if (this.Adb.Connect())
             {
-                this.Lab = new Lab(this.Adb, priorityStrategy, true);
+                this.Lab = new Lab(this.Adb, priorityStrategy, debug);
                 this.Lab.RegisterWithProxy(this.Proxy);
             }
 
