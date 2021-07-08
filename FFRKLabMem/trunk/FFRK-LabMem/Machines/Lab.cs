@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
+using System.Diagnostics;
 
 namespace FFRK_LabMem.Machines
 {
@@ -66,6 +67,7 @@ namespace FFRK_LabMem.Machines
         public Dictionary<String, int> PaintingPriorityMap { get; set; }
         public LabPriorityStrategy PriorityStrategy { get; set; }
         private Random rng = new Random();
+        private Stopwatch battleStopwatch = new Stopwatch();
 
         public Lab(Adb adb, LabPriorityStrategy priorityStrategy, bool debug)
         {
@@ -332,6 +334,15 @@ namespace FFRK_LabMem.Machines
                     break;
 
                 case 5:
+                    var r = data["result"]["prize_master"];
+                    if (r != null)
+                    {
+                        foreach (var item in r)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Green, "Battle Drop: {0}", item.First["name"]);
+                        }
+                        
+                    }
                     await this.StateMachine.FireAsync(Trigger.BattleSuccess);
                     break;
 
@@ -479,13 +490,21 @@ namespace FFRK_LabMem.Machines
         private async Task SelectTreasures()
         {
 
-            //TODO: The move on button is shifted downward when you take an item
-
             /*
              * 200001 = 6*, rainbow crystal
              * 300001 = 6* Mote, Key
              * 500103 = HE
              */
+
+            // Got Item
+            var i = this.Data["given_unsettled_items"];
+            if (i != null)
+            {
+                foreach (var item in i)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Got Item: {0}", item["item_name"]);
+                }
+            }
 
             // Treasure list
             var treasures = (JArray)this.Data["labyrinth_dungeon_session"]["treasure_chest_ids"];
@@ -568,14 +587,28 @@ namespace FFRK_LabMem.Machines
 
         private async Task MoveOn()
         {
+
+            var i = this.Data["given_unsettled_items"];
+            if (i != null)
+            {
+                foreach (var item in i)
+	            {
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Got Item: {0}", item["item_name"]);
+	            }
+            }
+
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 69.4, 80.8, 20);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 69.4, 80.8, 20);
             if (b)
             {
                 await Task.Delay(1000);
                 this.StateMachine.Fire(Trigger.MoveOn);
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
             }
             
             // Failed
@@ -592,13 +625,26 @@ namespace FFRK_LabMem.Machines
 
         private async Task StartBattle()
         {
-            ColorConsole.WriteLine("Starting Battle");
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 50, 90, 95, 20);
+            ColorConsole.Write("Starting Battle");
+            var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
+            if (d != null)
+            {
+                ColorConsole.Write(": ");
+                ColorConsole.Write(ConsoleColor.Yellow, "{0}", d["captures"][0]["tip_battle"]["title"]);
+            }
+            ColorConsole.WriteLine("");
+            
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 90, 95, 20);
             if (b)
             {
                 await Task.Delay(500);
                 await Adb.FindButtonAndTap(-14655282, 2000, 56, 60, 64, 5);
                 this.StateMachine.Fire(Trigger.StartBattle);
+                battleStopwatch.Start();
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
             }
            
         }
@@ -606,7 +652,10 @@ namespace FFRK_LabMem.Machines
         private async Task FinishBattle()
         {
 
-            ColorConsole.WriteLine("Battle Won!");
+            battleStopwatch.Stop();
+            ColorConsole.Write("Battle Won!");
+            ColorConsole.WriteLine(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
+            battleStopwatch.Reset();
             await Task.Delay(5000);
             await this.Adb.TapPct(85, 85);
             await Task.Delay(1000);
