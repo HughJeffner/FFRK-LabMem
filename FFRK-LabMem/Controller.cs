@@ -34,7 +34,7 @@ namespace FFRK_LabMem
             this.Adb = new Adb(adbPath, adbHost);
 
             // Start if connected
-            if (this.Adb.Connect())
+            if (this.Adb.Connect().Result)
             {
                 this.Lab = new Lab(this.Adb, priorityStrategy, debug);
                 this.Lab.RegisterWithProxy(this.Proxy);
