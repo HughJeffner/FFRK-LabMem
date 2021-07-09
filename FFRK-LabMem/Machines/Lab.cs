@@ -188,7 +188,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.Finished)
                 .OnEntryAsync(t => FinishLab())
-                .Ignore(Trigger.ResetState)
+                .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.BattleSuccess)
                 .Ignore(Trigger.PickedCombatant);
             
