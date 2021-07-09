@@ -20,6 +20,7 @@ namespace FFRK_LabMem
 
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps");
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // Controller
             Controller controller = new Controller(
