@@ -37,6 +37,7 @@ namespace FFRK_LabMem
             if (this.Adb.Connect().Result)
             {
                 this.Lab = new Lab(this.Adb, priorityStrategy, debug);
+                this.Lab.LabFinished += Lab_LabFinished;
                 this.Lab.RegisterWithProxy(this.Proxy);
             }
 
@@ -66,6 +67,11 @@ namespace FFRK_LabMem
                 }
             });
 
+        }
+
+        void Lab_LabFinished(object sender, EventArgs e)
+        {
+            Disable();
         }
 
         void Proxy_ProxyEvent(object sender, Proxy.ProxyEventArgs e)

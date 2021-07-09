@@ -17,6 +17,8 @@ namespace FFRK_LabMem.Machines
     public class Lab : Machine
     {
 
+        public event EventHandler LabFinished;
+
         public enum LabPriorityStrategy
         {
             Balanced = 0,
@@ -676,7 +678,8 @@ namespace FFRK_LabMem.Machines
         private async Task FinishLab()
         {
 
-            ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Please restart the app for next time.");
+            ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
+            LabFinished(this, new EventArgs());
             // Notification?
 
             for (int i = 0; i < 5; i++)
