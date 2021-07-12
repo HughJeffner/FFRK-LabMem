@@ -110,7 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\ConfigHelper.cs" />
-    <Compile Include="Controller.cs" />
+    <Compile Include="LabController.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Services\Adb.cs" />
@@ -124,6 +124,15 @@
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Config\lab.balanced.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\lab.full.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\lab.quick.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

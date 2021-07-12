@@ -9,11 +9,13 @@ using System.Collections.Concurrent;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using System.IO;
 
 
 namespace FFRK_LabMem
 {
-    class Controller
+    class LabController
     {
 
         private bool enabled = true;
@@ -22,7 +24,7 @@ namespace FFRK_LabMem
         public Adb Adb { get; set; }
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
 
-        public Controller(String adbPath, String adbHost, int proxyPort, Lab.LabPriorityStrategy priorityStrategy, bool debug)
+        public LabController(String adbPath, String adbHost, int proxyPort, String configFile)
         {
 
             // Proxy Server
@@ -36,7 +38,8 @@ namespace FFRK_LabMem
             // Start if connected
             if (this.Adb.Connect().Result)
             {
-                this.Lab = new Lab(this.Adb, priorityStrategy, debug);
+                ColorConsole.WriteLine("Setting up Lab with config: {0}", configFile);
+                this.Lab = new Lab(this.Adb, JsonConvert.DeserializeObject<Lab.Configuration>(File.ReadAllText(configFile)));
                 this.Lab.LabFinished += Lab_LabFinished;
                 this.Lab.RegisterWithProxy(this.Proxy);
             }

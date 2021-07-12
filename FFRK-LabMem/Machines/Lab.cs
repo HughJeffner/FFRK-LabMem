@@ -11,11 +11,20 @@ using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace FFRK_LabMem.Machines
 {
     public class Lab : Machine
     {
+
+        public class Configuration
+        {
+            public bool Debug { get; set; }
+            public bool OpenDoors { get; set; }
+            public Dictionary<String, int> PaintingPriorityMap { get; set; }
+
+        }
 
         public event EventHandler LabFinished;
 
@@ -66,65 +75,20 @@ namespace FFRK_LabMem.Machines
         public Adb Adb { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
         public JObject Data { get; set; }
-        public Dictionary<String, int> PaintingPriorityMap { get; set; }
-        public LabPriorityStrategy PriorityStrategy { get; set; }
+        public Configuration Config { get; set; }
         private Random rng = new Random();
         private Stopwatch battleStopwatch = new Stopwatch();
 
-        public Lab(Adb adb, LabPriorityStrategy priorityStrategy, bool debug)
+        public Lab(Adb adb, Configuration config)
         {
 
+            // Config
+            this.Config = config;
+                        
             // Setup
             this.Adb = adb;
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
-            this.PriorityStrategy = priorityStrategy;
-            ColorConsole.WriteLine("Setting up Lab with priority: {0}", priorityStrategy);
-
-            // painting priority map
-            if (priorityStrategy == LabPriorityStrategy.Balanced)
-            {
-                this.PaintingPriorityMap = new Dictionary<string, int>(){
-                   {"3", 1},   //Treasure
-                   {"4", 2},   //Explore
-                   {"7", 3},   //Restoration
-                   {"5", 4},   //Onslaught
-                   {"6", 5},   //Portal
-                   {"1.3", 6}, //Red
-                   {"1.2", 7}, //Orange
-                   {"1.1", 8}, //Green
-                   {"2", 9},   //Master
-                };
-            }
-            else if (priorityStrategy == LabPriorityStrategy.Quick)
-            {
-                this.PaintingPriorityMap = new Dictionary<string, int>(){
-                   {"3", 1},   //Treasure
-                   {"7", 3},   //Restoration
-                   {"5", 4},   //Onslaught
-                   {"6", 5},   //Portal
-                   {"4", 2},   //Explore
-                   {"1.3", 6}, //Red
-                   {"1.2", 7}, //Orange
-                   {"1.1", 8}, //Green
-                   {"2", 9},   //Master
-                };
-            }
-            else
-            {
-                this.PaintingPriorityMap = new Dictionary<string, int>(){
-                   {"3", 1},   //Treasure
-                   {"4", 2},   //Explore
-                   {"1.3", 3}, //Red
-                   {"1.2", 4}, //Orange
-                   {"1.1", 5}, //Green
-                   {"7", 6},   //Restoration
-                   {"5", 7},   //Onslaught
-                   {"6", 8},   //Portal
-                   {"2", 9},   //Master
-                };
-            }
             
-
             // State machine config
             this.StateMachine.Configure(State.Starting)
                 .Permit(Trigger.Started, State.Unknown);
@@ -193,7 +157,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.PickedCombatant);
             
             // Console output
-            if (debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
             
             // Activate
             this.StateMachine.Fire(Trigger.Started);
@@ -481,8 +445,8 @@ namespace FFRK_LabMem.Machines
                 type += "." + painting["display_type"].ToString();
             }
 
-            if (this.PaintingPriorityMap.ContainsKey(type)){
-                return this.PaintingPriorityMap[type];
+            if (this.Config.PaintingPriorityMap.ContainsKey(type)){
+                return this.Config.PaintingPriorityMap[type];
             } else {
                 return 99;
             }
@@ -569,7 +533,7 @@ namespace FFRK_LabMem.Machines
         private async Task OpenSealedDoor()
         {
 
-            if (this.PriorityStrategy != LabPriorityStrategy.Quick)
+            if (this.Config.OpenDoors)
             {
                 ColorConsole.WriteLine("Opening Door...");
                 await Task.Delay(5000);
