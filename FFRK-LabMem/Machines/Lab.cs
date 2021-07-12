@@ -25,6 +25,7 @@ namespace FFRK_LabMem.Machines
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
+            public Point AppPosition { get; set; }
         }
 
         public event EventHandler LabFinished;
@@ -99,7 +100,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
-                .Permit(Trigger.BattleSuccess, State.BattleFinished);
+                .Permit(Trigger.BattleSuccess, State.BattleFinished)
+                .Permit(Trigger.BattleCrashed, State.Crashed);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(t => SelectPainting())
@@ -158,7 +160,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.PickedCombatant);
 
             this.StateMachine.Configure(State.Crashed)
-                .OnEntry(t => ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected!"))
+                .OnEntryAsync(t => RecoverCrash())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
             
@@ -171,10 +173,11 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
+        async void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
 
-            this.StateMachine.Fire(Trigger.BattleCrashed);
+            await this.StateMachine.FireAsync(Trigger.BattleCrashed);
+            this.battleWatchdogTimer.Stop();
 
         }
         
@@ -694,6 +697,19 @@ namespace FFRK_LabMem.Machines
             {
                 Console.Beep();
                 await Task.Delay(1000);
+            }
+
+        }
+
+        private async Task RecoverCrash()
+        {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
+            await this.Adb.TapXY(this.Config.AppPosition.X, this.Config.AppPosition.Y);
+            await Task.Delay(5000);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 40, 70, 83, 20);
+            if (b)
+            {
+                await Adb.FindButtonAndTap(-14655282, 2000, 61, 57, 68, 20);
             }
 
         }
