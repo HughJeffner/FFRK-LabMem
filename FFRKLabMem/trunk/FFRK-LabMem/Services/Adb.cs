@@ -35,14 +35,14 @@ namespace FFRK_LabMem.Services
         public async Task<bool> Connect()
         {
 
-            this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
+            this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device == null)
             {
                 await RunProcessAsync("cmd.exe", "/c adb connect " + this.host);
             }
 
             AdbClient.Instance.Connect(this.host);
-            this.Device = AdbClient.Instance.GetDevices().FirstOrDefault();
+            this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
                 ColorConsole.WriteLine("Connected to " + this.Device.Name);

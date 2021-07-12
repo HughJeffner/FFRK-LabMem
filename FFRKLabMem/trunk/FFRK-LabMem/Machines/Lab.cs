@@ -11,7 +11,6 @@ using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
 using System.Diagnostics;
-using Newtonsoft.Json;
 
 namespace FFRK_LabMem.Machines
 {
@@ -23,7 +22,8 @@ namespace FFRK_LabMem.Machines
             public bool Debug { get; set; }
             public bool OpenDoors { get; set; }
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
-
+            public Dictionary<String, int> TreasurePriorityMap { get; set; }
+            public int MaxKeys {get; set;}
         }
 
         public event EventHandler LabFinished;
@@ -459,6 +459,7 @@ namespace FFRK_LabMem.Machines
             /*
              * 200001 = 6*, rainbow crystal
              * 300001 = 6* Mote, Key
+             * 400001 = Anima Lens, Marker
              * 500103 = HE
              */
 
@@ -477,14 +478,26 @@ namespace FFRK_LabMem.Machines
 
             // Already picked this many
             int picked = treasures.Where(t => (int)t == 0).Count();
-
+            
             // Select a random treasure
             JToken treasureToPick = treasures
                 .Select(t => t)
-                .Where(t => (int)t >= 300001)
-                .OrderBy(t => rng.Next())
+                .Where(t => GetTreasurePriority(t) > 0)
+                .OrderBy(t => GetTreasurePriority(t))
+                .ThenBy(t => rng.Next())
                 .FirstOrDefault();
 
+            // No treasures that match but we must pick one
+            if (picked == 0 && treasureToPick == null)
+                treasureToPick = treasures
+                    .Select(t => t)
+                    .OrderBy(t => rng.Next())
+                    .FirstOrDefault();
+
+            // Key check
+            if (picked == 1 && this.Config.MaxKeys < 1) treasureToPick = null;
+            if (picked == 2 && this.Config.MaxKeys < 3) treasureToPick = null;
+            
             // Pick if we got something good
             if (treasureToPick != null) {
 
@@ -527,6 +540,22 @@ namespace FFRK_LabMem.Machines
                 }
 
            }
+
+        }
+
+        private int GetTreasurePriority(JToken treasure)
+        {
+
+            var type = treasure.ToString();
+
+            if (this.Config.TreasurePriorityMap.ContainsKey(type))
+            {
+                return this.Config.TreasurePriorityMap[type];
+            }
+            else
+            {
+                return 0;
+            }
 
         }
 
