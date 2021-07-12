@@ -29,13 +29,6 @@ namespace FFRK_LabMem.Machines
 
         public event EventHandler LabFinished;
 
-        public enum LabPriorityStrategy
-        {
-            Balanced = 0,
-            Quick = 1,
-            Full = 2
-        }
-
         public enum Trigger
         {
             Started,
