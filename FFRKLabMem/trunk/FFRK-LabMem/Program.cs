@@ -23,12 +23,11 @@ namespace FFRK_LabMem
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // Controller
-            Controller controller = new Controller(
+            LabController controller = new LabController(
                 adbPath: config["adb.path"],
                 adbHost: config["adb.host"],
                 proxyPort: config.GetInt("proxy.port"),
-                priorityStrategy: config.GetEnum<FFRK_LabMem.Machines.Lab.LabPriorityStrategy>("lab.priorityStrategy"),
-                debug: config.GetBool("console.debug")
+                configFile: config["lab.configFile"]
             );
 
             // Ad-hoc command loop
