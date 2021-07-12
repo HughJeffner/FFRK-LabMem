@@ -11,6 +11,7 @@ using SharpAdbClient;
 using Stateless;
 using Stateless.Graph;
 using System.Diagnostics;
+using System.Timers;
 
 namespace FFRK_LabMem.Machines
 {
@@ -52,6 +53,7 @@ namespace FFRK_LabMem.Machines
             EnterDungeon,
             BattleSuccess,
             BattleFailed,
+            BattleCrashed,
             FoundBoss
         }
 
@@ -69,7 +71,8 @@ namespace FFRK_LabMem.Machines
             Battle,
             BattleFinished,
             Failed,
-            Finished
+            Finished,
+            Crashed
         }
 
         public Adb Adb { get; set; }
@@ -78,6 +81,7 @@ namespace FFRK_LabMem.Machines
         public Configuration Config { get; set; }
         private Random rng = new Random();
         private Stopwatch battleStopwatch = new Stopwatch();
+        private Timer battleWatchdogTimer;
 
         public Lab(Adb adb, Configuration config)
         {
@@ -88,6 +92,8 @@ namespace FFRK_LabMem.Machines
             // Setup
             this.Adb = adb;
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
+            battleWatchdogTimer = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
+            battleWatchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             
             // State machine config
             this.StateMachine.Configure(State.Starting)
@@ -140,7 +146,8 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
-                .Permit(Trigger.BattleFailed, State.Failed);
+                .Permit(Trigger.BattleFailed, State.Failed)
+                .Permit(Trigger.BattleCrashed, State.Crashed);
 
             this.StateMachine.Configure(State.BattleFinished)
                 .OnEntryAsync(t => FinishBattle())
@@ -154,7 +161,13 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => FinishLab())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.BattleSuccess)
+                .Ignore(Trigger.BattleCrashed)
                 .Ignore(Trigger.PickedCombatant);
+
+            this.StateMachine.Configure(State.Crashed)
+                .OnEntry(t => ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected!"))
+                .Permit(Trigger.ResetState, State.Ready)
+                .Permit(Trigger.StartBattle, State.Battle);
             
             // Console output
             if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
@@ -162,6 +175,13 @@ namespace FFRK_LabMem.Machines
             // Activate
             this.StateMachine.Fire(Trigger.Started);
             //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
+
+        }
+
+        void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+
+            this.StateMachine.Fire(Trigger.BattleCrashed);
 
         }
         
@@ -636,6 +656,7 @@ namespace FFRK_LabMem.Machines
                 await Adb.FindButtonAndTap(-14655282, 2000, 56, 60, 64, 5);
                 this.StateMachine.Fire(Trigger.StartBattle);
                 battleStopwatch.Start();
+                battleWatchdogTimer.Start();
             }
             else
             {
@@ -651,6 +672,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Battle Won!");
             ColorConsole.WriteLine(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
             battleStopwatch.Reset();
+            battleWatchdogTimer.Stop();
             await Task.Delay(5000);
             await this.Adb.TapPct(85, 85);
             await Task.Delay(1000);
