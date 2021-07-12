@@ -35,6 +35,9 @@
   <PropertyGroup>
     <ImplicitlyExpandTargetFramework>false</ImplicitlyExpandTargetFramework>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>drop.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.8.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
       <HintPath>..\packages\Portable.BouncyCastle.1.8.8\lib\net40\BouncyCastle.Crypto.dll</HintPath>
@@ -128,6 +131,7 @@
     <Content Include="adb.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="drop.ico" />
     <Content Include="Info.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
