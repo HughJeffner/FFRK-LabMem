@@ -476,6 +476,12 @@ namespace FFRK_LabMem.Machines
 
             var type = painting["type"].ToString();
 
+            if ((bool)painting["is_special_effect"])
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Radiant painting detected: {0}", painting);
+                return 0;
+            }
+
             // Subtype for combatant (1)
             if (type.Equals("1"))
             {
