@@ -22,6 +22,8 @@ namespace FFRK_LabMem.Machines
         {
             public bool Debug { get; set; }
             public bool OpenDoors { get; set; }
+            public bool AvoidExploreIfTreasure { get; set; }
+            public bool AvoidPortal { get; set; }
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
@@ -369,7 +371,7 @@ namespace FFRK_LabMem.Machines
 
             // There's a treasure visible but picked a explore (unless last floor)
             // TODO: Determine if the last floor
-            if (isTreasure && (int)selectedPainting["type"] == 4 && (floor != 15 || floor !=20))
+            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)selectedPainting["type"] == 4 && (floor != 15 || floor !=20))
             {
                 selectedPainting = paintings
                 .Take(3)
@@ -384,7 +386,7 @@ namespace FFRK_LabMem.Machines
             }
 
             // There's a treasure or explore visible but picked a portal
-            if ((isTreasure || isExplore) && (int)selectedPainting["type"] == 6)
+            if (this.Config.AvoidPortal && (isTreasure || isExplore) && (int)selectedPainting["type"] == 6)
             {
                 selectedPainting = paintings
                 .Take(3)
@@ -464,6 +466,7 @@ namespace FFRK_LabMem.Machines
             if (this.Config.PaintingPriorityMap.ContainsKey(type)){
                 return this.Config.PaintingPriorityMap[type];
             } else {
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown painting id: {0}", type);
                 return 99;
             }
 
@@ -562,7 +565,7 @@ namespace FFRK_LabMem.Machines
         private int GetTreasurePriority(JToken treasure)
         {
 
-            var type = treasure.ToString();
+            var type = treasure.ToString().Substring(0,1);
 
             if (this.Config.TreasurePriorityMap.ContainsKey(type))
             {
@@ -570,6 +573,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
+                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure id: {0}", type);
                 return 0;
             }
 
