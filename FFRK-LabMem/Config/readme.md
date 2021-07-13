@@ -25,10 +25,10 @@
 | 7     | Restoration           |
 
 ## Treasure Types
-| Id    | Type                                  |
-| ----- | ------------------------------------- |
-| 5     | Hero Equipment                        |
-| 4     | Anima Lenses, Bookmark, 5* Rat Tails  |
-| 3     | 6* Motes, 4* Rat Tails, Magic Key     |
-| 2     | 6* Crystals, Rainbow Crystals         |
-| 1     | 5* Orbs, 5* Motes                     |
+| Id    | Type                                                              |
+| ----- | ----------------------------------------------------------------- |
+| 5     | Hero Equipment                                                    |
+| 4     | Anima Lenses, Bookmark, 5* Rat Tails, Map x2 | Teleport Stone     |
+| 3     | 6* Motes, 4* Rat Tails, Magic Key, Treasure Map, Lethe Potion     |
+| 2     | 6* Crystals, Rainbow Crystal, Rosetta Stone of Wisdom             |
+| 1     | 5* Orbs, 5* Motes                                                 |
