@@ -360,6 +360,9 @@ namespace FFRK_LabMem.Machines
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             JToken selectedPainting = null;
 
+            // New floor marker
+            if (total == 20) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+
             // Insert Priority Field
             foreach (var item in paintings)
             {
