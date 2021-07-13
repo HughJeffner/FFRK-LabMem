@@ -28,6 +28,7 @@ namespace FFRK_LabMem.Machines
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
             public Point AppPosition { get; set; }
+            public int BattleWatchdogMinutes { get; set; }
 
             public Configuration()
             {
@@ -36,6 +37,7 @@ namespace FFRK_LabMem.Machines
                 this.AvoidExploreIfTreasure = true;
                 this.AvoidPortal = true;
                 this.MaxKeys = 3;
+                this.BattleWatchdogMinutes = 10;
             }
         }
 
@@ -86,7 +88,7 @@ namespace FFRK_LabMem.Machines
         public Configuration Config { get; set; }
         private Random rng = new Random();
         private Stopwatch battleStopwatch = new Stopwatch();
-        private Timer battleWatchdogTimer;
+        private Timer battleWatchdogTimer = new Timer(System.Int32.MaxValue);
 
         public Lab(Adb adb, Configuration config)
         {
@@ -97,9 +99,14 @@ namespace FFRK_LabMem.Machines
             // Setup
             this.Adb = adb;
             this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
-            battleWatchdogTimer = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
-            battleWatchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
-            
+
+            // Timer
+            if (this.Config.BattleWatchdogMinutes > 0)
+            {
+                battleWatchdogTimer.Interval = TimeSpan.FromMinutes(this.Config.BattleWatchdogMinutes).TotalMilliseconds;
+                battleWatchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
+            }
+
             // State machine config
             this.StateMachine.Configure(State.Starting)
                 .Permit(Trigger.Started, State.Unknown);
