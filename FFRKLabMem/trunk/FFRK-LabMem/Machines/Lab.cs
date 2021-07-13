@@ -725,7 +725,8 @@ namespace FFRK_LabMem.Machines
             var b = await Adb.FindButtonAndTap(-14655282, 2000, 40, 70, 83, 20);
             if (b)
             {
-                await Adb.FindButtonAndTap(-14655282, 2000, 61, 57, 68, 20);
+                if (await Adb.FindButtonAndTap(-14655282, 2000, 61, 57, 68, 20))
+                    await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
 
         }
