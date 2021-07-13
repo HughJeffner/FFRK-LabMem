@@ -22,5 +22,6 @@
         "1": 0
     },
     "MaxKeys": 3,
-    "AppPosition": "213, 432"
+    "AppPosition": "213, 432",
+    "BattleWatchdogMinutes":  10
 }
