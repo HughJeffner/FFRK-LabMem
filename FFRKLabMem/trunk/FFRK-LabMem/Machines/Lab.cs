@@ -28,6 +28,15 @@ namespace FFRK_LabMem.Machines
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
             public Point AppPosition { get; set; }
+
+            public Configuration()
+            {
+                this.Debug = true;
+                this.OpenDoors = true;
+                this.AvoidExploreIfTreasure = true;
+                this.AvoidPortal = true;
+                this.MaxKeys = 3;
+            }
         }
 
         public event EventHandler LabFinished;
