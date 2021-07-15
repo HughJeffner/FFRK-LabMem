@@ -125,6 +125,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Config\lab.farm.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Config\lab.balanced.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
