@@ -411,8 +411,8 @@ namespace FFRK_LabMem.Machines
 
             }
 
-            // There's a treasure or explore visible but picked a portal
-            if (this.Config.AvoidPortal && (isTreasure || isExplore) && (int)selectedPainting["type"] == 6)
+            // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
+            if (this.Config.AvoidPortal && (int)selectedPainting["type"] == 6 && (isTreasure || isExplore || (total > 9)))
             {
                 selectedPainting = paintings
                 .Take(3)
