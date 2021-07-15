@@ -134,7 +134,8 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryAsync(t => MoveOn())
-                .Permit(Trigger.MoveOn, State.Ready);
+                .Permit(Trigger.MoveOn, State.Ready)
+                .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.FoundTreasure)
                 .OnEntryAsync(t => SelectTreasures())
@@ -155,7 +156,8 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.EquipParty)
                 .OnEntryAsync(t => StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
-                .Permit(Trigger.StartBattle, State.Battle);
+                .Permit(Trigger.StartBattle, State.Battle)
+                .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
@@ -289,9 +291,14 @@ namespace FFRK_LabMem.Machines
                             case 2:  // Item
                             case 3:  // Lab Item?
                             case 5:  // Spring
-
                             case 6:  // Buffs
+                                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                                break;
                             case 8:  // Portal
+                                int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
+                                ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+                                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                                break;
                             case 10: // Fatigue
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
@@ -580,7 +587,7 @@ namespace FFRK_LabMem.Machines
                         await this.Adb.TapPct(70, 64);
                         await Task.Delay(1000);
                     }
-                    this.StateMachine.Fire(Trigger.MoveOn);
+                    await this.StateMachine.FireAsync(Trigger.MoveOn);
                 }
 
            }
@@ -640,15 +647,16 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 69.4, 80.8, 20);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 69.4, 80.8, 30);
             if (b)
             {
                 await Task.Delay(1000);
-                this.StateMachine.Fire(Trigger.MoveOn);
+                await this.StateMachine.FireAsync(Trigger.MoveOn);
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
+                await this.StateMachine.FireAsync(Trigger.ResetState);
             }
             
             // Failed
@@ -660,7 +668,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Enter Dungeon");
             await Task.Delay(2000);
             await this.Adb.TapPct(70, 86);
-            this.StateMachine.Fire(Trigger.EnterDungeon);
+            await this.StateMachine.FireAsync(Trigger.EnterDungeon);
         }
 
         private async Task StartBattle()
@@ -674,18 +682,19 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 90, 95, 20);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 90, 95, 30);
             if (b)
             {
                 await Task.Delay(500);
                 await Adb.FindButtonAndTap(-14655282, 2000, 56, 60, 64, 5);
-                this.StateMachine.Fire(Trigger.StartBattle);
+                await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
                 battleWatchdogTimer.Start();
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
+                await this.StateMachine.FireAsync(Trigger.ResetState);
             }
            
         }
