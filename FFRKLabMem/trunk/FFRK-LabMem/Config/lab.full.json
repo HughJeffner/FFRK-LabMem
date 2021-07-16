@@ -23,5 +23,6 @@
     },
     "MaxKeys": 3,
     "AppPosition": "213, 432",
-    "BattleWatchdogMinutes":  10
+    "BattleWatchdogMinutes": 10,
+    "RestartFailedBattle":  false
 }

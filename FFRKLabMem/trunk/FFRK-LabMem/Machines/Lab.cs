@@ -29,6 +29,7 @@ namespace FFRK_LabMem.Machines
             public int MaxKeys {get; set;}
             public Point AppPosition { get; set; }
             public int BattleWatchdogMinutes { get; set; }
+            public bool RestartFailedBattle { get; set; }
 
             public Configuration()
             {
@@ -38,6 +39,7 @@ namespace FFRK_LabMem.Machines
                 this.AvoidPortal = true;
                 this.MaxKeys = 3;
                 this.BattleWatchdogMinutes = 10;
+                this.RestartFailedBattle = false;
             }
         }
 
@@ -119,7 +121,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
-                .Permit(Trigger.BattleCrashed, State.Crashed);
+                .Permit(Trigger.BattleCrashed, State.Crashed)
+                .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(t => SelectPainting())
@@ -183,6 +186,11 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => RecoverCrash())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
+
+            this.StateMachine.Configure(State.Failed)
+                .OnEntryAsync(t => RecoverFailed())
+                .Permit(Trigger.ResetState, State.Ready)
+                .Permit(Trigger.StartBattle, State.Battle);
             
             // Console output
             if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
@@ -209,6 +217,7 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("open_treasure_chest", this);
             Proxy.AddRegistration("dungeon_recommend_info", this);
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", this);
+            Proxy.AddRegistration("continue/get_info", this);
         }
 
         public override async Task PassFromProxy(int id, string urlMatch, JObject data)
@@ -352,7 +361,9 @@ namespace FFRK_LabMem.Machines
                     }
                     await this.StateMachine.FireAsync(Trigger.BattleSuccess);
                     break;
-
+                case 6:
+                    await this.StateMachine.FireAsync(Trigger.BattleFailed);
+                    break;
                 default:
                     System.Diagnostics.Debug.Print(data.ToString());
                     break;
@@ -750,6 +761,30 @@ namespace FFRK_LabMem.Machines
                 if (await Adb.FindButtonAndTap(-14655282, 2000, 61, 57, 68, 20))
                     await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
+
+        }
+
+        private async Task RecoverFailed()
+        {
+
+            await Task.Delay(5000);
+            ColorConsole.Write(ConsoleColor.DarkRed, "Battle failed! ");
+            if (this.Config.RestartFailedBattle)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
+                battleWatchdogTimer.Stop();
+                await this.Adb.TapPct(50, 72);
+                await Task.Delay(2000);
+                await this.Adb.TapPct(25, 55);
+                battleWatchdogTimer.Start();
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
+                battleWatchdogTimer.Stop();
+            }
+            
+            await this.StateMachine.FireAsync(Trigger.StartBattle);
 
         }
 
