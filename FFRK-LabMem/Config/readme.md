@@ -11,6 +11,7 @@
 | MaxKeys               | The maximum number of keys to use when opening treasures.  Sane values are 0, 1 or 3 | 3 |
 | AppPosition           | The postion of the FFRK icon on the homescreen, in pixels.  Used for battle crash recovery | 213, 432 |
 | BattleWatchdogMinutes | If a battle doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
+| RestartFailedBattle   | Attempt to restart a battle when defeated | false |
 
 ## Painting Types
 |  Id   | Type                  | Default Priority  |
