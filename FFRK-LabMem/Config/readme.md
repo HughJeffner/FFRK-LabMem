@@ -31,6 +31,6 @@
 | ----- | ----------------------------------------------------------------- | ----------------- |
 | 5     | Hero Equipment                                                    | 1                 |
 | 4     | Anima Lenses, Bookmark, 5* Rat Tails, Map x2, Teleport Stone     	| 1                 |
-| 3     | 6* Motes, 4* Rat Tails, Magic Key, Treasure Map, Lethe Potion     | 1                 |
+| 3     | 6* Motes, 4* Rat Tails, Magic Key, Treasure Map, Lethe Potion     | 2                 |
 | 2     | 6* Crystals, Rainbow Crystal, Rosetta Stone of Wisdom             | 0                 |
 | 1     | 5* Orbs, 5* Motes                                                 | 0                 |
