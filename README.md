@@ -2,13 +2,14 @@
 Full automation for labyrinth dungeons on Android FFRK and Windows using a proxy server and [adb](https://developer.android.com/studio/command-line/adb)
 
 ## Basic Usage
-This appliation runs as a command-line application in 'interactive mode'.  This means you can simply double-click it and it will continue to run in the window.
+This appliation runs as a command-line application in 'interactive mode'.  This means you can simply double-click it and it will continue to run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
 
 This application uses a split-configuration system: the standard .net config file for general program options and config.json for lab-walking related behaviors.  Eventually I plan to allow specifying the .net config values as command-line parameters (for creating a desktop short-cut for example).
 
-For this to work correctly, 2 items must be set up:
+For this to work correctly, the following must be set up:
 * Network proxy settings
 * ADB connection
+* Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
 
 ### Network proxy settings
 This varies wildly by device and every network is different.  Typically with android devices you would go into the wifi settings, change proxy to manual then enter the IP address of the windows system running the app for the hostname, 8081 for the proxy port, and the following for the proxy bypass:
