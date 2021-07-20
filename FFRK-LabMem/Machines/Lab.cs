@@ -350,20 +350,14 @@ namespace FFRK_LabMem.Machines
                     break;
 
                 case 5:
-                    var r = data["result"]["prize_master"];
-                    if (r != null)
-                    {
-                        foreach (var item in r)
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Green, "Battle Drop: {0}", item.First["name"]);
-                        }
-                        
-                    }
+                    this.Data = data;
                     await this.StateMachine.FireAsync(Trigger.BattleSuccess);
                     break;
+
                 case 6:
                     await this.StateMachine.FireAsync(Trigger.BattleFailed);
                     break;
+
                 default:
                     System.Diagnostics.Debug.Print(data.ToString());
                     break;
@@ -713,11 +707,25 @@ namespace FFRK_LabMem.Machines
         private async Task FinishBattle()
         {
 
+            // Timer
             battleStopwatch.Stop();
             ColorConsole.Write("Battle Won!");
-            ColorConsole.WriteLine(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
+            ColorConsole.Write(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
             battleStopwatch.Reset();
             battleWatchdogTimer.Stop();
+
+            // Drops
+            var r = this.Data["result"]["prize_master"];
+            if (r != null)
+            {
+                foreach (var item in r)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, " Drop: {0}", item.First["name"]);
+                }
+
+            }
+
+            //Tappy taps
             await Task.Delay(5000);
             await this.Adb.TapPct(85, 85);
             await Task.Delay(1000);
@@ -728,7 +736,6 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            ColorConsole.WriteLine("Next Level");
             await Task.Delay(2000);
             await this.Adb.TapPct(71, 62);
             await Task.Delay(2000);
