@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,8 +37,9 @@ namespace FFRK_LabMem.Services
         public Proxy(int port)
         {
             this.Registrations = new List<Registration>();
-            proxyServer = new ProxyServer();
+            proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
+            proxyServer.CertificateManager.RootCertificate = new X509Certificate2();
             //proxyServer.ThreadPoolWorkerThread = 64;
             proxyServer.BeforeResponse += OnResponse;
             
