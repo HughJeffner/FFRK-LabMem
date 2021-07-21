@@ -525,7 +525,7 @@ namespace FFRK_LabMem.Machines
             {
                 foreach (var item in i)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Green, "Got Item: {0}", item["item_name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0}", item["item_name"]);
                 }
             }
 
@@ -645,14 +645,14 @@ namespace FFRK_LabMem.Machines
             {
                 foreach (var item in i)
 	            {
-                    ColorConsole.WriteLine(ConsoleColor.Green, "Got Item: {0}", item["item_name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0}", item["item_name"]);
 	            }
             }
 
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 69.4, 80.8, 30);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 65, 81, 30);
             if (b)
             {
                 await Task.Delay(1000);
@@ -660,7 +660,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.ResetState);
             }
             
@@ -671,9 +671,17 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            await Task.Delay(2000);
-            await this.Adb.TapPct(70, 86);
-            await this.StateMachine.FireAsync(Trigger.EnterDungeon);
+            var b = await Adb.FindButtonAndTap(-14655282, 4000, 55, 80, 90, 30);
+            if (b)
+            {
+                await this.StateMachine.FireAsync(Trigger.EnterDungeon);
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
+                await this.StateMachine.FireAsync(Trigger.ResetState);
+            }
+
         }
 
         private async Task StartBattle()
@@ -698,7 +706,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkBlue, "Failed to find button");
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.ResetState);
             }
            
@@ -720,7 +728,7 @@ namespace FFRK_LabMem.Machines
             {
                 foreach (var item in r)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Green, " Drop: {0}", item.First["name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0}", item.First["name"]);
                 }
 
             }
@@ -745,7 +753,7 @@ namespace FFRK_LabMem.Machines
         private async Task FinishLab()
         {
 
-            ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
+            ColorConsole.WriteLine(ConsoleColor.DarkGreen, "We reached the master painting.  Press 'E' to enable when ready.");
             LabFinished(this, new EventArgs());
             // Notification?
 
