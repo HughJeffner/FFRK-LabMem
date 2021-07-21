@@ -27,7 +27,9 @@ namespace FFRK_LabMem
                 adbPath: config["adb.path"],
                 adbHost: config["adb.host"],
                 proxyPort: config.GetInt("proxy.port"),
-                configFile: config["lab.configFile"]
+                configFile: config["lab.configFile"],
+                topOffset: config.GetInt("screen.topOffset"),
+                bottomOffset: config.GetInt("screen.bottomOffset")
             );
 
             // Ad-hoc command loop

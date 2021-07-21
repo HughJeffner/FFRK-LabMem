@@ -687,7 +687,7 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 90, 95, 30);
+            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 85, 95, 30);
             if (b)
             {
                 await Task.Delay(500);

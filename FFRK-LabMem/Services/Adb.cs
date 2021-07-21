@@ -19,15 +19,19 @@ namespace FFRK_LabMem.Services
         }
 
         public DeviceData Device { get; set; }
+        public double TopOffset { get; set; }
+        public double BottomOffset { get; set; }
         private Size screenSize = null;
         private String host;
         
-        public Adb(string path, string host)
+        public Adb(string path, string host, int topOffset, int bottomOffset)
         {
 
             AdbServer server = new AdbServer();
             var result = server.StartServer(path, restartServerIfNewer: false);
             this.host = host;
+            this.TopOffset = topOffset;
+            this.BottomOffset = bottomOffset;
             ColorConsole.WriteLine("Adb status: {0}", result);
 
         }
@@ -69,7 +73,9 @@ namespace FFRK_LabMem.Services
         public async Task TapPct(double X, double Y)
         {
             if (screenSize == null) screenSize = await GetScreenSize();
-            await TapXY((int)(screenSize.Width * X / 100), (int)(screenSize.Height * Y / 100));
+            double virtX = screenSize.Width * (X / 100);
+            double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (Y / 100) + this.TopOffset;
+            await TapXY((int)virtX, (int)virtY);
         }
 
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords)
@@ -103,7 +109,9 @@ namespace FFRK_LabMem.Services
             var coords = new List<Tuple<int, int>>();
             foreach (var item in coordsPct)
             {
-                coords.Add(new Tuple<int, int>((int)(screenSize.Width * item.Item1 / 100), (int)(screenSize.Height * item.Item2 / 100)));
+                double virtX = screenSize.Width * (item.Item1 / 100);
+                double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (item.Item2 / 100) + this.TopOffset;
+                coords.Add(new Tuple<int, int>((int)virtX, (int)virtY));
             }
 
             return await GetPixelColorXY(coords);
