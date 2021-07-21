@@ -13,6 +13,7 @@ This application uses a split-configuration system: the standard .net config fil
 For this to work correctly, the following must be set up:
 * Network proxy settings
 * ADB connection
+* Screen top and bottom offsets
 * Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
 
 ### Network proxy settings
@@ -26,6 +27,9 @@ Tip: for most android emulators if you can view the device ip address for exampl
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
 
 You can connect via USB for physical devices or TCP using an emulator.  You can set up TCP with a physical device as well but this is beyond scope.  Android emulators seem to use different TCP port numbers, you'll have to look this up.  The default host and port number configured in `FFRK-LabMem.exe.config` is `127.0.0.1:7555` which is for running MuMu app player on the local machine.
+
+### Screen offsets
+To allow different screen sizes, there are `screen.topOffset` and `screen.bottomOffset` in `FFRK-LabMem.exe.config`.  This corresponds to the height in pixels of the gray bars at the top and bottom of your screen that FFRK uses to support different screen sizes.  You can take a screenshot and measure them in a image editor, or just try to guestimate it.  If you have no bars at the top or bottom just leave it the default of 0.
 
 ## Configuration
 Four different lab config files are provided: Balanced (default), Farm, Full, and Quick
