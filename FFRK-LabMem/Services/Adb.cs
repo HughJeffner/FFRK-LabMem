@@ -155,9 +155,6 @@ namespace FFRK_LabMem.Services
         public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
         {
 
-            // Hold result
-            Tuple<double, double> ret = null;
-
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
             for (double i = yPctStart; i < yPctEnd; i++)
@@ -169,17 +166,30 @@ namespace FFRK_LabMem.Services
             // Target color
             var target = System.Drawing.ColorTranslator.FromHtml(htmlButtonColor);
 
+            // Hold matches
+            Dictionary<int, Tuple<double, double>> matches = new Dictionary<int,Tuple<double,double>>();
+
             // Iterate color and get distance
             foreach (var item in results)
             {
+                // Distance to target
                 var d = item.GetDistance(target);
-                if (d < threshold) { 
-                    ret = coords[results.IndexOf(item)];
-                    break;
+
+                // If below threshold
+                if (d < threshold) {
+
+                    // Add to matches
+                    if (!matches.ContainsKey(d))
+                        matches.Add(d, coords[results.IndexOf(item)]);
+
                 }
+
             }
 
-            return ret;
+            // Return closest match
+            if (matches.Count > 0) return matches[matches.Keys.Min()];
+
+            return null;
 
         }
 

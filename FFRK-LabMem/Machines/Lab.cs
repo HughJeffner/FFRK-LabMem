@@ -585,7 +585,7 @@ namespace FFRK_LabMem.Machines
 
                 // Move On
                 ColorConsole.WriteLine("Moving On...");
-                var b = await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 62, 80, 10);
+                var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 62, 80, 10);
                 if (b)
                 {
                     await Task.Delay(2000);
@@ -654,7 +654,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 42.7, 65, 81, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30);
             if (b)
             {
                 await Task.Delay(1000);
@@ -673,7 +673,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 56.6, 80, 95, 30);
             if (b)
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
@@ -697,11 +697,11 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 42.7, 85, 95, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 85, 95, 30);
             if (b)
             {
                 await Task.Delay(500);
-                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 60, 64, 5);
+                await Adb.FindButtonAndTap("#2060ce", 4000, 56, 55, 65, 5);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
                 battleWatchdogTimer.Start();
@@ -772,10 +772,10 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
             await this.Adb.TapXY(this.Config.AppPosition.X, this.Config.AppPosition.Y);
             await Task.Delay(5000);
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 40, 70, 83, 20);
+            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20);
             if (b)
             {
-                if (await Adb.FindButtonAndTap("#2060ce", 2000, 61, 57, 68, 20))
+                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 20))
                     await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
 
