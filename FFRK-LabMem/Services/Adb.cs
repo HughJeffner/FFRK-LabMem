@@ -157,7 +157,7 @@ namespace FFRK_LabMem.Services
 
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
-            for (double i = yPctStart; i < yPctEnd; i++)
+            for (double i = yPctStart; i < yPctEnd; i+=0.5)
             {
                 coords.Add(new Tuple<double, double>(xPct, i));
             }
@@ -187,6 +187,7 @@ namespace FFRK_LabMem.Services
             }
 
             // Return closest match
+            Debug.Print("matches: {0}", matches.Count);
             if (matches.Count > 0) return matches[matches.Keys.Min()];
 
             return null;
