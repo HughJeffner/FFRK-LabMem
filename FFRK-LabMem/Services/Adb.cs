@@ -152,7 +152,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        public async Task<Tuple<double, double>> FindButton(int argbButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
+        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
         {
 
             // Hold result
@@ -166,10 +166,13 @@ namespace FFRK_LabMem.Services
             }
             var results = await GetPixelColorPct(coords);
 
+            // Target color
+            var target = System.Drawing.ColorTranslator.FromHtml(htmlButtonColor);
+
             // Iterate color and get distance
             foreach (var item in results)
             {
-                var d = item.GetDistance(Color.FromArgb(argbButtonColor));
+                var d = item.GetDistance(target);
                 if (d < threshold) { 
                     ret = coords[results.IndexOf(item)];
                     break;
@@ -180,13 +183,13 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<Boolean> FindButtonAndTap(int argbButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries)
+        public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries)
         {
 
             int tries = 0;
             do
             {
-                var b = await FindButton(argbButtonColor, threshold, xPct, yPctStart, yPctEnd);
+                var b = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd);
                 if (b != null)
                 {
                     await TapPct(b.Item1, b.Item2);

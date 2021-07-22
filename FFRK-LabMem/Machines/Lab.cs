@@ -63,7 +63,8 @@ namespace FFRK_LabMem.Machines
             BattleSuccess,
             BattleFailed,
             BattleCrashed,
-            FoundBoss
+            FoundBoss,
+            MissedButton
         }
 
         public enum State
@@ -138,7 +139,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryAsync(t => MoveOn())
                 .Permit(Trigger.MoveOn, State.Ready)
-                .Permit(Trigger.ResetState, State.Ready);
+                .Permit(Trigger.MissedButton, State.Ready);
 
             this.StateMachine.Configure(State.FoundTreasure)
                 .OnEntryAsync(t => SelectTreasures())
@@ -154,13 +155,14 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(t => EnterDungeon())
-                .Permit(Trigger.EnterDungeon, State.EquipParty);
+                .Permit(Trigger.EnterDungeon, State.EquipParty)
+                .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
                 .OnEntryAsync(t => StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
                 .Permit(Trigger.StartBattle, State.Battle)
-                .Permit(Trigger.ResetState, State.Ready);
+                .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
@@ -565,13 +567,13 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
                 await Task.Delay(5000);
                 await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
-                await Task.Delay(1000);
+                await Task.Delay(2000);
 
                 // Check if key needed
                 if (picked > 0)
                 {
                     await this.Adb.TapPct(58, 44);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                 }
 
                 // Confirm
@@ -583,14 +585,14 @@ namespace FFRK_LabMem.Machines
 
                 // Move On
                 ColorConsole.WriteLine("Moving On...");
-                var b = await Adb.FindButtonAndTap(-14655282, 1000, 42.7, 62, 80, 10);
+                var b = await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 62, 80, 10);
                 if (b)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
                     if (picked != 3)
                     {
                         await this.Adb.TapPct(70, 64);
-                        await Task.Delay(1000);
+                        await Task.Delay(2000);
                     }
                     await this.StateMachine.FireAsync(Trigger.MoveOn);
                 }
@@ -652,7 +654,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 65, 81, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 42.7, 65, 81, 30);
             if (b)
             {
                 await Task.Delay(1000);
@@ -661,7 +663,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
-                await this.StateMachine.FireAsync(Trigger.ResetState);
+                await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
             
             // Failed
@@ -671,7 +673,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            var b = await Adb.FindButtonAndTap(-14655282, 4000, 55, 80, 90, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30);
             if (b)
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
@@ -679,7 +681,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
-                await this.StateMachine.FireAsync(Trigger.ResetState);
+                await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
 
         }
@@ -695,11 +697,11 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 42.7, 85, 95, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 42.7, 85, 95, 30);
             if (b)
             {
                 await Task.Delay(500);
-                await Adb.FindButtonAndTap(-14655282, 2000, 56, 60, 64, 5);
+                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 60, 64, 5);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
                 battleWatchdogTimer.Start();
@@ -707,7 +709,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
-                await this.StateMachine.FireAsync(Trigger.ResetState);
+                await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
            
         }
@@ -744,7 +746,7 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            await Task.Delay(2000);
+            await Task.Delay(5000);
             await this.Adb.TapPct(71, 62);
             await Task.Delay(2000);
 
@@ -770,10 +772,10 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
             await this.Adb.TapXY(this.Config.AppPosition.X, this.Config.AppPosition.Y);
             await Task.Delay(5000);
-            var b = await Adb.FindButtonAndTap(-14655282, 2000, 40, 70, 83, 20);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 40, 70, 83, 20);
             if (b)
             {
-                if (await Adb.FindButtonAndTap(-14655282, 2000, 61, 57, 68, 20))
+                if (await Adb.FindButtonAndTap("#2060ce", 2000, 61, 57, 68, 20))
                     await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
 
