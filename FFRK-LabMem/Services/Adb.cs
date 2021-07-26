@@ -49,7 +49,10 @@ namespace FFRK_LabMem.Services
             this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
-                ColorConsole.WriteLine("Connected to " + this.Device.Name);
+                var deviceName = this.Device.Name;
+                if (deviceName.Equals("")) deviceName = "Unknown";
+                deviceName += string.Format(" ({0} {1})", this.Device.Product, this.Device.Model);
+                ColorConsole.WriteLine("Connected to " + deviceName);
                 return true;
             }
             else

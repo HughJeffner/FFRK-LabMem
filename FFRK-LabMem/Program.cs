@@ -21,7 +21,6 @@ namespace FFRK_LabMem
 
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps");
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // Version check
             var version = Assembly.GetExecutingAssembly().GetName().Version;

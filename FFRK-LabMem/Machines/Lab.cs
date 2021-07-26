@@ -535,7 +535,9 @@ namespace FFRK_LabMem.Machines
             {
                 foreach (var item in i)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0}", item["item_name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}", 
+                        item["item_name"].ToString().Replace("★", "*"), 
+                        item["num"]);
                 }
             }
 
@@ -655,7 +657,9 @@ namespace FFRK_LabMem.Machines
             {
                 foreach (var item in i)
 	            {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0}", item["item_name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
+                        item["item_name"].ToString().Replace("★", "*"),
+                        item["num"]);
 	            }
             }
 
@@ -733,11 +737,14 @@ namespace FFRK_LabMem.Machines
 
             // Drops
             var r = this.Data["result"]["prize_master"];
-            if (r != null)
+            var n = this.Data["result"]["drop_item_id_to_num"];
+            if (r != null && n!= null)
             {
                 foreach (var item in r)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0}", item.First["name"]);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}", 
+                        item.First["name"].ToString().Replace("★", "*"), 
+                        n[item.First["item_id"].ToString()]);
                 }
 
             }
