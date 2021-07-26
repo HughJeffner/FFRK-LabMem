@@ -412,7 +412,7 @@ namespace FFRK_LabMem.Machines
 
             // There's a treasure visible but picked a explore (unless last floor)
             // TODO: Determine if the last floor
-            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)selectedPainting["type"] == 4 && (floor != 15 || floor !=20))
+            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)selectedPainting["type"] == 4 && floor != 15 && floor !=20)
             {
                 selectedPainting = paintings
                 .Take(3)
