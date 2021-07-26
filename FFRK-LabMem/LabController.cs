@@ -87,6 +87,7 @@ namespace FFRK_LabMem
             if (!enabled)
             {
                 enabled = true;
+                Lab.configureStateMachine(Lab.State.Unknown);
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled");
             }
 

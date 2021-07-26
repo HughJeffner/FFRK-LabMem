@@ -98,11 +98,8 @@ namespace FFRK_LabMem.Machines
 
             // Config
             this.Config = config;
-                        
-            // Setup
             this.Adb = adb;
-            this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
-
+           
             // Timer
             if (this.Config.BattleWatchdogMinutes > 0)
             {
@@ -110,7 +107,22 @@ namespace FFRK_LabMem.Machines
                 battleWatchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             }
 
-            // State machine config
+            // State machine
+            configureStateMachine(State.Starting);
+                       
+            // Activate
+            this.StateMachine.Fire(Trigger.Started);
+
+            // Debug graph
+            //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
+
+        }
+
+        public void configureStateMachine(State initialState)
+        {
+            
+            this.StateMachine = new StateMachine<State, Trigger>(initialState);
+            
             this.StateMachine.Configure(State.Starting)
                 .Permit(Trigger.Started, State.Unknown);
 
@@ -193,13 +205,9 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => RecoverFailed())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
-            
+
             // Console output
             if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
-            
-            // Activate
-            this.StateMachine.Fire(Trigger.Started);
-            //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
 
         }
 
@@ -673,7 +681,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 56.6, 80, 95, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30);
             if (b)
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
@@ -697,11 +705,10 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 85, 95, 30);
-            if (b)
+            if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30))
             {
                 await Task.Delay(500);
-                await Adb.FindButtonAndTap("#2060ce", 4000, 56, 55, 65, 5);
+                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
                 battleWatchdogTimer.Start();
@@ -736,7 +743,7 @@ namespace FFRK_LabMem.Machines
             }
 
             //Tappy taps
-            await Task.Delay(5000);
+            await Task.Delay(6000);
             await this.Adb.TapPct(85, 85);
             await Task.Delay(1000);
             await this.Adb.TapPct(50, 85);
