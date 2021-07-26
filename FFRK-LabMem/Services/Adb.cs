@@ -190,9 +190,13 @@ namespace FFRK_LabMem.Services
             }
 
             // Return closest match
+            if (matches.Count > 0)
+            {
+                var min = matches.Keys.Min();
+                Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
+                return matches[min];
+            }
             Debug.Print("matches: {0}", matches.Count);
-            if (matches.Count > 0) return matches[matches.Keys.Min()];
-
             return null;
 
         }
