@@ -41,6 +41,7 @@ namespace FFRK_LabMem
                 ColorConsole.WriteLine("Setting up Lab with config: {0}", configFile);
                 this.Lab = new Lab(this.Adb, JsonConvert.DeserializeObject<Lab.Configuration>(File.ReadAllText(configFile)));
                 this.Lab.LabFinished += Lab_LabFinished;
+                this.Lab.LabError += Lab_LabError;
                 this.Lab.RegisterWithProxy(this.Proxy);
             }
 
@@ -70,6 +71,12 @@ namespace FFRK_LabMem
                 }
             });
 
+        }
+
+        void Lab_LabError(object sender, Exception e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.Red, "Something wrong happened ({0}).  To prevent damages, LabMem will now be disabled.  Please re-enable when ready with 'E'", e.Message);
+            Disable();
         }
 
         void Lab_LabFinished(object sender, EventArgs e)

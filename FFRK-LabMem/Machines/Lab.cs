@@ -44,6 +44,7 @@ namespace FFRK_LabMem.Machines
         }
 
         public event EventHandler LabFinished;
+        public event EventHandler<Exception> LabError;
 
         public enum Trigger
         {
@@ -135,6 +136,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.BattleCrashed, State.Crashed)
+                .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Configure(State.Ready)
@@ -205,6 +207,11 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(t => RecoverFailed())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
+
+            // Invalid state handling
+            this.StateMachine.OnUnhandledTrigger((state, trigger) => {
+                this.LabError(this, new InvalidOperationException(String.Format("Trigger {0} not permitted for state {1}", trigger, state)));
+            });
 
             // Console output
             if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
@@ -500,7 +507,9 @@ namespace FFRK_LabMem.Machines
 
             if ((bool)painting["is_special_effect"])
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Radiant painting detected: {0}", painting);
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Radiant painting detected!: {0}", painting["name"]);
+                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
                 return 0;
             }
 
