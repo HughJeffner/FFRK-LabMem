@@ -8,7 +8,7 @@
 | AvoidPortal           | Avoids the portal if an exploration or treasure vault is visible behind it, or if there are more paintings to reveal | true |
 | PaintingPriorityMap   | A list of key-value pairs that assign a priority to paintings for selection.  Lower priority values are preferred.  If a priority is tied, then one is chosen randomly. See painting table below for values | see below |
 | TreasurePriorityMap   | A list of key-value pairs that assign a priority to treasures.  A value of 0 will skip that type of treasure, otherwise lower priority values are preferred.  If a priority is tied, then one is chosen at random.  See treasure table below for values | see below |
-| MaxKeys               | The maximum number of keys to use when opening treasures.  Sane values are 0, 1 or 3 | 3 |
+| MaxKeys               | The maximum number of keys to use when opening treasures.  Sane values are 0, 1 or 3 | 1 |
 | AppPosition           | The postion of the FFRK icon on the homescreen, in pixels.  Used for battle crash recovery | 213, 432 |
 | BattleWatchdogMinutes | If a battle doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
