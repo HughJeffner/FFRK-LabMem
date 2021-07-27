@@ -25,6 +25,8 @@ This varies wildly by device and every network is different.  Typically with and
 
 Tip: for most android emulators if you can view the device ip address for example `10.0.x.x` you can simply use `10.0.x.2` for the loopback to the host system.
 
+If you are going to use a physical device or an emulator on another system, please make sure to open port 8081 in the firewall to allow incoming connections.  On Windows, it usually prompts you on first run to create the proper firewall rule.
+
 ### Adb connection
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
 
