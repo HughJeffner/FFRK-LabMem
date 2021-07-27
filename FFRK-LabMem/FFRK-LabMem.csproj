@@ -156,6 +156,9 @@
     <Content Include="AdbWinApi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="AdbWinUsbApi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="drop.ico" />
     <Content Include="Info.txt" />
   </ItemGroup>

@@ -88,11 +88,26 @@ namespace FFRK_LabMem.Machines
 
         public Adb Adb { get; set; }
         public StateMachine<State, Trigger> StateMachine { get; set; }
-        public JObject Data { get; set; }
         public Configuration Config { get; set; }
+        private int CurrentKeys { get; set; }
         private Random rng = new Random();
         private Stopwatch battleStopwatch = new Stopwatch();
         private Timer battleWatchdogTimer = new Timer(System.Int32.MaxValue);
+
+        // Data property
+        private JObject mData = null;
+        public JObject Data
+        {
+            get
+            {
+                return mData;
+            }
+            set
+            {
+                mData = value;
+                ParseCurrentKeysFromData();
+            }
+        }
 
         public Lab(Adb adb, Configuration config)
         {
@@ -387,6 +402,30 @@ namespace FFRK_LabMem.Machines
             
         }
 
+        private void ParseCurrentKeysFromData()
+        {
+
+            var labItems = (JArray)this.Data["labyrinth_items"];
+            if (labItems != null)
+            {
+                var keys = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000001")).FirstOrDefault();
+                if (keys != null)
+                {
+                    this.CurrentKeys = (int)keys["num"];
+                }
+            }
+            var unsettledItems = (JArray)this.Data["unsettled_items"];
+            if (unsettledItems != null)
+            {
+                var keys = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000001")).FirstOrDefault();
+                if (keys != null)
+                {
+                    this.CurrentKeys+= (int)keys["num"];
+                }
+            }
+
+        }
+
         private async Task SelectPainting()
         {
 
@@ -555,7 +594,7 @@ namespace FFRK_LabMem.Machines
 
             // Already picked this many
             int picked = treasures.Where(t => (int)t == 0).Count();
-            
+                        
             // Select a random treasure
             JToken treasureToPick = treasures
                 .Select(t => t)
