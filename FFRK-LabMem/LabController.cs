@@ -106,6 +106,7 @@ namespace FFRK_LabMem
             if (enabled)
             {
                 enabled = false;
+                Lab.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled");
             }
         }

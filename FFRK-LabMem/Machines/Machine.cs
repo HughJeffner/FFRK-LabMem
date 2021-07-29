@@ -22,5 +22,14 @@ namespace FFRK_LabMem.Machines
         /// <param name="UrlContains"></param>
         /// <param name="data"></param>
         public abstract Task PassFromProxy(int id, String urlMatch, JObject data);
+
+        /// <summary>
+        /// Handles any tasks needed if the controller disables this machine.  Does nothing by default, implementors of this class should override this method.
+        /// </summary>
+        public virtual Task Disable()
+        {
+            return Task.FromResult(0);
+        }
+
     }
 }

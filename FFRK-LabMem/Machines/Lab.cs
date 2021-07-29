@@ -397,6 +397,17 @@ namespace FFRK_LabMem.Machines
             }
         }
 
+        public override async Task Disable()
+        {
+            if (battleWatchdogTimer.Enabled) battleWatchdogTimer.Stop();
+            if (battleStopwatch.IsRunning)
+            {
+                battleStopwatch.Stop();
+                battleStopwatch.Reset();
+            }
+            await base.Disable();
+        }
+
         private void DetermineState()
         {
             
