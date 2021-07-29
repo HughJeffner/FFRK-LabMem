@@ -626,7 +626,13 @@ namespace FFRK_LabMem.Machines
             // Key check
             if (picked == 1 && this.Config.MaxKeys < 1) treasureToPick = null;
             if (picked == 2 && this.Config.MaxKeys < 3) treasureToPick = null;
-            
+            if ((picked == 1 && this.CurrentKeys == 0) || 
+                (picked == 2 && this.CurrentKeys < 2))
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough keys!");
+                treasureToPick = null;
+            }
+
             // Pick if we got something good
             if (treasureToPick != null) {
 
