@@ -30,6 +30,7 @@ namespace FFRK_LabMem.Machines
             public Point AppPosition { get; set; }
             public int BattleWatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
+            public bool StopOnMasterPainting { get; set; }
 
             public Configuration()
             {
@@ -40,6 +41,7 @@ namespace FFRK_LabMem.Machines
                 this.MaxKeys = 3;
                 this.BattleWatchdogMinutes = 10;
                 this.RestartFailedBattle = false;
+                this.StopOnMasterPainting = true;
             }
         }
 
@@ -499,7 +501,7 @@ namespace FFRK_LabMem.Machines
             if (selectedPainting != null) selectedPaintingIndex = paintings.IndexOf(selectedPainting);
            
             // Master painting check
-            if ((int)selectedPainting["type"] == 2)
+            if ((int)selectedPainting["type"] == 2 && this.Config.StopOnMasterPainting)
             {
                 await this.StateMachine.FireAsync(Trigger.FoundBoss);
                 return;
