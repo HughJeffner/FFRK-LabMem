@@ -91,7 +91,7 @@ namespace FFRK_LabMem
 
         public void Enable()
         {
-            if (!enabled)
+            if (!enabled && Lab != null)
             {
                 enabled = true;
                 Lab.configureStateMachine(Lab.State.Unknown);
@@ -103,7 +103,7 @@ namespace FFRK_LabMem
         public void Disable()
         {
 
-            if (enabled)
+            if (enabled && Lab != null)
             {
                 enabled = false;
                 Lab.Disable();

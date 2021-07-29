@@ -662,7 +662,7 @@ namespace FFRK_LabMem.Machines
 
                 // Move On
                 ColorConsole.WriteLine("Moving On...");
-                var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 62, 80, 10);
+                var b = await Adb.FindButtonAndTap("#2060ce", 2000, 42.7, 62, 80, 10);
                 if (b)
                 {
                     await Task.Delay(2000);

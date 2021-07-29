@@ -57,7 +57,7 @@ namespace FFRK_LabMem.Services
             }
             else
             {
-                ColorConsole.WriteLine("Could not connect");
+                ColorConsole.WriteLine(ConsoleColor.Red, "Could not connect to device via adb.  Check your connection, make sure device drivers are installed, and enable USB debugging in developer options.");
                 return false;
             }
 
