@@ -47,6 +47,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo();
+                if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) UpdateChecker.OpenReleasesInBrowser("hughjeffner", "ffrk-labmem");
             }
             
             // Stop

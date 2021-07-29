@@ -40,7 +40,7 @@ namespace FFRK_LabMem.Services
                 {
                     if (await checker.IsLatestRelease(versionCode))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to https://github.com/{0}/{1}/releases to get it!", user, repo);
+                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to https://github.com/{0}/{1}/releases by pressing [Alt+U] to get it!", user, repo);
                     }
                 }
                 catch (Exception e)
@@ -49,6 +49,12 @@ namespace FFRK_LabMem.Services
                 }
             });
 
+        }
+
+        public static void OpenReleasesInBrowser(string user, string repo)
+        {
+            var url = String.Format("https://github.com/{0}/{1}/releases", user, repo);
+            System.Diagnostics.Process.Start("explorer", url);
         }
 
         public async Task<bool> IsLatestRelease(string version)
