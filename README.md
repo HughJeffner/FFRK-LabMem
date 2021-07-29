@@ -30,7 +30,7 @@ If you are going to use a physical device or an emulator on another system, plea
 ### Adb connection
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
 
-If you are connecting an acutal device via USB, you may need the proper drivers.  See [here](https://developer.android.com/studio/run/oem-usb)
+If you are connecting an acutal device via USB, you may need the proper drivers.  See [here](https://developer.android.com/studio/run/oem-usb) -OR- [here](https://adb.clockworkmod.com/)
 
 Connecting to an emulator works over TCP.  You can set up TCP with a physical device as well but this is beyond scope.  Android emulators seem to use different TCP port numbers, you'll have to look this up.  The default host and port number configured in `FFRK-LabMem.exe.config` is `127.0.0.1:7555` which is for running MuMu app player on the local machine.
 
@@ -39,6 +39,8 @@ Connecting to an emulator works over TCP.  You can set up TCP with a physical de
 | --------- | --------------- | --------------------- |
 | MuMu      | 127.0.0.1:7555  |                       |
 | Nox (5)   | 127.0.0.1:62001 | 62025,62026,62027     |
+| MeMu      | 127.0.0.1:21503 |                       |
+| LDPlayer  | 127.0.0.1:5555  | See [here](https://www.ldplayer.net/apps/adb-debugging-on-pc.html) |
 
 
 ### Screen offsets
