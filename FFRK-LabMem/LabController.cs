@@ -75,7 +75,7 @@ namespace FFRK_LabMem
 
         void Lab_LabError(object sender, Exception e)
         {
-            ColorConsole.WriteLine(ConsoleColor.Red, "Something wrong happened ({0}).  To prevent damages, LabMem will now be disabled.  Please re-enable when ready with 'E'", e.Message);
+            ColorConsole.WriteLine(ConsoleColor.Red, "Something unexpected happened ({0}).  To prevent damages, LabMem will now be reset.  Please re-enable when ready with 'E'", e.Message);
             Disable();
         }
 
