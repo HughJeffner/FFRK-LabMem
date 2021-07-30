@@ -15,12 +15,11 @@ using System.Timers;
 
 namespace FFRK_LabMem.Machines
 {
-    public class Lab : Machine
+    public class Lab : Machine<Lab.State, Lab.Trigger, Lab.Configuration>
     {
 
-        public class Configuration
+        public class Configuration : MachineConfiguration
         {
-            public bool Debug { get; set; }
             public bool OpenDoors { get; set; }
             public bool AvoidExploreIfTreasure { get; set; }
             public bool AvoidPortal { get; set; }
@@ -44,9 +43,6 @@ namespace FFRK_LabMem.Machines
                 this.StopOnMasterPainting = true;
             }
         }
-
-        public event EventHandler LabFinished;
-        public event EventHandler<Exception> LabError;
 
         public enum Trigger
         {
@@ -87,29 +83,10 @@ namespace FFRK_LabMem.Machines
             Finished,
             Crashed
         }
-
-        public Adb Adb { get; set; }
-        public StateMachine<State, Trigger> StateMachine { get; set; }
-        public Configuration Config { get; set; }
+                
         private int CurrentKeys { get; set; }
-        private Random rng = new Random();
         private Stopwatch battleStopwatch = new Stopwatch();
         private Timer battleWatchdogTimer = new Timer(System.Int32.MaxValue);
-
-        // Data property
-        private JObject mData = null;
-        public JObject Data
-        {
-            get
-            {
-                return mData;
-            }
-            set
-            {
-                mData = value;
-                ParseCurrentKeysFromData();
-            }
-        }
 
         public Lab(Adb adb, Configuration config)
         {
@@ -126,7 +103,7 @@ namespace FFRK_LabMem.Machines
             }
 
             // State machine
-            configureStateMachine(State.Starting);
+            ConfigureStateMachine(State.Starting);
                        
             // Activate
             this.StateMachine.Fire(Trigger.Started);
@@ -136,9 +113,9 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public void configureStateMachine(State initialState)
+        public override void ConfigureStateMachine(State initialState)
         {
-            
+
             this.StateMachine = new StateMachine<State, Trigger>(initialState);
             
             this.StateMachine.Configure(State.Starting)
@@ -217,6 +194,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.Crashed)
                 .OnEntryAsync(t => RecoverCrash())
+                .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
 
@@ -225,13 +203,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
 
-            // Invalid state handling
-            this.StateMachine.OnUnhandledTrigger((state, trigger) => {
-                this.LabError(this, new InvalidOperationException(String.Format("Trigger {0} not permitted for state {1}", trigger, state)));
-            });
-
-            // Console output
-            if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            base.ConfigureStateMachine(initialState);
 
         }
 
@@ -415,10 +387,11 @@ namespace FFRK_LabMem.Machines
             
         }
 
-        private void ParseCurrentKeysFromData()
+        protected override void OnDataChanged(JObject data)
         {
 
-            var labItems = (JArray)this.Data["labyrinth_items"];
+            // Parse number of keys
+            var labItems = (JArray)data["labyrinth_items"];
             if (labItems != null)
             {
                 var keys = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000001")).FirstOrDefault();
@@ -427,7 +400,7 @@ namespace FFRK_LabMem.Machines
                     this.CurrentKeys = (int)keys["num"];
                 }
             }
-            var unsettledItems = (JArray)this.Data["unsettled_items"];
+            var unsettledItems = (JArray)data["unsettled_items"];
             if (unsettledItems != null)
             {
                 var keys = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000001")).FirstOrDefault();
@@ -837,7 +810,7 @@ namespace FFRK_LabMem.Machines
         {
 
             ColorConsole.WriteLine(ConsoleColor.DarkGreen, "We reached the master painting.  Press 'E' to enable when ready.");
-            LabFinished(this, new EventArgs());
+            base.OnMachineFinished();
             // Notification?
 
             for (int i = 0; i < 5; i++)

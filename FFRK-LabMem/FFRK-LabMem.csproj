@@ -118,6 +118,8 @@
     <Compile Include="Machines\LabController.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Machines\Machine.cs" />
+    <Compile Include="Machines\MachineConfiguration.cs" />
+    <Compile Include="Machines\MachineController.cs" />
     <Compile Include="Services\Adb.cs" />
     <Compile Include="Machines\Lab.cs" />
     <Compile Include="Program.cs" />

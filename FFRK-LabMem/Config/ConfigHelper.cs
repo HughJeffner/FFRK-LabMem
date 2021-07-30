@@ -37,6 +37,12 @@ namespace FFRK_LabMem.Config
             }
         }
 
+        public String GetString(String key, String defaultValue)
+        {
+            if (this[key] == null) return defaultValue;
+            return this[key];
+        }
+
         public int GetInt(String key, int defaultValue)
         {
             if (this[key] == null) return defaultValue;

@@ -17,12 +17,29 @@ namespace FFRK_LabMem.Services
     public class Proxy
     {
 
+        public interface IProxyMachine
+        {
+            /// <summary>
+            /// Gives a chance for this machine to register with the proxy
+            /// </summary>
+            /// <param name="Proxy"></param>
+            void RegisterWithProxy(Proxy Proxy);
+
+            /// <summary>
+            /// Data mached from registrations is passed from the proxy to the machine
+            /// </summary>
+            /// <param name="UrlContains"></param>
+            /// <param name="data"></param>
+            Task PassFromProxy(int id, String urlMatch, JObject data);
+
+        }
+
         public event EventHandler<ProxyEventArgs> ProxyEvent;
 
         public class Registration
         {
             public Regex UrlMatch { get; set; }
-            public Machine Machine { get; set; }
+            public IProxyMachine Machine { get; set; }
         }
 
         public class ProxyEventArgs{
@@ -33,9 +50,11 @@ namespace FFRK_LabMem.Services
         ProxyServer proxyServer = null;
         ExplicitProxyEndPoint explicitEndPoint = null;
         public List<Registration> Registrations {get; set;}
+        private bool debug;
 
-        public Proxy(int port)
+        public Proxy(int port, bool debug)
         {
+            this.debug = debug;
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
@@ -72,7 +91,7 @@ namespace FFRK_LabMem.Services
             proxyServer.Stop();
         }
 
-        public void AddRegistration(String UrlMatch, Machine Machine)
+        public void AddRegistration(String UrlMatch, IProxyMachine Machine)
         {
             this.Registrations.Add(new Registration(){ 
                 UrlMatch = new Regex(UrlMatch),
@@ -85,6 +104,7 @@ namespace FFRK_LabMem.Services
             // read response headers
             //var responseHeaders = e.HttpClient.Response.Headers;
             System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
+            if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
             {
@@ -92,9 +112,6 @@ namespace FFRK_LabMem.Services
                 {
                     if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("application/json"))
                     {
-
-                        //string d = await e.GetResponseBodyAsString();
-                        //System.Diagnostics.Debug.Print(d);
 
                         if (Registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
                         {

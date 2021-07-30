@@ -31,10 +31,11 @@ namespace FFRK_LabMem
            
             // Controller
             LabController controller = new LabController(
-                adbPath: config["adb.path"],
-                adbHost: config["adb.host"],
+                debug: config.GetBool("console.debug", false),
+                adbPath: config.GetString("adb.path", "adb.exe"),
+                adbHost: config.GetString("adb.host", "127.0.0.1:7555"),
                 proxyPort: config.GetInt("proxy.port", 8081),
-                configFile: config["lab.configFile"],
+                configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", 0),
                 bottomOffset: config.GetInt("screen.bottomOffset", 0)
             );
