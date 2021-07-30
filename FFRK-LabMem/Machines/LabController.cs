@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -13,7 +12,7 @@ using Newtonsoft.Json;
 using System.IO;
 
 
-namespace FFRK_LabMem
+namespace FFRK_LabMem.Machines
 {
     class LabController
     {

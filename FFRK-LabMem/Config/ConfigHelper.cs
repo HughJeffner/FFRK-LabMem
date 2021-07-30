@@ -37,18 +37,21 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        public int GetInt(String key)
+        public int GetInt(String key, int defaultValue)
         {
+            if (this[key] == null) return defaultValue;
             return Int32.Parse(this[key]);
         }
 
-        public bool GetBool(String key)
+        public bool GetBool(String key, bool defaultValue)
         {
+            if (this[key] == null) return defaultValue;
             return this[key].Equals("1") || this[key].ToLower().Equals("true");
         }
 
-        public TEnum GetEnum<TEnum>(String key)
+        public TEnum GetEnum<TEnum>(String key, TEnum defaultValue)
         {
+            if (this[key] == null) return defaultValue;
             return (TEnum)Enum.Parse(typeof(TEnum), this[key]);
         }
     }

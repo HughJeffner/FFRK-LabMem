@@ -115,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\ConfigHelper.cs" />
-    <Compile Include="LabController.cs" />
+    <Compile Include="Machines\LabController.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Services\Adb.cs" />
@@ -125,7 +125,7 @@
     <Compile Include="ColorConsole.cs" />
     <Compile Include="Services\Proxy.cs" />
     <Compile Include="Services\Tray.cs" />
-    <Compile Include="Services\UpdateChecker.cs" />
+    <Compile Include="Services\Updates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -160,7 +160,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="drop.ico" />
-    <Content Include="Info.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

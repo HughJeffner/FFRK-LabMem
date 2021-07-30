@@ -12,35 +12,38 @@ using Semver;
 
 namespace FFRK_LabMem.Services
 {
-    class UpdateChecker
+    class Updates
     {
 
-        private String endPoint = "";
-        private Boolean includePreRelease = true;
+        private String Endpoint { get; set; }
+        private Boolean IncludePreRelease { get; set; }
         private HttpClient httpClient;
+        private const String API_URL = "https://api.github.com/repos/{0}/{1}/releases";
+        private const String WEB_URL = "https://github.com/{0}/{1}/releases";
 
-        public UpdateChecker(String user, String repo)
+        public Updates(String user, String repo, bool includePreRelease)
         {
 
-            this.endPoint = "https://api.github.com/repos/" + user + "/" + repo + "/releases";
+            this.Endpoint = string.Format(API_URL, user, repo);
+            this.IncludePreRelease = includePreRelease;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "UpdateChecker");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "FFRK-LabMem UpdateChecker 1.0");
 
         }
 
-        public static void Check(String user, String repo, String versionCode)
+        public static void Check(String user, String repo, bool includePreRelease, String versionCode)
         {
             
             ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases... disable in app.config");
             var checkerTask = Task.Run(async () =>
             {
-                var checker = new UpdateChecker(user, repo);
+                var checker = new Updates(user, repo, includePreRelease);
                 try
                 {
                     if (await checker.IsLatestRelease(versionCode))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to https://github.com/{0}/{1}/releases by pressing [Alt+U] to get it!", user, repo);
+                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to " + WEB_URL + " by pressing [Alt+U] to get it!", user, repo);
                     }
                 }
                 catch (Exception e)
@@ -53,7 +56,7 @@ namespace FFRK_LabMem.Services
 
         public static void OpenReleasesInBrowser(string user, string repo)
         {
-            var url = String.Format("https://github.com/{0}/{1}/releases", user, repo);
+            var url = String.Format(WEB_URL, user, repo);
             System.Diagnostics.Process.Start("explorer", url);
         }
 
@@ -102,14 +105,14 @@ namespace FFRK_LabMem.Services
             var releases = new Dictionary<string, SemVersion>();
             while (pageNumber != null)
             {
-                var response = await httpClient.GetAsync(new Uri(this.endPoint + "?page=" + pageNumber));
+                var response = await httpClient.GetAsync(new Uri(this.Endpoint + "?page=" + pageNumber));
                 var contentJson = await response.Content.ReadAsStringAsync();
                 VerifyGitHubAPIResponse(response.StatusCode, contentJson);
                 var releasesJson = JArray.Parse(contentJson);
                 foreach (var releaseJson in releasesJson)
                 {
                     bool preRelease = (bool)releaseJson["prerelease"];
-                    if (!this.includePreRelease && preRelease) continue;
+                    if (!this.IncludePreRelease && preRelease) continue;
                     var releaseId = releaseJson["id"].ToString();
                     try
                     {
