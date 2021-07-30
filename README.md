@@ -1,9 +1,16 @@
 # FFRK-LabMem
 Full automation for labyrinth dungeons on Android FFRK and Windows using a proxy server and [adb](https://developer.android.com/studio/command-line/adb)
 
-Built using Visual Studio, pre-compiled binaries provided on the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases), download the .zip file under 'Assets'
+Built using Visual Studio, pre-compiled binaries provided on the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
 
 **Note: button tap locations were calculated as a percentage of a 720 x 1280 screen, this may not work on other screen sizes, more testing needed**
+
+## Download & Run
+1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
+2. Expand the 'Assets' dropdown for the version of your choice
+3. Download the first .zip file
+4. Extract to directory of your choice
+5. Application to run is FFRK-LabMem.exe (it has a treasure-chest icon)
 
 ## Basic Usage
 Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
