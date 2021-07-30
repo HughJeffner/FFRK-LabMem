@@ -36,7 +36,7 @@
     <ImplicitlyExpandTargetFramework>false</ImplicitlyExpandTargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>drop.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\drop.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.8.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
@@ -147,10 +147,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="drop.ico" />
+    <Content Include="Resources\drop.ico" />
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="Resources\adb.exe">
