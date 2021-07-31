@@ -10,7 +10,12 @@ Built using Visual Studio, pre-compiled binaries provided on the [releases page]
 2. Expand the 'Assets' dropdown for the version of your choice
 3. Download the first .zip file
 4. Extract to directory of your choice
-5. Application to run is FFRK-LabMem.exe (it has a treasure-chest icon)
+5. Order of operations:
+    1. Setup / config, see below
+    2. Start Emulator / Connect device to USB
+    3. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
+    4. Start FFRK
+    5. Load up a Labyrinth
 
 ## Basic Usage
 Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
@@ -19,11 +24,12 @@ This appliation runs as a command-line application in 'interactive mode'.  This 
 
 This application uses a split-configuration system: the standard .net config file for general program options and config.json for lab-walking related behaviors.  Eventually I plan to allow specifying the .net config values as command-line parameters (for creating a desktop short-cut for example).
 
+## Setup
 For this to work correctly, the following must be set up:
 1. Network proxy settings
-1. ADB connection
-1. Screen top and bottom offsets
-1. Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
+2. ADB connection
+3. Screen top and bottom offsets
+4. Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
 
 ### Network proxy settings
 This varies wildly by device and every network is different.  Typically with android devices you would go into the wifi settings, change proxy to manual then enter the IP address of the windows system running the app for the hostname, 8081 for the proxy port, and the following for the proxy bypass:
