@@ -57,6 +57,8 @@ Connecting to an emulator works over TCP.  You can set up TCP with a physical de
 
 
 ### Screen offsets
+From version 0.9.10 and higher, screen offsets can be automatically detected using `Alt+O`.
+
 To allow different screen sizes, there are `screen.topOffset` and `screen.bottomOffset` in `FFRK-LabMem.exe.config`.  This corresponds to the height in pixels of the gray bars at the top and bottom of your screen that FFRK uses to support different screen sizes.  You can take a screenshot and measure them in a image editor, or just try to guestimate it.  If you have no bars at the top or bottom just leave it the default of 0.
 
 ## Configuration
