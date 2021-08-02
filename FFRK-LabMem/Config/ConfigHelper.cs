@@ -10,7 +10,8 @@ namespace FFRK_LabMem.Config
     class ConfigHelper
     {
 
-        private KeyValueConfigurationCollection config = null;
+        private System.Configuration.Configuration config = null;
+        private KeyValueConfigurationCollection appSettings = null;
 
         public ConfigHelper() : this(null) { }
 
@@ -20,8 +21,8 @@ namespace FFRK_LabMem.Config
             {
                 ExeConfigurationFileMap configMap = new ExeConfigurationFileMap();
                 configMap.ExeConfigFilename = path;
-                System.Configuration.Configuration configuration = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
-                config = configuration.AppSettings.Settings;
+                this.config = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
+                this.appSettings = config.AppSettings.Settings;
             }
         }
 
@@ -29,11 +30,27 @@ namespace FFRK_LabMem.Config
         {
             get
             {
-                if (config == null || config[key] == null)
+                if (appSettings == null || appSettings[key] == null)
                 {
                     return ConfigurationManager.AppSettings[key];
                 }
-                return config[key].Value;
+                return appSettings[key].Value;
+            }
+        }
+
+        public void SetValue(String key, String value)
+        {
+            if (this.config != null)
+            {
+                this.config.AppSettings.Settings[key].Value = value;
+                this.config.Save();
+            }
+            else
+            {
+                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings[key].Value = value;
+                config.Save();
+                ConfigurationManager.RefreshSection("appSettings");
             }
         }
 

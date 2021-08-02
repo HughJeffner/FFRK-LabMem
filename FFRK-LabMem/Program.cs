@@ -30,15 +30,7 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false)) Updates.Check("hughjeffner", "ffrk-labmem", true, versionCode);
            
             // Controller
-            LabController controller = new LabController(
-                debug: config.GetBool("console.debug", false),
-                adbPath: config.GetString("adb.path", "adb.exe"),
-                adbHost: config.GetString("adb.host", "127.0.0.1:7555"),
-                proxyPort: config.GetInt("proxy.port", 8081),
-                configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
-                topOffset: config.GetInt("screen.topOffset", 0),
-                bottomOffset: config.GetInt("screen.bottomOffset", 0)
-            );
+            LabController controller = LabController.CreateAndStart(config).Result;
 
             // Ad-hoc command loop
             Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'X' to Exit");
@@ -50,6 +42,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo();
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.OpenReleasesInBrowser("hughjeffner", "ffrk-labmem");
+                if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
             }
             
             // Stop

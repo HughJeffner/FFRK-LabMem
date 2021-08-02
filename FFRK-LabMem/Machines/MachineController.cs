@@ -48,7 +48,7 @@ namespace FFRK_LabMem.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public void Start(bool debug, String adbPath, String adbHost, int proxyPort, int topOffset, int bottomOffset, String configFile, S unkownState)
+        public async Task Start(bool debug, String adbPath, String adbHost, int proxyPort, int topOffset, int bottomOffset, String configFile, S unkownState)
         {
 
             this.unknownState = unkownState;
@@ -62,7 +62,7 @@ namespace FFRK_LabMem.Machines
             this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
 
             // Start if connected
-            if (this.Adb.Connect().Result)
+            if (await this.Adb.Connect())
             {
                 ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
                 this.Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
