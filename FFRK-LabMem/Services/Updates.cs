@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,6 +31,18 @@ namespace FFRK_LabMem.Services
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "FFRK-LabMem UpdateChecker 1.0");
 
+        }
+
+        public static String GetVersionCode(String preRelease)
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var suffix = (String.IsNullOrEmpty(preRelease))?"":"-" + preRelease;
+            return string.Format("v{0}.{1}.{2}{3}", version.Major, version.Minor, version.Build, suffix);
+        }
+
+        public static String GetName()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Name;
         }
 
         public static void Check(String user, String repo, bool includePreRelease, String versionCode)

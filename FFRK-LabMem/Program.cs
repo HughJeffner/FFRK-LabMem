@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FFRK_LabMem.Config;
@@ -24,9 +23,8 @@ namespace FFRK_LabMem
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
 
             // Version check
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            var versionCode = string.Format("v{0}.{1}.{2}-beta", version.Major, version.Minor, version.Build);
-            ColorConsole.WriteLine("{0} {1}", Assembly.GetExecutingAssembly().GetName().Name, versionCode);
+            var versionCode = Updates.GetVersionCode("beta");
+            ColorConsole.WriteLine("{0} {1}", Updates.GetName(), versionCode);
             if (config.GetBool("updates.checkForUpdates", false)) Updates.Check("hughjeffner", "ffrk-labmem", true, versionCode);
            
             // Controller
