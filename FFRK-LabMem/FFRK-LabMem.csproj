@@ -130,6 +130,9 @@
     <Compile Include="Services\Updates.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AppSecrets.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
