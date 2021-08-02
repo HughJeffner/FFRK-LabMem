@@ -16,7 +16,7 @@ namespace FFRK_LabMem
         {
             var current = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.Write(format, arg);
+            Write(format, arg);
             Console.ForegroundColor = current;
         }
 

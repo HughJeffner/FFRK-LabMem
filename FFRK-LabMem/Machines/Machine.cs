@@ -88,7 +88,9 @@ namespace FFRK_LabMem.Machines
             });
 
             // Console output
+            if (this.Config == null) return;
             if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            if (this.Adb != null) this.Adb.Debug = this.Config.Debug;
 
         }
 

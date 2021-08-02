@@ -382,11 +382,6 @@ namespace FFRK_LabMem.Machines
             await base.Disable();
         }
 
-        private void DetermineState()
-        {
-            
-        }
-
         protected override void OnDataChanged(JObject data)
         {
 
@@ -409,6 +404,13 @@ namespace FFRK_LabMem.Machines
                     this.CurrentKeys+= (int)keys["num"];
                 }
             }
+
+        }
+
+        #region "State Actions"
+
+        private void DetermineState()
+        {
 
         }
 
@@ -859,5 +861,8 @@ namespace FFRK_LabMem.Machines
 
         }
 
+    #endregion
+
     }
+
 }

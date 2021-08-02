@@ -21,6 +21,7 @@ namespace FFRK_LabMem.Services
         public DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
+        public bool Debug { get; set; }
         private Size screenSize = null;
         private String host;
         
@@ -75,10 +76,8 @@ namespace FFRK_LabMem.Services
 
         public async Task TapPct(double X, double Y)
         {
-            if (screenSize == null) screenSize = await GetScreenSize();
-            double virtX = screenSize.Width * (X / 100);
-            double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (Y / 100) + this.TopOffset;
-            await TapXY((int)virtX, (int)virtY);
+            Tuple<int, int> target = await ConvertPctToXY(X, Y);
+            await TapXY(target.Item1, target.Item2);
         }
 
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords)
@@ -106,15 +105,12 @@ namespace FFRK_LabMem.Services
 
         public async Task<List<Color>> GetPixelColorPct(List<Tuple<double, double>> coordsPct)
         {
-            if (screenSize == null) screenSize = await GetScreenSize();
 
             // Convert to XY
             var coords = new List<Tuple<int, int>>();
             foreach (var item in coordsPct)
             {
-                double virtX = screenSize.Width * (item.Item1 / 100);
-                double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (item.Item2 / 100) + this.TopOffset;
-                coords.Add(new Tuple<int, int>((int)virtX, (int)virtY));
+                coords.Add(await ConvertPctToXY(item));
             }
 
             return await GetPixelColorXY(coords);
@@ -158,6 +154,12 @@ namespace FFRK_LabMem.Services
         public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
         {
 
+            if (this.Debug)
+            {
+                var dTargetStart = await ConvertPctToXY(xPct, yPctStart);
+                var dTargetEnd = await ConvertPctToXY(xPct, yPctEnd);
+                ColorConsole.Write(ConsoleColor.DarkGray, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
+            }
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
             for (double i = yPctStart; i < yPctEnd; i+=0.5)
@@ -193,10 +195,12 @@ namespace FFRK_LabMem.Services
             if (matches.Count > 0)
             {
                 var min = matches.Keys.Min();
-                Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
+                System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
+                if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Count, min);
                 return matches[min];
             }
-            Debug.Print("matches: {0}", matches.Count);
+            System.Diagnostics.Debug.Print("matches: {0}", matches.Count);
+            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}", matches.Count);
             return null;
 
         }
@@ -218,6 +222,21 @@ namespace FFRK_LabMem.Services
             } while (tries < retries);
 
             return false;
+
+        }
+
+        private async Task<Tuple<int, int>> ConvertPctToXY(Tuple<double, double> coords)
+        {
+            return await ConvertPctToXY(coords.Item1, coords.Item2);
+        }
+
+        private async Task<Tuple<int, int>> ConvertPctToXY(double xPct, double yPct)
+        {
+
+            if (screenSize == null) screenSize = await GetScreenSize();
+            double virtX = screenSize.Width * (xPct / 100);
+            double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (yPct / 100) + this.TopOffset;
+            return new Tuple<int, int>((int)virtX, (int)virtY);
 
         }
 
