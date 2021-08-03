@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace FFRK_LabMem
+namespace FFRK_Machines
 {
-    class ColorConsole
+    public class ColorConsole
     {
 
         public static bool Timestamps { get; set; }
         private static bool stamped = false;
 
-        public static void Write(ConsoleColor color, String format, params object[] arg)
+        public static void Write(ConsoleColor color, string format, params object[] arg)
         {
             var current = Console.ForegroundColor;
             Console.ForegroundColor = color;
@@ -16,7 +16,7 @@ namespace FFRK_LabMem
             Console.ForegroundColor = current;
         }
 
-        public static void Write(ConsoleColor color, String value)
+        public static void Write(ConsoleColor color, string value)
         {
             var current = Console.ForegroundColor;
             Console.ForegroundColor = color;
@@ -24,19 +24,19 @@ namespace FFRK_LabMem
             Console.ForegroundColor = current;
         }
 
-        public static void Write(String format, params object[] arg)
+        public static void Write(string format, params object[] arg)
         {
             DoTimestamp(false);
             Console.Write(format, arg);
         }
 
-        public static void Write(String value)
+        public static void Write(string value)
         {
             DoTimestamp(false);
             Console.Write(value);
         }
 
-        public static void WriteLine(ConsoleColor color, String format, params object[] arg)
+        public static void WriteLine(ConsoleColor color, string format, params object[] arg)
         {
             var current = Console.ForegroundColor;
             Console.ForegroundColor = color;
@@ -44,7 +44,7 @@ namespace FFRK_LabMem
             Console.ForegroundColor = current;
         }
 
-        public static void WriteLine(ConsoleColor color, String value)
+        public static void WriteLine(ConsoleColor color, string value)
         {
             var current = Console.ForegroundColor;
             Console.ForegroundColor = color;
@@ -52,21 +52,22 @@ namespace FFRK_LabMem
             Console.ForegroundColor = current;
         }
 
-        public static void WriteLine(String value)
+        public static void WriteLine(string value)
         {
             DoTimestamp(true);
             Console.WriteLine(value);
         }
 
-        public static void WriteLine(String format, params object[] arg)
+        public static void WriteLine(string format, params object[] arg)
         {
             DoTimestamp(true);
             Console.WriteLine(format, arg);
         }
 
-        private static void DoTimestamp(bool newLine){
+        private static void DoTimestamp(bool newLine)
+        {
 
-            if (ColorConsole.Timestamps)
+            if (Timestamps)
             {
                 if (!stamped)
                 {

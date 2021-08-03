@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FFRK_LabMem.Config;
-using FFRK_LabMem.Extensions;
+using FFRK_Machines;
+using FFRK_Machines.Machines;
+using FFRK_Machines.Extensions;
 
 namespace FFRK_LabMem.Machines
 {
