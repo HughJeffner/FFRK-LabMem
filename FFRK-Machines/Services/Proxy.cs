@@ -5,6 +5,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;

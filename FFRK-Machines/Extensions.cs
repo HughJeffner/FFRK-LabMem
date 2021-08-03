@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace FFRK_LabMem.Extensions
+namespace FFRK_Machines.Extensions
 {
-    static class Extensions
+    public static class Extensions
     {
 
         public static int GetDistance(this Color current, Color match)

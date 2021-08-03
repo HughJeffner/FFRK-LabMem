@@ -2,6 +2,7 @@
 using FFRK_LabMem.Config;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
+using FFRK_Machines;
 
 namespace FFRK_LabMem
 {

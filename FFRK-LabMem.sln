@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFRK-LabMem", "FFRK-LabMem\FFRK-LabMem.csproj", "{0EE6C01A-C8DD-4210-A630-8D083D998C9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFRK-Machines", "FFRK-Machines\FFRK-Machines.csproj", "{A17E3DA3-25A3-4710-A032-495ADA9B9C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{0EE6C01A-C8DD-4210-A630-8D083D998C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EE6C01A-C8DD-4210-A630-8D083D998C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EE6C01A-C8DD-4210-A630-8D083D998C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A17E3DA3-25A3-4710-A032-495ADA9B9C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A17E3DA3-25A3-4710-A032-495ADA9B9C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A17E3DA3-25A3-4710-A032-495ADA9B9C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A17E3DA3-25A3-4710-A032-495ADA9B9C16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D625233-16FD-45B0-AD31-2D13E27B664B}
 	EndGlobalSection
 EndGlobal

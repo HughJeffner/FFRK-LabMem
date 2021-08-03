@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using Stateless;
 using System.Diagnostics;
 using System.Timers;
+using FFRK_Machines.Machines;
+using FFRK_Machines;
 
 namespace FFRK_LabMem.Machines
 {

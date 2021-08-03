@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using SharpAdbClient;
-using FFRK_LabMem.Extensions;
 using System.Diagnostics;
+using FFRK_Machines;
+using FFRK_Machines.Extensions;
 
 namespace FFRK_LabMem.Services
 {

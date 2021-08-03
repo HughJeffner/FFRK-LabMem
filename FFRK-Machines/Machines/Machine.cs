@@ -4,7 +4,7 @@ using FFRK_LabMem.Services;
 using Newtonsoft.Json.Linq;
 using Stateless;
 
-namespace FFRK_LabMem.Machines
+namespace FFRK_Machines.Machines
 {
     /// <summary>
     /// Abstract class that represents a machine
@@ -12,8 +12,8 @@ namespace FFRK_LabMem.Machines
     /// <typeparam name="S">An enum of all the possible machine states</typeparam>
     /// <typeparam name="T">An enum of all the available machine triggers</typeparam>
     /// <typeparam name="C">A class containing configuration information for the machine, must inherit from MachineConfiguration</typeparam>
-    public abstract class Machine<S, T, C> : Proxy.IProxyMachine 
-        where C : MachineConfiguration 
+    public abstract class Machine<S, T, C> : Proxy.IProxyMachine
+        where C : MachineConfiguration
     {
 
         // Event Handling
@@ -59,8 +59,8 @@ namespace FFRK_LabMem.Machines
         /// <param name="urlMatch">The url matched of the registration</param>
         /// <param name="data">The data recived from the proxy</param>
         /// <returns></returns>
-        public abstract Task PassFromProxy(int id, String urlMatch, JObject data);
-        
+        public abstract Task PassFromProxy(int id, string urlMatch, JObject data);
+
         /// <summary>
         /// Handles any tasks needed if the controller disables this machine.  Does nothing by default, implementors of this class should override this method.
         /// </summary>
@@ -76,18 +76,18 @@ namespace FFRK_LabMem.Machines
         public virtual void ConfigureStateMachine(S initialState)
         {
 
-            if (this.StateMachine == null) return;
+            if (StateMachine == null) return;
 
             // Invalid state handling
-            this.StateMachine.OnUnhandledTrigger((state, trigger) =>
+            StateMachine.OnUnhandledTrigger((state, trigger) =>
             {
-                OnMachineError(new InvalidOperationException(String.Format("Trigger {0} not permitted for state {1}", trigger, state)));
+                OnMachineError(new InvalidOperationException(string.Format("Trigger {0} not permitted for state {1}", trigger, state)));
             });
 
             // Console output
-            if (this.Config == null) return;
-            if (this.Config.Debug) this.StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
-            if (this.Adb != null) this.Adb.Debug = this.Config.Debug;
+            if (Config == null) return;
+            if (Config.Debug) StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            if (Adb != null) Adb.Debug = Config.Debug;
 
         }
 
