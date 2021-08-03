@@ -12,7 +12,7 @@
 | AppPosition           | The postion of the FFRK icon on the homescreen, in pixels.  Used for battle crash recovery | 213, 432 |
 | BattleWatchdogMinutes | If a battle doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
-| StopOnMasterPainting  | Automatically disables when the master painting is reached.  Disable to fight it | true |
+| StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |
 
 ## Painting Types
 |  Id   | Type                  | Default Priority  |

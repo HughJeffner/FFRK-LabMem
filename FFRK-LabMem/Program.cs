@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FFRK_LabMem.Config;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
