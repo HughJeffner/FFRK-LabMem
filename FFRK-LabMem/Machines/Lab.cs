@@ -132,7 +132,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Configure(State.Ready)
-                .OnEntryAsync(t => SelectPainting())
+                .OnEntryAsync(async (t) => await SelectPainting())
                 .PermitReentry(Trigger.ResetState)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
@@ -143,29 +143,29 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor);
 
             this.StateMachine.Configure(State.FoundThing)
-                .OnEntryAsync(t => MoveOn())
+                .OnEntryAsync(async (t) => await MoveOn())
                 .Permit(Trigger.MoveOn, State.Ready)
                 .Permit(Trigger.MissedButton, State.Ready);
 
             this.StateMachine.Configure(State.FoundTreasure)
-                .OnEntryAsync(t => SelectTreasures())
+                .OnEntryAsync(async (t) => await SelectTreasures())
                 .PermitReentry(Trigger.FoundTreasure)
                 .Permit(Trigger.MoveOn, State.Ready);
 
             this.StateMachine.Configure(State.FoundSealedDoor)
-                .OnEntryAsync(t => OpenSealedDoor())
+                .OnEntryAsync(async (t) => await OpenSealedDoor())
                 .Permit(Trigger.DontOpenDoor, State.FoundThing)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
 
             this.StateMachine.Configure(State.BattleInfo)
-                .OnEntryAsync(t => EnterDungeon())
+                .OnEntryAsync(async (t) => await EnterDungeon())
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
-                .OnEntryAsync(t => StartBattle())
+                .OnEntryAsync(async (t) => await StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Ignore(Trigger.MissedButton);
@@ -176,28 +176,28 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleCrashed, State.Crashed);
 
             this.StateMachine.Configure(State.BattleFinished)
-                .OnEntryAsync(t => FinishBattle())
+                .OnEntryAsync(async (t) => await FinishBattle())
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.PortalConfirm)
-                .OnEntryAsync(t => ConfirmPortal())
+                .OnEntryAsync(async (t) => await ConfirmPortal())
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Finished)
-                .OnEntryAsync(t => FinishLab())
+                .OnEntryAsync(async (t) => await FinishLab())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.BattleSuccess)
                 .Ignore(Trigger.BattleCrashed)
                 .Ignore(Trigger.PickedCombatant);
 
             this.StateMachine.Configure(State.Crashed)
-                .OnEntryAsync(t => RecoverCrash())
+                .OnEntryAsync(async (t) => await RecoverCrash())
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
 
             this.StateMachine.Configure(State.Failed)
-                .OnEntryAsync(t => RecoverFailed())
+                .OnEntryAsync(async (t) => await RecoverFailed())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
 
