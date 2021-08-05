@@ -25,7 +25,7 @@ namespace FFRK_LabMem.Machines
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
             public Point AppPosition { get; set; }
-            public int BattleWatchdogMinutes { get; set; }
+            public int WatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
             public bool StopOnMasterPainting { get; set; }
 
@@ -36,7 +36,7 @@ namespace FFRK_LabMem.Machines
                 this.AvoidExploreIfTreasure = true;
                 this.AvoidPortal = true;
                 this.MaxKeys = 3;
-                this.BattleWatchdogMinutes = 10;
+                this.WatchdogMinutes = 10;
                 this.RestartFailedBattle = false;
                 this.StopOnMasterPainting = true;
             }
@@ -59,7 +59,7 @@ namespace FFRK_LabMem.Machines
             EnterDungeon,
             BattleSuccess,
             BattleFailed,
-            BattleCrashed,
+            WatchdogTimer,
             FoundBoss,
             MissedButton
         }
@@ -84,7 +84,7 @@ namespace FFRK_LabMem.Machines
                 
         private int CurrentKeys { get; set; }
         private Stopwatch battleStopwatch = new Stopwatch();
-        private Timer battleWatchdogTimer = new Timer(System.Int32.MaxValue);
+        private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
 
         public Lab(Adb adb, Configuration config)
         {
@@ -94,10 +94,11 @@ namespace FFRK_LabMem.Machines
             this.Adb = adb;
            
             // Timer
-            if (this.Config.BattleWatchdogMinutes > 0)
+            if (this.Config.WatchdogMinutes > 0)
             {
-                battleWatchdogTimer.Interval = TimeSpan.FromMinutes(this.Config.BattleWatchdogMinutes).TotalMilliseconds;
-                battleWatchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
+                watchdogTimer.AutoReset = false;
+                watchdogTimer.Interval = TimeSpan.FromMinutes(this.Config.WatchdogMinutes).TotalMilliseconds;
+                watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             }
 
             // State machine
@@ -108,7 +109,7 @@ namespace FFRK_LabMem.Machines
 
             // Debug graph
             //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
-
+            
         }
 
         public override void ConfigureStateMachine(State initialState)
@@ -121,19 +122,20 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.Unknown)
                 .OnEntry(t => DetermineState())
+                .Ignore(Trigger.WatchdogTimer)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
-                .Permit(Trigger.BattleCrashed, State.Crashed)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
                 .PermitReentry(Trigger.ResetState)
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
@@ -144,16 +146,19 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryAsync(async (t) => await MoveOn())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.MoveOn, State.Ready)
                 .Permit(Trigger.MissedButton, State.Ready);
 
             this.StateMachine.Configure(State.FoundTreasure)
                 .OnEntryAsync(async (t) => await SelectTreasures())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .PermitReentry(Trigger.FoundTreasure)
                 .Permit(Trigger.MoveOn, State.Ready);
 
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(async (t) => await OpenSealedDoor())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.DontOpenDoor, State.FoundThing)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
@@ -161,33 +166,37 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
                 .OnEntryAsync(async (t) => await StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.BattleFailed, State.Failed)
-                .Permit(Trigger.BattleCrashed, State.Crashed);
+                .Permit(Trigger.WatchdogTimer, State.Crashed);
 
             this.StateMachine.Configure(State.BattleFinished)
                 .OnEntryAsync(async (t) => await FinishBattle())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.PortalConfirm)
                 .OnEntryAsync(async (t) => await ConfirmPortal())
+                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Finished)
                 .OnEntryAsync(async (t) => await FinishLab())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.BattleSuccess)
-                .Ignore(Trigger.BattleCrashed)
+                .Ignore(Trigger.WatchdogTimer)
                 .Ignore(Trigger.PickedCombatant);
 
             this.StateMachine.Configure(State.Crashed)
@@ -203,13 +212,22 @@ namespace FFRK_LabMem.Machines
 
             base.ConfigureStateMachine(initialState);
 
+            if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => { 
+                if (state.Trigger != Trigger.WatchdogTimer)
+                {
+                    watchdogTimer.Stop();
+                    watchdogTimer.Start();
+                }
+                
+            });
+
+
         }
 
         async void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
 
-            await this.StateMachine.FireAsync(Trigger.BattleCrashed);
-            this.battleWatchdogTimer.Stop();
+            await this.StateMachine.FireAsync(Trigger.WatchdogTimer);
 
         }
         
@@ -371,7 +389,7 @@ namespace FFRK_LabMem.Machines
 
         public override async Task Disable()
         {
-            if (battleWatchdogTimer.Enabled) battleWatchdogTimer.Stop();
+            if (watchdogTimer.Enabled) watchdogTimer.Stop();
             if (battleStopwatch.IsRunning)
             {
                 battleStopwatch.Stop();
@@ -755,7 +773,6 @@ namespace FFRK_LabMem.Machines
                 await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
-                battleWatchdogTimer.Start();
             }
             else
             {
@@ -773,7 +790,6 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Battle Won!");
             ColorConsole.Write(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
             battleStopwatch.Reset();
-            battleWatchdogTimer.Stop();
 
             // Drops
             var r = this.Data["result"]["prize_master"];
@@ -824,13 +840,45 @@ namespace FFRK_LabMem.Machines
         private async Task RecoverCrash()
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
+
+            // Go to home screen
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating home...");
+            await this.Adb.NavigateHome();
+            await Task.Delay(5000);
+
+            // Kill FFRK
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
+            await this.Adb.StopPackage("com.dena.west.FFRK");
+            await Task.Delay(5000);
+
+            // Tap app position
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping app icon at position {0},{1}...", this.Config.AppPosition.X, this.Config.AppPosition.Y);
             await this.Adb.TapXY(this.Config.AppPosition.X, this.Config.AppPosition.Y);
             await Task.Delay(5000);
-            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20);
-            if (b)
+
+            // Press start button
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for start button...");
+            if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20))
             {
-                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 20))
+                // Press continue battle button
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for continue battle button...");
+                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
                     await this.StateMachine.FireAsync(Trigger.StartBattle);
+                } else
+                {
+                    // Go back into lab
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
+                    await this.Adb.TapPct(50, 50);
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
+                    ConfigureStateMachine(State.Unknown);
+                }
+
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
+                OnMachineFinished();
             }
 
         }
@@ -843,16 +891,16 @@ namespace FFRK_LabMem.Machines
             if (this.Config.RestartFailedBattle)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
-                battleWatchdogTimer.Stop();
+                watchdogTimer.Stop();
                 await this.Adb.TapPct(50, 72);
                 await Task.Delay(2000);
                 await this.Adb.TapPct(25, 55);
-                battleWatchdogTimer.Start();
+                watchdogTimer.Start();
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                battleWatchdogTimer.Stop();
+                watchdogTimer.Stop();
             }
             
             await this.StateMachine.FireAsync(Trigger.StartBattle);

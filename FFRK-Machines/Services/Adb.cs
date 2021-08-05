@@ -65,6 +65,24 @@ namespace FFRK_LabMem.Services
 
         }
 
+        public async Task NavigateHome()
+        {
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input keyevent {0}", "KEYCODE_HOME"),
+                this.Device,
+                null,
+                System.Threading.CancellationToken.None,
+                1000);
+        }
+
+        public async Task StopPackage(String packageName)
+        {
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am force-stop {0}", packageName),
+                this.Device,
+                null,
+                System.Threading.CancellationToken.None,
+                1000);
+        }
+
         public async Task TapXY(int X, int Y)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y), 

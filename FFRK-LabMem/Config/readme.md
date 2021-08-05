@@ -10,7 +10,7 @@
 | TreasurePriorityMap   | A list of key-value pairs that assign a priority to treasures.  A value of 0 will skip that type of treasure, otherwise lower priority values are preferred.  If a priority is tied, then one is chosen at random.  See treasure table below for values | see below |
 | MaxKeys               | The maximum number of keys to use when opening treasures.  Sane values are 0, 1 or 3 | 1 |
 | AppPosition           | The postion of the FFRK icon on the homescreen, in pixels.  Used for battle crash recovery | 213, 432 |
-| BattleWatchdogMinutes | If a battle doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
+| WatchdogMinutes       | If an action doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
 | StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |
 
