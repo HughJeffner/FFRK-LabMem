@@ -18,10 +18,17 @@ namespace FFRK_LabMem.Services
             public int Height { get; set; }
         }
 
-        public DeviceData Device { get; set; }
+        protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
         public bool Debug { get; set; }
+        public bool HasDevice
+        {
+            get
+            {
+                return this.Device != null;
+            }
+        }
         private Size screenSize = null;
         private String host;
         

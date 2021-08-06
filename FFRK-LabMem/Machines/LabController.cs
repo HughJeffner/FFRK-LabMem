@@ -28,7 +28,7 @@ namespace FFRK_LabMem.Machines
                 unkownState: Lab.State.Unknown);
             
             // Auto-detect offsets
-            if (ret.Adb != null && ret.Adb.Device != null && config.GetInt("screen.topOffset", -1) == -1)
+            if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Title Screen");
             }
@@ -38,7 +38,7 @@ namespace FFRK_LabMem.Machines
 
         public async void AutoDetectOffsets(ConfigHelper config) {
 
-            if (this.Adb != null && this.Adb.Device != null && config.GetInt("screen.topOffset", -1) == -1)
+            if (this.Adb != null && this.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detecting screen offsets...");
                 var offsets = await GetOffsets(2000);
