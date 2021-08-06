@@ -21,8 +21,7 @@
         "2": 0,
         "1": 0
     },
-    "MaxKeys": 3,
-    "AppPosition": "213, 432",
+    "MaxKeys": 0,
     "WatchdogMinutes": 10,
     "RestartFailedBattle": false,
     "StopOnMasterPainting": false

@@ -80,7 +80,16 @@ namespace FFRK_LabMem.Services
                 this.Device,
                 null,
                 System.Threading.CancellationToken.None,
-                1000);
+                2000);
+        }
+
+        public async Task StartActivity(String packageName, String activityName)
+        {
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -n {0}/{1}", packageName, activityName),
+                this.Device,
+                null,
+                System.Threading.CancellationToken.None,
+                2000);
         }
 
         public async Task TapXY(int X, int Y)

@@ -24,7 +24,6 @@ namespace FFRK_LabMem.Machines
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
             public Dictionary<String, int> TreasurePriorityMap { get; set; }
             public int MaxKeys {get; set;}
-            public Point AppPosition { get; set; }
             public int WatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
             public bool StopOnMasterPainting { get; set; }
@@ -61,7 +60,8 @@ namespace FFRK_LabMem.Machines
             BattleFailed,
             WatchdogTimer,
             FoundBoss,
-            MissedButton
+            MissedButton,
+            FinishedLab
         }
 
         public enum State
@@ -78,7 +78,8 @@ namespace FFRK_LabMem.Machines
             Battle,
             BattleFinished,
             Failed,
-            Finished,
+            WaitForBoss,
+            Completed,
             Crashed
         }
                 
@@ -130,7 +131,9 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
-                .Permit(Trigger.BattleFailed, State.Failed);
+                .Permit(Trigger.BattleFailed, State.Failed)
+                .Permit(Trigger.FoundBoss, State.WaitForBoss)
+                .Permit(Trigger.FinishedLab, State.Completed);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
@@ -141,8 +144,9 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.PickedPortal, State.PortalConfirm)
-                .Permit(Trigger.FoundBoss, State.Finished)
-                .Permit(Trigger.FoundDoor, State.FoundSealedDoor);
+                .Permit(Trigger.FoundBoss, State.WaitForBoss)
+                .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
+                .Permit(Trigger.FinishedLab, State.Completed);
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryAsync(async (t) => await MoveOn())
@@ -185,15 +189,23 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.BattleFinished)
                 .OnEntryAsync(async (t) => await FinishBattle())
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
+                .Permit(Trigger.FinishedLab, State.Completed)
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.PortalConfirm)
                 .OnEntryAsync(async (t) => await ConfirmPortal())
+                .Permit(Trigger.FinishedLab, State.Completed)
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.ResetState, State.Ready);
 
-            this.StateMachine.Configure(State.Finished)
-                .OnEntryAsync(async (t) => await FinishLab())
+            this.StateMachine.Configure(State.Completed)
+                .OnEntryAsync(async (t) => await FinishLab(t))
+                .Permit(Trigger.ResetState, State.Ready)
+                .Ignore(Trigger.BattleSuccess)
+                .Ignore(Trigger.WatchdogTimer);
+
+            this.StateMachine.Configure(State.WaitForBoss)
+                .OnEntryAsync(async (t) => await FinishLab(t))
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.BattleSuccess)
                 .Ignore(Trigger.WatchdogTimer)
@@ -279,6 +291,13 @@ namespace FFRK_LabMem.Machines
                 case 1:
                 case 2:
 
+                    // Final portal completes dungeon
+                    if (data["labyrinth_dungeon_result"] != null)
+                    {
+                        await this.StateMachine.FireAsync(Trigger.FinishedLab);
+                        break;
+                    }
+
                     this.Data = data;
                     int total = 0;
                     var t = this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
@@ -286,10 +305,14 @@ namespace FFRK_LabMem.Machines
 
                     // Status
                     status = data["labyrinth_dungeon_session"]["current_painting_status"];
-                    if (status != null && (int)status == 0 && total==20) // Fresh floor
+                    if (status != null && (int)status == 0) // Fresh floor
                     {
-                        await this.StateMachine.FireAsync(Trigger.ResetState);
-                        break;
+                        if (total == 20 || this.StateMachine.State == State.PortalConfirm)
+                        {
+                            await this.StateMachine.FireAsync(Trigger.ResetState);
+                            break;
+                        }
+                        
                     }
                     if (status != null && (int)status == 1)
                     {
@@ -811,6 +834,11 @@ namespace FFRK_LabMem.Machines
             await Task.Delay(1000);
             await this.Adb.TapPct(50, 85);
 
+            // Check if we defeated the boss
+            if (this.Data["result"]["labyrinth_dungeon_result"] != null) 
+                await this.StateMachine.FireAsync(Trigger.FinishedLab);
+
+
         }
 
         private async Task ConfirmPortal()
@@ -822,13 +850,19 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task FinishLab()
+        private async Task FinishLab(StateMachine<State,Trigger>.Transition t)
         {
 
-            ColorConsole.WriteLine(ConsoleColor.DarkGreen, "We reached the master painting.  Press 'E' to enable when ready.");
+            // Disable machine
             base.OnMachineFinished();
-            // Notification?
 
+            if (t.Destination == State.WaitForBoss)
+                ColorConsole.WriteLine(ConsoleColor.DarkGreen, "We reached the master painting.  Press 'E' to enable when ready.");
+
+            if (t.Destination == State.Completed)
+                ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Lab run completed!  Press 'E' to enable when ready.");
+
+            // Notification?
             for (int i = 0; i < 5; i++)
             {
                 Console.Beep();
@@ -839,6 +873,10 @@ namespace FFRK_LabMem.Machines
 
         private async Task RecoverCrash()
         {
+
+            const String FFRK_PACKAGE_NAME = "com.dena.west.FFRK";
+            const String FFRK_ACTIVITY_NAME = "jp.dena.dot.Dot";
+
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
 
             // Go to home screen
@@ -848,12 +886,12 @@ namespace FFRK_LabMem.Machines
 
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
-            await this.Adb.StopPackage("com.dena.west.FFRK");
+            await this.Adb.StopPackage(FFRK_PACKAGE_NAME);
             await Task.Delay(5000);
 
-            // Tap app position
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping app icon at position {0},{1}...", this.Config.AppPosition.X, this.Config.AppPosition.Y);
-            await this.Adb.TapXY(this.Config.AppPosition.X, this.Config.AppPosition.Y);
+            // Launch app
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Launching app");
+            await this.Adb.StartActivity(FFRK_PACKAGE_NAME, FFRK_ACTIVITY_NAME);
             await Task.Delay(5000);
 
             // Press start button
