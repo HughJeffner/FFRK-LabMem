@@ -29,7 +29,7 @@ namespace FFRK_LabMem.Services
             this.IncludePreRelease = includePreRelease;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "FFRK-LabMem UpdateChecker 1.0");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", String.Format("{0} {1}", GetName(), GetVersionCode("")));
 
         }
 
@@ -54,7 +54,7 @@ namespace FFRK_LabMem.Services
                 var checker = new Updates(user, repo, includePreRelease);
                 try
                 {
-                    if (await checker.IsLatestRelease(versionCode))
+                    if (await checker.IsReleaseAvailable(versionCode))
                     {
                         ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to " + WEB_URL + " by pressing [Alt+U] to get it!", user, repo);
                     }
@@ -73,7 +73,7 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
-        public async Task<bool> IsLatestRelease(string version)
+        public async Task<bool> IsReleaseAvailable(string version)
         {
             SemVersion semVersion;
             try
@@ -86,6 +86,7 @@ namespace FFRK_LabMem.Services
             }
 
             var latestRelease = await GetLatestRelease();
+            if (latestRelease.Value == null) return false;
             return semVersion < latestRelease.Value;
         }
 
@@ -103,7 +104,7 @@ namespace FFRK_LabMem.Services
         private async Task<KeyValuePair<string, SemVersion>> GetLatestRelease()
         {
             var releases = await GetReleasesAsync();
-            var latestRelease = releases.First();
+            var latestRelease = releases.FirstOrDefault();
 
             foreach (var release in releases)
                 if (SemVersion.Compare(release.Value, latestRelease.Value) > 0)

@@ -22,7 +22,8 @@ namespace FFRK_LabMem
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
             ColorConsole.WriteLine("{0} {1}", Updates.GetName(), versionCode);
-            if (config.GetBool("updates.checkForUpdates", false)) Updates.Check("hughjeffner", "ffrk-labmem", true, versionCode);
+            if (config.GetBool("updates.checkForUpdates", false)) 
+                Updates.Check("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", true), versionCode);
            
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
