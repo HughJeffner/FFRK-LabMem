@@ -118,6 +118,10 @@ namespace FFRK_LabMem.Machines
                 }
             }
 
+            // Sanity check
+            if (topOffset < 0) topOffset = 0;
+            if (bottomOffset < 0) bottomOffset = 0;
+
             return new Tuple<int,int>(topOffset,bottomOffset);
 
         }
