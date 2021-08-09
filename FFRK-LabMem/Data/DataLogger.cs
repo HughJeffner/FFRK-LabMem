@@ -40,7 +40,7 @@ namespace FFRK_LabMem.Data
                             row[3]);
 
                     }
-                    await AppendFile("drops.csv", writer);
+                    await AppendFile("drops_v01.csv", writer);
                 }
             }
 
@@ -67,7 +67,7 @@ namespace FFRK_LabMem.Data
                             row[3]);
 
                     }
-                    await AppendFile("drops_battle.csv", writer);
+                    await AppendFile("drops_battle_v01.csv", writer);
                 }
 
             }
