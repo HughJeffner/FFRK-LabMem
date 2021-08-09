@@ -836,10 +836,10 @@ namespace FFRK_LabMem.Machines
             base.OnMachineFinished();
 
             if (t.Destination == State.WaitForBoss)
-                ColorConsole.WriteLine(ConsoleColor.DarkGreen, "We reached the master painting.  Press 'E' to enable when ready.");
+                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
 
             if (t.Destination == State.Completed)
-                ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Lab run completed!  Press 'E' to enable when ready.");
+                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!  Press 'E' to enable when ready.");
 
             // Notification?
             await Notify();
