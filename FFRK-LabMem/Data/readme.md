@@ -14,7 +14,7 @@
 | Timestamp			| Date/time in YYYY-MM-DD HH:MM     |
 | Source			| Painting Id (always 4)		    |
 | ResultType		| See below                 		|
-| InsideDoor		| true if result of opening door	|
+| InsideDoor		| 1 if result of opening door		|
 
 ### Explore Result Types
 | Id	| Description	|

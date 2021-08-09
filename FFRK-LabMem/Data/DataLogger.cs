@@ -47,7 +47,7 @@ namespace FFRK_LabMem.Data
                     {
                         row[2] = eventData["type"].ToString();
                     }
-                    row[3] = insideDoor.ToString();
+                    row[3] = insideDoor?"1":"0";
                     WriteLine(writer, row, row.Length, ',');
                     await AppendFile("explore_results_v01.csv", writer);
                 }
