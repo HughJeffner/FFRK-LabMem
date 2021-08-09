@@ -4,18 +4,9 @@
 
     <ItemGroup>
       <InputAssemblies Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
-      <InputAssemblies Include="$(OutputPath)\FFRK-Machines.dll" />
-      <InputAssemblies Include="$(OutputPath)\BrotliSharpLib.dll" />
-      <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
-      <InputAssemblies Include="$(OutputPath)\Semver.dll" />
-      <InputAssemblies Include="$(OutputPath)\SharpAdbClient.dll" />
-      <InputAssemblies Include="$(OutputPath)\stateless.dll" />
-      <InputAssemblies Include="$(OutputPath)\System.Buffers.dll" />
-      <InputAssemblies Include="$(OutputPath)\System.Memory.dll" />
-      <InputAssemblies Include="$(OutputPath)\System.Numerics.Vectors.dll" />
-      <InputAssemblies Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll" />
-      <InputAssemblies Include="$(OutputPath)\System.Threading.Tasks.Extensions.dll" />
-      <InputAssemblies Include="$(OutputPath)\Titanium.Web.Proxy.dll" />
+      <InputAssemblies Include="$(OutputPath)*.dll" Exclude="$(OutputPath)$(TargetName)$(TargetExt)"/>
+      <InputAssemblies Remove="$(OutputPath)AdbWinApi.dll" />
+      <InputAssemblies Remove="$(OutputPath)AdbWinUsbApi.dll" />
     </ItemGroup>
 
     <ILRepack
