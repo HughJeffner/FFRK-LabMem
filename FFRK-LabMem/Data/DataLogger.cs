@@ -69,8 +69,8 @@ namespace FFRK_LabMem.Data
                         WriteLine(writer, row, row.Length, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
-                            row[2].Replace("★", "*"),
-                            row[3]);
+                            row[3].Replace("★", "*"),
+                            row[4]);
 
                     }
                     await AppendFile("drops_v01.csv", writer);
