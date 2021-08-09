@@ -20,6 +20,41 @@ namespace FFRK_LabMem.Data
             DataLogger.enabled = config.GetBool("datalogger.enabled", false);
         }
 
+        public static async Task LogExploreResult(JToken eventData, JToken status, JToken currentPainting, bool insideDoor)
+        {
+
+            if (eventData != null)
+            {
+                using (var writer = new StringWriter())
+                {
+                    String[] row = CreateDataRow(4, currentPainting);
+                    if (insideDoor)
+                    {
+                        switch ((int)status)
+                        {
+                            case 2:
+                            case 4:
+                                row[2] = "9";
+                                break;
+                            case 3:
+                                row[2] = "4";
+                                break;
+                            default:
+                                row[2] = "?" + status.ToString();
+                                break;
+                        }
+                    } else
+                    {
+                        row[2] = eventData["type"].ToString();
+                    }
+                    row[3] = insideDoor.ToString();
+                    WriteLine(writer, row, row.Length, ',');
+                    await AppendFile("explore_results_v01.csv", writer);
+                }
+            }
+                        
+        }
+
         public static async Task LogGotItem(JObject data, JToken currentPainting)
         {
 

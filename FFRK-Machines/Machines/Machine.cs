@@ -119,5 +119,18 @@ namespace FFRK_Machines.Machines
             if (MachineFinished != null) MachineFinished.Invoke(this, new EventArgs());
         }
 
+        /// <summary>
+        /// Notifies the user, by default system beeps
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task Notify()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Beep();
+                await Task.Delay(1000);
+            }
+        }
+
     }
 }

@@ -221,7 +221,9 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.Failed)
                 .OnEntryAsync(async (t) => await RecoverFailed())
                 .Permit(Trigger.ResetState, State.Ready)
-                .Permit(Trigger.StartBattle, State.Battle);
+                .Permit(Trigger.StartBattle, State.Battle)
+                .Permit(Trigger.BattleSuccess, State.BattleFinished)
+                .PermitReentry(Trigger.BattleFailed);
 
             base.ConfigureStateMachine(initialState);
 
@@ -299,16 +301,23 @@ namespace FFRK_LabMem.Machines
                         break;
                     }
 
+                    // Data
                     this.Data = data;
-                    int total = 0;
-                    var t = this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
-                    if (t != null) total = (int)t;
+                    int remainingPaintings = 0;
+                    var remainingData = this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
+                    if (remainingData != null) remainingPaintings = (int)remainingData;
 
-                    // Status
+                    // Event results
+                    var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
                     status = data["labyrinth_dungeon_session"]["current_painting_status"];
+
+                    // Data logging
+                    await DataLogger.LogExploreResult(eventdata, status, this.CurrentPainting, id == 2);
+
+                    // Check status first
                     if (status != null && (int)status == 0) // Fresh floor
                     {
-                        if (total == 20 || this.StateMachine.State == State.PortalConfirm)
+                        if (remainingPaintings == 20 || this.StateMachine.State == State.PortalConfirm)
                         {
                             await this.StateMachine.FireAsync(Trigger.ResetState);
                             break;
@@ -335,9 +344,8 @@ namespace FFRK_LabMem.Machines
                         await this.StateMachine.FireAsync(Trigger.FoundTreasure);
                         break;
                     }
-
-                    // Explore event result
-                    var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
+                                     
+                    // Check explore event next
                     if (eventdata != null)
                     {
                         switch ((int)eventdata["type"])
@@ -834,11 +842,7 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Lab run completed!  Press 'E' to enable when ready.");
 
             // Notification?
-            for (int i = 0; i < 5; i++)
-            {
-                Console.Beep();
-                await Task.Delay(1000);
-            }
+            await Notify();
 
         }
 
@@ -888,6 +892,7 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
                 OnMachineFinished();
+                await Notify();
             }
 
         }
@@ -900,20 +905,18 @@ namespace FFRK_LabMem.Machines
             if (this.Config.RestartFailedBattle)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
-                watchdogTimer.Stop();
                 await this.Adb.TapPct(50, 72);
                 await Task.Delay(2000);
                 await this.Adb.TapPct(25, 55);
-                watchdogTimer.Start();
+                await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
+                await Notify();
                 watchdogTimer.Stop();
             }
             
-            await this.StateMachine.FireAsync(Trigger.StartBattle);
-
         }
 
     #endregion
