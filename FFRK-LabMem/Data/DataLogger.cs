@@ -1,11 +1,9 @@
 ﻿using FFRK_LabMem.Config;
+using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Data
@@ -20,14 +18,14 @@ namespace FFRK_LabMem.Data
             DataLogger.enabled = config.GetBool("datalogger.enabled", false);
         }
 
-        public static async Task LogExploreResult(JToken eventData, JToken status, JToken currentPainting, bool insideDoor)
+        public static async Task LogExploreResult(Lab lab, JToken eventData, JToken status, bool insideDoor)
         {
 
             if (eventData != null)
             {
                 using (var writer = new StringWriter())
                 {
-                    String[] row = CreateDataRow(4, currentPainting);
+                    String[] row = CreateDataRow(5, lab);
                     if (insideDoor)
                     {
                         switch ((int)status)
@@ -37,17 +35,17 @@ namespace FFRK_LabMem.Data
                                 row[2] = "9";
                                 break;
                             case 3:
-                                row[2] = "4";
+                                row[3] = "4";
                                 break;
                             default:
-                                row[2] = "?" + status.ToString();
+                                row[3] = "?" + status.ToString();
                                 break;
                         }
                     } else
                     {
-                        row[2] = eventData["type"].ToString();
+                        row[3] = eventData["type"].ToString();
                     }
-                    row[3] = insideDoor?"1":"0";
+                    row[4] = insideDoor?"1":"0";
                     WriteLine(writer, row, row.Length, ',');
                     await AppendFile("explore_results_v01.csv", writer);
                 }
@@ -55,19 +53,19 @@ namespace FFRK_LabMem.Data
                         
         }
 
-        public static async Task LogGotItem(JObject data, JToken currentPainting)
+        public static async Task LogGotItem(Lab lab)
         {
 
-            var items = data["given_unsettled_items"];
+            var items = lab.Data["given_unsettled_items"];
             if (items != null)
             {
                 using (var writer = new StringWriter())
                 {
                     foreach (var item in items)
                     {
-                        String[] row = CreateDataRow(4, currentPainting);
-                        row[2] = item["item_name"].ToString();
-                        row[3] = item["num"].ToString();
+                        String[] row = CreateDataRow(5, lab);
+                        row[3] = item["item_name"].ToString();
+                        row[4] = item["num"].ToString();
                         WriteLine(writer, row, row.Length, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
@@ -81,20 +79,20 @@ namespace FFRK_LabMem.Data
 
         }
 
-        public static async Task LogBattleDrops(JObject data, JToken currentPainting)
+        public static async Task LogBattleDrops(Lab lab)
         {
 
-            var drops = data["result"]["prize_master"];
-            var qtyMap = data["result"]["drop_item_id_to_num"];
+            var drops = lab.Data["result"]["prize_master"];
+            var qtyMap = lab.Data["result"]["drop_item_id_to_num"];
             if (drops != null && qtyMap != null)
             {
                 using (var writer = new StringWriter())
                 {
                     foreach (var item in drops)
                     {
-                        String[] row = CreateDataRow(4, currentPainting);
-                        row[2] = item.First["name"].ToString();
-                        row[3] = qtyMap[item.First["item_id"].ToString()].ToString();
+                        String[] row = CreateDataRow(5, lab);
+                        row[3] = item.First["name"].ToString();
+                        row[4] = qtyMap[item.First["item_id"].ToString()].ToString();
                         WriteLine(writer, row, row.Length, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}",
@@ -109,11 +107,12 @@ namespace FFRK_LabMem.Data
 
         }
 
-        private static string[] CreateDataRow(int columns, JToken currentPainting)
+        private static string[] CreateDataRow(int columns, Lab lab)
         {
             String[] row = new string[columns];
             row[0] = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            row[1] = GetCurrentPaintingID(currentPainting);
+            row[1] = GetCurrentFloor(lab.CurrentFloor);
+            row[2] = GetCurrentPaintingID(lab.CurrentPainting);
             return row;
         }
 
@@ -123,6 +122,12 @@ namespace FFRK_LabMem.Data
             if (currentPainting == null) return "?";
             return currentPainting["type"].ToString();
 
+        }
+
+        private static String GetCurrentFloor(int floor)
+        {
+            if (floor == 0) return "?";
+            return floor.ToString();
         }
 
         private static async Task AppendFile(String fileName, TextWriter data)

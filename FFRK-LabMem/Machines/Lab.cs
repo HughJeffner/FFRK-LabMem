@@ -84,7 +84,8 @@ namespace FFRK_LabMem.Machines
         }
                 
         private int CurrentKeys { get; set; }
-        private JToken CurrentPainting { get; set; }
+        public JToken CurrentPainting { get; set; }
+        public int CurrentFloor { get; set; }
         private Stopwatch battleStopwatch = new Stopwatch();
         private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
 
@@ -312,7 +313,7 @@ namespace FFRK_LabMem.Machines
                     status = data["labyrinth_dungeon_session"]["current_painting_status"];
 
                     // Data logging
-                    await DataLogger.LogExploreResult(eventdata, status, this.CurrentPainting, id == 2);
+                    await DataLogger.LogExploreResult(this, eventdata, status, id == 2);
 
                     // Check status first
                     if (status != null && (int)status == 0) // Fresh floor
@@ -467,12 +468,12 @@ namespace FFRK_LabMem.Machines
 
             // Logic to determine painting
             int total = (int)this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
-            int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
+            this.CurrentFloor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             this.CurrentPainting = null;
 
             // New floor marker
-            if (total == 20) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+            if (total == 20) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", this.CurrentFloor);
 
             // Insert Priority Field
             foreach (var item in paintings)
@@ -494,7 +495,7 @@ namespace FFRK_LabMem.Machines
 
             // There's a treasure visible but picked a explore (unless last floor)
             // TODO: Determine if the last floor
-            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)this.CurrentPainting["type"] == 4 && floor != 15 && floor !=20)
+            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)this.CurrentPainting["type"] == 4 && this.CurrentFloor != 15 && this.CurrentFloor != 20)
             {
                 this.CurrentPainting = paintings
                 .Take(3)
@@ -614,7 +615,7 @@ namespace FFRK_LabMem.Machines
              */
 
             // Got Item
-            await DataLogger.LogGotItem(this.Data, this.CurrentPainting);
+            await DataLogger.LogGotItem(this);
 
             // Treasure list
             var treasures = (JArray)this.Data["labyrinth_dungeon_session"]["treasure_chest_ids"];
@@ -733,7 +734,7 @@ namespace FFRK_LabMem.Machines
         private async Task MoveOn()
         {
 
-            await DataLogger.LogGotItem(this.Data, this.CurrentPainting);
+            await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
@@ -805,7 +806,7 @@ namespace FFRK_LabMem.Machines
             battleStopwatch.Reset();
 
             // Drops
-            await DataLogger.LogBattleDrops(this.Data, this.CurrentPainting);
+            await DataLogger.LogBattleDrops(this);
             
             //Tappy taps
             await Task.Delay(6000);
