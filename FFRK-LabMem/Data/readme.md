@@ -4,6 +4,7 @@
 | Column            | Description                       |
 | ----------------- | ----------------------------------|
 | Timestamp			| Date/time in YYYY-MM-DD HH:MM     |
+| Floor				| Floor number						|
 | Source			| Painting Id					    |
 | Name				| Dropped item name					|
 | Qty				| Quantity							|
@@ -12,6 +13,7 @@
 | Column            | Description                       |
 | ----------------- | ----------------------------------|
 | Timestamp			| Date/time in YYYY-MM-DD HH:MM     |
+| Floor				| Floor number						|
 | Source			| Painting Id (always 4)		    |
 | ResultType		| See below                 		|
 | InsideDoor		| 1 if result of opening door		|
