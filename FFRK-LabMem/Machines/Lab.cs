@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
@@ -10,6 +9,7 @@ using System.Diagnostics;
 using System.Timers;
 using FFRK_Machines.Machines;
 using FFRK_Machines;
+using FFRK_LabMem.Data;
 
 namespace FFRK_LabMem.Machines
 {
@@ -84,6 +84,7 @@ namespace FFRK_LabMem.Machines
         }
                 
         private int CurrentKeys { get; set; }
+        private JToken CurrentPainting { get; set; }
         private Stopwatch battleStopwatch = new Stopwatch();
         private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
 
@@ -460,7 +461,7 @@ namespace FFRK_LabMem.Machines
             int total = (int)this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
             int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
-            JToken selectedPainting = null;
+            this.CurrentPainting = null;
 
             // New floor marker
             if (total == 20) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
@@ -476,7 +477,7 @@ namespace FFRK_LabMem.Machines
             var isExplore = paintings.Any(p => (int)p["type"] == 4);
 
             // Select top 1 priority from the first 3
-            selectedPainting = paintings
+            this.CurrentPainting = paintings
                 .Take(3)                            // Only from the first 3
                 .Select(p => p)
                 .OrderBy(p => (int)p["priority"])   // Priority ordering
@@ -485,9 +486,9 @@ namespace FFRK_LabMem.Machines
 
             // There's a treasure visible but picked a explore (unless last floor)
             // TODO: Determine if the last floor
-            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)selectedPainting["type"] == 4 && floor != 15 && floor !=20)
+            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)this.CurrentPainting["type"] == 4 && floor != 15 && floor !=20)
             {
-                selectedPainting = paintings
+                this.CurrentPainting = paintings
                 .Take(3)
                 .Select(p => p)
                 .Where(p => (int)p["type"] != 4)
@@ -495,14 +496,14 @@ namespace FFRK_LabMem.Machines
                 .FirstOrDefault();
 
                 // No choice
-                if (selectedPainting == null) selectedPainting = paintings[rng.Next(2)];
+                if (this.CurrentPainting == null) this.CurrentPainting = paintings[rng.Next(2)];
 
             }
 
             // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
-            if (this.Config.AvoidPortal && (int)selectedPainting["type"] == 6 && (isTreasure || isExplore || (total > 9)))
+            if (this.Config.AvoidPortal && (int)this.CurrentPainting["type"] == 6 && (isTreasure || isExplore || (total > 9)))
             {
-                selectedPainting = paintings
+                this.CurrentPainting = paintings
                 .Take(3)
                 .Select(p => p)
                 .Where(p => (int)p["type"] != 6)
@@ -512,21 +513,21 @@ namespace FFRK_LabMem.Machines
                          
             // Get selected painting id
             int selectedPaintingIndex = 0;
-            if (selectedPainting != null) selectedPaintingIndex = paintings.IndexOf(selectedPainting);
+            if (this.CurrentPainting != null) selectedPaintingIndex = paintings.IndexOf(this.CurrentPainting);
            
             // Master painting check
-            if ((int)selectedPainting["type"] == 2 && this.Config.StopOnMasterPainting)
+            if ((int)this.CurrentPainting["type"] == 2 && this.Config.StopOnMasterPainting)
             {
                 await this.StateMachine.FireAsync(Trigger.FoundBoss);
                 return;
             }
 
             // Do Pick
-            ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, selectedPainting["name"]);
-            if ((int)selectedPainting["type"] == 1)
+            ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, this.CurrentPainting["name"]);
+            if ((int)this.CurrentPainting["type"] == 1)
             {
                 ColorConsole.Write(": ");
-                ColorConsole.Write(ConsoleColor.Yellow, "{0}", selectedPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
+                ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
             }
             ColorConsole.WriteLine("");
             await Task.Delay(5000);
@@ -559,7 +560,7 @@ namespace FFRK_LabMem.Machines
             //    await this.StateMachine.FireAsync(Trigger.FoundThing);
             //}
 
-            if ((int)selectedPainting["type"] == 6)
+            if ((int)this.CurrentPainting["type"] == 6)
             {
                 await this.StateMachine.FireAsync(Trigger.PickedPortal);
             }
@@ -605,16 +606,7 @@ namespace FFRK_LabMem.Machines
              */
 
             // Got Item
-            var i = this.Data["given_unsettled_items"];
-            if (i != null)
-            {
-                foreach (var item in i)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}", 
-                        item["item_name"].ToString().Replace("★", "*"), 
-                        item["num"]);
-                }
-            }
+            await DataLogger.LogGotItem(this.Data, this.CurrentPainting);
 
             // Treasure list
             var treasures = (JArray)this.Data["labyrinth_dungeon_session"]["treasure_chest_ids"];
@@ -733,17 +725,7 @@ namespace FFRK_LabMem.Machines
         private async Task MoveOn()
         {
 
-            var i = this.Data["given_unsettled_items"];
-            if (i != null)
-            {
-                foreach (var item in i)
-	            {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
-                        item["item_name"].ToString().Replace("★", "*"),
-                        item["num"]);
-	            }
-            }
-
+            await DataLogger.LogGotItem(this.Data, this.CurrentPainting);
             ColorConsole.WriteLine("Moving On...");
             await Task.Delay(5000);
 
@@ -815,19 +797,8 @@ namespace FFRK_LabMem.Machines
             battleStopwatch.Reset();
 
             // Drops
-            var r = this.Data["result"]["prize_master"];
-            var n = this.Data["result"]["drop_item_id_to_num"];
-            if (r != null && n!= null)
-            {
-                foreach (var item in r)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}", 
-                        item.First["name"].ToString().Replace("★", "*"), 
-                        n[item.First["item_id"].ToString()]);
-                }
-
-            }
-
+            await DataLogger.LogBattleDrops(this.Data, this.CurrentPainting);
+            
             //Tappy taps
             await Task.Delay(6000);
             await this.Adb.TapPct(85, 85);

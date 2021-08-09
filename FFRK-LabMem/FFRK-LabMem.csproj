@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\ConfigHelper.cs" />
+    <Compile Include="Data\DataLogger.cs" />
     <Compile Include="Machines\LabController.cs" />
     <Compile Include="Machines\Lab.cs" />
     <Compile Include="Program.cs" />
@@ -97,6 +98,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+    <None Include="Data\readme.md" />
     <None Include="ILRepack.targets" />
     <None Include="packages.config" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using FFRK_LabMem.Config;
+using FFRK_LabMem.Data;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
@@ -24,7 +25,10 @@ namespace FFRK_LabMem
             ColorConsole.WriteLine("{0} {1}", Updates.GetName(), versionCode);
             if (config.GetBool("updates.checkForUpdates", false)) 
                 Updates.Check("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", false), versionCode);
-           
+
+            // Data logging
+            DataLogger.Initalize(config);
+
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
 
