@@ -22,7 +22,7 @@ Extract all files from the .zip file to a folder.  You can skip configuration fi
 
 This appliation runs as a command-line application in 'interactive mode'.  This means you can simply double-click it and it will continue to run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
 
-This application uses a split-configuration system: the standard .net config file for general program options and config.json for lab-walking related behaviors.  Eventually I plan to allow specifying the .net config values as command-line parameters (for creating a desktop short-cut for example).
+This application uses a split-configuration system: the standard .net config file for [general program options](#configuration) and config.json for [lab-walking related behaviors](./FFRK-LabMem/Config/readme.md).  Eventually I plan to allow specifying the .net config values as command-line parameters (for creating a desktop short-cut for example).
 
 ## Setup
 For this to work correctly, the following must be set up:
@@ -62,6 +62,22 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 To allow different screen sizes, there are `screen.topOffset` and `screen.bottomOffset` in `FFRK-LabMem.exe.config`.  This corresponds to the height in pixels of the gray bars at the top and bottom of your screen that FFRK uses to support different screen sizes.  You can take a screenshot and measure them in a image editor, or just try to guestimate it.  If you have no bars at the top or bottom just leave it the default of 0.
 
 ## Configuration
+### General program options
+| Property                  | Description                                | Default  |
+| ------------------------- | ------------------------------------------ | -------- |
+| console.timestamps        | Show timestamps in console                 | true     |
+| console.debug             | Show general program debugging information | false    |
+| adb.path                  | Path to ADB executeable, it's included     | adb.exe  |
+| adb.host                  | TCP host to connect to ADB, if using, ignored if connected via USB       | 127.0.0.1:7555 |
+| proxy.port                | TCP port to listen for proxy requests      | 8081     |
+| lab.configFile            | Lab config file path, see below            | Config/lab.balanced.json |
+| screen.topOffset          | Number of pixels of the gray bar at the top of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
+| screen.bottomOffset       | Number of pixels of the gray bar at the bottom of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
+| updates.checkForUpdates   | Checks the releases page for new versions  | true     |
+| updates.includePrerelease | Includes pre-release (testing) versions when checking for new releases | false |
+| datalogger.enabled        | When enabled, logs various data to files in the DataLog directory | false |
+
+### Lab walking behavior
 Four different lab config files are provided: Balanced (default), Farm, Full, and Quick
 
 Configuring the lab walker behavior and all the various options is documented [here](./FFRK-LabMem/Config/readme.md)
