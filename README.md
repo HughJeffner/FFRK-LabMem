@@ -81,3 +81,6 @@ To allow different screen sizes, there are `screen.topOffset` and `screen.bottom
 Four different lab config files are provided: Balanced (default), Farm, Full, and Quick
 
 Configuring the lab walker behavior and all the various options is documented [here](./FFRK-LabMem/Config/readme.md)
+
+## Data Logging
+Not enabled by default, set `datalogger.enabled` to true in `ffrk-labmem.exe.config`.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
