@@ -232,7 +232,7 @@ namespace FFRK_LabMem.Machines
                 if (state.Trigger != Trigger.WatchdogTimer)
                 {
                     watchdogTimer.Stop();
-                    watchdogTimer.Start();
+                    if (this.Data != null) watchdogTimer.Start();
                 }
                 
             });
@@ -313,7 +313,7 @@ namespace FFRK_LabMem.Machines
                     status = data["labyrinth_dungeon_session"]["current_painting_status"];
 
                     // Data logging
-                    await DataLogger.LogExploreResult(this, eventdata, status, id == 2);
+                    await DataLogger.LogExploreRate(this, eventdata, status, id == 2);
 
                     // Check status first
                     if (status != null && (int)status == 0) // Fresh floor
@@ -622,7 +622,10 @@ namespace FFRK_LabMem.Machines
 
             // Already picked this many
             int picked = treasures.Where(t => (int)t == 0).Count();
-                        
+
+            // Treasure rate
+            if (picked==0) await DataLogger.LogTreasureRate(this, treasures);
+
             // Select a random treasure
             JToken treasureToPick = treasures
                 .Select(t => t)

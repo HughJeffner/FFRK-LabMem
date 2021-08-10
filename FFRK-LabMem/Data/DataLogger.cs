@@ -3,6 +3,7 @@ using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -12,42 +13,66 @@ namespace FFRK_LabMem.Data
     {
 
         private static Boolean enabled = false;
+        private static String folder = @"./DataLog";
 
         public static void Initalize(ConfigHelper config)
         {
             DataLogger.enabled = config.GetBool("datalogger.enabled", false);
+            if (DataLogger.enabled) ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Data logging enabled, target folder: {0}", folder);
         }
 
-        public static async Task LogExploreResult(Lab lab, JToken eventData, JToken status, bool insideDoor)
+        public static async Task LogTreasureRate(Lab lab, JArray treasures)
+        {
+   
+            if (treasures != null)
+            {
+                using (var writer = new StringWriter())
+                {
+                    var i = 0;
+                    foreach (var item in treasures)
+                    {
+                        var row = CreateDataRow(lab);
+                        row.Add(i.ToString());
+                        row.Add(item.ToString());
+                        WriteLine(writer, row.ToArray(), row.Count, ',');
+                        i++;
+                    }
+                    await AppendFile("treasures_v01.csv", writer);
+                }
+            }
+
+        }
+
+        public static async Task LogExploreRate(Lab lab, JToken eventData, JToken status, bool insideDoor)
         {
 
             if (eventData != null)
             {
                 using (var writer = new StringWriter())
                 {
-                    String[] row = CreateDataRow(5, lab);
+                    var row = CreateDataRow(lab);
                     if (insideDoor)
                     {
                         switch ((int)status)
                         {
                             case 2:
                             case 4:
-                                row[2] = "9";
+                                row.Add("9");
                                 break;
                             case 3:
-                                row[3] = "4";
+                                row.Add("4");
                                 break;
                             default:
-                                row[3] = "?" + status.ToString();
+                                row.Add("?" + status.ToString());
                                 break;
                         }
                     } else
                     {
-                        row[3] = eventData["type"].ToString();
+                        row.Add(eventData["type"].ToString());
                     }
-                    row[4] = insideDoor?"1":"0";
-                    WriteLine(writer, row, row.Length, ',');
-                    await AppendFile("explore_results_v01.csv", writer);
+                    row.Add(insideDoor?"1":"0");
+                    WriteLine(writer, row.ToArray(), row.Count, ',');
+                    await AppendFile("explores_v01.csv", writer);
                 }
             }
                         
@@ -63,10 +88,10 @@ namespace FFRK_LabMem.Data
                 {
                     foreach (var item in items)
                     {
-                        String[] row = CreateDataRow(5, lab);
-                        row[3] = item["item_name"].ToString();
-                        row[4] = item["num"].ToString();
-                        WriteLine(writer, row, row.Length, ',');
+                        var row = CreateDataRow(lab);
+                        row.Add(item["item_name"].ToString());
+                        row.Add(item["num"].ToString());
+                        WriteLine(writer, row.ToArray(), row.Count, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
                             row[3].Replace("★", "*"),
@@ -90,10 +115,10 @@ namespace FFRK_LabMem.Data
                 {
                     foreach (var item in drops)
                     {
-                        String[] row = CreateDataRow(5, lab);
-                        row[3] = item.First["name"].ToString();
-                        row[4] = qtyMap[item.First["item_id"].ToString()].ToString();
-                        WriteLine(writer, row, row.Length, ',');
+                        var row = CreateDataRow(lab);
+                        row.Add(item.First["name"].ToString());
+                        row.Add(qtyMap[item.First["item_id"].ToString()].ToString());
+                        WriteLine(writer, row.ToArray(), row.Count, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}",
                             row[3].Replace("★", "*"),
@@ -107,21 +132,19 @@ namespace FFRK_LabMem.Data
 
         }
 
-        private static string[] CreateDataRow(int columns, Lab lab)
+        private static List<String> CreateDataRow(Lab lab)
         {
-            String[] row = new string[columns];
-            row[0] = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            row[1] = GetCurrentFloor(lab.CurrentFloor);
-            row[2] = GetCurrentPaintingID(lab.CurrentPainting);
+            var row = new List<String>();
+            row.Add(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+            row.Add(GetCurrentFloor(lab.CurrentFloor));
+            row.Add(GetCurrentPaintingID(lab.CurrentPainting));
             return row;
         }
 
         private static String GetCurrentPaintingID(JToken currentPainting)
         {
-
             if (currentPainting == null) return "?";
             return currentPainting["type"].ToString();
-
         }
 
         private static String GetCurrentFloor(int floor)
@@ -134,12 +157,11 @@ namespace FFRK_LabMem.Data
         {
 
             if (!enabled) return;
-
-            Directory.CreateDirectory("./DataLog");
+            Directory.CreateDirectory(folder);
 
             try
             {
-                using (var stream = new StreamWriter(@"./DataLog/" + fileName, true))
+                using (var stream = new StreamWriter(folder + "/" + fileName, true))
                 {
                     await stream.WriteAsync(data.ToString());
                 }
