@@ -27,6 +27,7 @@ namespace FFRK_Machines.Machines
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
+        private CancellationTokenSource cancelMachineSource = new CancellationTokenSource();
 
         /// <summary>
         /// Implementors create an instance of the machine you are controlling
@@ -65,11 +66,11 @@ namespace FFRK_Machines.Machines
                 Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
                 Machine.MachineFinished += Machine_MachineFinished;
                 Machine.MachineError += Machine_MachineError;
+                Machine.CancellationToken = this.cancelMachineSource.Token;
                 Machine.RegisterWithProxy(Proxy);
             }
 
             // Consumer queue
-            var cts = new CancellationTokenSource();
             var consumerTask = Task.Run(async () =>
             {
                 foreach (var item in queue.GetConsumingEnumerable())
@@ -86,6 +87,7 @@ namespace FFRK_Machines.Machines
                             i++;
                         }
                     }
+                    catch (OperationCanceledException){}
                     catch (Exception ex)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
@@ -121,7 +123,9 @@ namespace FFRK_Machines.Machines
             if (!enabled && Machine != null)
             {
                 enabled = true;
-                Machine.ConfigureStateMachine(unknownState);
+                this.cancelMachineSource = new CancellationTokenSource();
+                this.Machine.CancellationToken = this.cancelMachineSource.Token;
+                this.Machine.ConfigureStateMachine(unknownState);
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
             }
 
@@ -136,7 +140,8 @@ namespace FFRK_Machines.Machines
             if (enabled && Machine != null)
             {
                 enabled = false;
-                Machine.Disable();
+                this.cancelMachineSource.CancelAfter(0);
+                this.Machine.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled {0}", typeof(M).Name);
             }
 

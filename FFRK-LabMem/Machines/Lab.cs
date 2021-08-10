@@ -228,11 +228,18 @@ namespace FFRK_LabMem.Machines
 
             base.ConfigureStateMachine(initialState);
 
-            if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => { 
+            if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
                 if (state.Trigger != Trigger.WatchdogTimer)
                 {
                     watchdogTimer.Stop();
-                    if (this.Data != null) watchdogTimer.Start();
+                    if (this.Data != null)
+                    {
+                        watchdogTimer.Start();
+                        if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
+                    } else
+                    {
+                        if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
+                    }
                 }
                 
             });
@@ -401,7 +408,7 @@ namespace FFRK_LabMem.Machines
                     break;
         
                 case 4:
-                    await this.StateMachine.FireAsync(Trigger.PickedCombatant);
+                    if (this.Data !=null) await this.StateMachine.FireAsync(Trigger.PickedCombatant);
                     break;
 
                 case 5:
@@ -422,12 +429,22 @@ namespace FFRK_LabMem.Machines
 
         public override async Task Disable()
         {
+            // Stop timers
             if (watchdogTimer.Enabled) watchdogTimer.Stop();
+            if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
             if (battleStopwatch.IsRunning)
             {
                 battleStopwatch.Stop();
                 battleStopwatch.Reset();
             }
+
+            // Reset status
+            this.Data = null;
+            this.CurrentPainting = null;
+            this.CurrentFloor = 0;
+            this.CurrentKeys = 0;
+            
+            // Base
             await base.Disable();
         }
 
@@ -467,6 +484,7 @@ namespace FFRK_LabMem.Machines
         {
 
             // Logic to determine painting
+            CancellationToken.ThrowIfCancellationRequested();
             int total = (int)this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
             this.CurrentFloor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
@@ -539,27 +557,27 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
             }
             ColorConsole.WriteLine("");
-            await Task.Delay(5000);
-            
+            await Task.Delay(5000, this.CancellationToken);
+
             // TODO: clean this painting placement handling up
             // 2 or less paintings remaining change position
             if (total >= 3)
             {
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50);
-                await Task.Delay(1000);
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50);
+                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
+                await Task.Delay(1000, this.CancellationToken);
+                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else if (total == 2)
             {
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50);
-                await Task.Delay(1000);
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50);
+                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
+                await Task.Delay(1000, this.CancellationToken);
+                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else
             {
-                await this.Adb.TapPct(50, 50);
-                await Task.Delay(1000);
-                await this.Adb.TapPct(50, 50);
+                await this.Adb.TapPct(50, 50, this.CancellationToken);
+                await Task.Delay(1000, this.CancellationToken);
+                await this.Adb.TapPct(50, 50, this.CancellationToken);
             }
             
 
@@ -607,17 +625,11 @@ namespace FFRK_LabMem.Machines
         private async Task SelectTreasures()
         {
 
-            /*
-             * 200001 = 6*, rainbow crystal
-             * 300001 = 6* Mote, Key
-             * 400001 = Anima Lens, Marker
-             * 500103 = HE
-             */
-
             // Got Item
             await DataLogger.LogGotItem(this);
 
             // Treasure list
+            CancellationToken.ThrowIfCancellationRequested();
             var treasures = (JArray)this.Data["labyrinth_dungeon_session"]["treasure_chest_ids"];
 
             // Already picked this many
@@ -660,19 +672,19 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                await Task.Delay(5000);
-                await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50);
-                await Task.Delay(2000);
+                await Task.Delay(5000, this.CancellationToken);
+                await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50, this.CancellationToken);
+                await Task.Delay(2000, this.CancellationToken);
 
                 // Check if key needed
                 if (picked > 0)
                 {
-                    await this.Adb.TapPct(58, 44);
-                    await Task.Delay(2000);
+                    await this.Adb.TapPct(58, 44, this.CancellationToken);
+                    await Task.Delay(2000, this.CancellationToken);
                 }
 
                 // Confirm
-                await this.Adb.TapPct(70, 64);
+                await this.Adb.TapPct(70, 64, this.CancellationToken);
 
            }
            else
@@ -680,14 +692,14 @@ namespace FFRK_LabMem.Machines
 
                 // Move On
                 ColorConsole.WriteLine("Moving On...");
-                var b = await Adb.FindButtonAndTap("#2060ce", 4000, 40, 62, 80, 10);
+                var b = await Adb.FindButtonAndTap("#2060ce", 4000, 40, 62, 80, 10, this.CancellationToken);
                 if (b)
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(2000, this.CancellationToken);
                     if (picked != 3)
                     {
-                        await this.Adb.TapPct(70, 64);
-                        await Task.Delay(2000);
+                        await this.Adb.TapPct(70, 64, this.CancellationToken);
+                        await Task.Delay(2000, this.CancellationToken);
                     }
                     await this.StateMachine.FireAsync(Trigger.MoveOn);
                 }
@@ -719,16 +731,16 @@ namespace FFRK_LabMem.Machines
             if (this.Config.OpenDoors)
             {
                 ColorConsole.WriteLine("Opening Door...");
-                await Task.Delay(5000);
-                await this.Adb.TapPct(70, 74);
-                await Task.Delay(1000);
+                await Task.Delay(5000, this.CancellationToken);
+                await this.Adb.TapPct(70, 74, this.CancellationToken);
+                await Task.Delay(1000, this.CancellationToken);
             }
             else
             {
                 ColorConsole.WriteLine("Leaving Door...");
-                await Task.Delay(5000);
-                await this.Adb.TapPct(30, 74);
-                await Task.Delay(1000);
+                await Task.Delay(5000, this.CancellationToken);
+                await this.Adb.TapPct(30, 74, this.CancellationToken);
+                await Task.Delay(1000, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.DontOpenDoor);
             }
 
@@ -739,12 +751,12 @@ namespace FFRK_LabMem.Machines
 
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
-            await Task.Delay(5000);
+            await Task.Delay(5000, this.CancellationToken);
 
-            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30, this.CancellationToken);
             if (b)
             {
-                await Task.Delay(1000);
+                await Task.Delay(1000, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.MoveOn);
             }
             else
@@ -760,7 +772,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30);
+            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30, this.CancellationToken);
             if (b)
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
@@ -776,6 +788,7 @@ namespace FFRK_LabMem.Machines
         private async Task StartBattle()
         {
             ColorConsole.Write("Starting Battle");
+            this.CancellationToken.ThrowIfCancellationRequested();
             var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
             if (d != null)
             {
@@ -784,10 +797,10 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
             
-            if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30))
+            if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30, this.CancellationToken))
             {
-                await Task.Delay(500);
-                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5);
+                await Task.Delay(500, this.CancellationToken);
+                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
             }
@@ -812,10 +825,10 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogBattleDrops(this);
             
             //Tappy taps
-            await Task.Delay(6000);
-            await this.Adb.TapPct(85, 85);
-            await Task.Delay(1000);
-            await this.Adb.TapPct(50, 85);
+            await Task.Delay(6000, this.CancellationToken);
+            await this.Adb.TapPct(85, 85, this.CancellationToken);
+            await Task.Delay(1000, this.CancellationToken);
+            await this.Adb.TapPct(50, 85, this.CancellationToken);
 
             // Check if we defeated the boss
             if (this.Data["result"]["labyrinth_dungeon_result"] != null) 
@@ -827,9 +840,9 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            await Task.Delay(5000);
-            await this.Adb.TapPct(71, 62);
-            await Task.Delay(2000);
+            await Task.Delay(5000, this.CancellationToken);
+            await this.Adb.TapPct(71, 62, this.CancellationToken);
+            await Task.Delay(2000, this.CancellationToken);
 
         }
 
@@ -860,26 +873,26 @@ namespace FFRK_LabMem.Machines
 
             // Go to home screen
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating home...");
-            await this.Adb.NavigateHome();
-            await Task.Delay(5000);
+            await this.Adb.NavigateHome(this.CancellationToken);
+            await Task.Delay(5000, this.CancellationToken);
 
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
-            await this.Adb.StopPackage(FFRK_PACKAGE_NAME);
-            await Task.Delay(5000);
+            await this.Adb.StopPackage(FFRK_PACKAGE_NAME, this.CancellationToken);
+            await Task.Delay(5000, this.CancellationToken);
 
             // Launch app
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Launching app");
-            await this.Adb.StartActivity(FFRK_PACKAGE_NAME, FFRK_ACTIVITY_NAME);
-            await Task.Delay(5000);
+            await this.Adb.StartActivity(FFRK_PACKAGE_NAME, FFRK_ACTIVITY_NAME, this.CancellationToken);
+            await Task.Delay(5000, this.CancellationToken);
 
             // Press start button
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for start button...");
-            if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20))
+            if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20, this.CancellationToken))
             {
                 // Press continue battle button
                 if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for continue battle button...");
-                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10))
+                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10, this.CancellationToken))
                 {
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
                     await this.StateMachine.FireAsync(Trigger.StartBattle);
@@ -887,7 +900,7 @@ namespace FFRK_LabMem.Machines
                 {
                     // Go back into lab
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
-                    await this.Adb.TapPct(50, 50);
+                    await this.Adb.TapPct(50, 50, this.CancellationToken);
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
                     ConfigureStateMachine(State.Unknown);
                 }
@@ -904,14 +917,14 @@ namespace FFRK_LabMem.Machines
         private async Task RecoverFailed()
         {
 
-            await Task.Delay(5000);
+            await Task.Delay(5000, this.CancellationToken);
             ColorConsole.Write(ConsoleColor.DarkRed, "Battle failed! ");
             if (this.Config.RestartFailedBattle)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
-                await this.Adb.TapPct(50, 72);
-                await Task.Delay(2000);
-                await this.Adb.TapPct(25, 55);
+                await this.Adb.TapPct(50, 72, this.CancellationToken);
+                await Task.Delay(2000, this.CancellationToken);
+                await this.Adb.TapPct(25, 55, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
             else
@@ -919,6 +932,7 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
                 await Notify();
                 watchdogTimer.Stop();
+                if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
             }
             
         }

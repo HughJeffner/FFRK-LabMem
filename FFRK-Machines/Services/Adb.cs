@@ -7,6 +7,7 @@ using SharpAdbClient;
 using System.Diagnostics;
 using FFRK_Machines;
 using FFRK_Machines.Extensions;
+using System.Threading;
 
 namespace FFRK_LabMem.Services
 {
@@ -36,7 +37,7 @@ namespace FFRK_LabMem.Services
         {
 
             AdbServer server = new AdbServer();
-            var result = server.StartServer(path, restartServerIfNewer: false);
+            var result = server.StartServer(path, restartServerIfNewer: true);
             this.host = host;
             this.TopOffset = topOffset;
             this.BottomOffset = bottomOffset;
@@ -65,53 +66,53 @@ namespace FFRK_LabMem.Services
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.Red, "Could not connect to device via adb.  Check your connection, make sure device drivers are installed, and enable USB debugging in developer options.");
+                ColorConsole.WriteLine(ConsoleColor.Red, "Could not connect to device via adb.  Check your connection, make sure device drivers are installed, and enable USB debugging in developer options.  If you recently updated LabMem, try killing adb.exe and try again.");
                 return false;
             }
 
 
         }
 
-        public async Task NavigateHome()
+        public async Task NavigateHome(CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input keyevent {0}", "KEYCODE_HOME"),
                 this.Device,
                 null,
-                System.Threading.CancellationToken.None,
+                cancellationToken,
                 1000);
         }
 
-        public async Task StopPackage(String packageName)
+        public async Task StopPackage(String packageName, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am force-stop {0}", packageName),
                 this.Device,
                 null,
-                System.Threading.CancellationToken.None,
+                cancellationToken,
                 2000);
         }
 
-        public async Task StartActivity(String packageName, String activityName)
+        public async Task StartActivity(String packageName, String activityName, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -n {0}/{1}", packageName, activityName),
                 this.Device,
                 null,
-                System.Threading.CancellationToken.None,
+                cancellationToken,
                 2000);
         }
 
-        public async Task TapXY(int X, int Y)
+        public async Task TapXY(int X, int Y, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y), 
                 this.Device, 
                 null, 
-                System.Threading.CancellationToken.None, 
+                cancellationToken, 
                 1000);
         }
 
-        public async Task TapPct(double X, double Y)
+        public async Task TapPct(double X, double Y, CancellationToken cancellationToken)
         {
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
-            await TapXY(target.Item1, target.Item2);
+            await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords)
@@ -239,7 +240,7 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries)
+        public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
         {
 
             int tries = 0;
@@ -248,11 +249,11 @@ namespace FFRK_LabMem.Services
                 var b = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd);
                 if (b != null)
                 {
-                    await TapPct(b.Item1, b.Item2);
+                    await TapPct(b.Item1, b.Item2, cancellationToken);
                     return true;
                 }
                 tries++;
-                await Task.Delay(1000);
+                await Task.Delay(1000, cancellationToken);
             } while (tries < retries);
 
             return false;
@@ -280,7 +281,7 @@ namespace FFRK_LabMem.Services
 
             var process = new Process
             {
-                StartInfo = { FileName = fileName, Arguments = arguments },
+                StartInfo = { FileName = fileName, Arguments = arguments, CreateNoWindow = true},
                 EnableRaisingEvents = true
             };
 

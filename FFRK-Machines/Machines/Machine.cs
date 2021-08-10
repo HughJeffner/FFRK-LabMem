@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
 using Newtonsoft.Json.Linq;
@@ -25,6 +26,7 @@ namespace FFRK_Machines.Machines
         public StateMachine<S, T> StateMachine { get; set; }
         public C Config { get; set; }
         protected Random rng = new Random();
+        protected internal CancellationToken CancellationToken { get; set; }
 
         // Data property
         private JObject mData = null;
@@ -41,7 +43,7 @@ namespace FFRK_Machines.Machines
             set
             {
                 mData = value;
-                OnDataChanged(value);
+                if (value != null) OnDataChanged(value);
             }
         }
 
