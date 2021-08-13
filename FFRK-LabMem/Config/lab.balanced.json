@@ -36,7 +36,6 @@
       "MaxKeys": 0
     }
   },
-  "MaxKeys": 1,
   "WatchdogMinutes": 10,
   "RestartFailedBattle": false,
   "StopOnMasterPainting": false

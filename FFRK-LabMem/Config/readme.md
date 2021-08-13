@@ -8,7 +8,7 @@
 | AvoidPortal           | Avoids the portal if an exploration or treasure vault is visible behind it, or if there are more paintings to reveal | true |
 | PaintingPriorityMap   | A list of key-value pairs that assign a priority to paintings for selection.  Lower priority values are preferred.  If a priority is tied, then one is chosen randomly. See painting table below for values | see below |
 | TreasureFilterMap     | A list of key-value pairs that filters treasures.  A priority of 0 will skip that type of treasure, otherwise lower priority values are preferred.  If a priority is tied, then one is chosen at random. MaxKeys will filter treasures depending on the number of keys it would cost, sane values are 0, 1 or 3. See treasure table below for values | see below |
-| MaxKeys               | Default number of max keys to use if no matches in TreasureFilterMap. Sane values are 0, 1 or 3 | 1 |
+| ~~MaxKeys~~           | Deprecated in 2.0.0, use TreasureFilterMap instead |  |
 | WatchdogMinutes       | If an action doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
 | StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |

@@ -23,7 +23,6 @@ namespace FFRK_LabMem.Machines
             public bool AvoidPortal { get; set; }
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
             public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; }
-            public int MaxKeys {get; set;}
             public int WatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
             public bool StopOnMasterPainting { get; set; }
@@ -34,10 +33,10 @@ namespace FFRK_LabMem.Machines
                 this.OpenDoors = true;
                 this.AvoidExploreIfTreasure = true;
                 this.AvoidPortal = true;
-                this.MaxKeys = 3;
                 this.WatchdogMinutes = 10;
                 this.RestartFailedBattle = false;
                 this.StopOnMasterPainting = true;
+                this.PaintingPriorityMap = new Dictionary<string, int>();
                 this.TreasureFilterMap = new Dictionary<string, TreasureFilter>();
             }
 
@@ -657,6 +656,7 @@ namespace FFRK_LabMem.Machines
                     return filter.Priority > 0 && filter.MaxKeys >= willSpendKeys; 
                 })
                 .OrderBy(t => GetTreasureFilter(t).Priority)
+                .ThenBy(t => GetTreasureFilter(t).MaxKeys)
                 .ThenBy(t => rng.Next())
                 .FirstOrDefault();
 
@@ -731,7 +731,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure filter id: {0}", type);
-                return new Configuration.TreasureFilter() { MaxKeys = Config.MaxKeys, Priority = 0 };
+                return new Configuration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
             }
 
         }
