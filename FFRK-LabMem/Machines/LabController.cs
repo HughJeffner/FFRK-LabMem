@@ -77,7 +77,7 @@ namespace FFRK_LabMem.Machines
             }
 
             // Get color values
-            var results = await this.Adb.GetPixelColorXY(coords);
+            var results = await this.Adb.GetPixelColorXY(coords, System.Threading.CancellationToken.None);
 
             // Target color gray
             var target = System.Drawing.ColorTranslator.FromHtml("#151515");

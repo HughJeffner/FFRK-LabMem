@@ -115,12 +115,12 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
-        public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords)
+        public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords, CancellationToken cancellationToken)
         {
 
             var ret = new List<Color>();
 
-            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None))
+            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
             {
                 using (Bitmap b = new Bitmap(framebuffer))
                 {
@@ -138,7 +138,7 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<List<Color>> GetPixelColorPct(List<Tuple<double, double>> coordsPct)
+        public async Task<List<Color>> GetPixelColorPct(List<Tuple<double, double>> coordsPct, CancellationToken cancellationToken)
         {
 
             // Convert to XY
@@ -148,23 +148,23 @@ namespace FFRK_LabMem.Services
                 coords.Add(await ConvertPctToXY(item));
             }
 
-            return await GetPixelColorXY(coords);
+            return await GetPixelColorXY(coords, cancellationToken);
 
         }
 
-        public async Task<Color> GetPixelColorXY(int X, int Y)
+        public async Task<Color> GetPixelColorXY(int X, int Y, CancellationToken cancellationToken)
         {
             var color = await GetPixelColorXY(new List<Tuple<int, int>>() { 
                 new Tuple<int, int>(X, Y) 
-            });
+            }, cancellationToken);
             return color.First();
         }
 
-        public async Task<Color> GetPixelColorPct(double X, double Y)
+        public async Task<Color> GetPixelColorPct(double X, double Y, CancellationToken cancellationToken)
         {
             var color = await GetPixelColorPct(new List<Tuple<double, double>>() { 
                 new Tuple<double, double>(X, Y) 
-            });
+            }, cancellationToken);
             return color.First();
         }
 
@@ -186,7 +186,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd)
+        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
         {
 
             if (this.Debug)
@@ -201,7 +201,7 @@ namespace FFRK_LabMem.Services
             {
                 coords.Add(new Tuple<double, double>(xPct, i));
             }
-            var results = await GetPixelColorPct(coords);
+            var results = await GetPixelColorPct(coords, cancellationToken);
 
             // Target color
             var target = System.Drawing.ColorTranslator.FromHtml(htmlButtonColor);
@@ -246,7 +246,7 @@ namespace FFRK_LabMem.Services
             int tries = 0;
             do
             {
-                var b = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd);
+                var b = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken);
                 if (b != null)
                 {
                     await TapPct(b.Item1, b.Item2, cancellationToken);

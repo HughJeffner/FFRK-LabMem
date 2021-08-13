@@ -22,7 +22,7 @@ namespace FFRK_LabMem.Machines
             public bool AvoidExploreIfTreasure { get; set; }
             public bool AvoidPortal { get; set; }
             public Dictionary<String, int> PaintingPriorityMap { get; set; }
-            public Dictionary<String, int> TreasurePriorityMap { get; set; }
+            public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; }
             public int MaxKeys {get; set;}
             public int WatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
@@ -38,7 +38,15 @@ namespace FFRK_LabMem.Machines
                 this.WatchdogMinutes = 10;
                 this.RestartFailedBattle = false;
                 this.StopOnMasterPainting = true;
+                this.TreasureFilterMap = new Dictionary<string, TreasureFilter>();
             }
+
+            public class TreasureFilter
+            {
+                public int Priority { get; set; }
+                public int MaxKeys { get; set; }
+            }
+
         }
 
         public enum Trigger
@@ -638,11 +646,17 @@ namespace FFRK_LabMem.Machines
             // Treasure rate
             if (picked==0) await DataLogger.LogTreasureRate(this, treasures);
 
+            // Key usage
+            int willSpendKeys = (picked*picked + picked) / 2;  // triangle number, n(n+1)/2
+
             // Select a random treasure
             JToken treasureToPick = treasures
                 .Select(t => t)
-                .Where(t => GetTreasurePriority(t) > 0)
-                .OrderBy(t => GetTreasurePriority(t))
+                .Where(t => { 
+                    var filter = GetTreasureFilter(t); 
+                    return filter.Priority > 0 && filter.MaxKeys >= willSpendKeys; 
+                })
+                .OrderBy(t => GetTreasureFilter(t).Priority)
                 .ThenBy(t => rng.Next())
                 .FirstOrDefault();
 
@@ -654,10 +668,7 @@ namespace FFRK_LabMem.Machines
                     .FirstOrDefault();
 
             // Key check
-            if (picked == 1 && this.Config.MaxKeys < 1) treasureToPick = null;
-            if (picked == 2 && this.Config.MaxKeys < 3) treasureToPick = null;
-            if ((picked == 1 && this.CurrentKeys == 0) || 
-                (picked == 2 && this.CurrentKeys < 2))
+            if (willSpendKeys > this.CurrentKeys)
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough keys!");
                 treasureToPick = null;
@@ -708,19 +719,19 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private int GetTreasurePriority(JToken treasure)
+        private Configuration.TreasureFilter GetTreasureFilter(JToken treasure)
         {
 
-            var type = treasure.ToString().Substring(0,1);
+            var type = treasure.ToString().Substring(0, 1);
 
-            if (this.Config.TreasurePriorityMap.ContainsKey(type))
+            if (this.Config.TreasureFilterMap.ContainsKey(type))
             {
-                return this.Config.TreasurePriorityMap[type];
+                return this.Config.TreasureFilterMap[type];
             }
             else
             {
-                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure id: {0}", type);
-                return 0;
+                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure filter id: {0}", type);
+                return new Configuration.TreasureFilter() { MaxKeys = Config.MaxKeys, Priority = 0 };
             }
 
         }
