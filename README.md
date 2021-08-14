@@ -52,7 +52,7 @@ Connecting to an emulator works over TCP.  You can set up TCP with a physical de
 | --------- | --------------- | --------------------- |
 | MuMu      | 127.0.0.1:7555  |                       |
 | Nox (5)   | 127.0.0.1:62001 | 62025,62026,62027     |
-| MeMu      | 127.0.0.1:21503 |                       |
+| MeMu      | 127.0.0.1:21503 | 21513                 |
 | LDPlayer  | 127.0.0.1:5555  | See [here](https://www.ldplayer.net/apps/adb-debugging-on-pc.html) |
 
 
