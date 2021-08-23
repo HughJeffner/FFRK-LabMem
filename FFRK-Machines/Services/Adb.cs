@@ -8,6 +8,7 @@ using System.Diagnostics;
 using FFRK_Machines;
 using FFRK_Machines.Extensions;
 using System.Threading;
+using System.IO;
 
 namespace FFRK_LabMem.Services
 {
@@ -98,6 +99,101 @@ namespace FFRK_LabMem.Services
                 null,
                 cancellationToken,
                 2000);
+        }
+
+        public async Task<int> GetAPILevel(CancellationToken cancellationToken)
+        {
+
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.build.version.sdk",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            return int.Parse(receiver.ToString());
+
+        }
+
+        public async Task<String> GetPackageVersion(CancellationToken cancellationToken)
+        {
+
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("dumpsys package com.dena.west.FFRK | grep versionName",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            return receiver.ToString();
+
+        }
+
+        public async Task InstallRootCert(String certPath, CancellationToken cancellationToken)
+        {
+
+            // Get package version
+            var packageVersion = await GetPackageVersion(cancellationToken);
+            if (int.Parse(packageVersion.Substring(packageVersion.IndexOf("=")+1,1)) < 8)
+            {
+                return;
+            }
+
+            // Get API level
+            int apiLevel = await GetAPILevel(cancellationToken);
+
+            // Lollipop - Marshmallow
+            if (apiLevel >= 21 && apiLevel <= 23)
+            {
+
+                if (File.Exists(certPath))
+                {
+
+                    var cert = "/storage/emulated/0/TWP_Root_Cert.pfx";
+                    bool needsInstall = false;
+                    //var certInstalled = "/data/misc/user/0/cacerts-added/3dcac768.0";
+
+                    // Check if copied root cert present
+                    // TODO: check if actually installed
+                    using (SyncService service = new SyncService(this.Device))
+                    {
+                        var files = service.GetDirectoryListing("/storage/emulated/0/");
+                        needsInstall = !files.Any(f => f.Path.EndsWith("TWP_Root_Cert.pfx"));
+                    }
+
+                    // If needs install
+                    if (needsInstall)
+                    {
+
+                        // Copy root cert over
+                        using (SyncService service = new SyncService(this.Device))
+                        {
+                            if (needsInstall)
+                            {
+                                using (Stream stream = File.OpenRead(certPath))
+                                {
+                                    service.Push(stream, cert, 999, DateTime.Now, null, cancellationToken);
+                                }
+                            }
+                        }
+
+                        // Prompt to install
+                        await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -a android.settings.SECURITY_SETTINGS"),
+                            this.Device,
+                            null,
+                            cancellationToken,
+                            2000);
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Install Certificate: Navigate to Credential Storage > Install from SD card");
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Use blank password and default certificate name");
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
+                    }
+                    
+                }
+
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+).  Maybe root in the future.");
+            }
+
         }
 
         public async Task TapXY(int X, int Y, CancellationToken cancellationToken)

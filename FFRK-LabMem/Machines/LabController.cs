@@ -22,6 +22,7 @@ namespace FFRK_LabMem.Machines
                 adbPath: config.GetString("adb.path", "adb.exe"),
                 adbHost: config.GetString("adb.host", "127.0.0.1:7555"),
                 proxyPort: config.GetInt("proxy.port", 8081),
+                proxySecure: config.GetBool("proxy.secure", false),
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),

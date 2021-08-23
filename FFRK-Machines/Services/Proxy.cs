@@ -51,17 +51,17 @@ namespace FFRK_LabMem.Services
         public List<Registration> Registrations {get; set;}
         private bool debug;
 
-        public Proxy(int port, bool debug)
+        public Proxy(int port, bool secure, bool debug)
         {
             this.debug = debug;
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
-            proxyServer.CertificateManager.RootCertificate = new X509Certificate2();
+            //proxyServer.CertificateManager.RootCertificate = new X509Certificate2();
             //proxyServer.ThreadPoolWorkerThread = 64;
             proxyServer.BeforeResponse += OnResponse;
             
-            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, false)
+            explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, secure)
             {
                 // Use self-issued generic certificate on all https requests
                 // Optimizes performance by not creating a certificate for each https-enabled domain
@@ -126,24 +126,21 @@ namespace FFRK_LabMem.Services
 
         private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
-            //string hostname = e.HttpClient.Request.RequestUri.Host;
+            string hostname = e.HttpClient.Request.RequestUri.Host;
             // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
-            //writeToConsole("Tunnel to: " + hostname);
-            //ColorConsole.WriteLine("Tunnel to: " + hostname);
 
-            var clientLocalIp = e.ClientLocalEndPoint.Address;
-            if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
-            {
-                e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
-            }
-
-            //if (hostname.Contains("dropbox.com"))
+            //var clientLocalIp = e.ClientLocalEndPoint.Address;
+            //if (!clientLocalIp.Equals(IPAddress.Loopback) && !clientLocalIp.Equals(IPAddress.IPv6Loopback))
             //{
-                // Exclude Https addresses you don't want to proxy
-                // Useful for clients that use certificate pinning
-                // for example dropbox.com
-                e.DecryptSsl = false;
+            //    e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
             //}
+
+            if (!hostname.Contains("ffrk.denagames.com"))
+            {
+                e.DecryptSsl = false;
+                System.Diagnostics.Debug.Print("Tunnel to: " + hostname);
+                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tunnel to: " + hostname);
+            }
             return Task.FromResult(false);
         }
            

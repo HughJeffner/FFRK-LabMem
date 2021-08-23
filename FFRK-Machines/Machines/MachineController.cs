@@ -46,13 +46,13 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, int topOffset, int bottomOffset, string configFile, S unkownState)
+        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, int topOffset, int bottomOffset, string configFile, S unkownState)
         {
 
             unknownState = unkownState;
 
             // Proxy Server
-            Proxy = new Proxy(proxyPort, debug);
+            Proxy = new Proxy(proxyPort, proxySecure, debug);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             Proxy.Start();
 
@@ -62,12 +62,20 @@ namespace FFRK_Machines.Machines
             // Start if connected
             if (await Adb.Connect())
             {
+                // Create machine and hook up events
                 ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
                 Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
                 Machine.MachineFinished += Machine_MachineFinished;
                 Machine.MachineError += Machine_MachineError;
                 Machine.CancellationToken = this.cancelMachineSource.Token;
                 Machine.RegisterWithProxy(Proxy);
+
+                // Proxy cert
+                if (proxySecure)
+                {
+                    await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
+                }
+
             }
 
             // Consumer queue
