@@ -50,10 +50,12 @@ namespace FFRK_LabMem.Services
         ExplicitProxyEndPoint explicitEndPoint = null;
         public List<Registration> Registrations {get; set;}
         private bool debug;
+        private bool secure;
 
         public Proxy(int port, bool secure, bool debug)
         {
             this.debug = debug;
+            this.secure = secure;
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
@@ -78,7 +80,7 @@ namespace FFRK_LabMem.Services
 
         public void Start()
         {
-            ColorConsole.WriteLine("Starting proxy server on {0}:{1}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port);
+            ColorConsole.WriteLine("Starting proxy server on {0}:{1} ssl:{2}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port, secure);
             proxyServer.Start();
             
         }
