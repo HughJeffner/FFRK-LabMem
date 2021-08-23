@@ -14,13 +14,32 @@ namespace FFRK_LabMem.Services
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern void LockWorkStation();
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOW = 5;
+        private const int WM_SYSCOMMAND = 0x0112;
+        private const uint SC_MONITORPOWER = 0xF170;
+        enum MonitorState
+        {
+            ON = -1,
+            OFF = 2,
+            STANDBY = 1
+        }
 
         static NotifyIcon notifyIcon = null;
 
-        public static void MinimizeTo(){
-            
+        public static void MinimizeTo(ConsoleModifiers modifiers)
+        {
+            Tray.MinimizeTo(modifiers.HasFlag(ConsoleModifiers.Alt), modifiers.HasFlag(ConsoleModifiers.Control));
+        }
+
+        public static void MinimizeTo(bool monitorOff = false, bool lockWorkstation = false){
+
             // Windows API to hide window
             ShowWindow(GetConsoleWindow(), SW_HIDE);
 
@@ -44,6 +63,12 @@ namespace FFRK_LabMem.Services
             {
                 notifyIcon.Visible = true;
             }
+
+            // Super hide
+            if (monitorOff) SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, (IntPtr)SC_MONITORPOWER, (IntPtr)MonitorState.OFF);
+
+            // Lock
+            if (lockWorkstation) LockWorkStation();
 
             // Message pump to handle icon events - console will pause
             Application.Run(); 
