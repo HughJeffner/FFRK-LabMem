@@ -42,7 +42,7 @@ namespace FFRK_LabMem.Machines
             if (this.Adb != null && this.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detecting screen offsets...");
-                var offsets = await GetOffsets(2000);
+                var offsets = await this.Adb.GetOffsets("#151515", 2000, System.Threading.CancellationToken.None);
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detected offset t:{0}, b:{1}, saving to .config", offsets.Item1, offsets.Item2);
                 this.Adb.TopOffset = offsets.Item1;
                 this.Adb.BottomOffset = offsets.Item2;
@@ -59,72 +59,6 @@ namespace FFRK_LabMem.Machines
         protected override Lab CreateMachine(Lab.Configuration config)
         {
             return new Lab(this.Adb, config);
-        }
-
-        protected async Task<Tuple<int, int>> GetOffsets(int threshold)
-        {
-
-            int topOffset = 0;
-            int bottomOffset = 0;
-
-            // Screen size
-            var size = await this.Adb.GetScreenSize();
-
-            // Coordinates from top of screen to bottom
-            var coords = new List<Tuple<int, int>>();
-            for (int i = 0; i < size.Height; i++)
-            {
-                coords.Add(new Tuple<int, int>(size.Width / 2, i));
-            }
-
-            // Get color values
-            var results = await this.Adb.GetPixelColorXY(coords, System.Threading.CancellationToken.None);
-
-            // Target color gray
-            var target = System.Drawing.ColorTranslator.FromHtml("#151515");
-
-            // Hold matches
-            var matches = new List<int>();
-            int itemIndex = 0;
-
-            // Inspect each item
-            foreach (var item in results)
-            {
-                // Distance to target
-                var d = item.GetDistance(target);
-
-                // If below threshold add to matches
-                if (d < threshold) matches.Add(itemIndex);
-                itemIndex++;
-
-            }
-
-            // Inspect matches starting from 0, if a jump over 1 occurs then top offset
-            for (int i = 0; i < matches.Count; i++)
-            {
-                if (matches[i] != i)
-                {
-                    topOffset = i-1;
-                    break;
-                }
-            }
-
-            // Inspect matches starting from last match, if a jump over 1 occurs then bottom offset
-            for (int i = matches.Count-1; i>0; i--)
-            {
-                if (matches[i] != (size.Height-1) - (matches.Count-i-1))
-                {
-                    bottomOffset = matches.Count - 1 - i;
-                    break;
-                }
-            }
-
-            // Sanity check
-            if (topOffset < 0) topOffset = 0;
-            if (bottomOffset < 0) bottomOffset = 0;
-
-            return new Tuple<int,int>(topOffset,bottomOffset);
-
         }
 
     }

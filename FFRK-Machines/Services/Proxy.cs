@@ -80,7 +80,7 @@ namespace FFRK_LabMem.Services
 
         public void Start()
         {
-            ColorConsole.WriteLine("Starting proxy server on {0}:{1} ssl:{2}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port, secure);
+            ColorConsole.WriteLine("Starting proxy server on {0}:{1} https:{2}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port, secure);
             proxyServer.Start();
             
         }

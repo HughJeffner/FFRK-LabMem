@@ -19,7 +19,6 @@ namespace FFRK_LabMem.Services
             public int Width {get; set;}
             public int Height { get; set; }
         }
-
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
@@ -353,6 +352,72 @@ namespace FFRK_LabMem.Services
             } while (tries < retries);
 
             return false;
+
+        }
+
+        public async Task<Tuple<int, int>> GetOffsets(string htmlColor, int threshold, CancellationToken cancellationToken)
+        {
+
+            int topOffset = 0;
+            int bottomOffset = 0;
+
+            // Screen size
+            var size = await GetScreenSize();
+
+            // Coordinates from top of screen to bottom
+            var coords = new List<Tuple<int, int>>();
+            for (int i = 0; i < size.Height; i++)
+            {
+                coords.Add(new Tuple<int, int>(size.Width / 2, i));
+            }
+
+            // Get color values
+            var results = await GetPixelColorXY(coords, cancellationToken);
+
+            // Target color gray
+            var target = ColorTranslator.FromHtml(htmlColor);
+
+            // Hold matches
+            var matches = new List<int>();
+            int itemIndex = 0;
+
+            // Inspect each item
+            foreach (var item in results)
+            {
+                // Distance to target
+                var d = item.GetDistance(target);
+
+                // If below threshold add to matches
+                if (d < threshold) matches.Add(itemIndex);
+                itemIndex++;
+
+            }
+
+            // Inspect matches starting from 0, if a jump over 1 occurs then top offset
+            for (int i = 0; i < matches.Count; i++)
+            {
+                if (matches[i] != i)
+                {
+                    topOffset = i - 1;
+                    break;
+                }
+            }
+
+            // Inspect matches starting from last match, if a jump over 1 occurs then bottom offset
+            for (int i = matches.Count - 1; i > 0; i--)
+            {
+                if (matches[i] != (size.Height - 1) - (matches.Count - i - 1))
+                {
+                    bottomOffset = matches.Count - 1 - i;
+                    break;
+                }
+            }
+
+            // Sanity check
+            if (topOffset < 0) topOffset = 0;
+            if (bottomOffset < 0) bottomOffset = 0;
+
+            return new Tuple<int, int>(topOffset, bottomOffset);
 
         }
 

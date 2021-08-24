@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FFRK_LabMem.Services
@@ -65,7 +66,12 @@ namespace FFRK_LabMem.Services
             }
 
             // Super hide
-            if (monitorOff) SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, (IntPtr)SC_MONITORPOWER, (IntPtr)MonitorState.OFF);
+            if (monitorOff)
+            {
+                // Delay to keep key release from waking monitor
+                Task.Delay(1000).ContinueWith(t => SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, (IntPtr)SC_MONITORPOWER, (IntPtr)MonitorState.OFF));
+                
+            }
 
             // Lock
             if (lockWorkstation) LockWorkStation();
