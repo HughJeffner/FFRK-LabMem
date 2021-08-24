@@ -22,12 +22,14 @@ namespace FFRK_Machines.Machines
     {
 
         private S unknownState;
-        private bool enabled = true;
+        private bool enabled = false;
+        private bool proxySecure = false;
         public M Machine { get; set; }
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
         private CancellationTokenSource cancelMachineSource = new CancellationTokenSource();
+       
 
         /// <summary>
         /// Implementors create an instance of the machine you are controlling
@@ -54,28 +56,33 @@ namespace FFRK_Machines.Machines
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, debug);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
+            this.proxySecure = proxySecure;
             Proxy.Start();
 
             // Adb
-            Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
+            this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
+            this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
+
+            // Machine
+            ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
+            Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
+            Machine.MachineFinished += Machine_MachineFinished;
+            Machine.MachineError += Machine_MachineError;
+            Machine.CancellationToken = this.cancelMachineSource.Token;
 
             // Start if connected
             if (await Adb.Connect())
             {
-                // Create machine and hook up events
-                ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
-                Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
-                Machine.MachineFinished += Machine_MachineFinished;
-                Machine.MachineError += Machine_MachineError;
-                Machine.CancellationToken = this.cancelMachineSource.Token;
-                Machine.RegisterWithProxy(Proxy);
+                // Hook up events
+                await EngageMachine();
+                this.enabled = true;
 
-                // Proxy cert
-                if (proxySecure)
-                {
-                    await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
-                }
-
+            } else
+            {
+                // Wait for device
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Waiting for a device to become available");
+                this.Adb.DeviceAvailable += Adb_DeviceAvailable;
+                this.enabled = false;
             }
 
             // Consumer queue
@@ -106,6 +113,27 @@ namespace FFRK_Machines.Machines
 
         }
 
+        private async Task EngageMachine()
+        {
+            Machine.RegisterWithProxy(Proxy);
+            if (this.proxySecure) await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
+        }
+
+        private void Adb_DeviceAvailable(object sender, SharpAdbClient.DeviceDataEventArgs e)
+        {
+            if (Adb.Connect().Result)
+            {
+                _ = EngageMachine();
+                this.Adb.DeviceAvailable -= Adb_DeviceAvailable;
+                this.Enable();
+            }
+        }
+
+        private void Adb_DeviceUnavailable(object sender, SharpAdbClient.DeviceDataEventArgs e)
+        {
+            this.Disable();
+        }
+
         // Event handlers
         void Machine_MachineError(object sender, Exception e)
         {
@@ -128,7 +156,7 @@ namespace FFRK_Machines.Machines
         /// </summary>
         public void Enable()
         {
-            if (!enabled && Machine != null)
+            if (!enabled && Machine != null && this.Adb.HasDevice)
             {
                 enabled = true;
                 this.cancelMachineSource = new CancellationTokenSource();
