@@ -146,16 +146,15 @@ namespace FFRK_LabMem.Services
                 if (File.Exists(certPath))
                 {
 
-                    var cert = "/storage/emulated/0/TWP_Root_Cert.pfx";
+                    var cert = "/storage/emulated/0/LabMem_Root_Cert.pfx";
                     bool needsInstall = false;
-                    //var certInstalled = "/data/misc/user/0/cacerts-added/3dcac768.0";
 
                     // Check if copied root cert present
-                    // TODO: check if actually installed
+
                     using (SyncService service = new SyncService(this.Device))
                     {
-                        var files = service.GetDirectoryListing("/storage/emulated/0/");
-                        needsInstall = !files.Any(f => f.Path.EndsWith("TWP_Root_Cert.pfx"));
+                        var files = service.GetDirectoryListing("/data/misc/user/0/cacerts-added/");
+                        needsInstall = !files.Any(f => f.Path.Equals("3dcac768.0"));
                     }
 
                     // If needs install
@@ -165,12 +164,9 @@ namespace FFRK_LabMem.Services
                         // Copy root cert over
                         using (SyncService service = new SyncService(this.Device))
                         {
-                            if (needsInstall)
+                            using (Stream stream = File.OpenRead(certPath))
                             {
-                                using (Stream stream = File.OpenRead(certPath))
-                                {
-                                    service.Push(stream, cert, 999, DateTime.Now, null, cancellationToken);
-                                }
+                                service.Push(stream, cert, 999, DateTime.Now, null, cancellationToken);
                             }
                         }
 
@@ -179,11 +175,13 @@ namespace FFRK_LabMem.Services
                             this.Device,
                             null,
                             cancellationToken,
-                            2000);
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Install Certificate: Navigate to Credential Storage > Install from SD card");
+							2000);
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "***************** Install Certificate *****************");
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Scroll to Credential Storage > Install from SD card");
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Use blank password and default certificate name");
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************************************************");
                     }
                     
                 }
