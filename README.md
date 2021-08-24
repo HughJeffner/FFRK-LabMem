@@ -85,6 +85,7 @@ To allow different screen sizes, there are `screen.topOffset` and `screen.bottom
 | adb.path                  | Path to ADB executeable, it's included     | adb.exe  |
 | adb.host                  | TCP host to connect to ADB, if using, ignored if connected via USB       | 127.0.0.1:7555 |
 | proxy.port                | TCP port to listen for proxy requests      | 8081     |
+| proxy.secure              | Enable https proxy (FFRK 8.0.0)            | true     |
 | lab.configFile            | Lab config file path, see below            | Config/lab.balanced.json |
 | screen.topOffset          | Number of pixels of the gray bar at the top of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
 | screen.bottomOffset       | Number of pixels of the gray bar at the bottom of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
