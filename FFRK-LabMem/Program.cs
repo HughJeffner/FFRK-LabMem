@@ -19,10 +19,12 @@ namespace FFRK_LabMem
 
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
-
+            
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
-            ColorConsole.WriteLine("{0} {1}", Updates.GetName(), versionCode);
+            var versionTitle = String.Format("{0} {1}", Updates.GetName(), versionCode);
+            ColorConsole.WriteLine(versionTitle);
+            Console.Title = versionTitle;
             if (config.GetBool("updates.checkForUpdates", false)) 
                 Updates.Check("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", false), versionCode);
 

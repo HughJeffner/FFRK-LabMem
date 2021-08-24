@@ -51,7 +51,7 @@ namespace FFRK_LabMem.Services
                 notifyIcon = new NotifyIcon();
                 notifyIcon.DoubleClick +=notifyIcon_DoubleClick;
                 notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-                notifyIcon.Text = Application.ProductName;
+                notifyIcon.Text = Console.Title;
 
                 var contextMenu = new ContextMenuStrip();
                 contextMenu.Items.Add("Show", null, (s, e) => { notifyIcon_DoubleClick(s, e); });
@@ -74,7 +74,7 @@ namespace FFRK_LabMem.Services
             }
 
             // Lock
-            if (lockWorkstation) LockWorkStation();
+            if (lockWorkstation) Task.Delay(1000).ContinueWith( t => LockWorkStation());
 
             // Message pump to handle icon events - console will pause
             Application.Run(); 
