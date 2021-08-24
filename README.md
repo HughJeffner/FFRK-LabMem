@@ -5,7 +5,7 @@ Built using Visual Studio 2019 Community, pre-compiled binaries provided on the 
 
 **Note: button tap locations were calculated as a percentage of a 720 x 1280 screen, this may not work on other screen sizes, more testing needed**
 
-## Compatiblity
+## Compatibility
 | Android Version                 | GL FFRK Version | Compatible |
 | ------------------------------- | --------------- | ---------- |
 | Android 4.4 (Kit Kat)           | 7.7.0 and lower | Yes        |
