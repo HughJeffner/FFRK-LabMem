@@ -5,6 +5,17 @@ Built using Visual Studio 2019 Community, pre-compiled binaries provided on the 
 
 **Note: button tap locations were calculated as a percentage of a 720 x 1280 screen, this may not work on other screen sizes, more testing needed**
 
+## Compatiblity
+| Android Version                 | GL FFRK Version | Compatible |
+| ------------------------------- | --------------- | ---------- |
+| Android 4.4 (Kit Kat)           | 7.7.0 and lower | Yes        |
+| Android 5.0 (Lollipop)          | 7.7.0, 8.0.0    | Yes        |
+| Android 6.0 (Marshmallow)       | 7.7.0, 8.0.0    | Yes        |
+| Android 7.0 (Nougat) and higher | 7.7.0           | Yes        |
+| Android 7.0 (Nougat) and higher | 8.0.0           | No         |
+
+_All compatible versions using FFRK 8.0.0 must install a certificate_
+
 ## Download & Run
 1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
 2. Expand the 'Assets' dropdown for the version of your choice
@@ -27,9 +38,10 @@ This application uses a split-configuration system: the standard .net config fil
 ## Setup
 For this to work correctly, the following must be set up:
 1. Network proxy settings
-2. ADB connection
-3. Screen top and bottom offsets
-4. Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
+2. Install trusted certificate (FFRK 8.0.0+)
+3. ADB connection
+4. Screen top and bottom offsets
+5. Team 1 must be able to beat anything (except the boss), even at 10 fatigue.  Holy mind mage party recommended!
 
 ### Network proxy settings
 This varies wildly by device and every network is different.  Typically with android devices you would go into the wifi settings, change proxy to manual then enter the IP address of the windows system running the app for the hostname, 8081 for the proxy port, and the following for the proxy bypass:
@@ -39,6 +51,9 @@ This varies wildly by device and every network is different.  Typically with and
 Tip: for most android emulators if you can view the device ip address for example `10.0.x.x` you can simply use `10.0.x.2` for the loopback to the host system.
 
 If you are going to use a physical device or an emulator on another system, please make sure to open port 8081 in the firewall to allow incoming connections.  On Windows, it usually prompts you on first run to create the proper firewall rule.
+
+### Install trusted certificate
+If the proxy ca certificate isn't installed the bot will copy it to the device and switch to the settings screen and offer guidance on installing it.
 
 ### Adb connection
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
