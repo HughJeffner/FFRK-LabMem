@@ -10,6 +10,8 @@ using FFRK_Machines.Extensions;
 using System.Threading;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace FFRK_LabMem.Services
 {
@@ -156,6 +158,32 @@ namespace FFRK_LabMem.Services
 
         }
 
+        public async Task<bool> CopyClientCertsToSystem(CancellationToken cancellationToken)
+        {
+
+            var receiver = new ConsoleOutputReceiver();
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Remount system partition as writeable");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("mount -o rw,remount /system",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            if (receiver.ToString().Contains("denied")) return false;
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy user certs to system certs");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("cp /data/misc/user/0/cacerts-added/* /system/etc/security/cacerts/",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Remount system partition as read only");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("mount -o ro,remount /system",
+               this.Device,
+               receiver,
+               cancellationToken,
+               2000);
+            return true;
+        }
+
         public async Task InstallRootCert(String certPath, CancellationToken cancellationToken)
         {
 
@@ -169,30 +197,42 @@ namespace FFRK_LabMem.Services
             // Get API level
             int apiLevel = await GetAPILevel(cancellationToken);
 
-            // Lollipop - Marshmallow
-            if (apiLevel >= 21 && apiLevel <= 23)
+            // Lollipop or higher
+            if (apiLevel >= 21)
             {
 
                 if (File.Exists(certPath))
                 {
 
                     var cert = "/sdcard/LabMem_Root_Cert.pfx";
-                    bool needsInstall = false;
+                    bool certInstalled = false;
+                    bool clientExists = false;
+                    bool systemExists = false;
 
                     // Check if copied root cert present
-
-                    using (SyncService service = new SyncService(this.Device))
+                    using (var service = Factories.SyncServiceFactory(this.Device))
                     {
-                        var files = service.GetDirectoryListing("/data/misc/user/0/cacerts-added/");
-                        needsInstall = !files.Any(f => f.Path.Equals("3dcac768.0"));
+                        clientExists = service.Stat("/data/misc/user/0/cacerts-added/3dcac768.0").FileMode != 0;
+                        systemExists = service.Stat("/system/etc/security/cacerts/3dcac768.0").FileMode != 0;
+                        certInstalled = (clientExists && apiLevel <= 23) || systemExists;
                     }
 
                     // If needs install
-                    if (needsInstall)
+                    if (!certInstalled)
                     {
 
+                        // Convert pfx to cer
+                        if (apiLevel >= 24)
+                        {
+                            var c = new X509Certificate2(certPath, "");
+                            c.PrivateKey = null;
+                            File.WriteAllBytes("rootCert.crt", c.Export(X509ContentType.Cert));
+                            certPath = "rootCert.crt";
+                            cert = "/sdcard/LabMem_Root_Cert.crt";
+                        }
+
                         // Copy root cert over
-                        using (SyncService service = new SyncService(this.Device))
+                        using (var service = Factories.SyncServiceFactory(this.Device))
                         {
                             using (Stream stream = File.OpenRead(certPath))
                             {
@@ -211,14 +251,28 @@ namespace FFRK_LabMem.Services
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Use blank password and default certificate name");
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
+
+                        // Need root
+                        if (apiLevel >= 24)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************ROOT REQUIRED***********************");
+                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Please press <Enter> once certificate installed to copy");
+                            ColorConsole.WriteLine(ConsoleColor.Yellow, "it to the system store");
+                            while(Console.ReadKey(true).Key != ConsoleKey.Enter){}
+                            if (await CopyClientCertsToSystem(cancellationToken))
+                            {
+                                ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy complete.  You may now delete the user certificate");
+                            } else
+                            {
+                                ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+ no root).  Please root your device.");
+                            }
+                        }
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************************************************");
+
                     }
                     
                 }
 
-            } else
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+).  Maybe root in the future.");
             }
 
         }

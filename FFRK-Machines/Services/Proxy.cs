@@ -59,6 +59,7 @@ namespace FFRK_LabMem.Services
             this.Registrations = new List<Registration>();
             proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
+            proxyServer.CertificateManager.CertificateValidDays = 365;
             //proxyServer.CertificateManager.RootCertificate = new X509Certificate2();
             //proxyServer.ThreadPoolWorkerThread = 64;
             proxyServer.BeforeResponse += OnResponse;
