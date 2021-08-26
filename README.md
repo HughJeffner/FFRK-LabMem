@@ -8,11 +8,14 @@ Built using Visual Studio 2019 Community, pre-compiled binaries provided on the 
 ## Compatibility
 | Android Version                 | GL FFRK Version | Compatible |
 | ------------------------------- | --------------- | ---------- |
-| Android 4.4 (Kit Kat)           | 7.7.0 and lower | Yes        |
-| Android 5.0 (Lollipop)          | 7.7.0, 8.0.0    | Yes        |
-| Android 6.0 (Marshmallow)       | 7.7.0, 8.0.0    | Yes        |
-| Android 7.0 (Nougat) and higher | 7.7.0           | Yes        |
-| Android 7.0 (Nougat) and higher | 8.0.0           | No         |
+| Android 4.4 (Kit Kat)           | 7.7.0 and lower | Yes (EoL)  |
+| Android 5 (Lollipop)            | 7.7.0, 8.0.0    | Yes        |
+| Android 6 (Marshmallow)         | 7.7.0, 8.0.0    | Yes        |
+| Android 7 (Nougat) and higher   | 7.7.0           | Yes        |
+| Android 7 (Nougat)              | 8.0.0           | Yes (root) |
+| Android 8 (Oreo)                | 8.0.0           | Yes (root) |
+| Android 9 (Nougat)              | 8.0.0           | Yes (root) |
+| Android 10 +                    | 8.0.0           | No         |
 
 _All compatible versions using FFRK 8.0.0 must install a certificate_
 
