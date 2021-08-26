@@ -191,6 +191,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
+                .PermitReentry(Trigger.StartBattle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.BattleFailed, State.Failed)
                 .Permit(Trigger.WatchdogTimer, State.Crashed);

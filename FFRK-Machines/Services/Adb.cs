@@ -176,7 +176,7 @@ namespace FFRK_LabMem.Services
                 if (File.Exists(certPath))
                 {
 
-                    var cert = "/storage/emulated/0/LabMem_Root_Cert.pfx";
+                    var cert = "/sdcard/LabMem_Root_Cert.pfx";
                     bool needsInstall = false;
 
                     // Check if copied root cert present
