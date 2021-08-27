@@ -9,7 +9,6 @@ namespace FFRK_LabMem
 {
     class Program
     {
-
         static void Main(string[] args)
         {
 
@@ -45,6 +44,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers);
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.OpenReleasesInBrowser("hughjeffner", "ffrk-labmem");
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
+                if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
             }
             
             // Stop

@@ -75,6 +75,7 @@
     <Compile Include="Machines\Lab.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Clipboard.cs" />
     <Compile Include="Services\Tray.cs" />
     <Compile Include="Services\Updates.cs" />
   </ItemGroup>
