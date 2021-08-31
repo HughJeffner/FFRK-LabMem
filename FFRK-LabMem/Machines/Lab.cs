@@ -559,7 +559,7 @@ namespace FFRK_LabMem.Machines
 
             // Do Pick
             ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, this.CurrentPainting["name"]);
-            if ((int)this.CurrentPainting["type"] == 1)
+            if ((int)this.CurrentPainting["type"] <= 2)
             {
                 ColorConsole.Write(": ");
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
