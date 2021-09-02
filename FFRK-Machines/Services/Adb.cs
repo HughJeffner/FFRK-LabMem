@@ -11,7 +11,6 @@ using System.Threading;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace FFRK_LabMem.Services
 {
@@ -53,28 +52,20 @@ namespace FFRK_LabMem.Services
             this.deviceMonitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
             this.deviceMonitor.DeviceConnected += this.OnDeviceConnected;
             this.deviceMonitor.DeviceDisconnected += this.OnDeviceDisconnected;
-            this.deviceMonitor.DeviceChanged += this.OnDeviceChanged;
             this.deviceMonitor.Start();
 
-        }
-
-        private void OnDeviceChanged(object sender, DeviceDataEventArgs e)
-        {
-            ColorConsole.WriteLine("Device changed: {1}:{0}", e.Device, e.Device.State);
-            if (e.Device.State == DeviceState.Online && DeviceAvailable != null) DeviceAvailable(sender, e);
-            if (e.Device.State == DeviceState.Offline && DeviceUnavailable != null) DeviceUnavailable(sender, e);
         }
 
         private void OnDeviceDisconnected(object sender, DeviceDataEventArgs e)
         {
             ColorConsole.WriteLine("Device unavailable: {0}", e.Device);
-            if (DeviceUnavailable != null) DeviceUnavailable(sender, e);
+            DeviceUnavailable?.Invoke(sender, e);
         }
 
         private void OnDeviceConnected(object sender, DeviceDataEventArgs e)
         {
             ColorConsole.WriteLine("Device available: {0}", e.Device);
-            if (DeviceAvailable != null) DeviceAvailable(sender, e);
+            DeviceAvailable?.Invoke(sender, e);
         }
 
         public async Task<bool> Connect()
