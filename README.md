@@ -8,10 +8,9 @@ Built using Visual Studio 2019 Community, pre-compiled binaries provided on the 
 ## Compatibility
 | Android Version                 | GL FFRK Version | Compatible |
 | ------------------------------- | --------------- | ---------- |
-| Android 4.4 (Kit Kat)           | 7.7.0 and lower | Yes (EoL)  |
-| Android 5 (Lollipop)            | 7.7.0, 8.0.0    | Yes        |
-| Android 6 (Marshmallow)         | 7.7.0, 8.0.0    | Yes        |
-| Android 7 (Nougat) and higher   | 7.7.0           | Yes        |
+| Android (Any)                   | 7.7.0 and lower | Not Supported|
+| Android 5 (Lollipop)            | 8.0.0           | Yes        |
+| Android 6 (Marshmallow)         | 8.0.0           | Yes        |
 | Android 7 (Nougat)              | 8.0.0           | Yes (root) |
 | Android 8 (Oreo)                | 8.0.0           | Yes (root) |
 | Android 9 (Nougat)              | 8.0.0           | Yes (root) |
