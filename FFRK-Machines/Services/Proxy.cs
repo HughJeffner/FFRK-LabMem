@@ -57,13 +57,19 @@ namespace FFRK_LabMem.Services
             this.debug = debug;
             this.secure = secure;
             this.Registrations = new List<Registration>();
+
+            // Proxy Setup
             proxyServer = new ProxyServer(false);
             proxyServer.EnableConnectionPool = false;
+
+            // Proxy Root Cert - Long lived
+            proxyServer.CertificateManager.CertificateValidDays = 365 * 10;
+            proxyServer.CertificateManager.CreateRootCertificate();
+
+            // Generated Certificates - Short Lived
             proxyServer.CertificateManager.CertificateValidDays = 30;
-            //proxyServer.CertificateManager.RootCertificate = new X509Certificate2();
-            //proxyServer.ThreadPoolWorkerThread = 64;
+
             proxyServer.BeforeResponse += OnResponse;
-            
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, secure)
             {
                 // Use self-issued generic certificate on all https requests

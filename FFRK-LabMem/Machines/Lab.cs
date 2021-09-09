@@ -877,10 +877,7 @@ namespace FFRK_LabMem.Machines
 
         private async Task RecoverCrash()
         {
-
-            const String FFRK_PACKAGE_NAME = "com.dena.west.FFRK";
-            const String FFRK_ACTIVITY_NAME = "jp.dena.dot.Dot";
-
+            
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
 
             // Go to home screen
@@ -890,12 +887,12 @@ namespace FFRK_LabMem.Machines
 
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
-            await this.Adb.StopPackage(FFRK_PACKAGE_NAME, this.CancellationToken);
+            await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);
             await Task.Delay(5000, this.CancellationToken);
 
             // Launch app
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Launching app");
-            await this.Adb.StartActivity(FFRK_PACKAGE_NAME, FFRK_ACTIVITY_NAME, this.CancellationToken);
+            await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
             await Task.Delay(5000, this.CancellationToken);
 
             // Press start button

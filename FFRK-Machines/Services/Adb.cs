@@ -17,6 +17,12 @@ namespace FFRK_LabMem.Services
     public class Adb
     {
 
+        public const String FFRK_PACKAGE_NAME = "com.dena.west.FFRK";
+        public const String FFRK_ACTIVITY_NAME = "jp.dena.dot.Dot";
+        private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
+        private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
+        private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
+
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
 
@@ -144,20 +150,7 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<String> GetPackageVersion(CancellationToken cancellationToken)
-        {
-
-            var receiver = new ConsoleOutputReceiver();
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("dumpsys package com.dena.west.FFRK | grep versionName",
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-            return receiver.ToString();
-
-        }
-
-        public async Task<bool> CopyClientCertsToSystem(CancellationToken cancellationToken)
+        public async Task<bool> CopyUserCertsToSystem(CancellationToken cancellationToken)
         {
 
             var receiver = new ConsoleOutputReceiver();
@@ -183,15 +176,144 @@ namespace FFRK_LabMem.Services
             return true;
         }
 
-        public async Task InstallRootCert(String certPath, CancellationToken cancellationToken)
+        public async Task<RootCertInstalledStatus> CheckIfRootCertInstalled(int apiLevel)
+        {
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                var ret = new RootCertInstalledStatus();
+                ret.UserExists = service.Stat(CERTIFICATE_USER_PATH).FileMode != 0;
+                ret.SystemExists = service.Stat(CERTIFICATE_SYSTEM_PATH).FileMode != 0;
+                ret.Installed = ((ret.UserExists && apiLevel <= 23) || ret.SystemExists);
+                return await Task.FromResult(ret);
+            }
+
+        }
+
+        public async Task<bool> CopyRootCertToStorage(String certPath, X509Certificate2 rootCert, CancellationToken cancellationToken)
         {
 
-            // Get package version
-            var packageVersion = await GetPackageVersion(cancellationToken);
-            if (int.Parse(packageVersion.Substring(packageVersion.IndexOf("=")+1,1)) < 8)
+            try
             {
+                using (var service = Factories.SyncServiceFactory(this.Device))
+                {
+                    using (MemoryStream stream = new MemoryStream(rootCert.Export(X509ContentType.Cert)))
+                    {
+                        service.Push(stream, certPath, 999, DateTime.Now, null, cancellationToken);
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                return await Task.FromResult(false);
+            }
+     
+            return await Task.FromResult(true);
+
+        }
+
+        public async Task<X509Certificate2> GetInstalledRootCert(bool isSystemCert, CancellationToken cancellationToken)
+        {
+
+            var pathToCert = (isSystemCert) ? CERTIFICATE_SYSTEM_PATH : CERTIFICATE_USER_PATH;
+            X509Certificate2 ret;
+
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    service.Pull(pathToCert, stream, null, cancellationToken);
+                    ret = new X509Certificate2(stream.ToArray());
+                }
+            }
+
+            return await Task.FromResult(ret);
+        }
+
+        public async Task PromptToInstallRootCert(String cert, X509Certificate2 rootCert, int apiLevel, CancellationToken cancellationToken)
+        {
+
+            // First copy it over
+            if (await CopyRootCertToStorage(cert, rootCert, cancellationToken))
+            {
+
+                // Start security settings activity
+                await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -a android.settings.SECURITY_SETTINGS"),
+                                this.Device,
+                                null,
+                                cancellationToken,
+                                2000);
+
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "***************** Install Certificate *****************");
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Scroll to Credential Storage > Install from SD card");
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Use FFRK for certificate name");
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
+
+                // Need root
+                if (apiLevel >= 24)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************ROOT REQUIRED***********************");
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Please press <Enter> once certificate installed to copy");
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "it to the system store");
+                    while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
+                    if (await CopyUserCertsToSystem(cancellationToken))
+                    {
+                        if ((await CheckIfRootCertInstalled(apiLevel)).Installed)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy complete.  You may now delete the user certificate");
+                        }
+                        else
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy failed.  Check if the certificate is under the user tab of Trusted Credentials and try again");
+                        }
+
+                    }
+                    else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+ no root).  Please root your device.");
+                    }
+                }
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************************************************");
+
+            }
+
+        }
+
+        public async Task ValidateInstalledRootCert(String certPath, bool isSystemCert, X509Certificate2 rootCert, int apiLevel, CancellationToken cancellationToken)
+        {
+
+            var installedRootCert = await GetInstalledRootCert(isSystemCert, cancellationToken);
+
+            // Thumbprint check
+            if (!installedRootCert.Thumbprint.Equals(rootCert.Thumbprint))
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE MISMATCH **");
+                ColorConsole.WriteLine(ConsoleColor.Red, "** DELETE THE CURRENT CERTIFICATE IN THE USER TAB BEFORE PROCEEDING**");
+                await PromptToInstallRootCert(certPath, rootCert, apiLevel, cancellationToken);
                 return;
             }
+
+            // Expired
+            TimeSpan timeLeft = installedRootCert.NotAfter - DateTime.Now;
+            if (timeLeft.TotalMinutes <= 0)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE EXPIRED **");
+                ColorConsole.WriteLine(ConsoleColor.Red, "** DELETE THE CURRENT CERTIFICATE IN THE USER TAB BEFORE PROCEEDING**");
+                await PromptToInstallRootCert(certPath, rootCert, apiLevel, cancellationToken);
+                return;
+            }
+
+            // Expire warning
+            if (timeLeft.Days <= 30)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "** WARNING ** Installed root CA certificate will expire in {0} days", timeLeft.Days);
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Delete .pfx file and relaunch to begin re-install process");
+            }
+
+        }
+
+        public async Task InstallRootCert(String pfxPath, CancellationToken cancellationToken)
+        {
 
             // Get API level
             int apiLevel = await GetAPILevel(cancellationToken);
@@ -200,73 +322,27 @@ namespace FFRK_LabMem.Services
             if (apiLevel >= 21)
             {
 
-                if (File.Exists(certPath))
+                // If pfx file exists
+                if (File.Exists(pfxPath))
                 {
 
-                    var cert = "/sdcard/LabMem_Root_Cert.pfx";
-                    bool certInstalled = false;
-                    bool clientExists = false;
-                    bool systemExists = false;
-
-                    // Check if copied root cert present
-                    using (var service = Factories.SyncServiceFactory(this.Device))
+                    // Root Cert in filesystem
+                    var rootCert = new X509Certificate2(pfxPath, "")
                     {
-                        clientExists = service.Stat("/data/misc/user/0/cacerts-added/3dcac768.0").FileMode != 0;
-                        systemExists = service.Stat("/system/etc/security/cacerts/3dcac768.0").FileMode != 0;
-                        certInstalled = (clientExists && apiLevel <= 23) || systemExists;
-                    }
+                        PrivateKey = null
+                    };
 
                     // If needs install
-                    if (!certInstalled)
+                    var installStatus = await CheckIfRootCertInstalled(apiLevel);
+                    if (!installStatus.Installed)
                     {
-
-                        // Convert pfx to cer
-                        if (apiLevel >= 24)
-                        {
-                            var c = new X509Certificate2(certPath, "");
-                            c.PrivateKey = null;
-                            File.WriteAllBytes("rootCert.crt", c.Export(X509ContentType.Cert));
-                            certPath = "rootCert.crt";
-                            cert = "/sdcard/LabMem_Root_Cert.crt";
-                        }
-
-                        // Copy root cert over
-                        using (var service = Factories.SyncServiceFactory(this.Device))
-                        {
-                            using (Stream stream = File.OpenRead(certPath))
-                            {
-                                service.Push(stream, cert, 999, DateTime.Now, null, cancellationToken);
-                            }
-                        }
-
                         // Prompt to install
-                        await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -a android.settings.SECURITY_SETTINGS"),
-                            this.Device,
-                            null,
-                            cancellationToken,
-							2000);
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "***************** Install Certificate *****************");
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Scroll to Credential Storage > Install from SD card");
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Use blank password and default certificate name");
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
+                        await PromptToInstallRootCert(CERTIFICATE_CRT_PATH, rootCert, apiLevel, cancellationToken);
 
-                        // Need root
-                        if (apiLevel >= 24)
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************ROOT REQUIRED***********************");
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Please press <Enter> once certificate installed to copy");
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "it to the system store");
-                            while(Console.ReadKey(true).Key != ConsoleKey.Enter){}
-                            if (await CopyClientCertsToSystem(cancellationToken))
-                            {
-                                ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy complete.  You may now delete the user certificate");
-                            } else
-                            {
-                                ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+ no root).  Please root your device.");
-                            }
-                        }
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************************************************");
+                    } else
+                    {
+                        // Installed certificate validation checks
+                        await ValidateInstalledRootCert(CERTIFICATE_CRT_PATH, installStatus.SystemExists, rootCert, apiLevel, cancellationToken);
 
                     }
                     
@@ -536,6 +612,14 @@ namespace FFRK_LabMem.Services
             process.Start();
 
             return tcs.Task;
+        }
+
+        public class RootCertInstalledStatus
+        {
+            public bool Installed { get; set; }
+            public bool UserExists { get; set; }
+            public bool SystemExists { get; set; }
+
         }
 
     }
