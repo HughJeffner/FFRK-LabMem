@@ -107,6 +107,9 @@ namespace FFRK_LabMem.Data
         public static async Task LogBattleDrops(Lab lab)
         {
 
+            if (lab.Data == null) return;
+            if (!lab.Data.ContainsKey("result")) return;
+
             var drops = lab.Data["result"]["prize_master"];
             var qtyMap = lab.Data["result"]["drop_item_id_to_num"];
             if (drops != null && qtyMap != null)
