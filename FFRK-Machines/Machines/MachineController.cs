@@ -44,17 +44,19 @@ namespace FFRK_Machines.Machines
         /// <param name="adbPath">Path to adb executable</param>
         /// <param name="adbHost">TCP host for adb connection</param>
         /// <param name="proxyPort">Port to listen for http proxy requests</param>
+        /// <param name="proxySecure">Intercept and decrypt https requests</param>
+        /// <param name="proxyBlocklist">Path to proxy blocklist file</param>
         /// <param name="topOffset">Top offset of screen</param>
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, int topOffset, int bottomOffset, string configFile, S unkownState)
+        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, S unkownState)
         {
 
             unknownState = unkownState;
 
             // Proxy Server
-            Proxy = new Proxy(proxyPort, proxySecure, debug);
+            Proxy = new Proxy(proxyPort, proxySecure, debug, proxyBlocklist);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             this.proxySecure = proxySecure;
             Proxy.Start();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -45,18 +46,20 @@ namespace FFRK_LabMem.Services
             public String Url { get; set; }
             public String Body { get; set; }
         }
-               
-        ProxyServer proxyServer = null;
-        ExplicitProxyEndPoint explicitEndPoint = null;
-        public List<Registration> Registrations {get; set;}
+
+        readonly ProxyServer proxyServer = null;
+        readonly ExplicitProxyEndPoint explicitEndPoint = null;
+        public List<Registration> Registrations { get; set; } = new List<Registration>();
         private bool debug;
         private bool secure;
+        private List<string> Blocklist { get; set; } = new List<string>();
 
-        public Proxy(int port, bool secure, bool debug)
+        public Proxy (int port, bool secure, bool debug) : this(port, secure, debug, null) { }
+
+        public Proxy(int port, bool secure, bool debug, string blocklist)
         {
             this.debug = debug;
             this.secure = secure;
-            this.Registrations = new List<Registration>();
 
             // Proxy Setup
             proxyServer = new ProxyServer(false);
@@ -82,7 +85,14 @@ namespace FFRK_LabMem.Services
             // An explicit endpoint is where the client knows about the existence of a proxy
             // So client sends request in a proxy friendly manner
             proxyServer.AddEndPoint(explicitEndPoint);
-            
+
+            // Blocklist
+            if (!String.IsNullOrEmpty(blocklist) && File.Exists(blocklist))
+            {
+                Blocklist = new List<string>(File.ReadAllLines(blocklist));
+                proxyServer.BeforeRequest += BeforeRequest;
+            }
+
         }
 
         public void Start()
@@ -132,6 +142,19 @@ namespace FFRK_LabMem.Services
             }
         }
 
+        private Task BeforeRequest(object sender, SessionEventArgs e)
+        {
+
+            string hostname = e.HttpClient.Request.RequestUri.Host;
+            if (Blocklist.Any(b => hostname.EndsWith(b)))
+            {
+                e.TerminateSession();
+                System.Diagnostics.Debug.Print("Blocked: " + hostname);
+                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+            }
+
+            return Task.FromResult(true);
+        }
 
         private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
@@ -144,13 +167,22 @@ namespace FFRK_LabMem.Services
             //    e.HttpClient.UpStreamEndPoint = new IPEndPoint(clientLocalIp, 0);
             //}
 
+            if (Blocklist.Any(b => hostname.EndsWith(b)))
+            {
+                e.DenyConnect = true;
+                System.Diagnostics.Debug.Print("Blocked: " + hostname);
+                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+                return Task.FromResult(false);
+            }
+
             if (!hostname.Contains("ffrk.denagames.com"))
             {
                 e.DecryptSsl = false;
                 System.Diagnostics.Debug.Print("Tunnel to: " + hostname);
                 if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tunnel to: " + hostname);
             }
-            return Task.FromResult(false);
+
+            return Task.FromResult(true);
         }
            
     }
