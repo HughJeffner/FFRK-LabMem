@@ -18,17 +18,15 @@ Built using Visual Studio 2019 Community, pre-compiled binaries provided on the 
 
 _All compatible versions using FFRK 8.0.0+ must install a certificate_
 
-## Download & Run
-1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
-2. Expand the 'Assets' dropdown for the version of your choice
-3. Download the first .zip file
-4. Extract to directory of your choice
-5. Order of operations:
-    1. Setup / config, see below
-    2. Start Emulator / Connect device to USB
-    3. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
-    4. Start FFRK
-    5. Load up a Labyrinth
+## Quick Start
+1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases) and find the lastest release
+2. Under 'Assets' dropdown download the first .zip file and extract to directory of your choice
+3. Start Emulator / Connect device to USB
+4. Turn on 'Developer Mode' in android settings 
+5. Activate USB debugging
+6. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
+7. Follow any on-screen instructions
+8. Load up a Labyrinth
 
 ## Basic Usage
 Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
