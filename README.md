@@ -24,9 +24,11 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 3. Start Emulator / Connect device to USB
 4. Turn on 'Developer Mode' in android settings 
 5. Activate USB debugging
-6. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
-7. Follow any on-screen instructions
-8. Load up a Labyrinth
+6. [Change android network proxy settings](#proxysetting)
+7. [Update ADB port](#adbconnection)
+8. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
+9. Follow any on-screen instructions
+10. Load up a Labyrinth
 
 ## Basic Usage
 Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
@@ -43,8 +45,8 @@ For this to work correctly, the following must be set up:
 4. Screen top and bottom offsets
 5. Team 1 must be able to beat anything, even at 10 fatigue.  Holy mind mage party recommended!
 
-### Network proxy settings
-This varies wildly by device and every network is different.  Typically with android devices you would go into the wifi settings, change proxy to manual then enter the IP address of the windows system running the app for the hostname, 8081 for the proxy port, and the following for the proxy bypass:
+### <a name="proxysetting"></a>Network proxy settings
+This varies by device and every network is different.  Typically with android devices you would go into the wifi settings, change proxy to manual then enter the IP address of the windows system running the app for the hostname, 8081 for the proxy port, and the following for the proxy bypass:
 
 `127.0.0.1,lcd-prod.appspot.com,live.chartboost.com,android.clients.google.com,googleapis.com,ssl.sp.mbga-platform.jp,ssl.sp.mbga.jp,app.adjust.io`
 
@@ -59,7 +61,7 @@ If the proxy root CA certificate isn't installed the bot will copy it to the dev
 
 This certificate is only used to decrypt traffic to the `ffrk.denagames.com`, all other traffic is tunneled through the proxy with no inspection.
 
-### Adb connection
+### <a name="adbconnection"></a>Adb connection
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
 
 If you are connecting an acutal device via USB, you may need the proper drivers.  See [here](https://developer.android.com/studio/run/oem-usb) -OR- [here](https://adb.clockworkmod.com/)
@@ -76,9 +78,7 @@ Connecting to an emulator works over TCP.  You can set up TCP with a physical de
 
 
 ### Screen offsets
-From version 0.9.10 and higher, screen offsets can be automatically detected using `Alt+O`.
-
-To allow different screen sizes, there are `screen.topOffset` and `screen.bottomOffset` in `FFRK-LabMem.exe.config`.  This corresponds to the height in pixels of the gray bars at the top and bottom of your screen that FFRK uses to support different screen sizes.  You can take a screenshot and measure them in a image editor, or just try to guestimate it.  If you have no bars at the top or bottom just leave it the default of 0.
+From version 0.9.10 and higher, screen offsets can be automatically detected using `Alt+O` when on FFRK title screen.
 
 ## Configuration
 ### General program options
