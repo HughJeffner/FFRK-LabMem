@@ -8,7 +8,7 @@ using FFRK_Machines.Extensions;
 
 namespace FFRK_LabMem.Machines
 {
-    class LabController : MachineController<Lab, Lab.State, Lab.Trigger, Lab.Configuration>
+    public class LabController : MachineController<Lab, Lab.State, Lab.Trigger, Lab.Configuration>
     {
 
         public static async Task<LabController> CreateAndStart(ConfigHelper config)

@@ -3,7 +3,7 @@ using System.Configuration;
 
 namespace FFRK_LabMem.Config
 {
-    class ConfigHelper
+    public class ConfigHelper
     {
 
         private System.Configuration.Configuration config = null;
