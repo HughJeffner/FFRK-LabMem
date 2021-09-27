@@ -220,8 +220,11 @@ namespace FFRK_LabMem.Config
 
         private void listViewTreasures_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listViewTreasures.SelectedItems.Count > 0)
-                comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[1].Text);
+            if (listViewTreasures.SelectedItems.Count == 0) return;
+            comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[1].Text);
+            buttonTreasureUp.Enabled = listViewTreasures.SelectedItems[0].Checked;
+            buttonTreasureDown.Enabled = listViewTreasures.SelectedItems[0].Checked;
+
         }
 
         private void buttonPaintingUp_Click(object sender, EventArgs e)
@@ -278,6 +281,7 @@ namespace FFRK_LabMem.Config
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
             var p = int.Parse(listViewTreasures.SelectedItems[0].Text) - 1;
+            if (p < 0) return;
             if (p <= 1) p = 1;
             listViewTreasures.SelectedItems[0].Text = p.ToString();
             listViewTreasures.Sort();
@@ -305,6 +309,8 @@ namespace FFRK_LabMem.Config
             {
                 e.Item.Text = "0";
             }
+            buttonTreasureUp.Enabled = e.Item.Checked;
+            buttonTreasureDown.Enabled = e.Item.Checked;
             listViewTreasures.Sort();
         }
 
