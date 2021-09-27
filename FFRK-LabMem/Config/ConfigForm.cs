@@ -147,7 +147,7 @@ namespace FFRK_LabMem.Config
             }
 
             // Save to .json
-            File.WriteAllText(comboBoxLab.SelectedItem.ToString(), JsonConvert.SerializeObject(labConfig));
+            File.WriteAllText(comboBoxLab.SelectedItem.ToString(), JsonConvert.SerializeObject(labConfig,Formatting.Indented));
 
             // Update machine
             controller.Machine.Config = labConfig;
@@ -372,6 +372,16 @@ namespace FFRK_LabMem.Config
         private void checkBoxUpdates_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxPrerelease.Enabled = checkBoxUpdates.Checked;
+        }
+
+        private void buttonProxyRegenCert_Click(object sender, EventArgs e)
+        {
+            var ret = MessageBox.Show(this, "Regenerate the proxy HTTPS certificate?  (This will delete your existing certificate and you will have to install the new one on your device)", "Regenerate Certificate", MessageBoxButtons.OKCancel);
+            if (ret == DialogResult.OK)
+            {
+                lblRestart.Visible = true;
+                File.Delete("rootCert.pfx");
+            }
         }
     }
 }

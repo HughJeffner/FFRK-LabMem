@@ -89,6 +89,7 @@ namespace FFRK_LabMem.Config
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.buttonProxyRegenCert = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -288,6 +289,7 @@ namespace FFRK_LabMem.Config
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.buttonProxyRegenCert);
             this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
             this.tabPage2.Controls.Add(this.textBoxProxyBlocklist);
             this.tabPage2.Controls.Add(this.label4);
@@ -761,6 +763,16 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // buttonProxyRegenCert
+            // 
+            this.buttonProxyRegenCert.Location = new System.Drawing.Point(0, 93);
+            this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
+            this.buttonProxyRegenCert.Size = new System.Drawing.Size(160, 23);
+            this.buttonProxyRegenCert.TabIndex = 51;
+            this.buttonProxyRegenCert.Text = "Regenerate Certificate";
+            this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
+            this.buttonProxyRegenCert.Click += new System.EventHandler(this.buttonProxyRegenCert_Click);
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -778,6 +790,7 @@ namespace FFRK_LabMem.Config
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfigForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FFRK LabMem Configuration";
             this.Load += new System.EventHandler(this.ConfigForm_Load);
             this.tabControl.ResumeLayout(false);
@@ -864,5 +877,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.Button buttonProxyRegenCert;
     }
 }
