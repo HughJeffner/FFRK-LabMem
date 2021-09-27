@@ -26,6 +26,8 @@ namespace FFRK_LabMem.Machines
             public int WatchdogMinutes { get; set; }
             public bool RestartFailedBattle { get; set; }
             public bool StopOnMasterPainting { get; set; }
+            public bool RestartLab { get; set; }
+            public bool UsePotions { get; set; }
 
             public Configuration()
             {
@@ -38,6 +40,8 @@ namespace FFRK_LabMem.Machines
                 this.StopOnMasterPainting = true;
                 this.PaintingPriorityMap = new Dictionary<string, int>();
                 this.TreasureFilterMap = new Dictionary<string, TreasureFilter>();
+                this.RestartLab = false;
+                this.UsePotions = false;
             }
 
             public class TreasureFilter
@@ -68,7 +72,8 @@ namespace FFRK_LabMem.Machines
             WatchdogTimer,
             FoundBoss,
             MissedButton,
-            FinishedLab
+            FinishedLab,
+            Restart
         }
 
         public enum State
@@ -87,7 +92,8 @@ namespace FFRK_LabMem.Machines
             Failed,
             WaitForBoss,
             Completed,
-            Crashed
+            Crashed,
+            Restarting
         }
                 
         private int CurrentKeys { get; set; }
@@ -211,8 +217,13 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.Completed)
                 .OnEntryAsync(async (t) => await FinishLab(t))
                 .Permit(Trigger.ResetState, State.Ready)
+                .Permit(Trigger.Restart, State.Restarting)
                 .Ignore(Trigger.BattleSuccess)
                 .Ignore(Trigger.WatchdogTimer);
+
+            this.StateMachine.Configure(State.Restarting)
+                .OnEntryAsync(async (t) => await RestartLab())
+                .Permit(Trigger.ResetState, State.Unknown);
 
             this.StateMachine.Configure(State.WaitForBoss)
                 .OnEntryAsync(async (t) => await FinishLab(t))
@@ -861,17 +872,116 @@ namespace FFRK_LabMem.Machines
         private async Task FinishLab(StateMachine<State,Trigger>.Transition t)
         {
 
-            // Disable machine
-            base.OnMachineFinished();
-
-            if (t.Destination == State.WaitForBoss)
-                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
-
-            if (t.Destination == State.Completed)
-                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!  Press 'E' to enable when ready.");
-
             // Notification?
             await Notify();
+
+            // Disable machine
+            if (t.Destination == State.WaitForBoss)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
+                base.OnMachineFinished();
+            }
+
+            if (t.Destination == State.Completed)
+            {
+                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                if (!Config.RestartLab)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, " Press 'E' to enable when ready.");
+                    base.OnMachineFinished();
+                } else
+                {
+                    ColorConsole.WriteLine("");
+                    await this.StateMachine.FireAsync(Trigger.Restart);
+                }
+            }
+
+        }
+
+        private async Task RestartLab()
+        {
+
+            ColorConsole.WriteLine("Restarting Lab");
+            // Dungeon Complete
+            await Task.Delay(2000);
+            if (await Adb.FindButtonAndTap("#5a3015", 4000, 50, 81, 93, 20, this.CancellationToken))
+            {
+                // Enter button 1
+                await Task.Delay(2000);
+                if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 84, 94, 20, this.CancellationToken))
+                {
+
+                    // Enter button 2
+                    await Task.Delay(2000);
+                    if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken))
+                    {
+
+                        // Stamina dialog
+                        await Task.Delay(2000);
+                        var button = await Adb.FindButton("#6c3518", 2000, 50, 36, 50, 5, this.CancellationToken);
+                        if (button != null)
+                        {
+                            if (Config.UsePotions)
+                            {
+                                await Adb.TapPct(button.Item1, button.Item2, this.CancellationToken); // Select potions
+                                await Task.Delay(2000);
+                                await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
+                                await Task.Delay(2000);
+                                await Adb.FindButtonAndTap("#2060ce", 3000, 47, 57, 70, 5, this.CancellationToken);  // Potion used dialog
+                                await Task.Delay(2000);
+                                await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
+                                await Task.Delay(2000);
+
+                            } else
+                            {
+                                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Not enough stamina");
+                                OnMachineFinished();
+                                return;
+                            }
+
+                        }
+
+                        // Confirm equipment box or enter
+                        await Task.Delay(2000);
+                        if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                        {
+
+                            // Enter if equipment confirmed, otherwise should find nothing
+                            await Task.Delay(2000);
+                            if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                            {
+                                await Task.Delay(4000);
+                            }
+
+                            // Reset state
+                            await StateMachine.FireAsync(Trigger.ResetState);
+
+                        }
+                        else
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 3");
+                            OnMachineFinished();
+                        }
+
+
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
+                        OnMachineFinished();
+                    }
+
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 1");
+                    OnMachineFinished();
+                }
+
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect dungeon complete dialog");
+                OnMachineFinished();
+            }
+
 
         }
 
@@ -909,7 +1019,7 @@ namespace FFRK_LabMem.Machines
                 {
                     // Go back into lab
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
-                    await this.Adb.TapPct(50, 50, this.CancellationToken);
+                    await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
                     ConfigureStateMachine(State.Unknown);
                 }

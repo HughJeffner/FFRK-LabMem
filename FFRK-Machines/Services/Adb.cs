@@ -438,7 +438,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
+        public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
         {
 
             if (this.Debug)
@@ -494,21 +494,35 @@ namespace FFRK_LabMem.Services
 
         public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
         {
+            
+            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken);
+            if (button == null)
+            {
+                return false;
+            } else
+            {
+                await TapPct(button.Item1, button.Item2, cancellationToken);
+                return true;
+            }
+
+        }
+
+        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
+        {
 
             int tries = 0;
             do
             {
-                var b = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken);
+                var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken);
                 if (b != null)
                 {
-                    await TapPct(b.Item1, b.Item2, cancellationToken);
-                    return true;
+                    return b;
                 }
                 tries++;
                 await Task.Delay(1000, cancellationToken);
             } while (tries < retries);
 
-            return false;
+            return null;
 
         }
 

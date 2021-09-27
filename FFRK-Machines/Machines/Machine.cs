@@ -127,11 +127,16 @@ namespace FFRK_Machines.Machines
         /// <returns></returns>
         protected virtual async Task Notify()
         {
-            for (int i = 0; i < 5; i++)
-            {
-                Console.Beep();
-                await Task.Delay(1000);
-            }
+            Console.Beep(523, 200);
+            Console.Beep(523, 200);
+            Console.Beep(523, 200);
+            Console.Beep(523, 500);
+            Console.Beep(415, 500);
+            Console.Beep(466, 500);
+            Console.Beep(523, 300);
+            Console.Beep(466, 250);
+            Console.Beep(523, 800);
+            await Task.FromResult(0);
         }
 
     }

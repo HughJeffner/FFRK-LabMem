@@ -38,5 +38,7 @@
   },
   "WatchdogMinutes": 10,
   "RestartFailedBattle": false,
-  "StopOnMasterPainting": false
+  "StopOnMasterPainting": false,
+  "RestartLab": false,
+  "UsePotions": false
 }
