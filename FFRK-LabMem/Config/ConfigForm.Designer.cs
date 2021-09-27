@@ -45,6 +45,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
             this.checkBoxTimestamps = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.buttonProxyRegenCert = new System.Windows.Forms.Button();
             this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.textBoxProxyBlocklist = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -89,7 +90,6 @@ namespace FFRK_LabMem.Config
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.buttonProxyRegenCert = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -302,6 +302,16 @@ namespace FFRK_LabMem.Config
             this.tabPage2.Size = new System.Drawing.Size(449, 337);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Proxy";
+            // 
+            // buttonProxyRegenCert
+            // 
+            this.buttonProxyRegenCert.Location = new System.Drawing.Point(0, 93);
+            this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
+            this.buttonProxyRegenCert.Size = new System.Drawing.Size(160, 23);
+            this.buttonProxyRegenCert.TabIndex = 51;
+            this.buttonProxyRegenCert.Text = "Regenerate Certificate";
+            this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
+            this.buttonProxyRegenCert.Click += new System.EventHandler(this.buttonProxyRegenCert_Click);
             // 
             // buttonProxyBlocklist
             // 
@@ -749,9 +759,9 @@ namespace FFRK_LabMem.Config
             this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
             this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
             this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblRestart.Location = new System.Drawing.Point(12, 375);
+            this.lblRestart.Location = new System.Drawing.Point(15, 375);
             this.lblRestart.Name = "lblRestart";
-            this.lblRestart.Size = new System.Drawing.Size(293, 29);
+            this.lblRestart.Size = new System.Drawing.Size(301, 29);
             this.lblRestart.TabIndex = 18;
             this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
             this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -762,16 +772,6 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.Description = "Choose blocklist file";
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
-            // buttonProxyRegenCert
-            // 
-            this.buttonProxyRegenCert.Location = new System.Drawing.Point(0, 93);
-            this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
-            this.buttonProxyRegenCert.Size = new System.Drawing.Size(160, 23);
-            this.buttonProxyRegenCert.TabIndex = 51;
-            this.buttonProxyRegenCert.Text = "Regenerate Certificate";
-            this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
-            this.buttonProxyRegenCert.Click += new System.EventHandler(this.buttonProxyRegenCert_Click);
             // 
             // ConfigForm
             // 

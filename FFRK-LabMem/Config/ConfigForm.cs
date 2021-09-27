@@ -157,7 +157,12 @@ namespace FFRK_LabMem.Config
             // Restart warning
             if (lblRestart.Visible)
             {
-                var ret = MessageBox.Show(this, "Restart now?", "Restart Required", MessageBoxButtons.YesNo);
+                var ret = MessageBox.Show(this, "Changes require the app to restart, restart now?", 
+                    "Restart Required", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Warning, 
+                    MessageBoxDefaultButton.Button1);
+
                 if (ret == DialogResult.Yes)
                 {
                     Application.Restart();
@@ -365,7 +370,18 @@ namespace FFRK_LabMem.Config
 
         private void NeedsRestart_Changed(object sender, EventArgs e)
         {
-            lblRestart.Visible = true;
+
+            var changed = (checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
+            checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
+            checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
+            numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
+            checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
+            textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
+            textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
+            textBoxAdbHost.Text != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+            numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
+
+            lblRestart.Visible = changed;
 
         }
 
@@ -376,7 +392,13 @@ namespace FFRK_LabMem.Config
 
         private void buttonProxyRegenCert_Click(object sender, EventArgs e)
         {
-            var ret = MessageBox.Show(this, "Regenerate the proxy HTTPS certificate?  (This will delete your existing certificate and you will have to install the new one on your device)", "Regenerate Certificate", MessageBoxButtons.OKCancel);
+            var ret = MessageBox.Show(this, 
+                "Regenerate the proxy HTTPS certificate?  (This will delete your existing certificate and you will have to install the new one on your device)", 
+                "Regenerate Certificate", 
+                MessageBoxButtons.OKCancel, 
+                MessageBoxIcon.Warning, 
+                MessageBoxDefaultButton.Button2);
+
             if (ret == DialogResult.OK)
             {
                 lblRestart.Visible = true;
