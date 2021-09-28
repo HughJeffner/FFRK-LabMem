@@ -12,6 +12,8 @@
 | WatchdogMinutes       | If an action doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
 | StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |
+| RestartLab            | Restarts the lab once completed | false |
+| UsePotions            | Uses potions when restarting a lab | false |
 
 ## Painting Types
 |  Id   | Type                  | Default Priority  |
