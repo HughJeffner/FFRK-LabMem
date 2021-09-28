@@ -444,5 +444,11 @@ namespace FFRK_LabMem.Config
         {
             if (tabControl1.SelectedTab == tabPage7) treasuresLoaded = true;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Services.Clipboard.CopyProxyBypassToClipboard();
+            MessageBox.Show(this, "Copied!","", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }

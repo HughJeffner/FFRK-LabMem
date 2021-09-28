@@ -92,6 +92,8 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.button1 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -105,6 +107,7 @@ namespace FFRK_LabMem.Config
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -299,7 +302,7 @@ namespace FFRK_LabMem.Config
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage2.Controls.Add(this.buttonProxyRegenCert);
+            this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
             this.tabPage2.Controls.Add(this.textBoxProxyBlocklist);
             this.tabPage2.Controls.Add(this.label4);
@@ -315,9 +318,9 @@ namespace FFRK_LabMem.Config
             // 
             // buttonProxyRegenCert
             // 
-            this.buttonProxyRegenCert.Location = new System.Drawing.Point(0, 93);
+            this.buttonProxyRegenCert.Location = new System.Drawing.Point(131, 77);
             this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
-            this.buttonProxyRegenCert.Size = new System.Drawing.Size(160, 23);
+            this.buttonProxyRegenCert.Size = new System.Drawing.Size(229, 23);
             this.buttonProxyRegenCert.TabIndex = 51;
             this.buttonProxyRegenCert.Text = "Regenerate Certificate";
             this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
@@ -809,6 +812,27 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(131, 35);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(229, 23);
+            this.button1.TabIndex = 52;
+            this.button1.Text = "Copy Proxy Bypass to Clipboard\r\n";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.buttonProxyRegenCert);
+            this.groupBox1.Location = new System.Drawing.Point(0, 96);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(449, 235);
+            this.groupBox1.TabIndex = 53;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Actions";
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -848,6 +872,7 @@ namespace FFRK_LabMem.Config
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -915,5 +940,7 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.Button buttonProxyRegenCert;
         private System.Windows.Forms.ComboBox comboBoxAdbHost;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
