@@ -23,19 +23,21 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 2. Under 'Assets' dropdown download the first .zip file and extract to directory of your choice
 3. Start Emulator / Connect device to USB
 4. Turn on 'Developer Mode' in android settings 
-5. Activate USB debugging
+5. Activate USB debugging in developer settings
 6. [Change android network proxy settings](#proxysetting)
-7. [Update ADB port](#adbconnection)
-8. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
-9. Follow any on-screen instructions
-10. Load up a Labyrinth
+7. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
+8. Press `C` to open the configuration
+9. [Update ADB host](#adbconnection) if using emulator
+10. Restart the bot when prompted
+11. Follow any on-screen instructions to install the certificate
+12. Load up a Labyrinth
 
 ## Basic Usage
 Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
 
 This appliation runs as a command-line application in 'interactive mode'.  This means you can simply double-click it and it will continue to run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
 
-This application uses a split-configuration system: the standard .net config file for [general program options](#configuration) and config.json for [lab-walking related behaviors](./FFRK-LabMem/Config/readme.md).  Eventually I plan to allow specifying the .net config values as command-line parameters (for creating a desktop short-cut for example).
+Press `C` to open configuration options
 
 ## Setup
 For this to work correctly, the following must be set up:
@@ -50,7 +52,7 @@ This varies by device and every network is different.  Typically with android de
 
 `127.0.0.1,lcd-prod.appspot.com,live.chartboost.com,android.clients.google.com,googleapis.com,ssl.sp.mbga-platform.jp,ssl.sp.mbga.jp,app.adjust.io`
 
-> **Tip:** you can press `Ctrl+B` to copy the proxy bypass to the clipboard
+> **Tip:** you can press `Ctrl+B` to copy the proxy bypass to the clipboard or use the button in the GUI configuration
 
 > **Tip:** for most android emulators if you can view the device ip address for example `10.0.x.x` you can simply use `10.0.x.2` for the loopback to the host system.
 
@@ -90,6 +92,7 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 | adb.host                  | TCP host to connect to ADB, if using, ignored if connected via USB       | 127.0.0.1:7555 |
 | proxy.port                | TCP port to listen for proxy requests      | 8081     |
 | proxy.secure              | Enable https proxy (FFRK 8.0.0)            | true     |
+| proxy.blocklist           | Path to a file which domains should be blocked.  One domain name per line | |
 | lab.configFile            | Lab config file path, see below            | Config/lab.balanced.json |
 | screen.topOffset          | Number of pixels of the gray bar at the top of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
 | screen.bottomOffset       | Number of pixels of the gray bar at the bottom of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
