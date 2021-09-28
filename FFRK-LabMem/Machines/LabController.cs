@@ -47,8 +47,8 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detected offset t:{0}, b:{1}, saving to .config", offsets.Item1, offsets.Item2);
                 this.Adb.TopOffset = offsets.Item1;
                 this.Adb.BottomOffset = offsets.Item2;
-                config.SetValue("screen.topOffset", offsets.Item1.ToString());
-                config.SetValue("screen.bottomOffset", offsets.Item2.ToString());
+                config.SetValue("screen.topOffset", offsets.Item1);
+                config.SetValue("screen.bottomOffset", offsets.Item2);
             }
             else
             {

@@ -38,16 +38,42 @@ namespace FFRK_LabMem.Config
         {
             if (this.config != null)
             {
-                this.config.AppSettings.Settings[key].Value = value;
+                if (this.config.AppSettings.Settings[key] == null)
+                {
+                    this.config.AppSettings.Settings.Add(key, value);
+                } else
+                {
+                    this.config.AppSettings.Settings[key].Value = value;
+                }
                 this.config.Save();
             }
             else
             {
                 var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings[key].Value = value;
+                if (config.AppSettings.Settings[key] == null)
+                {
+                    config.AppSettings.Settings.Add(key, value);
+                } else
+                {
+                    config.AppSettings.Settings[key].Value = value;
+                }
                 config.Save();
                 ConfigurationManager.RefreshSection("appSettings");
             }
+        }
+        public void SetValue(String key, int value)
+        {
+            SetValue(key, value.ToString());
+        }
+
+        public void SetValue(String key, decimal value)
+        {
+            SetValue(key, value.ToString());
+        }
+
+        public void SetValue(String key, bool value)
+        {
+            SetValue(key, value ? "true" : "false");
         }
 
         public String GetString(String key, String defaultValue)

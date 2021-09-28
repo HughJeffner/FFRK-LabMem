@@ -34,10 +34,20 @@ namespace FFRK_LabMem.Config
             {"1", "5* Orbs, 5* Motes"}
         };
 
+        private List<AdbHostItem> adbHosts = new List<AdbHostItem>() { 
+            new AdbHostItem { Name = "MuMu", Value = "127.0.0.1:7555"} ,
+            new AdbHostItem { Name = "Nox 5", Value = "127.0.0.1:62001"} ,
+            new AdbHostItem { Name = "Nox", Value = "127.0.0.1:5037"} ,
+            new AdbHostItem { Name = "MEmu", Value = "127.0.0.1:21503"} ,
+            new AdbHostItem { Name = "MEmu Instance 2", Value = "127.0.0.1:21513"} ,
+            new AdbHostItem { Name = "MEmu Instance 3", Value = "127.0.0.1:21523"} ,
+            new AdbHostItem { Name = "LD Player", Value = "127.0.0.1:5555"}
+        };
 
         public ConfigHelper configHelper = null;
         public LabController controller = null;
         public Lab.Configuration labConfig = new Lab.Configuration();
+        private bool treasuresLoaded = false;
 
         public ConfigForm()
         {
@@ -82,8 +92,12 @@ namespace FFRK_LabMem.Config
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
-            textBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
-            
+            comboBoxAdbHost.DataSource = adbHosts;
+            comboBoxAdbHost.DisplayMember = "Display";
+            comboBoxAdbHost.ValueMember = "Value";
+            comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
+            if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
+
             // Load lab .json
             foreach (var item in Directory.GetFiles("./Config/", "*.json"))
             {
@@ -103,23 +117,23 @@ namespace FFRK_LabMem.Config
             lblRestart.Visible = false;
 
         }
-        private void buttonOk_Click(object sender, EventArgs e)
+        private void ButtonOk_Click(object sender, EventArgs e)
         {
             ColorConsole.Write("Saving configuration... ");
 
             // General
-            configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked ? "true" : "false");
-            configHelper.SetValue("console.debug", checkBoxDebug.Checked ? "true" : "false");
-            configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked ? "true" : "false");
-            configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked ? "true" : "false");
-            configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked ? "true" : "false");
-            configHelper.SetValue("screen.topOffset", numericUpDownScreenTop.Value.ToString());
-            configHelper.SetValue("screen.bottomOffset", numericUpDownScreenBottom.Value.ToString());
-            configHelper.SetValue("proxy.port", numericUpDownProxyPort.Value.ToString());
-            configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked ? "true" : "false");
+            configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
+            configHelper.SetValue("console.debug", checkBoxDebug.Checked);
+            configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
+            configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
+            configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
+            configHelper.SetValue("screen.topOffset", numericUpDownScreenTop.Value);
+            configHelper.SetValue("screen.bottomOffset", numericUpDownScreenBottom.Value);
+            configHelper.SetValue("proxy.port", numericUpDownProxyPort.Value);
+            configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked);
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
-            configHelper.SetValue("adb.host", textBoxAdbHost.Text);
+            configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile",comboBoxLab.SelectedItem.ToString());
 
             // Lab
@@ -183,7 +197,7 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void comboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
             labConfig = JsonConvert.DeserializeObject<Lab.Configuration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
             checkBoxLabDebug.Checked = labConfig.Debug;
@@ -218,7 +232,7 @@ namespace FFRK_LabMem.Config
 
         }
 
-        private void listViewTreasures_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListViewTreasures_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
             comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[1].Text);
@@ -227,7 +241,7 @@ namespace FFRK_LabMem.Config
 
         }
 
-        private void buttonPaintingUp_Click(object sender, EventArgs e)
+        private void ButtonPaintingUp_Click(object sender, EventArgs e)
         {
             if (listViewPaintings.SelectedItems.Count == 0) return;
             var p = int.Parse(listViewPaintings.SelectedItems[0].Text) - 1;
@@ -252,7 +266,7 @@ namespace FFRK_LabMem.Config
             listViewPaintings.Focus();
         }
 
-        private void buttonPaintingDown_Click(object sender, EventArgs e)
+        private void ButtonPaintingDown_Click(object sender, EventArgs e)
         {
             if (listViewPaintings.SelectedItems.Count == 0) return;
             var p = int.Parse(listViewPaintings.SelectedItems[0].Text) + 1;
@@ -277,7 +291,7 @@ namespace FFRK_LabMem.Config
             listViewPaintings.Focus();
         }
 
-        private void buttonTreasureUp_Click(object sender, EventArgs e)
+        private void ButtonTreasureUp_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
             var p = int.Parse(listViewTreasures.SelectedItems[0].Text) - 1;
@@ -288,7 +302,7 @@ namespace FFRK_LabMem.Config
             listViewTreasures.Focus();
         }
 
-        private void buttonTreasureDown_Click(object sender, EventArgs e)
+        private void ButtonTreasureDown_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
             var p = int.Parse(listViewTreasures.SelectedItems[0].Text) + 1;
@@ -299,8 +313,9 @@ namespace FFRK_LabMem.Config
             listViewTreasures.Focus();
         }
 
-        private void listViewTreasures_ItemChecked(object sender, ItemCheckedEventArgs e)
+        private void ListViewTreasures_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
+            if (!treasuresLoaded) return;
             if (e.Item.Checked)
             {
                 e.Item.Text = "1";
@@ -314,7 +329,7 @@ namespace FFRK_LabMem.Config
             listViewTreasures.Sort();
         }
 
-        private void comboBoxKeys_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxKeys_SelectedIndexChanged(object sender, EventArgs e)
         {
 
             if (listViewTreasures.SelectedItems.Count == 0) return;
@@ -374,6 +389,19 @@ namespace FFRK_LabMem.Config
             }
         }
 
+        public class AdbHostItem
+        {
+            public String Name { get; set; }
+            public String Value { get; set; }
+            public String Display
+            {
+                get
+                {
+                    return String.Format("{0} [{1}]", Value, Name);
+                }
+            }
+        }
+
         private void NeedsRestart_Changed(object sender, EventArgs e)
         {
 
@@ -384,19 +412,19 @@ namespace FFRK_LabMem.Config
             checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
             textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
             textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-            textBoxAdbHost.Text != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+            comboBoxAdbHost.Text != configHelper.GetString("adb.host", "127.0.0.1:7555") |
             numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
 
             lblRestart.Visible = changed;
 
         }
 
-        private void checkBoxUpdates_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxUpdates_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxPrerelease.Enabled = checkBoxUpdates.Checked;
         }
 
-        private void buttonProxyRegenCert_Click(object sender, EventArgs e)
+        private void ButtonProxyRegenCert_Click(object sender, EventArgs e)
         {
             var ret = MessageBox.Show(this, 
                 "Regenerate the proxy HTTPS certificate?  (This will delete your existing certificate and you will have to install the new one on your device)", 
@@ -410,6 +438,11 @@ namespace FFRK_LabMem.Config
                 lblRestart.Visible = true;
                 File.Delete("rootCert.pfx");
             }
+        }
+
+        private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == tabPage7) treasuresLoaded = true;
         }
     }
 }
