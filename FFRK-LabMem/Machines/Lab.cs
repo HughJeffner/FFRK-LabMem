@@ -903,7 +903,7 @@ namespace FFRK_LabMem.Machines
 
             ColorConsole.WriteLine("Restarting Lab");
             // Dungeon Complete
-            await Task.Delay(10000);
+            await Task.Delay(20000);
             if (await Adb.FindButtonAndTap("#5a3015", 4000, 50, 81, 93, 20, this.CancellationToken))
             {
                 // Enter button 1
