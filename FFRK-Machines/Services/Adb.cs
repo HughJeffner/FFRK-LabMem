@@ -367,6 +367,29 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
+        public async Task<Tuple<double,double>> FindImage(Bitmap image, CancellationToken cancellationToken)
+        {
+            Tuple<double, double> ret = null;
+
+            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
+            {
+                using (Bitmap b = new Bitmap(framebuffer.Width/4, framebuffer.Height/4, System.Drawing.Imaging.PixelFormat.Format24bppRgb))
+                {
+                    using (Graphics gr = Graphics.FromImage(b))
+                    {
+                        gr.DrawImage(framebuffer, new Rectangle(0, 0, b.Width, b.Height));
+                    }
+                    var m = new AForge.Imaging.ExhaustiveTemplateMatching(0.9F);
+                    var matches = m.ProcessImage(b, image);
+                    if (matches.Length > 0) ret = new Tuple<double, double>(matches[0].Rectangle.X*4, matches[0].Rectangle.Y*4);
+                }
+
+            }
+
+            return ret;
+
+        }
+
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords, CancellationToken cancellationToken)
         {
 
