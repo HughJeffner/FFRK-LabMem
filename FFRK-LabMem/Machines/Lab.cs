@@ -1048,28 +1048,36 @@ namespace FFRK_LabMem.Machines
                 // Reset state
                 ConfigureStateMachine(State.Unknown);
 
-                // Button Finding Loop
+                // Images to find
                 List<Adb.ImageDef> items = new List<Adb.ImageDef>();
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.90f });
 
-                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/button_blue_play.bmp"), Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/button_brown_ok.bmp"), Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/lab_segment.bmp"), Simalarity = 0.90f });
+                // Stopwatch to limit how long we try to find buttons
+                recoverStopwatch.Restart();
 
+                // Button Finding Loop with timeout and break if stopwatch stopped
                 int loopTimeout = 60;
                 if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Button finding loop for {0}s", loopTimeout);
-
-                recoverStopwatch.Restart();
                 while (recoverStopwatch.Elapsed < TimeSpan.FromSeconds(loopTimeout) && recoverStopwatch.IsRunning)
                 {
+                    // Find images in order, breaking on first match
                     var ret = await Adb.FindImages(items, 3, this.CancellationToken);
                     if (ret != null)
                     {
+                        // Tap it
                         await Adb.TapXY((int)ret.Item1, (int)ret.Item2, this.CancellationToken);
                     }
+                    // Delay between finds
                     await Task.Delay(5000, this.CancellationToken);
                 }
+
+                // Loop finshed, check state
                 CancellationToken.ThrowIfCancellationRequested();
                 recoverStopwatch.Stop();
+
+                // Disable lab if timeout
                 if (recoverStopwatch.Elapsed > TimeSpan.FromSeconds(loopTimeout))
                 {
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery timed out");

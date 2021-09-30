@@ -118,15 +118,9 @@
     <Content Include="blocklist.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\lab_segment.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Resources\button_blue_play.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Resources\button_brown_ok.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="Resources\lab_segment.bmp" />
+    <None Include="Resources\button_blue_play.bmp" />
+    <None Include="Resources\button_brown_ok.bmp" />
     <Content Include="Resources\drop.ico" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\error.png" />
