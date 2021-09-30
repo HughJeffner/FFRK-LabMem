@@ -901,9 +901,9 @@ namespace FFRK_LabMem.Machines
         private async Task RestartLab()
         {
 
-            ColorConsole.WriteLine("Restarting Lab");
+            ColorConsole.WriteLine("Restarting Lab in 60s");
             // Dungeon Complete
-            await Task.Delay(20000);
+            await Task.Delay(60000);
             if (await Adb.FindButtonAndTap("#5a3015", 4000, 50, 81, 93, 20, this.CancellationToken))
             {
                 // Enter button 1

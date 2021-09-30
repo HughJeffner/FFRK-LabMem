@@ -102,7 +102,7 @@ namespace FFRK_LabMem.Config
             foreach (var item in Directory.GetFiles("./Config/", "*.json"))
             {
                 comboBoxLab.Items.Add(item);
-                if (item.EndsWith(configHelper.GetString("lab.configFile", "config/lab.balanced.json"))) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
+                if (item.ToLower().EndsWith(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower())) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
             }
             if (comboBoxLab.SelectedItem != null)
             {
