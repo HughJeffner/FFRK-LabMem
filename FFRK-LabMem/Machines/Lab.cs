@@ -848,7 +848,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogBattleDrops(this);
             
             //Tappy taps
-            await Task.Delay(6000, this.CancellationToken);
+            await Task.Delay(7000, this.CancellationToken);
             await this.Adb.TapPct(85, 85, this.CancellationToken);
             await Task.Delay(1000, this.CancellationToken);
             await this.Adb.TapPct(50, 85, this.CancellationToken);
@@ -901,10 +901,11 @@ namespace FFRK_LabMem.Machines
         private async Task RestartLab()
         {
 
-            ColorConsole.WriteLine("Restarting Lab in 60s");
+            ColorConsole.WriteLine("Restarting Lab in 60 seconds");
+
             // Dungeon Complete
             await Task.Delay(60000);
-            if (await Adb.FindButtonAndTap("#5a3015", 4000, 50, 81, 93, 20, this.CancellationToken))
+            if (await Adb.FindButtonAndTap("#6c3518", 2000, 39, 81, 91, 20, this.CancellationToken))
             {
                 // Enter button 1
                 await Task.Delay(5000);
