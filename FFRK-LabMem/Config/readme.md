@@ -14,6 +14,7 @@
 | StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |
 | RestartLab            | Restarts the lab once completed | false |
 | UsePotions            | Uses potions when restarting a lab | false |
+| UseOldCrashRecovery   | Uses legacy (pixel based) crash recovery | false |
 
 ## Painting Types
 |  Id   | Type                  | Default Priority  |
