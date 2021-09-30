@@ -46,6 +46,8 @@ namespace FFRK_LabMem.Config
             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
             this.checkBoxTimestamps = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.buttonProxyRegenCert = new System.Windows.Forms.Button();
             this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.textBoxProxyBlocklist = new System.Windows.Forms.TextBox();
@@ -92,13 +94,13 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenTop)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -107,7 +109,6 @@ namespace FFRK_LabMem.Config
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -316,6 +317,27 @@ namespace FFRK_LabMem.Config
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Proxy";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.buttonProxyRegenCert);
+            this.groupBox1.Location = new System.Drawing.Point(0, 96);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(449, 235);
+            this.groupBox1.TabIndex = 53;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Actions";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(131, 35);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(229, 23);
+            this.button1.TabIndex = 52;
+            this.button1.Text = "Copy Proxy Bypass to Clipboard\r\n";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // buttonProxyRegenCert
             // 
             this.buttonProxyRegenCert.Location = new System.Drawing.Point(131, 77);
@@ -484,6 +506,7 @@ namespace FFRK_LabMem.Config
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBoxLabOldRecovery);
             this.tabPage5.Controls.Add(this.label8);
             this.tabPage5.Controls.Add(this.numericUpDownWatchdog);
             this.tabPage5.Controls.Add(this.label7);
@@ -812,26 +835,15 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // button1
+            // checkBoxLabOldRecovery
             // 
-            this.button1.Location = new System.Drawing.Point(131, 35);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(229, 23);
-            this.button1.TabIndex = 52;
-            this.button1.Text = "Copy Proxy Bypass to Clipboard\r\n";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.buttonProxyRegenCert);
-            this.groupBox1.Location = new System.Drawing.Point(0, 96);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(449, 235);
-            this.groupBox1.TabIndex = 53;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Actions";
+            this.checkBoxLabOldRecovery.AutoSize = true;
+            this.checkBoxLabOldRecovery.Location = new System.Drawing.Point(6, 225);
+            this.checkBoxLabOldRecovery.Name = "checkBoxLabOldRecovery";
+            this.checkBoxLabOldRecovery.Size = new System.Drawing.Size(135, 17);
+            this.checkBoxLabOldRecovery.TabIndex = 14;
+            this.checkBoxLabOldRecovery.Text = "Use old crash recovery";
+            this.checkBoxLabOldRecovery.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -860,6 +872,7 @@ namespace FFRK_LabMem.Config
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenTop)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
@@ -872,7 +885,6 @@ namespace FFRK_LabMem.Config
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -942,5 +954,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBoxLabOldRecovery;
     }
 }

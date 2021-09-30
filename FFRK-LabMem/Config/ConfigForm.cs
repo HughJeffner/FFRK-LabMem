@@ -146,6 +146,7 @@ namespace FFRK_LabMem.Config
             labConfig.RestartLab = checkBoxLabRestart.Checked;
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
             labConfig.WatchdogMinutes = (int)numericUpDownWatchdog.Value;
+            labConfig.UseOldCrashRecovery = checkBoxLabOldRecovery.Checked;
             labConfig.PaintingPriorityMap.Clear();
             foreach (ListViewItem item in listViewPaintings.Items)
             {
@@ -209,6 +210,7 @@ namespace FFRK_LabMem.Config
             checkBoxLabRestart.Checked = labConfig.RestartLab;
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
             numericUpDownWatchdog.Value = labConfig.WatchdogMinutes;
+            checkBoxLabOldRecovery.Checked = labConfig.UseOldCrashRecovery;
 
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)

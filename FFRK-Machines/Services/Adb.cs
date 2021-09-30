@@ -11,6 +11,7 @@ using System.Threading;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Drawing.Drawing2D;
 
 namespace FFRK_LabMem.Services
 {
@@ -29,6 +30,11 @@ namespace FFRK_LabMem.Services
         public class Size {
             public int Width {get; set;}
             public int Height { get; set; }
+        }
+        public class ImageDef
+        {
+            public Bitmap Image { get; set; }
+            public float Simalarity { get; set; }
         }
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
@@ -367,21 +373,43 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
-        public async Task<Tuple<double,double>> FindImage(Bitmap image, CancellationToken cancellationToken)
+        public async Task<Tuple<double,double>> FindImages(List<ImageDef> images, int scaleFactor, CancellationToken cancellationToken)
         {
             Tuple<double, double> ret = null;
 
             using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
             {
-                using (Bitmap b = new Bitmap(framebuffer.Width/4, framebuffer.Height/4, System.Drawing.Imaging.PixelFormat.Format24bppRgb))
+                double ratio = (double)framebuffer.Height / (double)framebuffer.Width;
+                int width = (720 / scaleFactor);
+                int height = (int)(width * ratio);
+                using (Bitmap b = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb))
                 {
                     using (Graphics gr = Graphics.FromImage(b))
                     {
+                        gr.CompositingQuality = CompositingQuality.HighQuality;
+                        gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        gr.SmoothingMode = SmoothingMode.HighQuality;
                         gr.DrawImage(framebuffer, new Rectangle(0, 0, b.Width, b.Height));
                     }
-                    var m = new AForge.Imaging.ExhaustiveTemplateMatching(0.9F);
-                    var matches = m.ProcessImage(b, image);
-                    if (matches.Length > 0) ret = new Tuple<double, double>(matches[0].Rectangle.X*4, matches[0].Rectangle.Y*4);
+                    var templateMatcher = new AForge.Imaging.ExhaustiveTemplateMatching();
+                    foreach (var item in images)
+                    {
+                        templateMatcher.SimilarityThreshold = item.Simalarity;
+                        var matches = templateMatcher.ProcessImage(b, item.Image);
+                        if (matches.Length > 0)
+                        {
+                            // Return the center of the found image
+                            var match = matches[0].Rectangle;
+                            ret = new Tuple<double, double>(
+                                (match.X + (match.Width/2))  * scaleFactor, 
+                                (match.Y + (match.Height/2))  * scaleFactor);
+                            System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+
+                            break;
+                        }
+                    }
+                   
                 }
 
             }

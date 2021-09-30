@@ -28,6 +28,7 @@ namespace FFRK_LabMem.Machines
             public bool StopOnMasterPainting { get; set; }
             public bool RestartLab { get; set; }
             public bool UsePotions { get; set; }
+            public bool UseOldCrashRecovery { get; set; }
 
             public Configuration()
             {
@@ -42,6 +43,7 @@ namespace FFRK_LabMem.Machines
                 this.TreasureFilterMap = new Dictionary<string, TreasureFilter>();
                 this.RestartLab = false;
                 this.UsePotions = false;
+                this.UseOldCrashRecovery = false;
             }
 
             public class TreasureFilter
@@ -100,6 +102,7 @@ namespace FFRK_LabMem.Machines
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         private Stopwatch battleStopwatch = new Stopwatch();
+        private Stopwatch recoverStopwatch = new Stopwatch();
         private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
 
         public Lab(Adb adb, Configuration config)
@@ -260,6 +263,7 @@ namespace FFRK_LabMem.Machines
                         if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
                     }
                 }
+                recoverStopwatch.Stop();
                 
             });
 
@@ -904,36 +908,36 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Restarting Lab in 60 seconds...");
 
             // Dungeon Complete
-            await Task.Delay(60000);
+            await Task.Delay(60000, this.CancellationToken);
 
             ColorConsole.WriteLine("Restarting Lab");
             if (await Adb.FindButtonAndTap("#6c3518", 2000, 39, 81, 91, 20, this.CancellationToken))
             {
                 // Enter button 1
-                await Task.Delay(5000);
+                await Task.Delay(5000, this.CancellationToken);
                 if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 84, 94, 20, this.CancellationToken))
                 {
 
                     // Enter button 2
-                    await Task.Delay(5000);
+                    await Task.Delay(5000, this.CancellationToken);
                     if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken))
                     {
 
                         // Stamina dialog
-                        await Task.Delay(2000);
+                        await Task.Delay(2000, this.CancellationToken);
                         var button = await Adb.FindButton("#6c3518", 2000, 50, 36, 50, 5, this.CancellationToken);
                         if (button != null)
                         {
                             if (Config.UsePotions)
                             {
                                 await Adb.TapPct(button.Item1, button.Item2, this.CancellationToken); // Select potions
-                                await Task.Delay(2000);
+                                await Task.Delay(2000, this.CancellationToken);
                                 await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
-                                await Task.Delay(2000);
+                                await Task.Delay(2000, this.CancellationToken);
                                 await Adb.FindButtonAndTap("#2060ce", 3000, 47, 57, 70, 5, this.CancellationToken);  // Potion used dialog
-                                await Task.Delay(2000);
+                                await Task.Delay(2000, this.CancellationToken);
                                 await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
-                                await Task.Delay(2000);
+                                await Task.Delay(2000, this.CancellationToken);
 
                             } else
                             {
@@ -945,15 +949,15 @@ namespace FFRK_LabMem.Machines
                         }
 
                         // Confirm equipment box or enter
-                        await Task.Delay(2000);
+                        await Task.Delay(2000, this.CancellationToken);
                         if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
                         {
 
                             // Enter if equipment confirmed, otherwise should find nothing
-                            await Task.Delay(2000);
+                            await Task.Delay(2000, this.CancellationToken);
                             if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
                             {
-                                await Task.Delay(4000);
+                                await Task.Delay(4000, this.CancellationToken);
                             }
 
                             // Reset state
@@ -1008,30 +1012,75 @@ namespace FFRK_LabMem.Machines
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
             await Task.Delay(5000, this.CancellationToken);
 
-            // Press start button
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for start button...");
-            if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20, this.CancellationToken))
+            if (Config.UseOldCrashRecovery)
             {
-                // Press continue battle button
-                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for continue battle button...");
-                if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10, this.CancellationToken))
+                // Press start button
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for start button...");
+                if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20, this.CancellationToken))
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
-                    await this.StateMachine.FireAsync(Trigger.StartBattle);
-                } else
+                    // Press continue battle button
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for continue battle button...");
+                    if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10, this.CancellationToken))
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
+                        await this.StateMachine.FireAsync(Trigger.StartBattle);
+                    }
+                    else
+                    {
+                        // Go back into lab
+                        if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
+                        await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
+                        ConfigureStateMachine(State.Unknown);
+                    }
+
+                }
+                else
                 {
-                    // Go back into lab
-                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
-                    await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
-                    ConfigureStateMachine(State.Unknown);
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
+                    OnMachineFinished();
+                    await Notify();
                 }
 
             } else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
-                OnMachineFinished();
-                await Notify();
+
+                // Reset state
+                ConfigureStateMachine(State.Unknown);
+
+                // Button Finding Loop
+                List<Adb.ImageDef> items = new List<Adb.ImageDef>();
+
+                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/button_blue_play.bmp"), Simalarity = 0.95f });
+                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/button_brown_ok.bmp"), Simalarity = 0.95f });
+                items.Add(new Adb.ImageDef() { Image = new System.Drawing.Bitmap("resources/lab_segment.bmp"), Simalarity = 0.90f });
+
+                int loopTimeout = 60;
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Button finding loop for {0}s", loopTimeout);
+
+                recoverStopwatch.Restart();
+                while (recoverStopwatch.Elapsed < TimeSpan.FromSeconds(loopTimeout) && recoverStopwatch.IsRunning)
+                {
+                    var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                    if (ret != null)
+                    {
+                        await Adb.TapXY((int)ret.Item1, (int)ret.Item2, this.CancellationToken);
+                    }
+                    await Task.Delay(5000, this.CancellationToken);
+                }
+                CancellationToken.ThrowIfCancellationRequested();
+                recoverStopwatch.Stop();
+                if (recoverStopwatch.Elapsed > TimeSpan.FromSeconds(loopTimeout))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery timed out");
+                    OnMachineFinished();
+                    await Notify();
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery completed!");
+                }
+
             }
 
         }
