@@ -115,7 +115,7 @@ Configuring the lab walker behavior and all the various options is documented [h
 ### Data Logging
 Not enabled by default, set `Enable data logging` in general program options.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
 
-## <a name="upgrading"></a> Upgrading
+## Upgrading
 Verson codes are in the format (major.minor.patch)
 
 For a minor or patch release copy the main executeable to your install folder.
