@@ -48,7 +48,7 @@ namespace FFRK_LabMem.Services
         public static void Check(String user, String repo, bool includePreRelease, String versionCode)
         {
             
-            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases... disable in app.config");
+            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases...");
             var checkerTask = Task.Run(async () =>
             {
                 var checker = new Updates(user, repo, includePreRelease);

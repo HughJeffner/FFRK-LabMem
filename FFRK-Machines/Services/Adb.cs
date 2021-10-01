@@ -398,14 +398,14 @@ namespace FFRK_LabMem.Services
                         var matches = templateMatcher.ProcessImage(b, item.Image);
                         if (matches.Length > 0)
                         {
-                            // Return the center of the found image
+                            // Return the center of the found image as a pct
                             var match = matches[0].Rectangle;
                             ret = new Tuple<double, double>(
-                                (match.X + (match.Width/2))  * scaleFactor, 
-                                (match.Y + (match.Height/2))  * scaleFactor);
+                                ((match.X + (match.Width/2)) / (double)width) * 100, 
+                                ((match.Y + (match.Height/2)) / (double)height) * 100
+                            );
                             System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
-
                             break;
                         }
                     }
