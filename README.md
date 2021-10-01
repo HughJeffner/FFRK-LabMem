@@ -84,6 +84,12 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 
 ## Configuration
 ### General program options
+
+All of these settings can be accessed by pressing `C`
+
+<details>
+  <summary>Show Options</summary>
+  
 | Property                  | Description                                | Default  |
 | ------------------------- | ------------------------------------------ | -------- |
 | console.timestamps        | Show timestamps in console                 | true     |
@@ -99,11 +105,19 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 | updates.checkForUpdates   | Checks the releases page for new versions  | true     |
 | updates.includePrerelease | Includes pre-release (testing) versions when checking for new releases | false |
 | datalogger.enabled        | When enabled, logs various data to files in the DataLog directory | false |
+</details>
 
 ### Lab walking behavior
 Four different lab config files are provided: Balanced (default), Farm, Full, and Quick
 
 Configuring the lab walker behavior and all the various options is documented [here](./FFRK-LabMem/Config/readme.md)
 
-## Data Logging
-Not enabled by default, set `datalogger.enabled` to true in `ffrk-labmem.exe.config`.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
+### Data Logging
+Not enabled by default, set `Enable data logging` in general program options.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
+
+## <a name="upgrading"></a> Upgrading
+Verson codes are in the format (major.minor.patch)
+
+For a minor or patch release copy the main executeable to your install folder.
+
+For a major release copy all files.  You can optionally keep your configuration files (any missing settings will use defaults and any unused settings will be ignored)
