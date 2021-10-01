@@ -65,7 +65,6 @@ namespace FFRK_LabMem.Machines
             PickedCombatant,
             PickedPortal,
             OpenDoor,
-            DontOpenDoor,
             MoveOn,
             StartBattle,
             EnterDungeon,
@@ -181,7 +180,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(async (t) => await OpenSealedDoor())
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
-                .Permit(Trigger.DontOpenDoor, State.FoundThing)
+                .Permit(Trigger.FoundDoor, State.FoundThing)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
@@ -768,7 +767,6 @@ namespace FFRK_LabMem.Machines
                 await Task.Delay(5000, this.CancellationToken);
                 await this.Adb.TapPct(30, 74, this.CancellationToken);
                 await Task.Delay(1000, this.CancellationToken);
-                await this.StateMachine.FireAsync(Trigger.DontOpenDoor);
             }
 
         }
