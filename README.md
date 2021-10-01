@@ -33,17 +33,17 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 12. Load up a Labyrinth
 
 ## Basic Usage
-Extract all files from the .zip file to a folder.  You can skip configuration files if they already exist to keep your settings.
+Extract all files from the .zip file to a folder
 
-This appliation runs as a command-line application in 'interactive mode'.  This means you can simply double-click it and it will continue to run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
+Double-click `FFRK-LabMem.exe` it and it will run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
 
 Press `C` to open configuration options
 
 ## Setup
 For this to work correctly, the following must be set up:
 1. Network proxy settings
-2. Install trusted certificate (FFRK 8.0.0+)
-3. ADB connection
+2. ADB connection
+3. Install trusted CA certificate
 4. Screen top and bottom offsets
 5. Team 1 must be able to beat anything, even at 10 fatigue.  Holy mind mage party recommended!
 
@@ -57,11 +57,6 @@ This varies by device and every network is different.  Typically with android de
 > **Tip:** for most android emulators if you can view the device ip address for example `10.0.x.x` you can simply use `10.0.x.2` for the loopback to the host system.
 
 If you are going to use a physical device or an emulator on another system, please make sure to open port 8081 in the firewall to allow incoming connections.  On Windows, it usually prompts you on first run to create the proper firewall rule.
-
-### Install trusted CA certificate
-If the proxy root CA certificate isn't installed the bot will copy it to the device and switch to the settings screen and offer guidance on installing it.  The root CA certificate is auto-generated on startup in a file called `rootCert.pfx` with a 10-year lifetime (so you only have to install it once).  Addtionally, the .pfx file contains the private key corresponding to the root CA public key contained in the certificate that is installed on the device.
-
-This certificate is only used to decrypt traffic to the `ffrk.denagames.com`, all other traffic is tunneled through the proxy with no inspection.
 
 ### <a name="adbconnection"></a>Adb connection
 This allows the application to interact with the android device. First you'll need to enable developer options in the device settings and enable USB debugging.  There are many tutorials online that cover this.
@@ -78,6 +73,10 @@ Connecting to an emulator works over TCP.  You can set up TCP with a physical de
 | MeMu      | 127.0.0.1:21503 | 21513, 21523 (based on instance id)|
 | LDPlayer  | 127.0.0.1:5555  | See [here](https://www.ldplayer.net/apps/adb-debugging-on-pc.html) |
 
+### Install trusted CA certificate
+If the proxy root CA certificate isn't installed the bot will copy it to the device and switch to the settings screen and offer guidance on installing it.  The root CA certificate is auto-generated on startup in a file called `rootCert.pfx` with a 10-year lifetime (so you only have to install it once).  Addtionally, the .pfx file contains the private key corresponding to the root CA public key contained in the certificate that is installed on the device.
+
+This certificate is only used to decrypt traffic to the `ffrk.denagames.com`, all other traffic is tunneled through the proxy with no inspection.
 
 ### Screen offsets
 From version 0.9.10 and higher, screen offsets can be automatically detected using `Alt+O` when on FFRK title screen.
