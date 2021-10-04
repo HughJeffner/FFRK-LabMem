@@ -27,6 +27,7 @@ namespace FFRK_Machines.Machines
         public M Machine { get; set; }
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
+        public bool Enabled => enabled;
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
         private CancellationTokenSource cancelMachineSource = new CancellationTokenSource();
        

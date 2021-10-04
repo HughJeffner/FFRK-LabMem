@@ -56,8 +56,11 @@ namespace FFRK_LabMem.Config
 
         public static void CreateAndShow(ConfigHelper configHelper, LabController controller)
         {
+
+            bool initalState = controller.Enabled;
+
             // Disable Lab
-            controller.Disable();
+            if (controller.Enabled) controller.Disable();
 
             // Show form
             Application.EnableVisualStyles();
@@ -65,6 +68,10 @@ namespace FFRK_LabMem.Config
             form.configHelper = configHelper;
             form.controller = controller;
             form.ShowDialog();
+
+            // Re-enable if needed
+            if (initalState) controller.Enable();
+
         }
 
         private void ListCategory_SelectedIndexChanged(object sender, EventArgs e)
