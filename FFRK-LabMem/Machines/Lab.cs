@@ -285,6 +285,7 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("dungeon_recommend_info", this);
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", this);
             Proxy.AddRegistration("continue/get_info", this);
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", this);
         }
 
         public override async Task PassFromProxy(int id, string urlMatch, JObject data)
@@ -440,6 +441,10 @@ namespace FFRK_LabMem.Machines
 
                 case 6:
                     await this.StateMachine.FireAsync(Trigger.BattleFailed);
+                    break;
+
+                case 7:
+                    recoverStopwatch.Stop();
                     break;
 
                 default:
