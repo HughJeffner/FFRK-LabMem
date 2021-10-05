@@ -600,7 +600,7 @@ namespace FFRK_LabMem.Machines
                 recoverStopwatch.Restart();
 
                 // Button Finding Loop with timeout and break if stopwatch stopped
-                int loopTimeout = 60;
+                double loopTimeout = TimeSpan.FromMinutes(3).TotalSeconds;
                 if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Button finding loop for {0}s", loopTimeout);
                 while (recoverStopwatch.Elapsed < TimeSpan.FromSeconds(loopTimeout) && recoverStopwatch.IsRunning)
                 {
