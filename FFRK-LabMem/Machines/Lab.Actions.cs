@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Machines
 {
-    public partial class Lab : Machine<Lab.State, Lab.Trigger, Lab.Configuration>
+    public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
 
         private void DetermineState()
@@ -255,7 +255,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private Configuration.TreasureFilter GetTreasureFilter(JToken treasure)
+        private LabConfiguration.TreasureFilter GetTreasureFilter(JToken treasure)
         {
 
             var type = treasure.ToString().Substring(0, 1);
@@ -267,7 +267,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure filter id: {0}", type);
-                return new Configuration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
+                return new LabConfiguration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
             }
 
         }
@@ -335,6 +335,14 @@ namespace FFRK_LabMem.Machines
         {
             ColorConsole.Write("Starting Battle");
             this.CancellationToken.ThrowIfCancellationRequested();
+
+            // Lethe Tears
+            if (Config.UseLetheTears && FatigueInfo.Any(f => f.Fatigue >= Config.LetheTearsFatigue))
+            {
+                await UseLetheTears();
+            }
+
+            // Dungeon info
             var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
             if (d != null)
             {
@@ -343,9 +351,11 @@ namespace FFRK_LabMem.Machines
             }
             ColorConsole.WriteLine("");
 
+            // Enter
             if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30, this.CancellationToken))
             {
                 await Task.Delay(500, this.CancellationToken);
+                // Fatigue warning
                 await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
@@ -370,6 +380,9 @@ namespace FFRK_LabMem.Machines
             // Drops
             await DataLogger.LogBattleDrops(this);
 
+            // Update fatigue
+            FatigueInfo.ForEach(f => f.Fatigue += 2);
+
             //Tappy taps
             await Task.Delay(7000, this.CancellationToken);
             await this.Adb.TapPct(85, 85, this.CancellationToken);
@@ -390,6 +403,65 @@ namespace FFRK_LabMem.Machines
             await this.Adb.TapPct(71, 62, this.CancellationToken);
             await Task.Delay(2000, this.CancellationToken);
 
+        }
+
+        private async Task<bool> UseLetheTears()
+        {
+
+            ColorConsole.WriteLine("Using Lethe Tears");
+            await Task.Delay(2000, this.CancellationToken);
+
+            // Lethe tears button
+            await this.Adb.TapPct(88.88, 17.18, this.CancellationToken);
+            await Task.Delay(2000, this.CancellationToken);
+
+            // Each unit if selected
+            for (int i = 0; i < 5; i++)
+            {
+                if ((Config.LetheTearsSlot & (1 << 4-i)) != 0)
+                {
+                    await this.Adb.TapPct(11.11 + (i * 15.55), 31.64, this.CancellationToken);
+                    await Task.Delay(500, this.CancellationToken);
+                }
+            }
+
+            // Confirm button
+            await Task.Delay(2000, this.CancellationToken);
+            if (await Adb.FindButtonAndTap("#2060ce", 3000, 37.5, 74, 87, 20, this.CancellationToken))
+            {
+                //Use Lethe Tears brown button
+                await Task.Delay(2000, this.CancellationToken);
+                if (await Adb.FindButtonAndTap("#6c3518", 2000, 50, 29, 42, 20, this.CancellationToken))
+                {
+                    // Confirmation
+                    await Task.Delay(2000, this.CancellationToken);
+                    if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                    {
+                        // OK
+                        await Task.Delay(2000, this.CancellationToken);
+                        if (await Adb.FindButtonAndTap("#2060ce", 3000, 38.8, 55, 70, 5, this.CancellationToken))
+                        {
+                            return true;
+                        } else
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'OK' button");
+                        }
+                        
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'Yes' button");
+                    }
+                    
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'Use' button");
+                }
+                
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'Confirm' button");
+            }
+            return false;
         }
 
         private async Task FinishLab(StateMachine<State, Trigger>.Transition t)

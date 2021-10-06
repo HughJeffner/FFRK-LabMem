@@ -46,7 +46,7 @@ namespace FFRK_LabMem.Config
 
         public ConfigHelper configHelper = null;
         public LabController controller = null;
-        public Lab.Configuration labConfig = new Lab.Configuration();
+        public LabConfiguration labConfig = new LabConfiguration();
         private bool treasuresLoaded = false;
 
         public ConfigForm()
@@ -113,7 +113,7 @@ namespace FFRK_LabMem.Config
             }
             if (comboBoxLab.SelectedItem != null)
             {
-                labConfig = JsonConvert.DeserializeObject<Lab.Configuration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
+                labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
             }
 
             // List sorting
@@ -162,7 +162,7 @@ namespace FFRK_LabMem.Config
             labConfig.TreasureFilterMap.Clear();
             foreach (ListViewItem item in listViewTreasures.Items)
             {
-                var value = new Lab.Configuration.TreasureFilter();
+                var value = new LabConfiguration.TreasureFilter();
                 value.Priority = int.Parse(item.Text);
                 value.MaxKeys = int.Parse(item.SubItems[1].Text);
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
@@ -207,7 +207,7 @@ namespace FFRK_LabMem.Config
 
         private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
-            labConfig = JsonConvert.DeserializeObject<Lab.Configuration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
+            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;

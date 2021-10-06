@@ -6,12 +6,9 @@
     public class MachineConfiguration
     {
 
-        public bool Debug { get; set; }
+        public bool Debug { get; set; } = true;
 
-        public MachineConfiguration()
-        {
-            Debug = true;
-        }
+        public MachineConfiguration() {}
 
     }
 }

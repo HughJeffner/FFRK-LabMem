@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
@@ -10,49 +9,12 @@ using System.Timers;
 using FFRK_Machines.Machines;
 using FFRK_Machines;
 using FFRK_LabMem.Data;
+using System.Collections.Generic;
 
 namespace FFRK_LabMem.Machines
 {
-    public partial class Lab : Machine<Lab.State, Lab.Trigger, Lab.Configuration>
+    public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
-
-        public class Configuration : MachineConfiguration
-        {
-            public bool OpenDoors { get; set; }
-            public bool AvoidExploreIfTreasure { get; set; }
-            public bool AvoidPortal { get; set; }
-            public Dictionary<String, int> PaintingPriorityMap { get; set; }
-            public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; }
-            public int WatchdogMinutes { get; set; }
-            public bool RestartFailedBattle { get; set; }
-            public bool StopOnMasterPainting { get; set; }
-            public bool RestartLab { get; set; }
-            public bool UsePotions { get; set; }
-            public bool UseOldCrashRecovery { get; set; }
-
-            public Configuration()
-            {
-                this.Debug = true;
-                this.OpenDoors = true;
-                this.AvoidExploreIfTreasure = true;
-                this.AvoidPortal = true;
-                this.WatchdogMinutes = 10;
-                this.RestartFailedBattle = false;
-                this.StopOnMasterPainting = true;
-                this.PaintingPriorityMap = new Dictionary<string, int>();
-                this.TreasureFilterMap = new Dictionary<string, TreasureFilter>();
-                this.RestartLab = false;
-                this.UsePotions = false;
-                this.UseOldCrashRecovery = false;
-            }
-
-            public class TreasureFilter
-            {
-                public int Priority { get; set; }
-                public int MaxKeys { get; set; }
-            }
-
-        }
 
         public enum Trigger
         {
@@ -104,7 +66,15 @@ namespace FFRK_LabMem.Machines
         private Stopwatch recoverStopwatch = new Stopwatch();
         private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
 
-        public Lab(Adb adb, Configuration config)
+        private class BuddyInfo
+        {
+            public int BuddyId { get; set; }
+            public int Fatigue { get; set; } = 3;
+        }
+
+        private List<BuddyInfo> FatigueInfo = new List<BuddyInfo>();
+
+        public Lab(Adb adb, LabConfiguration config)
         {
 
             // Config
@@ -286,6 +256,8 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", this);
             Proxy.AddRegistration("continue/get_info", this);
             Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", this);
+            Proxy.AddRegistration("labyrinth/party/list", this);
+            Proxy.AddRegistration("labyrinth/buddy/info", this);
         }
 
         public override async Task PassFromProxy(int id, string urlMatch, JObject data)
@@ -411,6 +383,7 @@ namespace FFRK_LabMem.Machines
                     var abrasionMap = data["user_buddy_memory_abrasion_map"];
                     if (abrasionMap != null)
                     {
+                        ParseAbrasionMap(abrasionMap);
                         await this.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     }
@@ -446,7 +419,12 @@ namespace FFRK_LabMem.Machines
                 case 7:
                     recoverStopwatch.Stop();
                     break;
-
+                case 8:
+                    ParsePartyInfo(data);
+                    break;
+                case 9:
+                    ParseFatigueInfo(data);
+                    break;
                 default:
                     System.Diagnostics.Debug.Print(data.ToString());
                     break;
@@ -470,6 +448,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentPainting = null;
             this.CurrentFloor = 0;
             this.CurrentKeys = 0;
+            this.FatigueInfo = new List<BuddyInfo>();
             
             // Base
             await base.Disable();
@@ -496,6 +475,51 @@ namespace FFRK_LabMem.Machines
                 {
                     this.CurrentKeys+= (int)keys["num"];
                 }
+            }
+
+            // Parse Fatigue
+
+
+        }
+
+        private void ParsePartyInfo(JObject data)
+        {
+
+            var party = data["parties"].Where(p => (string)p["party_no"] == "1").FirstOrDefault();
+            if (party != null)
+            {
+                
+                FatigueInfo.Clear();
+                foreach (var item in party["slot_to_buddy_id"].OrderBy(i => i.FirstOrDefault()))
+                {
+                    FatigueInfo.Add(new BuddyInfo() { BuddyId = (int)item.First });
+                }
+            }
+
+        }
+
+        private void ParseFatigueInfo(JObject data)
+        {
+            var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
+            if (values != null)
+            {
+                foreach (var item in FatigueInfo)
+                {
+                    var value = (JObject)values.Where(i => (int)i["user_buddy_id"] == item.BuddyId).FirstOrDefault();
+                    if (value != null) item.Fatigue = (int)value["memory_abrasion"];
+
+                }
+            }
+            
+        }
+
+        private void ParseAbrasionMap(JToken data)
+        {
+
+            foreach (var item in FatigueInfo)
+            {
+                var value = data[item.BuddyId.ToString()];
+                if (value != null) item.Fatigue = (int)value["value"];
             }
 
         }

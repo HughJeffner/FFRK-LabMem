@@ -78,6 +78,7 @@
     <Compile Include="Config\ConfigHelper.cs" />
     <Compile Include="Data\DataLogger.cs" />
     <Compile Include="Machines\Lab.Actions.cs" />
+    <Compile Include="Machines\LabConfiguration.cs" />
     <Compile Include="Machines\LabController.cs" />
     <Compile Include="Machines\Lab.cs" />
     <Compile Include="Program.cs" />
