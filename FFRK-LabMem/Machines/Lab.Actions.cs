@@ -336,12 +336,6 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Starting Battle");
             this.CancellationToken.ThrowIfCancellationRequested();
 
-            // Lethe Tears
-            if (Config.UseLetheTears && FatigueInfo.Any(f => f.Fatigue >= Config.LetheTearsFatigue))
-            {
-                await UseLetheTears();
-            }
-
             // Dungeon info
             var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
             if (d != null)
@@ -350,6 +344,13 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", d["captures"][0]["tip_battle"]["title"]);
             }
             ColorConsole.WriteLine("");
+
+            // Lethe Tears
+            if (Config.UseLetheTears && FatigueInfo.Any(f => f.Fatigue >= Config.LetheTearsFatigue))
+            {
+                await Task.Delay(5000, this.CancellationToken);
+                await UseLetheTears();
+            }
 
             // Enter
             if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30, this.CancellationToken))
