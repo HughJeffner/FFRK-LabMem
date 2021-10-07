@@ -202,6 +202,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.WaitForBoss)
                 .OnEntryAsync(async (t) => await FinishLab(t))
                 .Permit(Trigger.ResetState, State.Ready)
+                .Permit(Trigger.FinishedLab, State.Completed)
                 .Ignore(Trigger.BattleSuccess)
                 .Ignore(Trigger.WatchdogTimer)
                 .Ignore(Trigger.PickedCombatant);

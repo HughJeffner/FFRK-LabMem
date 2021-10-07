@@ -82,7 +82,7 @@ namespace FFRK_LabMem.Machines
             if (this.CurrentPainting != null) selectedPaintingIndex = paintings.IndexOf(this.CurrentPainting);
 
             // Master painting check
-            if ((int)this.CurrentPainting["type"] == 2 && this.Config.StopOnMasterPainting)
+            if ((int)this.CurrentPainting["type"] == 2 && (this.Config.StopOnMasterPainting || this.Config.UseTeleportStoneOnMasterPainting))
             {
                 await this.StateMachine.FireAsync(Trigger.FoundBoss);
                 return;
@@ -466,21 +466,67 @@ namespace FFRK_LabMem.Machines
             return false;
         }
 
-        private async Task FinishLab(StateMachine<State, Trigger>.Transition t)
+        public async Task<bool> UseTeleportStone()
         {
 
-            // Notification?
-            await Notify();
+            ColorConsole.WriteLine("Using Teleport Stone");
+            await Task.Delay(2000, this.CancellationToken);
+
+            // Lethe tears button
+            await this.Adb.TapPct(90.27, 4.68, this.CancellationToken);
+            await Task.Delay(2000, this.CancellationToken);
+
+            // Use a stone brown button
+            await Task.Delay(2000, this.CancellationToken);
+            if (await Adb.FindButtonAndTap("#6c3518", 2000, 58, 23, 37.5, 20, this.CancellationToken))
+            {
+                // Confirmation
+                await Task.Delay(2000, this.CancellationToken);
+                if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                {
+                    return true;
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'OK' button");
+                }
+
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find 'Use' button");
+            }
+            return false;
+        }
+
+        private async Task FinishLab(StateMachine<State, Trigger>.Transition t)
+        {
 
             // Disable machine
             if (t.Destination == State.WaitForBoss)
             {
-                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  Press 'E' to enable when ready.");
-                base.OnMachineFinished();
+                ColorConsole.Write(ConsoleColor.Green, "We reached the master painting.  ");
+                if (Config.StopOnMasterPainting)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
+                    await Notify();
+                    base.OnMachineFinished();
+                } 
+                if (Config.UseTeleportStoneOnMasterPainting)
+                {
+                    ColorConsole.WriteLine("");
+                    await UseTeleportStone();
+                    await StateMachine.FireAsync(Trigger.FinishedLab);
+                }
+                
             }
 
             if (t.Destination == State.Completed)
             {
+                
+                // Notify complete
+                await Notify();
+
+                // Restart or not
                 ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
                 if (!Config.RestartLab)
                 {
