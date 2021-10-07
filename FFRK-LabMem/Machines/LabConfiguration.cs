@@ -22,7 +22,8 @@ namespace FFRK_LabMem.Machines
         public bool UseOldCrashRecovery { get; set; } = false;
         public bool UseLetheTears { get; set; } = false;
         public byte LetheTearsSlot { get; set; } = 0b11111;
-        public int LetheTearsFatigue { get; set; } = 8;
+        public int LetheTearsFatigue { get; set; } = 7;
+        public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
 
         public LabConfiguration() {}
 

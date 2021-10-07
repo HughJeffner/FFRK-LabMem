@@ -63,6 +63,7 @@ namespace FFRK_LabMem.Config
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDownWatchdog = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -70,9 +71,6 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabRestart = new System.Windows.Forms.CheckBox();
             this.checkBoxLabStopOnMasterPainting = new System.Windows.Forms.CheckBox();
             this.checkBoxLabRestartFailedBattle = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabAvoidPortal = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabAvoidExplore = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabDoors = new System.Windows.Forms.CheckBox();
             this.checkBoxLabDebug = new System.Windows.Forms.CheckBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.checkBoxSwap = new System.Windows.Forms.CheckBox();
@@ -94,7 +92,18 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabAvoidPortal = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabAvoidExplore = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabDoors = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabUseTeleport = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot5 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot4 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot3 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot1 = new System.Windows.Forms.CheckBox();
+            this.numericUpDownFatigue = new System.Windows.Forms.NumericUpDown();
+            this.checkBoxLabUseLetheTears = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -109,6 +118,8 @@ namespace FFRK_LabMem.Config
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
+            this.tabPage8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -495,6 +506,7 @@ namespace FFRK_LabMem.Config
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Location = new System.Drawing.Point(3, 27);
@@ -506,6 +518,7 @@ namespace FFRK_LabMem.Config
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBoxLabUseTeleport);
             this.tabPage5.Controls.Add(this.checkBoxLabOldRecovery);
             this.tabPage5.Controls.Add(this.label8);
             this.tabPage5.Controls.Add(this.numericUpDownWatchdog);
@@ -514,22 +527,29 @@ namespace FFRK_LabMem.Config
             this.tabPage5.Controls.Add(this.checkBoxLabRestart);
             this.tabPage5.Controls.Add(this.checkBoxLabStopOnMasterPainting);
             this.tabPage5.Controls.Add(this.checkBoxLabRestartFailedBattle);
-            this.tabPage5.Controls.Add(this.checkBoxLabAvoidPortal);
-            this.tabPage5.Controls.Add(this.checkBoxLabAvoidExplore);
-            this.tabPage5.Controls.Add(this.checkBoxLabDoors);
             this.tabPage5.Controls.Add(this.checkBoxLabDebug);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage5.Size = new System.Drawing.Size(435, 279);
             this.tabPage5.TabIndex = 0;
-            this.tabPage5.Text = "Options";
+            this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabOldRecovery
+            // 
+            this.checkBoxLabOldRecovery.AutoSize = true;
+            this.checkBoxLabOldRecovery.Location = new System.Drawing.Point(6, 179);
+            this.checkBoxLabOldRecovery.Name = "checkBoxLabOldRecovery";
+            this.checkBoxLabOldRecovery.Size = new System.Drawing.Size(135, 17);
+            this.checkBoxLabOldRecovery.TabIndex = 14;
+            this.checkBoxLabOldRecovery.Text = "Use old crash recovery";
+            this.checkBoxLabOldRecovery.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(176, 197);
+            this.label8.Location = new System.Drawing.Point(176, 151);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(147, 13);
             this.label8.TabIndex = 13;
@@ -537,7 +557,7 @@ namespace FFRK_LabMem.Config
             // 
             // numericUpDownWatchdog
             // 
-            this.numericUpDownWatchdog.Location = new System.Drawing.Point(115, 195);
+            this.numericUpDownWatchdog.Location = new System.Drawing.Point(115, 149);
             this.numericUpDownWatchdog.Name = "numericUpDownWatchdog";
             this.numericUpDownWatchdog.Size = new System.Drawing.Size(48, 20);
             this.numericUpDownWatchdog.TabIndex = 12;
@@ -548,7 +568,7 @@ namespace FFRK_LabMem.Config
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 197);
+            this.label7.Location = new System.Drawing.Point(6, 151);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(103, 13);
             this.label7.TabIndex = 11;
@@ -557,7 +577,7 @@ namespace FFRK_LabMem.Config
             // checkBoxLabUsePotions
             // 
             this.checkBoxLabUsePotions.AutoSize = true;
-            this.checkBoxLabUsePotions.Location = new System.Drawing.Point(18, 167);
+            this.checkBoxLabUsePotions.Location = new System.Drawing.Point(18, 122);
             this.checkBoxLabUsePotions.Name = "checkBoxLabUsePotions";
             this.checkBoxLabUsePotions.Size = new System.Drawing.Size(121, 17);
             this.checkBoxLabUsePotions.TabIndex = 10;
@@ -567,18 +587,19 @@ namespace FFRK_LabMem.Config
             // checkBoxLabRestart
             // 
             this.checkBoxLabRestart.AutoSize = true;
-            this.checkBoxLabRestart.Location = new System.Drawing.Point(6, 144);
+            this.checkBoxLabRestart.Location = new System.Drawing.Point(6, 98);
             this.checkBoxLabRestart.Name = "checkBoxLabRestart";
             this.checkBoxLabRestart.Size = new System.Drawing.Size(158, 17);
             this.checkBoxLabRestart.TabIndex = 9;
             this.checkBoxLabRestart.Text = "Restart lab when completed";
             this.toolTip1.SetToolTip(this.checkBoxLabRestart, "Restarts the lab run once completed, use for degenerate 24/7 farming");
             this.checkBoxLabRestart.UseVisualStyleBackColor = true;
+            this.checkBoxLabRestart.CheckedChanged += new System.EventHandler(this.checkBoxLabRestart_CheckedChanged);
             // 
             // checkBoxLabStopOnMasterPainting
             // 
             this.checkBoxLabStopOnMasterPainting.AutoSize = true;
-            this.checkBoxLabStopOnMasterPainting.Location = new System.Drawing.Point(6, 121);
+            this.checkBoxLabStopOnMasterPainting.Location = new System.Drawing.Point(6, 75);
             this.checkBoxLabStopOnMasterPainting.Name = "checkBoxLabStopOnMasterPainting";
             this.checkBoxLabStopOnMasterPainting.Size = new System.Drawing.Size(205, 17);
             this.checkBoxLabStopOnMasterPainting.TabIndex = 8;
@@ -589,7 +610,7 @@ namespace FFRK_LabMem.Config
             // checkBoxLabRestartFailedBattle
             // 
             this.checkBoxLabRestartFailedBattle.AutoSize = true;
-            this.checkBoxLabRestartFailedBattle.Location = new System.Drawing.Point(6, 98);
+            this.checkBoxLabRestartFailedBattle.Location = new System.Drawing.Point(6, 29);
             this.checkBoxLabRestartFailedBattle.Name = "checkBoxLabRestartFailedBattle";
             this.checkBoxLabRestartFailedBattle.Size = new System.Drawing.Size(168, 17);
             this.checkBoxLabRestartFailedBattle.TabIndex = 7;
@@ -597,41 +618,6 @@ namespace FFRK_LabMem.Config
             this.toolTip1.SetToolTip(this.checkBoxLabRestartFailedBattle, "Restarts the battle if you are defeated.  If not set then plays a tone and waits " +
         "for your input.");
             this.checkBoxLabRestartFailedBattle.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabAvoidPortal
-            // 
-            this.checkBoxLabAvoidPortal.AutoSize = true;
-            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(6, 75);
-            this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
-            this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(422, 17);
-            this.checkBoxLabAvoidPortal.TabIndex = 6;
-            this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
-    "paintings";
-            this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
-        "ble in the background or there are more paintings to reveal.\r\n");
-            this.checkBoxLabAvoidPortal.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabAvoidExplore
-            // 
-            this.checkBoxLabAvoidExplore.AutoSize = true;
-            this.checkBoxLabAvoidExplore.Location = new System.Drawing.Point(6, 52);
-            this.checkBoxLabAvoidExplore.Name = "checkBoxLabAvoidExplore";
-            this.checkBoxLabAvoidExplore.Size = new System.Drawing.Size(243, 17);
-            this.checkBoxLabAvoidExplore.TabIndex = 5;
-            this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
-            this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
-        " visible in the background to eliminate the chance of getting a Portal");
-            this.checkBoxLabAvoidExplore.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabDoors
-            // 
-            this.checkBoxLabDoors.AutoSize = true;
-            this.checkBoxLabDoors.Location = new System.Drawing.Point(6, 29);
-            this.checkBoxLabDoors.Name = "checkBoxLabDoors";
-            this.checkBoxLabDoors.Size = new System.Drawing.Size(115, 17);
-            this.checkBoxLabDoors.TabIndex = 4;
-            this.checkBoxLabDoors.Text = "Open sealed doors";
-            this.checkBoxLabDoors.UseVisualStyleBackColor = true;
             // 
             // checkBoxLabDebug
             // 
@@ -695,8 +681,8 @@ namespace FFRK_LabMem.Config
             this.listViewPaintings.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
+            this.listViewPaintings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewPaintings.FullRowSelect = true;
-            this.listViewPaintings.GridLines = true;
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(6, 6);
             this.listViewPaintings.Name = "listViewPaintings";
@@ -778,8 +764,8 @@ namespace FFRK_LabMem.Config
             this.columnHeader3,
             this.columnHeader4,
             this.columnHeader5});
+            this.listViewTreasures.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewTreasures.FullRowSelect = true;
-            this.listViewTreasures.GridLines = true;
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(6, 6);
             this.listViewTreasures.Name = "listViewTreasures";
@@ -797,6 +783,7 @@ namespace FFRK_LabMem.Config
             // columnHeader4
             // 
             this.columnHeader4.Text = "Max Keys";
+            this.columnHeader4.Width = 75;
             // 
             // columnHeader5
             // 
@@ -835,15 +822,159 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // checkBoxLabOldRecovery
+            // tabPage8
             // 
-            this.checkBoxLabOldRecovery.AutoSize = true;
-            this.checkBoxLabOldRecovery.Location = new System.Drawing.Point(6, 225);
-            this.checkBoxLabOldRecovery.Name = "checkBoxLabOldRecovery";
-            this.checkBoxLabOldRecovery.Size = new System.Drawing.Size(135, 17);
-            this.checkBoxLabOldRecovery.TabIndex = 14;
-            this.checkBoxLabOldRecovery.Text = "Use old crash recovery";
-            this.checkBoxLabOldRecovery.UseVisualStyleBackColor = true;
+            this.tabPage8.Controls.Add(this.checkBoxSlot5);
+            this.tabPage8.Controls.Add(this.checkBoxSlot4);
+            this.tabPage8.Controls.Add(this.checkBoxSlot3);
+            this.tabPage8.Controls.Add(this.checkBoxSlot2);
+            this.tabPage8.Controls.Add(this.checkBoxSlot1);
+            this.tabPage8.Controls.Add(this.numericUpDownFatigue);
+            this.tabPage8.Controls.Add(this.checkBoxLabUseLetheTears);
+            this.tabPage8.Controls.Add(this.checkBoxLabAvoidPortal);
+            this.tabPage8.Controls.Add(this.checkBoxLabAvoidExplore);
+            this.tabPage8.Controls.Add(this.checkBoxLabDoors);
+            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Size = new System.Drawing.Size(435, 279);
+            this.tabPage8.TabIndex = 3;
+            this.tabPage8.Text = "Options";
+            this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabAvoidPortal
+            // 
+            this.checkBoxLabAvoidPortal.AutoSize = true;
+            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
+            this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(422, 17);
+            this.checkBoxLabAvoidPortal.TabIndex = 9;
+            this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
+    "paintings";
+            this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
+        "ble in the background or there are more paintings to reveal.\r\n");
+            this.checkBoxLabAvoidPortal.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabAvoidExplore
+            // 
+            this.checkBoxLabAvoidExplore.AutoSize = true;
+            this.checkBoxLabAvoidExplore.Location = new System.Drawing.Point(6, 29);
+            this.checkBoxLabAvoidExplore.Name = "checkBoxLabAvoidExplore";
+            this.checkBoxLabAvoidExplore.Size = new System.Drawing.Size(243, 17);
+            this.checkBoxLabAvoidExplore.TabIndex = 8;
+            this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
+            this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
+        " visible in the background to eliminate the chance of getting a Portal");
+            this.checkBoxLabAvoidExplore.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabDoors
+            // 
+            this.checkBoxLabDoors.AutoSize = true;
+            this.checkBoxLabDoors.Location = new System.Drawing.Point(6, 6);
+            this.checkBoxLabDoors.Name = "checkBoxLabDoors";
+            this.checkBoxLabDoors.Size = new System.Drawing.Size(115, 17);
+            this.checkBoxLabDoors.TabIndex = 7;
+            this.checkBoxLabDoors.Text = "Open sealed doors";
+            this.checkBoxLabDoors.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabUseTeleport
+            // 
+            this.checkBoxLabUseTeleport.AutoSize = true;
+            this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxLabUseTeleport.Name = "checkBoxLabUseTeleport";
+            this.checkBoxLabUseTeleport.Size = new System.Drawing.Size(269, 17);
+            this.checkBoxLabUseTeleport.TabIndex = 22;
+            this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
+            this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
+            this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSlot5
+            // 
+            this.checkBoxSlot5.AutoSize = true;
+            this.checkBoxSlot5.Location = new System.Drawing.Point(170, 98);
+            this.checkBoxSlot5.Name = "checkBoxSlot5";
+            this.checkBoxSlot5.Size = new System.Drawing.Size(32, 17);
+            this.checkBoxSlot5.TabIndex = 28;
+            this.checkBoxSlot5.Text = "5";
+            this.toolTip1.SetToolTip(this.checkBoxSlot5, "Party slot 5");
+            this.checkBoxSlot5.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSlot4
+            // 
+            this.checkBoxSlot4.AutoSize = true;
+            this.checkBoxSlot4.Location = new System.Drawing.Point(132, 98);
+            this.checkBoxSlot4.Name = "checkBoxSlot4";
+            this.checkBoxSlot4.Size = new System.Drawing.Size(32, 17);
+            this.checkBoxSlot4.TabIndex = 27;
+            this.checkBoxSlot4.Text = "4";
+            this.toolTip1.SetToolTip(this.checkBoxSlot4, "Party slot 4");
+            this.checkBoxSlot4.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSlot3
+            // 
+            this.checkBoxSlot3.AutoSize = true;
+            this.checkBoxSlot3.Location = new System.Drawing.Point(94, 98);
+            this.checkBoxSlot3.Name = "checkBoxSlot3";
+            this.checkBoxSlot3.Size = new System.Drawing.Size(32, 17);
+            this.checkBoxSlot3.TabIndex = 26;
+            this.checkBoxSlot3.Text = "3";
+            this.toolTip1.SetToolTip(this.checkBoxSlot3, "Party slot 3");
+            this.checkBoxSlot3.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSlot2
+            // 
+            this.checkBoxSlot2.AutoSize = true;
+            this.checkBoxSlot2.Location = new System.Drawing.Point(56, 98);
+            this.checkBoxSlot2.Name = "checkBoxSlot2";
+            this.checkBoxSlot2.Size = new System.Drawing.Size(32, 17);
+            this.checkBoxSlot2.TabIndex = 25;
+            this.checkBoxSlot2.Text = "2";
+            this.toolTip1.SetToolTip(this.checkBoxSlot2, "Party slot 2");
+            this.checkBoxSlot2.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSlot1
+            // 
+            this.checkBoxSlot1.AutoSize = true;
+            this.checkBoxSlot1.Location = new System.Drawing.Point(18, 98);
+            this.checkBoxSlot1.Name = "checkBoxSlot1";
+            this.checkBoxSlot1.Size = new System.Drawing.Size(32, 17);
+            this.checkBoxSlot1.TabIndex = 24;
+            this.checkBoxSlot1.Text = "1";
+            this.toolTip1.SetToolTip(this.checkBoxSlot1, "Party slot 1");
+            this.checkBoxSlot1.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownFatigue
+            // 
+            this.numericUpDownFatigue.Location = new System.Drawing.Point(222, 74);
+            this.numericUpDownFatigue.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownFatigue.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownFatigue.Name = "numericUpDownFatigue";
+            this.numericUpDownFatigue.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDownFatigue.TabIndex = 23;
+            this.toolTip1.SetToolTip(this.numericUpDownFatigue, "Fatigue that must be reached before Lethe Tears are used");
+            this.numericUpDownFatigue.Value = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            // 
+            // checkBoxLabUseLetheTears
+            // 
+            this.checkBoxLabUseLetheTears.AutoSize = true;
+            this.checkBoxLabUseLetheTears.Location = new System.Drawing.Point(6, 75);
+            this.checkBoxLabUseLetheTears.Name = "checkBoxLabUseLetheTears";
+            this.checkBoxLabUseLetheTears.Size = new System.Drawing.Size(210, 17);
+            this.checkBoxLabUseLetheTears.TabIndex = 22;
+            this.checkBoxLabUseLetheTears.Text = "Use Lethe Tears when fatigue reaches";
+            this.checkBoxLabUseLetheTears.UseVisualStyleBackColor = true;
+            this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.checkBoxLabUseLetheTears_CheckedChanged);
             // 
             // ConfigForm
             // 
@@ -885,6 +1016,9 @@ namespace FFRK_LabMem.Config
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
+            this.tabPage8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -922,12 +1056,9 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.ComboBox comboBoxLab;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.CheckBox checkBoxLabAvoidExplore;
-        private System.Windows.Forms.CheckBox checkBoxLabDoors;
         private System.Windows.Forms.CheckBox checkBoxLabDebug;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.TabPage tabPage7;
-        private System.Windows.Forms.CheckBox checkBoxLabAvoidPortal;
         private System.Windows.Forms.CheckBox checkBoxLabRestartFailedBattle;
         private System.Windows.Forms.CheckBox checkBoxLabStopOnMasterPainting;
         private System.Windows.Forms.CheckBox checkBoxLabRestart;
@@ -955,5 +1086,17 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox checkBoxLabOldRecovery;
+        private System.Windows.Forms.CheckBox checkBoxLabUseTeleport;
+        private System.Windows.Forms.TabPage tabPage8;
+        private System.Windows.Forms.CheckBox checkBoxLabAvoidPortal;
+        private System.Windows.Forms.CheckBox checkBoxLabAvoidExplore;
+        private System.Windows.Forms.CheckBox checkBoxLabDoors;
+        private System.Windows.Forms.CheckBox checkBoxSlot5;
+        private System.Windows.Forms.CheckBox checkBoxSlot4;
+        private System.Windows.Forms.CheckBox checkBoxSlot3;
+        private System.Windows.Forms.CheckBox checkBoxSlot2;
+        private System.Windows.Forms.CheckBox checkBoxSlot1;
+        private System.Windows.Forms.NumericUpDown numericUpDownFatigue;
+        private System.Windows.Forms.CheckBox checkBoxLabUseLetheTears;
     }
 }
