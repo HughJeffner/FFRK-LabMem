@@ -169,6 +169,7 @@ namespace FFRK_LabMem.Config
             {
                 labConfig.PaintingPriorityMap.Add(item.Tag.ToString(), int.Parse(item.Text));
             }
+
             labConfig.TreasureFilterMap.Clear();
             foreach (ListViewItem item in listViewTreasures.Items)
             {
@@ -176,6 +177,12 @@ namespace FFRK_LabMem.Config
                 value.Priority = int.Parse(item.Text);
                 value.MaxKeys = int.Parse(item.SubItems[1].Text);
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
+            }
+
+            labConfig.Timings.Clear();
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                labConfig.Timings.Add(item.Cells[0].Value.ToString(), int.Parse(item.Cells[1].Value.ToString()));
             }
 
             // Save to .json
@@ -257,6 +264,12 @@ namespace FFRK_LabMem.Config
                 newItem.Checked = item.Value.Priority > 0;
                 newItem.Tag = item.Key;
                 listViewTreasures.Items.Add(newItem);
+            }
+
+            dataGridView1.Rows.Clear();
+            foreach (KeyValuePair<string, int> item in labConfig.Timings)
+            {
+                dataGridView1.Rows.Add(item.Key, item.Value);
             }
 
         }
@@ -494,6 +507,44 @@ namespace FFRK_LabMem.Config
             checkBoxSlot4.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot5.Enabled = checkBoxLabUseLetheTears.Checked;
 
+        }
+
+        private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+
+            if (e.ColumnIndex == 1)
+            {
+                int i;
+                if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    if (i < 0) e.Cancel = true;
+                }
+            }
+
+        }
+
+        private void buttonTimingDefaults_Click(object sender, EventArgs e)
+        {
+
+            var ret = MessageBox.Show(this, "Are you sure you want to reset all timings to the defaults?",
+                   "Reset Timings",
+                   MessageBoxButtons.YesNo,
+                   MessageBoxIcon.Warning,
+                   MessageBoxDefaultButton.Button1);
+
+            if (ret == DialogResult.Yes)
+            {
+                labConfig.Timings = labConfig.GetDefaultTimings();
+                dataGridView1.Rows.Clear();
+                foreach (KeyValuePair<string, int> item in labConfig.Timings)
+                {
+                    dataGridView1.Rows.Add(item.Key, item.Value);
+                }
+            }
         }
     }
 }

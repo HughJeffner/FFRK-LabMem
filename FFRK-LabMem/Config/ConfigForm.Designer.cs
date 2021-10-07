@@ -63,6 +63,7 @@ namespace FFRK_LabMem.Config
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabUseTeleport = new System.Windows.Forms.CheckBox();
             this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDownWatchdog = new System.Windows.Forms.NumericUpDown();
@@ -72,6 +73,17 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabStopOnMasterPainting = new System.Windows.Forms.CheckBox();
             this.checkBoxLabRestartFailedBattle = new System.Windows.Forms.CheckBox();
             this.checkBoxLabDebug = new System.Windows.Forms.CheckBox();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.checkBoxSlot5 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot4 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot3 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxSlot1 = new System.Windows.Forms.CheckBox();
+            this.numericUpDownFatigue = new System.Windows.Forms.NumericUpDown();
+            this.checkBoxLabUseLetheTears = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabAvoidPortal = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabAvoidExplore = new System.Windows.Forms.CheckBox();
+            this.checkBoxLabDoors = new System.Windows.Forms.CheckBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.checkBoxSwap = new System.Windows.Forms.CheckBox();
             this.buttonPaintingMoveUp = new System.Windows.Forms.Button();
@@ -92,18 +104,11 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tabPage8 = new System.Windows.Forms.TabPage();
-            this.checkBoxLabAvoidPortal = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabAvoidExplore = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabDoors = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabUseTeleport = new System.Windows.Forms.CheckBox();
-            this.checkBoxSlot5 = new System.Windows.Forms.CheckBox();
-            this.checkBoxSlot4 = new System.Windows.Forms.CheckBox();
-            this.checkBoxSlot3 = new System.Windows.Forms.CheckBox();
-            this.checkBoxSlot2 = new System.Windows.Forms.CheckBox();
-            this.checkBoxSlot1 = new System.Windows.Forms.CheckBox();
-            this.numericUpDownFatigue = new System.Windows.Forms.NumericUpDown();
-            this.checkBoxLabUseLetheTears = new System.Windows.Forms.CheckBox();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.buttonTimingDefaults = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -116,10 +121,12 @@ namespace FFRK_LabMem.Config
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
-            this.tabPage6.SuspendLayout();
-            this.tabPage7.SuspendLayout();
             this.tabPage8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).BeginInit();
+            this.tabPage6.SuspendLayout();
+            this.tabPage7.SuspendLayout();
+            this.tabPage9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -509,6 +516,7 @@ namespace FFRK_LabMem.Config
             this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Controls.Add(this.tabPage9);
             this.tabControl1.Location = new System.Drawing.Point(3, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -535,6 +543,17 @@ namespace FFRK_LabMem.Config
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabUseTeleport
+            // 
+            this.checkBoxLabUseTeleport.AutoSize = true;
+            this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxLabUseTeleport.Name = "checkBoxLabUseTeleport";
+            this.checkBoxLabUseTeleport.Size = new System.Drawing.Size(269, 17);
+            this.checkBoxLabUseTeleport.TabIndex = 22;
+            this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
+            this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
+            this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
             // 
             // checkBoxLabOldRecovery
             // 
@@ -630,198 +649,6 @@ namespace FFRK_LabMem.Config
             this.toolTip1.SetToolTip(this.checkBoxLabDebug, "Shows lab-specific debug information including button-finding info");
             this.checkBoxLabDebug.UseVisualStyleBackColor = true;
             // 
-            // tabPage6
-            // 
-            this.tabPage6.Controls.Add(this.checkBoxSwap);
-            this.tabPage6.Controls.Add(this.buttonPaintingMoveUp);
-            this.tabPage6.Controls.Add(this.buttonPaintingMoveDown);
-            this.tabPage6.Controls.Add(this.listViewPaintings);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
-            this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(435, 279);
-            this.tabPage6.TabIndex = 1;
-            this.tabPage6.Text = "Painting Priority";
-            this.tabPage6.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxSwap
-            // 
-            this.checkBoxSwap.AutoSize = true;
-            this.checkBoxSwap.Checked = true;
-            this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(332, 249);
-            this.checkBoxSwap.Name = "checkBoxSwap";
-            this.checkBoxSwap.Size = new System.Drawing.Size(97, 17);
-            this.checkBoxSwap.TabIndex = 3;
-            this.checkBoxSwap.Text = "Swap positions";
-            this.checkBoxSwap.UseVisualStyleBackColor = true;
-            // 
-            // buttonPaintingMoveUp
-            // 
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(6, 243);
-            this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
-            this.buttonPaintingMoveUp.Size = new System.Drawing.Size(75, 23);
-            this.buttonPaintingMoveUp.TabIndex = 2;
-            this.buttonPaintingMoveUp.Text = "Move Up";
-            this.buttonPaintingMoveUp.UseVisualStyleBackColor = true;
-            this.buttonPaintingMoveUp.Click += new System.EventHandler(this.ButtonPaintingUp_Click);
-            // 
-            // buttonPaintingMoveDown
-            // 
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(87, 243);
-            this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
-            this.buttonPaintingMoveDown.Size = new System.Drawing.Size(75, 23);
-            this.buttonPaintingMoveDown.TabIndex = 1;
-            this.buttonPaintingMoveDown.Text = "Move Down";
-            this.buttonPaintingMoveDown.UseVisualStyleBackColor = true;
-            this.buttonPaintingMoveDown.Click += new System.EventHandler(this.ButtonPaintingDown_Click);
-            // 
-            // listViewPaintings
-            // 
-            this.listViewPaintings.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.listViewPaintings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listViewPaintings.FullRowSelect = true;
-            this.listViewPaintings.HideSelection = false;
-            this.listViewPaintings.Location = new System.Drawing.Point(6, 6);
-            this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(423, 232);
-            this.listViewPaintings.TabIndex = 0;
-            this.listViewPaintings.UseCompatibleStateImageBehavior = false;
-            this.listViewPaintings.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Priority";
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Painting Type";
-            this.columnHeader2.Width = 323;
-            // 
-            // tabPage7
-            // 
-            this.tabPage7.Controls.Add(this.label9);
-            this.tabPage7.Controls.Add(this.comboBoxKeys);
-            this.tabPage7.Controls.Add(this.buttonTreasureUp);
-            this.tabPage7.Controls.Add(this.buttonTreasureDown);
-            this.tabPage7.Controls.Add(this.listViewTreasures);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(435, 279);
-            this.tabPage7.TabIndex = 2;
-            this.tabPage7.Text = "Treasure Priority";
-            this.tabPage7.UseVisualStyleBackColor = true;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(187, 248);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(115, 13);
-            this.label9.TabIndex = 7;
-            this.label9.Text = "Max keys for selection:";
-            // 
-            // comboBoxKeys
-            // 
-            this.comboBoxKeys.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxKeys.FormattingEnabled = true;
-            this.comboBoxKeys.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(308, 245);
-            this.comboBoxKeys.Name = "comboBoxKeys";
-            this.comboBoxKeys.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxKeys.TabIndex = 6;
-            this.comboBoxKeys.SelectedIndexChanged += new System.EventHandler(this.ComboBoxKeys_SelectedIndexChanged);
-            // 
-            // buttonTreasureUp
-            // 
-            this.buttonTreasureUp.Location = new System.Drawing.Point(6, 243);
-            this.buttonTreasureUp.Name = "buttonTreasureUp";
-            this.buttonTreasureUp.Size = new System.Drawing.Size(75, 23);
-            this.buttonTreasureUp.TabIndex = 5;
-            this.buttonTreasureUp.Text = "Move Up";
-            this.buttonTreasureUp.UseVisualStyleBackColor = true;
-            this.buttonTreasureUp.Click += new System.EventHandler(this.ButtonTreasureUp_Click);
-            // 
-            // buttonTreasureDown
-            // 
-            this.buttonTreasureDown.Location = new System.Drawing.Point(87, 243);
-            this.buttonTreasureDown.Name = "buttonTreasureDown";
-            this.buttonTreasureDown.Size = new System.Drawing.Size(75, 23);
-            this.buttonTreasureDown.TabIndex = 4;
-            this.buttonTreasureDown.Text = "Move Down";
-            this.buttonTreasureDown.UseVisualStyleBackColor = true;
-            this.buttonTreasureDown.Click += new System.EventHandler(this.ButtonTreasureDown_Click);
-            // 
-            // listViewTreasures
-            // 
-            this.listViewTreasures.CheckBoxes = true;
-            this.listViewTreasures.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader3,
-            this.columnHeader4,
-            this.columnHeader5});
-            this.listViewTreasures.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listViewTreasures.FullRowSelect = true;
-            this.listViewTreasures.HideSelection = false;
-            this.listViewTreasures.Location = new System.Drawing.Point(6, 6);
-            this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(423, 232);
-            this.listViewTreasures.TabIndex = 3;
-            this.listViewTreasures.UseCompatibleStateImageBehavior = false;
-            this.listViewTreasures.View = System.Windows.Forms.View.Details;
-            this.listViewTreasures.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListViewTreasures_ItemChecked);
-            this.listViewTreasures.SelectedIndexChanged += new System.EventHandler(this.ListViewTreasures_SelectedIndexChanged);
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Priority";
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Max Keys";
-            this.columnHeader4.Width = 75;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Treasure Type";
-            this.columnHeader5.Width = 267;
-            // 
-            // comboBoxLab
-            // 
-            this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxLab.FormattingEnabled = true;
-            this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
-            this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(446, 21);
-            this.comboBoxLab.TabIndex = 17;
-            this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
-            // 
-            // lblRestart
-            // 
-            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
-            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
-            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblRestart.Location = new System.Drawing.Point(15, 375);
-            this.lblRestart.Name = "lblRestart";
-            this.lblRestart.Size = new System.Drawing.Size(301, 29);
-            this.lblRestart.TabIndex = 18;
-            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
-            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblRestart.Visible = false;
-            // 
-            // folderBrowserDialog1
-            // 
-            this.folderBrowserDialog1.Description = "Choose blocklist file";
-            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
-            this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
             // tabPage8
             // 
             this.tabPage8.Controls.Add(this.checkBoxSlot5);
@@ -840,52 +667,6 @@ namespace FFRK_LabMem.Config
             this.tabPage8.TabIndex = 3;
             this.tabPage8.Text = "Options";
             this.tabPage8.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabAvoidPortal
-            // 
-            this.checkBoxLabAvoidPortal.AutoSize = true;
-            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(6, 52);
-            this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
-            this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(422, 17);
-            this.checkBoxLabAvoidPortal.TabIndex = 9;
-            this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
-    "paintings";
-            this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
-        "ble in the background or there are more paintings to reveal.\r\n");
-            this.checkBoxLabAvoidPortal.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabAvoidExplore
-            // 
-            this.checkBoxLabAvoidExplore.AutoSize = true;
-            this.checkBoxLabAvoidExplore.Location = new System.Drawing.Point(6, 29);
-            this.checkBoxLabAvoidExplore.Name = "checkBoxLabAvoidExplore";
-            this.checkBoxLabAvoidExplore.Size = new System.Drawing.Size(243, 17);
-            this.checkBoxLabAvoidExplore.TabIndex = 8;
-            this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
-            this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
-        " visible in the background to eliminate the chance of getting a Portal");
-            this.checkBoxLabAvoidExplore.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabDoors
-            // 
-            this.checkBoxLabDoors.AutoSize = true;
-            this.checkBoxLabDoors.Location = new System.Drawing.Point(6, 6);
-            this.checkBoxLabDoors.Name = "checkBoxLabDoors";
-            this.checkBoxLabDoors.Size = new System.Drawing.Size(115, 17);
-            this.checkBoxLabDoors.TabIndex = 7;
-            this.checkBoxLabDoors.Text = "Open sealed doors";
-            this.checkBoxLabDoors.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabUseTeleport
-            // 
-            this.checkBoxLabUseTeleport.AutoSize = true;
-            this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(6, 52);
-            this.checkBoxLabUseTeleport.Name = "checkBoxLabUseTeleport";
-            this.checkBoxLabUseTeleport.Size = new System.Drawing.Size(269, 17);
-            this.checkBoxLabUseTeleport.TabIndex = 22;
-            this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
-            this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
-            this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
             // 
             // checkBoxSlot5
             // 
@@ -976,6 +757,287 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabUseLetheTears.UseVisualStyleBackColor = true;
             this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.checkBoxLabUseLetheTears_CheckedChanged);
             // 
+            // checkBoxLabAvoidPortal
+            // 
+            this.checkBoxLabAvoidPortal.AutoSize = true;
+            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
+            this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(422, 17);
+            this.checkBoxLabAvoidPortal.TabIndex = 9;
+            this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
+    "paintings";
+            this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
+        "ble in the background or there are more paintings to reveal.\r\n");
+            this.checkBoxLabAvoidPortal.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabAvoidExplore
+            // 
+            this.checkBoxLabAvoidExplore.AutoSize = true;
+            this.checkBoxLabAvoidExplore.Location = new System.Drawing.Point(6, 29);
+            this.checkBoxLabAvoidExplore.Name = "checkBoxLabAvoidExplore";
+            this.checkBoxLabAvoidExplore.Size = new System.Drawing.Size(243, 17);
+            this.checkBoxLabAvoidExplore.TabIndex = 8;
+            this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
+            this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
+        " visible in the background to eliminate the chance of getting a Portal");
+            this.checkBoxLabAvoidExplore.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabDoors
+            // 
+            this.checkBoxLabDoors.AutoSize = true;
+            this.checkBoxLabDoors.Location = new System.Drawing.Point(6, 6);
+            this.checkBoxLabDoors.Name = "checkBoxLabDoors";
+            this.checkBoxLabDoors.Size = new System.Drawing.Size(115, 17);
+            this.checkBoxLabDoors.TabIndex = 7;
+            this.checkBoxLabDoors.Text = "Open sealed doors";
+            this.checkBoxLabDoors.UseVisualStyleBackColor = true;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.checkBoxSwap);
+            this.tabPage6.Controls.Add(this.buttonPaintingMoveUp);
+            this.tabPage6.Controls.Add(this.buttonPaintingMoveDown);
+            this.tabPage6.Controls.Add(this.listViewPaintings);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(435, 279);
+            this.tabPage6.TabIndex = 1;
+            this.tabPage6.Text = "Painting Priority";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSwap
+            // 
+            this.checkBoxSwap.AutoSize = true;
+            this.checkBoxSwap.Checked = true;
+            this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSwap.Location = new System.Drawing.Point(332, 249);
+            this.checkBoxSwap.Name = "checkBoxSwap";
+            this.checkBoxSwap.Size = new System.Drawing.Size(97, 17);
+            this.checkBoxSwap.TabIndex = 3;
+            this.checkBoxSwap.Text = "Swap positions";
+            this.checkBoxSwap.UseVisualStyleBackColor = true;
+            // 
+            // buttonPaintingMoveUp
+            // 
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(6, 243);
+            this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
+            this.buttonPaintingMoveUp.Size = new System.Drawing.Size(75, 23);
+            this.buttonPaintingMoveUp.TabIndex = 2;
+            this.buttonPaintingMoveUp.Text = "Move Up";
+            this.buttonPaintingMoveUp.UseVisualStyleBackColor = true;
+            this.buttonPaintingMoveUp.Click += new System.EventHandler(this.ButtonPaintingUp_Click);
+            // 
+            // buttonPaintingMoveDown
+            // 
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(87, 243);
+            this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
+            this.buttonPaintingMoveDown.Size = new System.Drawing.Size(75, 23);
+            this.buttonPaintingMoveDown.TabIndex = 1;
+            this.buttonPaintingMoveDown.Text = "Move Down";
+            this.buttonPaintingMoveDown.UseVisualStyleBackColor = true;
+            this.buttonPaintingMoveDown.Click += new System.EventHandler(this.ButtonPaintingDown_Click);
+            // 
+            // listViewPaintings
+            // 
+            this.listViewPaintings.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listViewPaintings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewPaintings.FullRowSelect = true;
+            this.listViewPaintings.GridLines = true;
+            this.listViewPaintings.HideSelection = false;
+            this.listViewPaintings.Location = new System.Drawing.Point(6, 6);
+            this.listViewPaintings.Name = "listViewPaintings";
+            this.listViewPaintings.Size = new System.Drawing.Size(423, 232);
+            this.listViewPaintings.TabIndex = 0;
+            this.listViewPaintings.UseCompatibleStateImageBehavior = false;
+            this.listViewPaintings.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Priority";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Painting Type";
+            this.columnHeader2.Width = 323;
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Controls.Add(this.label9);
+            this.tabPage7.Controls.Add(this.comboBoxKeys);
+            this.tabPage7.Controls.Add(this.buttonTreasureUp);
+            this.tabPage7.Controls.Add(this.buttonTreasureDown);
+            this.tabPage7.Controls.Add(this.listViewTreasures);
+            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Size = new System.Drawing.Size(435, 279);
+            this.tabPage7.TabIndex = 2;
+            this.tabPage7.Text = "Treasure Priority";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(187, 248);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(115, 13);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "Max keys for selection:";
+            // 
+            // comboBoxKeys
+            // 
+            this.comboBoxKeys.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxKeys.FormattingEnabled = true;
+            this.comboBoxKeys.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "3"});
+            this.comboBoxKeys.Location = new System.Drawing.Point(308, 245);
+            this.comboBoxKeys.Name = "comboBoxKeys";
+            this.comboBoxKeys.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxKeys.TabIndex = 6;
+            this.comboBoxKeys.SelectedIndexChanged += new System.EventHandler(this.ComboBoxKeys_SelectedIndexChanged);
+            // 
+            // buttonTreasureUp
+            // 
+            this.buttonTreasureUp.Location = new System.Drawing.Point(6, 243);
+            this.buttonTreasureUp.Name = "buttonTreasureUp";
+            this.buttonTreasureUp.Size = new System.Drawing.Size(75, 23);
+            this.buttonTreasureUp.TabIndex = 5;
+            this.buttonTreasureUp.Text = "Move Up";
+            this.buttonTreasureUp.UseVisualStyleBackColor = true;
+            this.buttonTreasureUp.Click += new System.EventHandler(this.ButtonTreasureUp_Click);
+            // 
+            // buttonTreasureDown
+            // 
+            this.buttonTreasureDown.Location = new System.Drawing.Point(87, 243);
+            this.buttonTreasureDown.Name = "buttonTreasureDown";
+            this.buttonTreasureDown.Size = new System.Drawing.Size(75, 23);
+            this.buttonTreasureDown.TabIndex = 4;
+            this.buttonTreasureDown.Text = "Move Down";
+            this.buttonTreasureDown.UseVisualStyleBackColor = true;
+            this.buttonTreasureDown.Click += new System.EventHandler(this.ButtonTreasureDown_Click);
+            // 
+            // listViewTreasures
+            // 
+            this.listViewTreasures.CheckBoxes = true;
+            this.listViewTreasures.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5});
+            this.listViewTreasures.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewTreasures.FullRowSelect = true;
+            this.listViewTreasures.GridLines = true;
+            this.listViewTreasures.HideSelection = false;
+            this.listViewTreasures.Location = new System.Drawing.Point(6, 6);
+            this.listViewTreasures.Name = "listViewTreasures";
+            this.listViewTreasures.Size = new System.Drawing.Size(423, 232);
+            this.listViewTreasures.TabIndex = 3;
+            this.listViewTreasures.UseCompatibleStateImageBehavior = false;
+            this.listViewTreasures.View = System.Windows.Forms.View.Details;
+            this.listViewTreasures.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListViewTreasures_ItemChecked);
+            this.listViewTreasures.SelectedIndexChanged += new System.EventHandler(this.ListViewTreasures_SelectedIndexChanged);
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Priority";
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Max Keys";
+            this.columnHeader4.Width = 75;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Treasure Type";
+            this.columnHeader5.Width = 267;
+            // 
+            // comboBoxLab
+            // 
+            this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLab.FormattingEnabled = true;
+            this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
+            this.comboBoxLab.Name = "comboBoxLab";
+            this.comboBoxLab.Size = new System.Drawing.Size(446, 21);
+            this.comboBoxLab.TabIndex = 17;
+            this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
+            // 
+            // lblRestart
+            // 
+            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
+            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
+            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblRestart.Location = new System.Drawing.Point(15, 375);
+            this.lblRestart.Name = "lblRestart";
+            this.lblRestart.Size = new System.Drawing.Size(301, 29);
+            this.lblRestart.TabIndex = 18;
+            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
+            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblRestart.Visible = false;
+            // 
+            // folderBrowserDialog1
+            // 
+            this.folderBrowserDialog1.Description = "Choose blocklist file";
+            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
+            this.folderBrowserDialog1.ShowNewFolderButton = false;
+            // 
+            // tabPage9
+            // 
+            this.tabPage9.Controls.Add(this.buttonTimingDefaults);
+            this.tabPage9.Controls.Add(this.dataGridView1);
+            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage9.Size = new System.Drawing.Size(435, 279);
+            this.tabPage9.TabIndex = 4;
+            this.tabPage9.Text = "Timings";
+            this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Timing,
+            this.Value});
+            this.dataGridView1.Location = new System.Drawing.Point(6, 6);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(423, 230);
+            this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
+            // 
+            // Timing
+            // 
+            this.Timing.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Timing.HeaderText = "Timing";
+            this.Timing.Name = "Timing";
+            this.Timing.ReadOnly = true;
+            // 
+            // Value
+            // 
+            this.Value.HeaderText = "Value (ms)";
+            this.Value.Name = "Value";
+            // 
+            // buttonTimingDefaults
+            // 
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(6, 243);
+            this.buttonTimingDefaults.Name = "buttonTimingDefaults";
+            this.buttonTimingDefaults.Size = new System.Drawing.Size(100, 23);
+            this.buttonTimingDefaults.TabIndex = 5;
+            this.buttonTimingDefaults.Text = "Reset Defaults";
+            this.buttonTimingDefaults.UseVisualStyleBackColor = true;
+            this.buttonTimingDefaults.Click += new System.EventHandler(this.buttonTimingDefaults_Click);
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1012,13 +1074,15 @@ namespace FFRK_LabMem.Config
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).EndInit();
+            this.tabPage8.ResumeLayout(false);
+            this.tabPage8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
-            this.tabPage8.ResumeLayout(false);
-            this.tabPage8.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).EndInit();
+            this.tabPage9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1098,5 +1162,10 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.CheckBox checkBoxSlot1;
         private System.Windows.Forms.NumericUpDown numericUpDownFatigue;
         private System.Windows.Forms.CheckBox checkBoxLabUseLetheTears;
+        private System.Windows.Forms.TabPage tabPage9;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Timing;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
+        private System.Windows.Forms.Button buttonTimingDefaults;
     }
 }

@@ -96,26 +96,26 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
             }
             ColorConsole.WriteLine("");
-            await Task.Delay(5000, this.CancellationToken);
+            await Task.Delay(Config.Timings["Pre-SelectPainting"], this.CancellationToken);
 
             // TODO: clean this painting placement handling up
             // 2 or less paintings remaining change position
             if (total >= 3)
             {
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await Task.Delay(1000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else if (total == 2)
             {
                 await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await Task.Delay(1000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
                 await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else
             {
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
-                await Task.Delay(1000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
             }
 
@@ -219,7 +219,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                await Task.Delay(5000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Pre-SelectTreasure"], this.CancellationToken);
                 await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50, this.CancellationToken);
                 await Task.Delay(2000, this.CancellationToken);
 
@@ -278,14 +278,14 @@ namespace FFRK_LabMem.Machines
             if (this.Config.OpenDoors)
             {
                 ColorConsole.WriteLine("Opening Door...");
-                await Task.Delay(5000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Pre-Door"], this.CancellationToken);
                 await this.Adb.TapPct(70, 74, this.CancellationToken);
                 await Task.Delay(1000, this.CancellationToken);
             }
             else
             {
                 ColorConsole.WriteLine("Leaving Door...");
-                await Task.Delay(5000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Pre-Door"], this.CancellationToken);
                 await this.Adb.TapPct(30, 74, this.CancellationToken);
                 await Task.Delay(1000, this.CancellationToken);
             }
@@ -297,7 +297,7 @@ namespace FFRK_LabMem.Machines
 
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
-            await Task.Delay(5000, this.CancellationToken);
+            await Task.Delay(Config.Timings["Pre-MoveOn"], this.CancellationToken);
 
             var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30, this.CancellationToken);
             if (b)
@@ -349,7 +349,7 @@ namespace FFRK_LabMem.Machines
             await fatigueParsedEvent.WaitAsync(TimeSpan.FromSeconds(5), this.CancellationToken);
             if (Config.UseLetheTears && FatigueInfo.Any(f => f.Fatigue >= Config.LetheTearsFatigue))
             {
-                await Task.Delay(5000, this.CancellationToken);
+                await Task.Delay(Config.Timings["Pre-StartBattle"], this.CancellationToken);
                 await UseLetheTears();
             }
 
@@ -386,7 +386,7 @@ namespace FFRK_LabMem.Machines
             FatigueInfo.ForEach(f => f.Fatigue += 2);
 
             //Tappy taps
-            await Task.Delay(7000, this.CancellationToken);
+            await Task.Delay(Config.Timings["Post-Battle"], this.CancellationToken);
             await this.Adb.TapPct(85, 85, this.CancellationToken);
             await Task.Delay(1000, this.CancellationToken);
             await this.Adb.TapPct(50, 85, this.CancellationToken);
@@ -466,7 +466,7 @@ namespace FFRK_LabMem.Machines
             return false;
         }
 
-        public async Task<bool> UseTeleportStone()
+        private async Task<bool> UseTeleportStone()
         {
 
             ColorConsole.WriteLine("Using Teleport Stone");

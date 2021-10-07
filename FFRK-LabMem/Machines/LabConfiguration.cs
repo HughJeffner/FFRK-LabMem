@@ -12,8 +12,6 @@ namespace FFRK_LabMem.Machines
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = true;
         public bool AvoidPortal { get; set; } = true;
-        public Dictionary<String, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
-        public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         public int WatchdogMinutes { get; set; } = 10;
         public bool RestartFailedBattle { get; set; } = false;
         public bool StopOnMasterPainting { get; set; } = true;
@@ -24,8 +22,31 @@ namespace FFRK_LabMem.Machines
         public byte LetheTearsSlot { get; set; } = 0b11111;
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
+        public Dictionary<String, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
+        public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
+        public Dictionary<String, int> Timings { get; set; } = new Dictionary<string, int>();
 
-        public LabConfiguration() {}
+        public LabConfiguration() {
+
+            // Default timings
+            this.Timings = GetDefaultTimings();
+
+        }
+
+        public Dictionary<String, int> GetDefaultTimings()
+        {
+            Dictionary<String, int> defaults = new Dictionary<string, int>
+            {
+                { "Pre-SelectPainting", 5000 },
+                { "Inter-SelectPainting", 1000 },
+                { "Pre-SelectTreasure", 5000 },
+                { "Pre-Door", 5000 },
+                { "Pre-MoveOn", 5000 },
+                { "Pre-StartBattle", 5000 },
+                { "Post-Battle", 7000 }
+            };
+            return defaults;
+        }
 
         public class TreasureFilter
         {
