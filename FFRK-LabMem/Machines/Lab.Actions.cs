@@ -346,6 +346,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("");
 
             // Lethe Tears
+            await fatigueParsedEvent.WaitAsync(TimeSpan.FromSeconds(5), this.CancellationToken);
             if (Config.UseLetheTears && FatigueInfo.Any(f => f.Fatigue >= Config.LetheTearsFatigue))
             {
                 await Task.Delay(5000, this.CancellationToken);

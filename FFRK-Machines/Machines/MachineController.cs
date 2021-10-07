@@ -51,7 +51,7 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, S unkownState)
+        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, S unkownState, int consumers = 2)
         {
 
             unknownState = unkownState;
@@ -88,31 +88,38 @@ namespace FFRK_Machines.Machines
                 this.enabled = false;
             }
 
-            // Consumer queue
-            var consumerTask = Task.Run(async () =>
+            // Start consumers
+            for (int i = 0; i < consumers; i++)
             {
-                foreach (var item in queue.GetConsumingEnumerable())
-                {
-                    try
-                    {
-                        var data = JObject.Parse(item.Body.Substring(1));
-                        int i = 0;
-                        foreach (var r in Proxy.Registrations)
-                        {
-                            var match = r.UrlMatch.Match(item.Url);
-                            if (match.Success)
-                                await r.Machine.PassFromProxy(i, match.Value, data);
-                            i++;
-                        }
-                    }
-                    catch (OperationCanceledException){}
-                    catch (Exception ex)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                    }
+                var consumer = Task.Factory.StartNew(() => Consume());
+            }
 
+        }
+
+        private async void Consume()
+        {
+
+            foreach (var item in queue.GetConsumingEnumerable())
+            {
+                try
+                {
+                    var data = JObject.Parse(item.Body.Substring(1));
+                    int i = 0;
+                    foreach (var r in Proxy.Registrations)
+                    {
+                        var match = r.UrlMatch.Match(item.Url);
+                        if (match.Success)
+                            await r.Machine.PassFromProxy(i, match.Value, data);
+                        i++;
+                    }
                 }
-            });
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                }
+
+            }
 
         }
 

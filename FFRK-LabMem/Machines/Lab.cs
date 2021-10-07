@@ -10,6 +10,7 @@ using FFRK_Machines.Machines;
 using FFRK_Machines;
 using FFRK_LabMem.Data;
 using System.Collections.Generic;
+using FFRK_Machines.Threading;
 
 namespace FFRK_LabMem.Machines
 {
@@ -62,9 +63,10 @@ namespace FFRK_LabMem.Machines
         private int CurrentKeys { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
-        private Stopwatch battleStopwatch = new Stopwatch();
-        private Stopwatch recoverStopwatch = new Stopwatch();
-        private Timer watchdogTimer = new Timer(System.Int32.MaxValue);
+        private readonly Stopwatch battleStopwatch = new Stopwatch();
+        private readonly Stopwatch recoverStopwatch = new Stopwatch();
+        private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
+        private readonly AsyncAutoResetEvent fatigueParsedEvent = new AsyncAutoResetEvent(false);
 
         private class BuddyInfo
         {
@@ -510,6 +512,7 @@ namespace FFRK_LabMem.Machines
 
                 }
             }
+            fatigueParsedEvent.Set();
             
         }
 

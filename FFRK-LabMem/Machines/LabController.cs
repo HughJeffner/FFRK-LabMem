@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FFRK_LabMem.Config;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
-using FFRK_Machines.Extensions;
 
 namespace FFRK_LabMem.Machines
 {
@@ -27,7 +25,8 @@ namespace FFRK_LabMem.Machines
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
-                unkownState: Lab.State.Unknown);
+                unkownState: Lab.State.Unknown,
+                consumers: 2);
             
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
