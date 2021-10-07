@@ -359,7 +359,6 @@ namespace FFRK_LabMem.Machines
                             case 1:  // Nothing
                             case 2:  // Item
                             case 3:  // Lab Item?
-                            case 5:  // Spring
                             case 6:  // Buffs
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
@@ -368,7 +367,9 @@ namespace FFRK_LabMem.Machines
                                 ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
+                            case 5:  // Spring
                             case 10: // Fatigue
+                                ParseAbrasionMap(data);
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
                             case 7:  // Door
@@ -383,10 +384,8 @@ namespace FFRK_LabMem.Machines
                     }
 
                     // Abrasion map presence
-                    var abrasionMap = data["user_buddy_memory_abrasion_map"];
-                    if (abrasionMap != null)
+                    if (ParseAbrasionMap(data))
                     {
-                        ParseAbrasionMap(abrasionMap);
                         await this.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     }
@@ -451,7 +450,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentPainting = null;
             this.CurrentFloor = 0;
             this.CurrentKeys = 0;
-            this.FatigueInfo = new List<BuddyInfo>();
+            this.FatigueInfo.Clear();
             
             // Base
             await base.Disable();
@@ -513,19 +512,21 @@ namespace FFRK_LabMem.Machines
 
                 }
             }
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueParsedEvent);
             fatigueParsedEvent.Set();
             
         }
 
-        private void ParseAbrasionMap(JToken data)
+        private bool ParseAbrasionMap(JObject data)
         {
-
+            var map = data["user_buddy_memory_abrasion_map"];
+            if (map == null) return false;
             foreach (var item in FatigueInfo)
             {
-                var value = data[item.BuddyId.ToString()];
+                var value = map[item.BuddyId.ToString()];
                 if (value != null) item.Fatigue = (int)value["value"];
             }
-
+            return true;
         }
 
     }

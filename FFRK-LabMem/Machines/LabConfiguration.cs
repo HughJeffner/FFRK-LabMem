@@ -42,7 +42,6 @@ namespace FFRK_LabMem.Machines
                 { "Pre-SelectTreasure", 5000 },
                 { "Pre-Door", 5000 },
                 { "Pre-MoveOn", 5000 },
-                { "Pre-StartBattle", 5000 },
                 { "Post-Battle", 7000 }
             };
             return defaults;
