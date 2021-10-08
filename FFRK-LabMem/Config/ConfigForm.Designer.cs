@@ -100,15 +100,15 @@ namespace FFRK_LabMem.Config
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.buttonTimingDefaults = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.buttonTimingDefaults = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -135,7 +135,7 @@ namespace FFRK_LabMem.Config
             this.buttonOk.Location = new System.Drawing.Point(442, 375);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(75, 29);
-            this.buttonOk.TabIndex = 0;
+            this.buttonOk.TabIndex = 2;
             this.buttonOk.Text = "Save";
             this.buttonOk.UseVisualStyleBackColor = true;
             this.buttonOk.Click += new System.EventHandler(this.ButtonOk_Click);
@@ -147,7 +147,7 @@ namespace FFRK_LabMem.Config
             this.buttonCancel.Location = new System.Drawing.Point(523, 375);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 29);
-            this.buttonCancel.TabIndex = 1;
+            this.buttonCancel.TabIndex = 3;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
@@ -165,7 +165,7 @@ namespace FFRK_LabMem.Config
             this.listCategory.Location = new System.Drawing.Point(15, 12);
             this.listCategory.Name = "listCategory";
             this.listCategory.Size = new System.Drawing.Size(120, 362);
-            this.listCategory.TabIndex = 25;
+            this.listCategory.TabIndex = 0;
             this.listCategory.SelectedIndexChanged += new System.EventHandler(this.ListCategory_SelectedIndexChanged);
             // 
             // tabControl
@@ -180,7 +180,7 @@ namespace FFRK_LabMem.Config
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(457, 363);
-            this.tabControl.TabIndex = 26;
+            this.tabControl.TabIndex = 1;
             // 
             // tabPage1
             // 
@@ -342,7 +342,7 @@ namespace FFRK_LabMem.Config
             this.groupBox1.Location = new System.Drawing.Point(0, 96);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(449, 235);
-            this.groupBox1.TabIndex = 53;
+            this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Actions";
             // 
@@ -351,7 +351,7 @@ namespace FFRK_LabMem.Config
             this.button1.Location = new System.Drawing.Point(131, 35);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(229, 23);
-            this.button1.TabIndex = 52;
+            this.button1.TabIndex = 0;
             this.button1.Text = "Copy Proxy Bypass to Clipboard\r\n";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -361,7 +361,7 @@ namespace FFRK_LabMem.Config
             this.buttonProxyRegenCert.Location = new System.Drawing.Point(131, 77);
             this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
             this.buttonProxyRegenCert.Size = new System.Drawing.Size(229, 23);
-            this.buttonProxyRegenCert.TabIndex = 51;
+            this.buttonProxyRegenCert.TabIndex = 1;
             this.buttonProxyRegenCert.Text = "Regenerate Certificate";
             this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
             this.buttonProxyRegenCert.Click += new System.EventHandler(this.ButtonProxyRegenCert_Click);
@@ -373,7 +373,7 @@ namespace FFRK_LabMem.Config
             this.buttonProxyBlocklist.Location = new System.Drawing.Point(378, 25);
             this.buttonProxyBlocklist.Name = "buttonProxyBlocklist";
             this.buttonProxyBlocklist.Size = new System.Drawing.Size(25, 20);
-            this.buttonProxyBlocklist.TabIndex = 50;
+            this.buttonProxyBlocklist.TabIndex = 4;
             this.buttonProxyBlocklist.UseVisualStyleBackColor = true;
             this.buttonProxyBlocklist.Visible = false;
             this.buttonProxyBlocklist.Click += new System.EventHandler(this.BtnBrowseIn_Click);
@@ -383,7 +383,7 @@ namespace FFRK_LabMem.Config
             this.textBoxProxyBlocklist.Location = new System.Drawing.Point(131, 26);
             this.textBoxProxyBlocklist.Name = "textBoxProxyBlocklist";
             this.textBoxProxyBlocklist.Size = new System.Drawing.Size(241, 20);
-            this.textBoxProxyBlocklist.TabIndex = 11;
+            this.textBoxProxyBlocklist.TabIndex = 3;
             this.toolTip1.SetToolTip(this.textBoxProxyBlocklist, "Specifies a text file to block connections.  The file should contain a domain nam" +
         "e on each line of the file.");
             this.textBoxProxyBlocklist.TextChanged += new System.EventHandler(this.NeedsRestart_Changed);
@@ -393,7 +393,7 @@ namespace FFRK_LabMem.Config
             this.label4.Location = new System.Drawing.Point(0, 27);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(125, 20);
-            this.label4.TabIndex = 10;
+            this.label4.TabIndex = 2;
             this.label4.Text = "Proxy blocklist:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -403,7 +403,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxProxySecure.Location = new System.Drawing.Point(3, 61);
             this.checkBoxProxySecure.Name = "checkBoxProxySecure";
             this.checkBoxProxySecure.Size = new System.Drawing.Size(140, 17);
-            this.checkBoxProxySecure.TabIndex = 9;
+            this.checkBoxProxySecure.TabIndex = 5;
             this.checkBoxProxySecure.Text = "Use secure proxy (https)";
             this.toolTip1.SetToolTip(this.checkBoxProxySecure, "Use HTTPS interception, this is required for FFRK version 8.0.0+");
             this.checkBoxProxySecure.UseVisualStyleBackColor = true;
@@ -424,7 +424,7 @@ namespace FFRK_LabMem.Config
             0});
             this.numericUpDownProxyPort.Name = "numericUpDownProxyPort";
             this.numericUpDownProxyPort.Size = new System.Drawing.Size(94, 20);
-            this.numericUpDownProxyPort.TabIndex = 8;
+            this.numericUpDownProxyPort.TabIndex = 1;
             this.numericUpDownProxyPort.Value = new decimal(new int[] {
             8081,
             0,
@@ -437,7 +437,7 @@ namespace FFRK_LabMem.Config
             this.label3.Location = new System.Drawing.Point(0, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(125, 20);
-            this.label3.TabIndex = 7;
+            this.label3.TabIndex = 0;
             this.label3.Text = "Proxy port:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -467,7 +467,7 @@ namespace FFRK_LabMem.Config
             this.comboBoxAdbHost.Location = new System.Drawing.Point(131, 25);
             this.comboBoxAdbHost.Name = "comboBoxAdbHost";
             this.comboBoxAdbHost.Size = new System.Drawing.Size(241, 21);
-            this.comboBoxAdbHost.TabIndex = 56;
+            this.comboBoxAdbHost.TabIndex = 3;
             this.toolTip1.SetToolTip(this.comboBoxAdbHost, "Host and port for connecting to the device adb service.  Not needed if connected " +
         "via USB");
             this.comboBoxAdbHost.TextChanged += new System.EventHandler(this.NeedsRestart_Changed);
@@ -477,7 +477,7 @@ namespace FFRK_LabMem.Config
             this.label6.Location = new System.Drawing.Point(0, 26);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(125, 20);
-            this.label6.TabIndex = 54;
+            this.label6.TabIndex = 2;
             this.label6.Text = "Adb host:";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -486,7 +486,7 @@ namespace FFRK_LabMem.Config
             this.textBoxAdbPath.Location = new System.Drawing.Point(131, 0);
             this.textBoxAdbPath.Name = "textBoxAdbPath";
             this.textBoxAdbPath.Size = new System.Drawing.Size(241, 20);
-            this.textBoxAdbPath.TabIndex = 52;
+            this.textBoxAdbPath.TabIndex = 1;
             this.toolTip1.SetToolTip(this.textBoxAdbPath, "Custom adb path if not using the bundled adb.exe");
             this.textBoxAdbPath.TextChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
@@ -495,7 +495,7 @@ namespace FFRK_LabMem.Config
             this.label5.Location = new System.Drawing.Point(0, 1);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(125, 20);
-            this.label5.TabIndex = 51;
+            this.label5.TabIndex = 0;
             this.label5.Text = "Adb path:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -521,7 +521,7 @@ namespace FFRK_LabMem.Config
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(443, 305);
-            this.tabControl1.TabIndex = 18;
+            this.tabControl1.TabIndex = 1;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
             // tabPage5
@@ -547,10 +547,10 @@ namespace FFRK_LabMem.Config
             // checkBoxLabUseTeleport
             // 
             this.checkBoxLabUseTeleport.AutoSize = true;
-            this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(6, 75);
             this.checkBoxLabUseTeleport.Name = "checkBoxLabUseTeleport";
             this.checkBoxLabUseTeleport.Size = new System.Drawing.Size(269, 17);
-            this.checkBoxLabUseTeleport.TabIndex = 22;
+            this.checkBoxLabUseTeleport.TabIndex = 3;
             this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
             this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
@@ -561,7 +561,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabOldRecovery.Location = new System.Drawing.Point(6, 179);
             this.checkBoxLabOldRecovery.Name = "checkBoxLabOldRecovery";
             this.checkBoxLabOldRecovery.Size = new System.Drawing.Size(135, 17);
-            this.checkBoxLabOldRecovery.TabIndex = 14;
+            this.checkBoxLabOldRecovery.TabIndex = 7;
             this.checkBoxLabOldRecovery.Text = "Use old crash recovery";
             this.checkBoxLabOldRecovery.UseVisualStyleBackColor = true;
             // 
@@ -579,7 +579,7 @@ namespace FFRK_LabMem.Config
             this.numericUpDownWatchdog.Location = new System.Drawing.Point(115, 149);
             this.numericUpDownWatchdog.Name = "numericUpDownWatchdog";
             this.numericUpDownWatchdog.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDownWatchdog.TabIndex = 12;
+            this.numericUpDownWatchdog.TabIndex = 6;
             this.toolTip1.SetToolTip(this.numericUpDownWatchdog, "If an action doesn\'t complete in this number of minutes, crash recovery is perfor" +
         "med. Set to \'0\' for no crash recovery");
             this.numericUpDownWatchdog.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
@@ -599,7 +599,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabUsePotions.Location = new System.Drawing.Point(18, 122);
             this.checkBoxLabUsePotions.Name = "checkBoxLabUsePotions";
             this.checkBoxLabUsePotions.Size = new System.Drawing.Size(121, 17);
-            this.checkBoxLabUsePotions.TabIndex = 10;
+            this.checkBoxLabUsePotions.TabIndex = 5;
             this.checkBoxLabUsePotions.Text = "Use stamina potions";
             this.checkBoxLabUsePotions.UseVisualStyleBackColor = true;
             // 
@@ -609,7 +609,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabRestart.Location = new System.Drawing.Point(6, 98);
             this.checkBoxLabRestart.Name = "checkBoxLabRestart";
             this.checkBoxLabRestart.Size = new System.Drawing.Size(158, 17);
-            this.checkBoxLabRestart.TabIndex = 9;
+            this.checkBoxLabRestart.TabIndex = 4;
             this.checkBoxLabRestart.Text = "Restart lab when completed";
             this.toolTip1.SetToolTip(this.checkBoxLabRestart, "Restarts the lab run once completed, use for degenerate 24/7 farming");
             this.checkBoxLabRestart.UseVisualStyleBackColor = true;
@@ -618,13 +618,14 @@ namespace FFRK_LabMem.Config
             // checkBoxLabStopOnMasterPainting
             // 
             this.checkBoxLabStopOnMasterPainting.AutoSize = true;
-            this.checkBoxLabStopOnMasterPainting.Location = new System.Drawing.Point(6, 75);
+            this.checkBoxLabStopOnMasterPainting.Location = new System.Drawing.Point(6, 52);
             this.checkBoxLabStopOnMasterPainting.Name = "checkBoxLabStopOnMasterPainting";
             this.checkBoxLabStopOnMasterPainting.Size = new System.Drawing.Size(205, 17);
-            this.checkBoxLabStopOnMasterPainting.TabIndex = 8;
+            this.checkBoxLabStopOnMasterPainting.TabIndex = 2;
             this.checkBoxLabStopOnMasterPainting.Text = "Stop when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabStopOnMasterPainting, "Disables the bot when the Master painting is reached");
             this.checkBoxLabStopOnMasterPainting.UseVisualStyleBackColor = true;
+            this.checkBoxLabStopOnMasterPainting.CheckedChanged += new System.EventHandler(this.checkBoxLabStopOnMasterPainting_CheckedChanged);
             // 
             // checkBoxLabRestartFailedBattle
             // 
@@ -632,7 +633,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabRestartFailedBattle.Location = new System.Drawing.Point(6, 29);
             this.checkBoxLabRestartFailedBattle.Name = "checkBoxLabRestartFailedBattle";
             this.checkBoxLabRestartFailedBattle.Size = new System.Drawing.Size(168, 17);
-            this.checkBoxLabRestartFailedBattle.TabIndex = 7;
+            this.checkBoxLabRestartFailedBattle.TabIndex = 1;
             this.checkBoxLabRestartFailedBattle.Text = "Restart battles when defeated";
             this.toolTip1.SetToolTip(this.checkBoxLabRestartFailedBattle, "Restarts the battle if you are defeated.  If not set then plays a tone and waits " +
         "for your input.");
@@ -644,7 +645,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabDebug.Location = new System.Drawing.Point(6, 6);
             this.checkBoxLabDebug.Name = "checkBoxLabDebug";
             this.checkBoxLabDebug.Size = new System.Drawing.Size(136, 17);
-            this.checkBoxLabDebug.TabIndex = 3;
+            this.checkBoxLabDebug.TabIndex = 0;
             this.checkBoxLabDebug.Text = "Show debug messages";
             this.toolTip1.SetToolTip(this.checkBoxLabDebug, "Shows lab-specific debug information including button-finding info");
             this.checkBoxLabDebug.UseVisualStyleBackColor = true;
@@ -674,7 +675,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxSlot5.Location = new System.Drawing.Point(170, 98);
             this.checkBoxSlot5.Name = "checkBoxSlot5";
             this.checkBoxSlot5.Size = new System.Drawing.Size(32, 17);
-            this.checkBoxSlot5.TabIndex = 28;
+            this.checkBoxSlot5.TabIndex = 9;
             this.checkBoxSlot5.Text = "5";
             this.toolTip1.SetToolTip(this.checkBoxSlot5, "Party slot 5");
             this.checkBoxSlot5.UseVisualStyleBackColor = true;
@@ -685,7 +686,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxSlot4.Location = new System.Drawing.Point(132, 98);
             this.checkBoxSlot4.Name = "checkBoxSlot4";
             this.checkBoxSlot4.Size = new System.Drawing.Size(32, 17);
-            this.checkBoxSlot4.TabIndex = 27;
+            this.checkBoxSlot4.TabIndex = 8;
             this.checkBoxSlot4.Text = "4";
             this.toolTip1.SetToolTip(this.checkBoxSlot4, "Party slot 4");
             this.checkBoxSlot4.UseVisualStyleBackColor = true;
@@ -696,7 +697,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxSlot3.Location = new System.Drawing.Point(94, 98);
             this.checkBoxSlot3.Name = "checkBoxSlot3";
             this.checkBoxSlot3.Size = new System.Drawing.Size(32, 17);
-            this.checkBoxSlot3.TabIndex = 26;
+            this.checkBoxSlot3.TabIndex = 7;
             this.checkBoxSlot3.Text = "3";
             this.toolTip1.SetToolTip(this.checkBoxSlot3, "Party slot 3");
             this.checkBoxSlot3.UseVisualStyleBackColor = true;
@@ -707,7 +708,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxSlot2.Location = new System.Drawing.Point(56, 98);
             this.checkBoxSlot2.Name = "checkBoxSlot2";
             this.checkBoxSlot2.Size = new System.Drawing.Size(32, 17);
-            this.checkBoxSlot2.TabIndex = 25;
+            this.checkBoxSlot2.TabIndex = 6;
             this.checkBoxSlot2.Text = "2";
             this.toolTip1.SetToolTip(this.checkBoxSlot2, "Party slot 2");
             this.checkBoxSlot2.UseVisualStyleBackColor = true;
@@ -718,7 +719,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxSlot1.Location = new System.Drawing.Point(18, 98);
             this.checkBoxSlot1.Name = "checkBoxSlot1";
             this.checkBoxSlot1.Size = new System.Drawing.Size(32, 17);
-            this.checkBoxSlot1.TabIndex = 24;
+            this.checkBoxSlot1.TabIndex = 5;
             this.checkBoxSlot1.Text = "1";
             this.toolTip1.SetToolTip(this.checkBoxSlot1, "Party slot 1");
             this.checkBoxSlot1.UseVisualStyleBackColor = true;
@@ -738,7 +739,7 @@ namespace FFRK_LabMem.Config
             0});
             this.numericUpDownFatigue.Name = "numericUpDownFatigue";
             this.numericUpDownFatigue.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDownFatigue.TabIndex = 23;
+            this.numericUpDownFatigue.TabIndex = 4;
             this.toolTip1.SetToolTip(this.numericUpDownFatigue, "Fatigue that must be reached before Lethe Tears are used");
             this.numericUpDownFatigue.Value = new decimal(new int[] {
             7,
@@ -752,7 +753,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabUseLetheTears.Location = new System.Drawing.Point(6, 75);
             this.checkBoxLabUseLetheTears.Name = "checkBoxLabUseLetheTears";
             this.checkBoxLabUseLetheTears.Size = new System.Drawing.Size(210, 17);
-            this.checkBoxLabUseLetheTears.TabIndex = 22;
+            this.checkBoxLabUseLetheTears.TabIndex = 3;
             this.checkBoxLabUseLetheTears.Text = "Use Lethe Tears when fatigue reaches";
             this.checkBoxLabUseLetheTears.UseVisualStyleBackColor = true;
             this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.checkBoxLabUseLetheTears_CheckedChanged);
@@ -763,7 +764,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(6, 52);
             this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
             this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(422, 17);
-            this.checkBoxLabAvoidPortal.TabIndex = 9;
+            this.checkBoxLabAvoidPortal.TabIndex = 2;
             this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
     "paintings";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
@@ -776,7 +777,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabAvoidExplore.Location = new System.Drawing.Point(6, 29);
             this.checkBoxLabAvoidExplore.Name = "checkBoxLabAvoidExplore";
             this.checkBoxLabAvoidExplore.Size = new System.Drawing.Size(243, 17);
-            this.checkBoxLabAvoidExplore.TabIndex = 8;
+            this.checkBoxLabAvoidExplore.TabIndex = 1;
             this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
         " visible in the background to eliminate the chance of getting a Portal");
@@ -788,7 +789,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabDoors.Location = new System.Drawing.Point(6, 6);
             this.checkBoxLabDoors.Name = "checkBoxLabDoors";
             this.checkBoxLabDoors.Size = new System.Drawing.Size(115, 17);
-            this.checkBoxLabDoors.TabIndex = 7;
+            this.checkBoxLabDoors.TabIndex = 0;
             this.checkBoxLabDoors.Text = "Open sealed doors";
             this.checkBoxLabDoors.UseVisualStyleBackColor = true;
             // 
@@ -823,7 +824,7 @@ namespace FFRK_LabMem.Config
             this.buttonPaintingMoveUp.Location = new System.Drawing.Point(6, 243);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(75, 23);
-            this.buttonPaintingMoveUp.TabIndex = 2;
+            this.buttonPaintingMoveUp.TabIndex = 1;
             this.buttonPaintingMoveUp.Text = "Move Up";
             this.buttonPaintingMoveUp.UseVisualStyleBackColor = true;
             this.buttonPaintingMoveUp.Click += new System.EventHandler(this.ButtonPaintingUp_Click);
@@ -833,7 +834,7 @@ namespace FFRK_LabMem.Config
             this.buttonPaintingMoveDown.Location = new System.Drawing.Point(87, 243);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(75, 23);
-            this.buttonPaintingMoveDown.TabIndex = 1;
+            this.buttonPaintingMoveDown.TabIndex = 2;
             this.buttonPaintingMoveDown.Text = "Move Down";
             this.buttonPaintingMoveDown.UseVisualStyleBackColor = true;
             this.buttonPaintingMoveDown.Click += new System.EventHandler(this.ButtonPaintingDown_Click);
@@ -883,7 +884,7 @@ namespace FFRK_LabMem.Config
             this.label9.Location = new System.Drawing.Point(187, 248);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(115, 13);
-            this.label9.TabIndex = 7;
+            this.label9.TabIndex = 3;
             this.label9.Text = "Max keys for selection:";
             // 
             // comboBoxKeys
@@ -897,7 +898,7 @@ namespace FFRK_LabMem.Config
             this.comboBoxKeys.Location = new System.Drawing.Point(308, 245);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxKeys.TabIndex = 6;
+            this.comboBoxKeys.TabIndex = 4;
             this.comboBoxKeys.SelectedIndexChanged += new System.EventHandler(this.ComboBoxKeys_SelectedIndexChanged);
             // 
             // buttonTreasureUp
@@ -905,7 +906,7 @@ namespace FFRK_LabMem.Config
             this.buttonTreasureUp.Location = new System.Drawing.Point(6, 243);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(75, 23);
-            this.buttonTreasureUp.TabIndex = 5;
+            this.buttonTreasureUp.TabIndex = 1;
             this.buttonTreasureUp.Text = "Move Up";
             this.buttonTreasureUp.UseVisualStyleBackColor = true;
             this.buttonTreasureUp.Click += new System.EventHandler(this.ButtonTreasureUp_Click);
@@ -915,7 +916,7 @@ namespace FFRK_LabMem.Config
             this.buttonTreasureDown.Location = new System.Drawing.Point(87, 243);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(75, 23);
-            this.buttonTreasureDown.TabIndex = 4;
+            this.buttonTreasureDown.TabIndex = 2;
             this.buttonTreasureDown.Text = "Move Down";
             this.buttonTreasureDown.UseVisualStyleBackColor = true;
             this.buttonTreasureDown.Click += new System.EventHandler(this.ButtonTreasureDown_Click);
@@ -934,7 +935,7 @@ namespace FFRK_LabMem.Config
             this.listViewTreasures.Location = new System.Drawing.Point(6, 6);
             this.listViewTreasures.Name = "listViewTreasures";
             this.listViewTreasures.Size = new System.Drawing.Size(423, 232);
-            this.listViewTreasures.TabIndex = 3;
+            this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
             this.listViewTreasures.View = System.Windows.Forms.View.Details;
             this.listViewTreasures.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListViewTreasures_ItemChecked);
@@ -954,38 +955,6 @@ namespace FFRK_LabMem.Config
             this.columnHeader5.Text = "Treasure Type";
             this.columnHeader5.Width = 267;
             // 
-            // comboBoxLab
-            // 
-            this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxLab.FormattingEnabled = true;
-            this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
-            this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(446, 21);
-            this.comboBoxLab.TabIndex = 17;
-            this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
-            // 
-            // lblRestart
-            // 
-            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
-            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
-            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblRestart.Location = new System.Drawing.Point(15, 375);
-            this.lblRestart.Name = "lblRestart";
-            this.lblRestart.Size = new System.Drawing.Size(301, 29);
-            this.lblRestart.TabIndex = 18;
-            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
-            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblRestart.Visible = false;
-            // 
-            // folderBrowserDialog1
-            // 
-            this.folderBrowserDialog1.Description = "Choose blocklist file";
-            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
-            this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
             // tabPage9
             // 
             this.tabPage9.Controls.Add(this.buttonTimingDefaults);
@@ -997,6 +966,16 @@ namespace FFRK_LabMem.Config
             this.tabPage9.TabIndex = 4;
             this.tabPage9.Text = "Timings";
             this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // buttonTimingDefaults
+            // 
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(6, 243);
+            this.buttonTimingDefaults.Name = "buttonTimingDefaults";
+            this.buttonTimingDefaults.Size = new System.Drawing.Size(100, 23);
+            this.buttonTimingDefaults.TabIndex = 1;
+            this.buttonTimingDefaults.Text = "Reset Defaults";
+            this.buttonTimingDefaults.UseVisualStyleBackColor = true;
+            this.buttonTimingDefaults.Click += new System.EventHandler(this.buttonTimingDefaults_Click);
             // 
             // dataGridView1
             // 
@@ -1028,15 +1007,37 @@ namespace FFRK_LabMem.Config
             this.Value.HeaderText = "Value (ms)";
             this.Value.Name = "Value";
             // 
-            // buttonTimingDefaults
+            // comboBoxLab
             // 
-            this.buttonTimingDefaults.Location = new System.Drawing.Point(6, 243);
-            this.buttonTimingDefaults.Name = "buttonTimingDefaults";
-            this.buttonTimingDefaults.Size = new System.Drawing.Size(100, 23);
-            this.buttonTimingDefaults.TabIndex = 5;
-            this.buttonTimingDefaults.Text = "Reset Defaults";
-            this.buttonTimingDefaults.UseVisualStyleBackColor = true;
-            this.buttonTimingDefaults.Click += new System.EventHandler(this.buttonTimingDefaults_Click);
+            this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLab.FormattingEnabled = true;
+            this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
+            this.comboBoxLab.Name = "comboBoxLab";
+            this.comboBoxLab.Size = new System.Drawing.Size(446, 21);
+            this.comboBoxLab.TabIndex = 0;
+            this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
+            // 
+            // lblRestart
+            // 
+            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
+            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
+            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblRestart.Location = new System.Drawing.Point(15, 375);
+            this.lblRestart.Name = "lblRestart";
+            this.lblRestart.Size = new System.Drawing.Size(301, 29);
+            this.lblRestart.TabIndex = 18;
+            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
+            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblRestart.Visible = false;
+            // 
+            // folderBrowserDialog1
+            // 
+            this.folderBrowserDialog1.Description = "Choose blocklist file";
+            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
+            this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
             // ConfigForm
             // 

@@ -231,6 +231,7 @@ namespace FFRK_LabMem.Config
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
             checkBoxLabRestartFailedBattle.Checked = labConfig.RestartFailedBattle;
             checkBoxLabStopOnMasterPainting.Checked = labConfig.StopOnMasterPainting;
+            checkBoxLabStopOnMasterPainting_CheckedChanged(sender, e);
             checkBoxLabRestart.Checked = labConfig.RestartLab;
             checkBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
@@ -545,6 +546,11 @@ namespace FFRK_LabMem.Config
                     dataGridView1.Rows.Add(item.Key, item.Value);
                 }
             }
+        }
+
+        private void checkBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
         }
     }
 }

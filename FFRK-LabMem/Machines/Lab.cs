@@ -492,9 +492,9 @@ namespace FFRK_LabMem.Machines
             {
                 
                 FatigueInfo.Clear();
-                foreach (var item in party["slot_to_buddy_id"].OrderBy(i => i.FirstOrDefault()))
+                foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
                 {
-                    FatigueInfo.Add(new BuddyInfo() { BuddyId = (int)item.First });
+                    FatigueInfo.Add(new BuddyInfo() { BuddyId = (int)item.Value });
                 }
             }
 

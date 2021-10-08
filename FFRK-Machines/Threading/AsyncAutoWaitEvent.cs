@@ -48,7 +48,6 @@ namespace FFRK_Machines.Threading
             if (winner == tcs.Task)
             {
                 // The task was signaled.
-                this.isSignaled = false;
                 return true;
             }
             else

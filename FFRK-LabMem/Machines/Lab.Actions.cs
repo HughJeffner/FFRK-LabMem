@@ -346,7 +346,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("");
 
             // Lethe Tears
-            await fatigueParsedEvent.WaitAsync(TimeSpan.FromSeconds(10), this.CancellationToken);
+            await fatigueParsedEvent.WaitAsync(TimeSpan.FromSeconds(15), this.CancellationToken);
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values READ: {0}", fatigueParsedEvent);
             if (Config.UseLetheTears && FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
             {
@@ -383,8 +383,8 @@ namespace FFRK_LabMem.Machines
             // Drops
             await DataLogger.LogBattleDrops(this);
 
-            // Update fatigue
-            FatigueInfo.ForEach(f => f.Fatigue = Math.Min(10, f.Fatigue + 2));
+            // Update fatigue unknown value
+            FatigueInfo.ForEach(f => f.Fatigue = -1);
 
             //Tappy taps
             await Task.Delay(Config.Timings["Post-Battle"], this.CancellationToken);
