@@ -157,11 +157,11 @@ namespace FFRK_LabMem.Config
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
             labConfig.LetheTearsSlot = 0;
-            if (checkBoxSlot1.Checked) labConfig.LetheTearsSlot |= (1 << 0);
-            if (checkBoxSlot2.Checked) labConfig.LetheTearsSlot |= (1 << 1);
+            if (checkBoxSlot1.Checked) labConfig.LetheTearsSlot |= (1 << 4);
+            if (checkBoxSlot2.Checked) labConfig.LetheTearsSlot |= (1 << 3);
             if (checkBoxSlot3.Checked) labConfig.LetheTearsSlot |= (1 << 2);
-            if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 3);
-            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 4);
+            if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 1);
+            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 0);
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
 
             labConfig.PaintingPriorityMap.Clear();
@@ -240,11 +240,11 @@ namespace FFRK_LabMem.Config
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             checkBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
-            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
-            checkBoxSlot2.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
+            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot >> 4) & 1) != 0;
+            checkBoxSlot2.Checked = ((labConfig.LetheTearsSlot >> 3) & 1) != 0;
             checkBoxSlot3.Checked = ((labConfig.LetheTearsSlot >> 2) & 1) != 0;
-            checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 3) & 1) != 0;
-            checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 4) & 1) != 0;
+            checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
+            checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
 
             listViewPaintings.Items.Clear();
