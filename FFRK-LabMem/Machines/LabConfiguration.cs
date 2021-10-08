@@ -14,7 +14,7 @@ namespace FFRK_LabMem.Machines
         public bool AvoidPortal { get; set; } = true;
         public int WatchdogMinutes { get; set; } = 10;
         public bool RestartFailedBattle { get; set; } = false;
-        public bool StopOnMasterPainting { get; set; } = true;
+        public bool StopOnMasterPainting { get; set; } = false;
         public bool RestartLab { get; set; } = false;
         public bool UsePotions { get; set; } = false;
         public bool UseOldCrashRecovery { get; set; } = false;

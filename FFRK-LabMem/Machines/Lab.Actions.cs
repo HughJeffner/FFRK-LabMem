@@ -350,7 +350,6 @@ namespace FFRK_LabMem.Machines
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values READ: {0}", fatigueParsedEvent);
             if (Config.UseLetheTears && FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
             {
-                await Task.Delay(5000, this.CancellationToken);
                 await UseLetheTears();
             }
 
@@ -412,7 +411,7 @@ namespace FFRK_LabMem.Machines
         {
 
             ColorConsole.WriteLine("Using Lethe Tears");
-            await Task.Delay(2000, this.CancellationToken);
+            await Task.Delay(4000, this.CancellationToken);
 
             // Lethe tears button
             await this.Adb.TapPct(88.88, 17.18, this.CancellationToken);

@@ -1,8 +1,6 @@
 {
   "Debug": false,
-  "OpenDoors": true,
   "AvoidExploreIfTreasure": false,
-  "AvoidPortal": true,
   "PaintingPriorityMap": {
     "3": 1,
     "4": 2,
@@ -21,7 +19,7 @@
     },
     "4": {
       "Priority": 1,
-      "MaxKeys": 3
+      "MaxKeys": 1
     },
     "3": {
       "Priority": 1,
@@ -35,10 +33,5 @@
       "Priority": 0,
       "MaxKeys": 0
     }
-  },
-  "WatchdogMinutes": 10,
-  "RestartFailedBattle": false,
-  "StopOnMasterPainting": false,
-  "RestartLab": false,
-  "UsePotions": false
+  }
 }
