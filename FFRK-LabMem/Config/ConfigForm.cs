@@ -455,7 +455,7 @@ namespace FFRK_LabMem.Config
             checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
             textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
             textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-            comboBoxAdbHost.Text != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+            ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
             numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
 
             lblRestart.Visible = changed;
