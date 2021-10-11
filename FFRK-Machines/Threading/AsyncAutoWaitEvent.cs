@@ -83,6 +83,11 @@ namespace FFRK_Machines.Threading
             }
         }
 
+        public void Reset()
+        {
+            isSignaled = false;
+        }
+
         public override string ToString()
         {
             return $"Signaled: {this.isSignaled.ToString()}, Waiters: {this.waiters.Count.ToString()}";

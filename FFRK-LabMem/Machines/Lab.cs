@@ -66,7 +66,7 @@ namespace FFRK_LabMem.Machines
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
-        private readonly AsyncAutoResetEvent fatigueParsedEvent = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
 
         private class BuddyInfo
         {
@@ -451,6 +451,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentFloor = 0;
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
+            fatigueAutoResetEvent.Reset();
             
             // Base
             await base.Disable();
@@ -512,8 +513,8 @@ namespace FFRK_LabMem.Machines
 
                 }
             }
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueParsedEvent);
-            fatigueParsedEvent.Set();
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
+            fatigueAutoResetEvent.Set();
             
         }
 

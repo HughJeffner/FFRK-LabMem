@@ -12,6 +12,7 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace FFRK_LabMem.Services
 {
@@ -439,6 +440,14 @@ namespace FFRK_LabMem.Services
 
             return ret;
 
+        }
+
+        public async Task SaveScrenshot(String fileName, CancellationToken cancellationToken)
+        {
+            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
+            {
+                framebuffer.Save(fileName, ImageFormat.Png);
+            }
         }
 
         public async Task<List<Color>> GetPixelColorPct(List<Tuple<double, double>> coordsPct, CancellationToken cancellationToken)
