@@ -158,7 +158,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown painting id: {0}", type);
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown painting id: {0}", type);
                 return 99;
             }
 
@@ -226,6 +226,7 @@ namespace FFRK_LabMem.Machines
                 // Check if key needed
                 if (picked > 0)
                 {
+                    ColorConsole.Write(ConsoleColor.Magenta, "Using [Magic Key] x{0}", willSpendKeys);
                     await this.Adb.TapPct(58, 44, this.CancellationToken);
                     await Task.Delay(2000, this.CancellationToken);
                 }
@@ -266,7 +267,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Unknown treasure filter id: {0}", type);
+                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown treasure filter id: {0}", type);
                 return new LabConfiguration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
             }
 
@@ -307,7 +308,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
 
@@ -325,7 +326,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
 
@@ -371,7 +372,7 @@ namespace FFRK_LabMem.Machines
             }
             else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Failed to find button");
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
 
@@ -418,7 +419,9 @@ namespace FFRK_LabMem.Machines
         private async Task<bool> UseLetheTears()
         {
 
-            ColorConsole.WriteLine("Using Lethe Tears");
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0}",
+                Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1'));
+
             await Task.Delay(4000, this.CancellationToken);
 
             // Lethe tears button
@@ -477,7 +480,7 @@ namespace FFRK_LabMem.Machines
         private async Task<bool> UseTeleportStone()
         {
 
-            ColorConsole.WriteLine("Using Teleport Stone");
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Teleport Stone] x1");
             await Task.Delay(2000, this.CancellationToken);
 
             // Lethe tears button
@@ -592,7 +595,7 @@ namespace FFRK_LabMem.Machines
                         {
                             if (Config.UsePotions)
                             {
-                                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Using a potion");
+                                ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Stamina Potion] x1");
                                 await Adb.TapPct(button.Item1, button.Item2, this.CancellationToken); // Select potions
                                 await Task.Delay(2000, this.CancellationToken);
                                 await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
