@@ -203,7 +203,7 @@ namespace FFRK_LabMem.Machines
                     .FirstOrDefault();
 
             // Key check
-            if (willSpendKeys > this.CurrentKeys)
+            if (picked > this.CurrentKeys)
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough keys!");
                 treasureToPick = null;
@@ -226,7 +226,7 @@ namespace FFRK_LabMem.Machines
                 // Check if key needed
                 if (picked > 0)
                 {
-                    ColorConsole.Write(ConsoleColor.Magenta, "Using [Magic Key] x{0}", willSpendKeys);
+                    ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0}", picked);
                     await this.Adb.TapPct(58, 44, this.CancellationToken);
                     await Task.Delay(2000, this.CancellationToken);
                 }
@@ -608,7 +608,7 @@ namespace FFRK_LabMem.Machines
                             }
                             else
                             {
-                                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Not enough stamina");
+                                ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
                                 OnMachineFinished();
                                 return;
                             }
