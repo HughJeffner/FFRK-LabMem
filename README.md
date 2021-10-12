@@ -120,3 +120,5 @@ Verson codes are in the format (major.minor.patch)
 For a minor or patch release copy the main executeable to your install folder (and .pdb file if you want accurate error stack traces).
 
 For a major release copy all files.  You can optionally keep your configuration files (any missing settings will use defaults and any unused settings will be ignored)
+
+Please keep your `rootCert.pfx` file, or you will have to re-install the certificate on the android device
