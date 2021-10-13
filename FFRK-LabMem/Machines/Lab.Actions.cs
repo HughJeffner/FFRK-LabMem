@@ -293,7 +293,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task MoveOn()
+        private async Task MoveOn(bool FromPortal)
         {
 
             await DataLogger.LogGotItem(this);
@@ -312,7 +312,9 @@ namespace FFRK_LabMem.Machines
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
 
-            // Failed
+            // We need an additional delay if we got the dreaded portal
+            if (FromPortal) 
+                await Task.Delay(5000);
 
         }
 

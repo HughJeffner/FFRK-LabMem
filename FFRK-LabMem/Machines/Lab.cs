@@ -25,6 +25,7 @@ namespace FFRK_LabMem.Machines
             FoundDoor,
             FoundBattle,
             FoundTreasure,
+            FoundPortal,
             PickedCombatant,
             PickedPortal,
             OpenDoor,
@@ -115,6 +116,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.WatchdogTimer)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.FoundThing, State.FoundThing)
+                .Permit(Trigger.FoundPortal, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
@@ -129,6 +131,7 @@ namespace FFRK_LabMem.Machines
                 .PermitReentry(Trigger.ResetState)
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.FoundThing, State.FoundThing)
+                .Permit(Trigger.FoundPortal, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
@@ -138,7 +141,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FinishedLab, State.Completed);
 
             this.StateMachine.Configure(State.FoundThing)
-                .OnEntryAsync(async (t) => await MoveOn())
+                .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
+                .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.MoveOn, State.Ready)
                 .Permit(Trigger.MissedButton, State.Ready);
@@ -365,7 +369,7 @@ namespace FFRK_LabMem.Machines
                             case 8:  // Portal
                                 int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
                                 ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
-                                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                                await this.StateMachine.FireAsync(Trigger.FoundPortal);
                                 break;
                             case 5:  // Spring
                             case 10: // Fatigue
