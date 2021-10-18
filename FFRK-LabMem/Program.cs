@@ -38,7 +38,7 @@ namespace FFRK_LabMem
             while (true)
             {
                 var key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.X) break;
+                if (key.Key == ConsoleKey.X && key.Modifiers == 0) break;
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers);
