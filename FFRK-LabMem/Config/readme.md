@@ -19,6 +19,7 @@
 | LetheTearsSlot        | A 5-bit binary value in decimal form of which slots should be checked for fatigue, significant bit (right) is slot 1 | 31 (0b11111) |
 | LetheTearsFatigue     | Fatigue level before using lethe tears on the units in `LetheTearsSlot` | 7 |
 | UseTeleportStoneOnMasterPainting | Instead of fighting the master painting, use a teleport stone | false |
+| ScreenshotRadiantPainting | Saves a PNG screenshot to the bot directory if a radiant painting is seen | false |
 | PaintingPriorityMap   | A list of key-value pairs that assign a priority to paintings for selection.  Lower priority values are preferred.  If a priority is tied, then one is chosen randomly. See painting table below for values | see below |
 | TreasureFilterMap     | A list of key-value pairs that filters treasures.  A priority of 0 will skip that type of treasure, otherwise lower priority values are preferred.  If a priority is tied, then one is chosen at random. MaxKeys will filter treasures depending on the number of keys it would cost, sane values are 0, 1 or 3. See treasure table below for values | see below |
 | Timings | A list of configurable timings in milliseconds | see below |
