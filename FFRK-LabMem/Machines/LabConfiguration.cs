@@ -22,6 +22,7 @@ namespace FFRK_LabMem.Machines
         public byte LetheTearsSlot { get; set; } = 0b11111;
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
+        public bool ScreenshotRadiantPainting { get; set; } = false;
         public Dictionary<String, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
         public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         public Dictionary<String, int> Timings { get; set; } = new Dictionary<string, int>();

@@ -313,9 +313,6 @@ namespace FFRK_LabMem.Machines
 
                     // Data
                     this.Data = data;
-                    int remainingPaintings = 0;
-                    var remainingData = this.Data["labyrinth_dungeon_session"]["remaining_painting_num"];
-                    if (remainingData != null) remainingPaintings = (int)remainingData;
 
                     // Event results
                     var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
@@ -325,9 +322,9 @@ namespace FFRK_LabMem.Machines
                     await DataLogger.LogExploreRate(this, eventdata, status, id == 2);
 
                     // Check status first
-                    if (status != null && (int)status == 0) // Fresh floor
+                    if (status != null && (int)status == 0)
                     {
-                        if (remainingPaintings == 20 || this.StateMachine.State == State.PortalConfirm)
+                        if (this.StateMachine.State == State.PortalConfirm)
                         {
                             await this.StateMachine.FireAsync(Trigger.ResetState);
                             break;
@@ -361,19 +358,28 @@ namespace FFRK_LabMem.Machines
                         switch ((int)eventdata["type"])
                         {
                             case 1:  // Nothing
+                                ColorConsole.WriteLine("Did not find anything");
+                                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                                break;
                             case 2:  // Item
                             case 3:  // Lab Item?
+                                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                                break;
                             case 6:  // Buffs
+                                ColorConsole.WriteLine("Came across the statue of a gallant hero");
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
                             case 8:  // Portal
-                                int floor = (int)this.Data["labyrinth_dungeon_session"]["current_floor"];
-                                ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+                                ColorConsole.WriteLine("Pulled into a portal painting!");
                                 await this.StateMachine.FireAsync(Trigger.FoundPortal);
                                 break;
                             case 5:  // Spring
+                                ColorConsole.WriteLine("Discovered a mysterious spring");
+                                await this.StateMachine.FireAsync(Trigger.FoundPortal);
+                                break;
                             case 10: // Fatigue
                                 ParseAbrasionMap(data);
+                                ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
                                 await this.StateMachine.FireAsync(Trigger.FoundThing);
                                 break;
                             case 7:  // Door
@@ -484,8 +490,17 @@ namespace FFRK_LabMem.Machines
                 }
             }
 
-            // Parse Fatigue
-
+            // Parse Floor
+            var session = this.Data["labyrinth_dungeon_session"];
+            if (session != null)
+            {
+                var floor = session["current_floor"];
+                if (floor != null)
+                {
+                    if (CurrentFloor != 0 && (int)floor != CurrentFloor) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+                    this.CurrentFloor = (int)floor;
+                }
+            }
 
         }
 

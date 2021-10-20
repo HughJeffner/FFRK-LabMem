@@ -109,6 +109,7 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkBoxLabScreenshotRadiant = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -526,6 +527,7 @@ namespace FFRK_LabMem.Config
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBoxLabScreenshotRadiant);
             this.tabPage5.Controls.Add(this.checkBoxLabUseTeleport);
             this.tabPage5.Controls.Add(this.checkBoxLabOldRecovery);
             this.tabPage5.Controls.Add(this.label8);
@@ -1039,6 +1041,17 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // checkBoxLabScreenshotRadiant
+            // 
+            this.checkBoxLabScreenshotRadiant.AutoSize = true;
+            this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(6, 202);
+            this.checkBoxLabScreenshotRadiant.Name = "checkBoxLabScreenshotRadiant";
+            this.checkBoxLabScreenshotRadiant.Size = new System.Drawing.Size(259, 17);
+            this.checkBoxLabScreenshotRadiant.TabIndex = 14;
+            this.checkBoxLabScreenshotRadiant.Text = "Take screenshot when a radiant painting is found";
+            this.toolTip1.SetToolTip(this.checkBoxLabScreenshotRadiant, "Saves a PNG file to the bot\'s current directory");
+            this.checkBoxLabScreenshotRadiant.UseVisualStyleBackColor = true;
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1168,5 +1181,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.DataGridViewTextBoxColumn Timing;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button buttonTimingDefaults;
+        private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
     }
 }

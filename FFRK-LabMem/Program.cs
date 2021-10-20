@@ -34,11 +34,11 @@ namespace FFRK_LabMem
             LabController controller = LabController.CreateAndStart(config).Result;
 
             // Ad-hoc command loop
-            Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'X' to Exit");
+            Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'Ctrl+X' to Exit");
             while (true)
             {
                 var key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.X && key.Modifiers == 0) break;
+                if (key.Key == ConsoleKey.X && key.Modifiers == ConsoleModifiers.Control) break;
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers);

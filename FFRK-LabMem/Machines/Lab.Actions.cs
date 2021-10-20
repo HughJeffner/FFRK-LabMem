@@ -29,13 +29,10 @@ namespace FFRK_LabMem.Machines
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             this.CurrentPainting = null;
 
-            // New floor marker
-            if (total == 20) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", this.CurrentFloor);
-
             // Insert Priority Field
             foreach (var item in paintings)
             {
-                item["priority"] = GetPaintingPriority(item);
+                item["priority"] = await GetPaintingPriority(item);
             }
 
             // Is there a treasure vault or explore visible?
@@ -119,13 +116,7 @@ namespace FFRK_LabMem.Machines
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
             }
 
-
-            // Change state if needed
-            //if (new List<int>() { 7, 5 }.Contains((int)selectedPainting["type"]))
-            //{
-            //    await this.StateMachine.FireAsync(Trigger.FoundThing);
-            //}
-
+            CancellationToken.ThrowIfCancellationRequested();
             if ((int)this.CurrentPainting["type"] == 6)
             {
                 await this.StateMachine.FireAsync(Trigger.PickedPortal);
@@ -133,7 +124,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private int GetPaintingPriority(JToken painting)
+        private async Task<int> GetPaintingPriority(JToken painting)
         {
 
             var type = painting["type"].ToString();
@@ -143,6 +134,11 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Radiant painting detected!: {0}", painting["name"]);
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
+                if (Config.ScreenshotRadiantPainting)
+                {
+                    await Task.Delay(4000, this.CancellationToken);
+                    await Adb.SaveScrenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
+                }
                 return 0;
             }
 
