@@ -255,193 +255,169 @@ namespace FFRK_LabMem.Machines
         
         public override void RegisterWithProxy(Proxy Proxy)
         {
-            Proxy.AddRegistration("get_display_paintings", this);
-            Proxy.AddRegistration("select_painting", this);
-            Proxy.AddRegistration("choose_explore_painting", this);
-            Proxy.AddRegistration("open_treasure_chest", this);
-            Proxy.AddRegistration("dungeon_recommend_info", this);
-            Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", this);
-            Proxy.AddRegistration("continue/get_info", this);
-            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", this);
-            Proxy.AddRegistration("labyrinth/party/list", this);
-            Proxy.AddRegistration("labyrinth/buddy/info", this);
+            Proxy.AddRegistration("get_display_paintings", Handle_GetDisplayPaintings);
+            Proxy.AddRegistration("select_painting", Handle_Painting);
+            Proxy.AddRegistration("choose_explore_painting", Handle_Painting);
+            Proxy.AddRegistration("open_treasure_chest", async (data, url) =>
+            {
+                this.Data = data;
+                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
+            });
+            Proxy.AddRegistration("dungeon_recommend_info", async(data, url) => 
+            { 
+                if (this.Data != null) await this.StateMachine.FireAsync(Trigger.PickedCombatant); 
+            });
+            Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 
+            {
+                this.Data = data;
+                await this.StateMachine.FireAsync(Trigger.BattleSuccess);
+            });
+            Proxy.AddRegistration("continue/get_info", async(data, url) =>
+            {
+                await this.StateMachine.FireAsync(Trigger.BattleFailed);
+            });
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => recoverStopwatch.Stop());
+            Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
+            Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
         }
 
-        public override async Task PassFromProxy(int id, string urlMatch, JObject data)
+        private async Task Handle_GetDisplayPaintings(JObject data, String url)
         {
-            switch (id)
+
+            this.Data = data;
+
+            // Status
+            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
+            if (status != null && (int)status == 0)
             {
-                
-                case 0:
+                await this.StateMachine.FireAsync(Trigger.ResetState);
+            }
+            if (status != null && (int)status == 1)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundDoor);
+            }
+            if (status != null && (int)status == 2)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
+            }
+            if (status != null && (int)status == 3)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundBattle);
+            }
+            if (status != null && (int)status == 4)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
+            }
 
-                    this.Data = data;
+        }
 
-                    // Status
-                    var status = data["labyrinth_dungeon_session"]["current_painting_status"];
-                    if (status != null && (int)status == 0)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.ResetState);
-                    }
-                    if (status != null && (int)status == 1)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundDoor);
-                    }
-                    if (status != null && (int)status == 2)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                    }
-                    if (status != null && (int)status == 3)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundBattle);
-                    }
-                    if (status != null && (int)status == 4)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                        break;
-                    }
-                    break;
+        private async Task Handle_Painting(JObject data, string url)
+        {
 
-                case 1:
-                case 2:
+            // Final portal completes dungeon
+            if (data["labyrinth_dungeon_result"] != null)
+            {
+                await this.StateMachine.FireAsync(Trigger.FinishedLab);
+                return;
+            }
 
-                    // Final portal completes dungeon
-                    if (data["labyrinth_dungeon_result"] != null)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FinishedLab);
-                        break;
-                    }
+            // Data
+            this.Data = data;
 
-                    // Data
-                    this.Data = data;
+            // Event results
+            var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
+            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
 
-                    // Event results
-                    var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
-                    status = data["labyrinth_dungeon_session"]["current_painting_status"];
+            // Data logging
+            await DataLogger.LogExploreRate(this, eventdata, status, url.Contains("choose_explore_painting"));
 
-                    // Data logging
-                    await DataLogger.LogExploreRate(this, eventdata, status, id == 2);
-
-                    // Check status first
-                    if (status != null && (int)status == 0)
-                    {
-                        if (this.StateMachine.State == State.PortalConfirm)
-                        {
-                            await this.StateMachine.FireAsync(Trigger.ResetState);
-                            break;
-                        }
-                        
-                    }
-                    if (status != null && (int)status == 1)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundDoor);
-                        break;
-                    }
-                    if (status != null && (int)status == 2)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                        break;
-                    }
-                    if (status != null && (int)status == 3)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundBattle);
-                        break;
-                    }
-                    if (status != null && (int)status == 4)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                        break;
-                    }
-                                     
-                    // Check explore event next
-                    if (eventdata != null)
-                    {
-                        switch ((int)eventdata["type"])
-                        {
-                            case 1:  // Nothing
-                                ColorConsole.WriteLine("Did not find anything");
-                                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                                break;
-                            case 2:  // Item
-                            case 3:  // Lab Item?
-                                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                                break;
-                            case 6:  // Buffs
-                                ColorConsole.WriteLine("Came across the statue of a gallant hero");
-                                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                                break;
-                            case 8:  // Portal
-                                ColorConsole.WriteLine("Pulled into a portal painting!");
-                                await this.StateMachine.FireAsync(Trigger.FoundPortal);
-                                break;
-                            case 5:  // Spring
-                                ColorConsole.WriteLine("Discovered a mysterious spring");
-                                await this.StateMachine.FireAsync(Trigger.FoundPortal);
-                                break;
-                            case 10: // Fatigue
-                                ParseAbrasionMap(data);
-                                ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
-                                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                                break;
-                            case 7:  // Door
-                                await this.StateMachine.FireAsync(Trigger.FoundDoor);
-                                break;
-                            case 4:  // Battle
-                                await this.StateMachine.FireAsync(Trigger.FoundBattle);
-                                break;
-
-                        }
-                        break;
-                    }
-
-                    // Abrasion map presence
-                    if (ParseAbrasionMap(data))
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    }
-
-                    // Last buffs presence
-                    var lastAddonRM = data["labyrinth_dungeon_session"]["last_addon_record_materia"];
-                    if (lastAddonRM != null)
-                    {
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    }
-
-                    break;
-
-                case 3:
-                    this.Data = data;
-                    await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                    break;
-        
-                case 4:
-                    if (this.Data !=null) await this.StateMachine.FireAsync(Trigger.PickedCombatant);
-                    break;
-
-                case 5:
-                    this.Data = data;
-                    await this.StateMachine.FireAsync(Trigger.BattleSuccess);
-                    break;
-
-                case 6:
-                    await this.StateMachine.FireAsync(Trigger.BattleFailed);
-                    break;
-
-                case 7:
-                    recoverStopwatch.Stop();
-                    break;
-                case 8:
-                    ParsePartyInfo(data);
-                    break;
-                case 9:
-                    ParseFatigueInfo(data);
-                    break;
-                default:
-                    System.Diagnostics.Debug.Print(data.ToString());
-                    break;
+            // Check status first
+            if (status != null && (int)status == 0)
+            {
+                if (this.StateMachine.State == State.PortalConfirm)
+                {
+                    await this.StateMachine.FireAsync(Trigger.ResetState);
+                    return;
+                }
 
             }
+            if (status != null && (int)status == 1)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundDoor);
+                return;
+            }
+            if (status != null && (int)status == 2)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
+                return;
+            }
+            if (status != null && (int)status == 3)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundBattle);
+                return;
+            }
+            if (status != null && (int)status == 4)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
+                return;
+            }
+
+            // Check explore event next
+            if (eventdata != null)
+            {
+                switch ((int)eventdata["type"])
+                {
+                    case 1:  // Nothing
+                        ColorConsole.WriteLine("Did not find anything");
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    case 2:  // Item
+                    case 3:  // Lab Item?
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    case 6:  // Buffs
+                        ColorConsole.WriteLine("Came across the statue of a gallant hero");
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    case 8:  // Portal
+                        ColorConsole.WriteLine("Pulled into a portal painting!");
+                        await this.StateMachine.FireAsync(Trigger.FoundPortal);
+                        break;
+                    case 5:  // Spring
+                        ColorConsole.WriteLine("Discovered a mysterious spring");
+                        await this.StateMachine.FireAsync(Trigger.FoundPortal);
+                        break;
+                    case 10: // Fatigue
+                        ParseAbrasionMap(data);
+                        ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
+                        break;
+                    case 7:  // Door
+                        await this.StateMachine.FireAsync(Trigger.FoundDoor);
+                        break;
+                    case 4:  // Battle
+                        await this.StateMachine.FireAsync(Trigger.FoundBattle);
+                        break;
+
+                }
+                return;
+            }
+
+            // Abrasion map presence
+            if (ParseAbrasionMap(data))
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                return;
+            }
+
+            // Last buffs presence
+            var lastAddonRM = data["labyrinth_dungeon_session"]["last_addon_record_materia"];
+            if (lastAddonRM != null)
+            {
+                await this.StateMachine.FireAsync(Trigger.FoundThing);
+                return;
+            }
+
         }
 
         public override async Task Disable()
@@ -514,7 +490,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private void ParsePartyInfo(JObject data)
+        private async Task ParsePartyInfo(JObject data, string url)
         {
 
             var party = data["parties"].Where(p => (string)p["party_no"] == "1").FirstOrDefault();
@@ -527,10 +503,11 @@ namespace FFRK_LabMem.Machines
                     FatigueInfo.Add(new BuddyInfo() { BuddyId = (int)item.Value });
                 }
             }
+            await Task.CompletedTask;
 
         }
 
-        private void ParseFatigueInfo(JObject data)
+        private async Task ParseFatigueInfo(JObject data, string url)
         {
             var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
             if (values != null)
@@ -544,7 +521,7 @@ namespace FFRK_LabMem.Machines
             }
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
             fatigueAutoResetEvent.Set();
-            
+            await Task.CompletedTask;
         }
 
         private bool ParseAbrasionMap(JObject data)

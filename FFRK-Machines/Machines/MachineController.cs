@@ -104,13 +104,11 @@ namespace FFRK_Machines.Machines
                 try
                 {
                     var data = JObject.Parse(item.Body.Substring(1));
-                    int i = 0;
                     foreach (var r in Proxy.Registrations)
                     {
                         var match = r.UrlMatch.Match(item.Url);
                         if (match.Success)
-                            await r.Machine.PassFromProxy(i, match.Value, data);
-                        i++;
+                            await r.Handler(data, match.Value);
                     }
                 }
                 catch (OperationCanceledException) { }

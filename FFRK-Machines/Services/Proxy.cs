@@ -25,13 +25,6 @@ namespace FFRK_LabMem.Services
             /// <param name="Proxy"></param>
             void RegisterWithProxy(Proxy Proxy);
 
-            /// <summary>
-            /// Data mached from registrations is passed from the proxy to the machine
-            /// </summary>
-            /// <param name="UrlContains"></param>
-            /// <param name="data"></param>
-            Task PassFromProxy(int id, String urlMatch, JObject data);
-
         }
 
         public event EventHandler<ProxyEventArgs> ProxyEvent;
@@ -39,7 +32,7 @@ namespace FFRK_LabMem.Services
         public class Registration
         {
             public Regex UrlMatch { get; set; }
-            public IProxyMachine Machine { get; set; }
+            public Func<JObject,String,Task> Handler { get; set; }
         }
 
         public class ProxyEventArgs{
@@ -109,11 +102,11 @@ namespace FFRK_LabMem.Services
             proxyServer.Stop();
         }
 
-        public void AddRegistration(String UrlMatch, IProxyMachine Machine)
+        public void AddRegistration(String UrlMatch, Func<JObject,String,Task> handler)
         {
             this.Registrations.Add(new Registration(){ 
                 UrlMatch = new Regex(UrlMatch),
-                Machine = Machine
+                Handler = handler
             });
         }
 

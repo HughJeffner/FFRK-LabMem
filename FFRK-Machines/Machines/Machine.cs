@@ -55,15 +55,6 @@ namespace FFRK_Machines.Machines
         public abstract void RegisterWithProxy(Proxy Proxy);
 
         /// <summary>
-        /// Receives registered proxy data
-        /// </summary>
-        /// <param name="id">The index of the registration</param>
-        /// <param name="urlMatch">The url matched of the registration</param>
-        /// <param name="data">The data recived from the proxy</param>
-        /// <returns></returns>
-        public abstract Task PassFromProxy(int id, string urlMatch, JObject data);
-
-        /// <summary>
         /// Handles any tasks needed if the controller disables this machine.  Does nothing by default, implementors of this class should override this method.
         /// </summary>
         public virtual Task Disable()

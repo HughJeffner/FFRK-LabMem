@@ -670,11 +670,6 @@ namespace FFRK_LabMem.Machines
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
 
-            // Go to home screen
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating home...");
-            await this.Adb.NavigateHome(this.CancellationToken);
-            await Task.Delay(5000, this.CancellationToken);
-
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
             await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);
