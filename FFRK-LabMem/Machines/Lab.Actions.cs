@@ -345,18 +345,21 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("");
 
             // Lethe Tears
-            var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(TimeSpan.FromSeconds(20), this.CancellationToken);
-            if (gotFatigueValues)
+            if (Config.UseLetheTears)
             {
-                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values READ: {0}", fatigueAutoResetEvent);
-                if (Config.UseLetheTears && FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
+                var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(TimeSpan.FromSeconds(20), this.CancellationToken);
+                if (gotFatigueValues)
                 {
-                    await UseLetheTears();
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values READ: {0}", fatigueAutoResetEvent);
+                    if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
+                    {
+                        await UseLetheTears();
+                    }
                 }
-
-            } else
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                }
             }
 
             // Enter
