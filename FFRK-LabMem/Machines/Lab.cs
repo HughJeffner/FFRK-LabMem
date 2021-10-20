@@ -497,7 +497,17 @@ namespace FFRK_LabMem.Machines
                 var floor = session["current_floor"];
                 if (floor != null)
                 {
-                    if (CurrentFloor != 0 && (int)floor != CurrentFloor) ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+                    if ((int)floor != CurrentFloor)
+                    {
+                        if (CurrentFloor != 0)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
+                        } else
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Starting on Floor {0}!", floor);
+                        }
+                        
+                    }
                     this.CurrentFloor = (int)floor;
                 }
             }
