@@ -38,6 +38,7 @@ namespace FFRK_LabMem.Services
         public class ProxyEventArgs{
             public String Url { get; set; }
             public String Body { get; set; }
+            public Registration Registration { get; set; }
         }
 
         readonly ProxyServer proxyServer = null;
@@ -123,13 +124,16 @@ namespace FFRK_LabMem.Services
                 {
                     if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("application/json"))
                     {
-
-                        if (Registrations.Any(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success))
+                        var matches = Registrations.Where(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success);
+                        if (matches.Count() > 0)
                         {
                             string body = await e.GetResponseBodyAsString();
-                            ProxyEvent(sender, new ProxyEventArgs() { Body = body, Url = e.HttpClient.Request.Url });
-
+                            foreach (var match in matches)
+                            {
+                                ProxyEvent(sender, new ProxyEventArgs() { Body = body, Url = e.HttpClient.Request.Url, Registration = match });
+                            }
                         }
+                        
                     }
                 }
             }

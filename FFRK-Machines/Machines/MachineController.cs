@@ -104,12 +104,7 @@ namespace FFRK_Machines.Machines
                 try
                 {
                     var data = JObject.Parse(item.Body.Substring(1));
-                    foreach (var r in Proxy.Registrations)
-                    {
-                        var match = r.UrlMatch.Match(item.Url);
-                        if (match.Success)
-                            await r.Handler(data, match.Value);
-                    }
+                    await item.Registration.Handler(data, item.Registration.UrlMatch.ToString());
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception ex)
