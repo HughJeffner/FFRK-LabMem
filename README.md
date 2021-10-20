@@ -1,6 +1,8 @@
 # FFRK-LabMem
 Full automation for labyrinth dungeons on Android FFRK and Windows using a proxy server and [adb](https://developer.android.com/studio/command-line/adb)
 
+![App Screenshot](/docs/img/screenshot_01.png)
+
 Built using Visual Studio 2019 Community, pre-compiled binaries provided on the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
 
 **Note: button tap locations were calculated as a percentage of a 720 x 1280 screen, this may not work on other screen sizes, more testing needed**
@@ -85,6 +87,8 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 ### General program options
 
 All of these settings can be accessed by pressing `C`
+
+![Config Screenshot](/docs/img/config_lab_01.png)
 
 <details>
   <summary>Show Options</summary>
