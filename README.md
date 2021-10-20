@@ -35,7 +35,7 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 ## Basic Usage
 Extract all files from the .zip file to a folder
 
-Double-click `FFRK-LabMem.exe` it and it will run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `X` to exit, and `H` to minimize to system tray.
+Double-click `FFRK-LabMem.exe` it and it will run in the window.  At any time as it is running you can press `D` to disable, `E` to enable, `Ctrl+X` to exit, and `H` to minimize to system tray.
 
 Press `C` to open configuration options
 
