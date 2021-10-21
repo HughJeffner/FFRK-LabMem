@@ -536,6 +536,12 @@ namespace FFRK_LabMem.Machines
             return true;
         }
 
+        public void ManualCrashRecovery()
+        {
+            watchdogTimer.Stop();
+            this.StateMachine.FireAsync(Trigger.WatchdogTimer);
+        }
+
     }
 
 }

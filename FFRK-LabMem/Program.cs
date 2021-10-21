@@ -46,6 +46,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", false));
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
+                if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.Machine.ManualCrashRecovery();
             }
             
             // Stop
