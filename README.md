@@ -22,7 +22,7 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 
 ## Quick Start
 1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases) and find the lastest release
-2. Under 'Assets' dropdown download the first .zip file and extract to directory of your choice
+2. Under 'Assets' dropdown download `FFRK-LabMem-x.x.x-Beta.zip` file and extract to directory of your choice. (Or you can use the installer .exe if available)
 3. Start Emulator / Connect device to USB
 4. Turn on 'Developer Mode' in android settings 
 5. Activate USB debugging in developer settings
