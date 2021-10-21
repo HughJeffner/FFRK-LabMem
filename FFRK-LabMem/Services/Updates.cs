@@ -73,6 +73,45 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
+        public static void DownloadInstallerAndRun(string user, string repo, bool includePreRelease)
+        {
+
+            ColorConsole.Write(ConsoleColor.DarkYellow, "You are about to download and install from an external website, are you sure (Y/N):");
+            var key = Console.ReadKey().Key;
+            ColorConsole.WriteLine("");
+            if (key != ConsoleKey.Y) return;
+
+            var updaterTask = Task.Run(async () =>
+            {
+                var checker = new Updates(user, repo, includePreRelease);
+                try
+                {
+                    var latestRelease = await checker.GetLatestRelease();
+
+                    if (String.IsNullOrEmpty(latestRelease.InstallerUrl))
+                    {
+                        ColorConsole.Write(ConsoleColor.DarkYellow, "Latest release has no installer!");
+                        return;
+                    }
+
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloading installer: {0}", latestRelease.InstallerName);
+                    WebClient client = new WebClient();
+                    client.DownloadFile(latestRelease.InstallerUrl, latestRelease.InstallerName);
+                    
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Starting installer and exiting");
+                    System.Diagnostics.Process.Start(latestRelease.InstallerName, "/SILENT");
+                    Environment.Exit(0);
+
+                }
+                catch (Exception e)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to download new version: {0}", e.Message);
+                }
+            });
+
+
+        }
+
         public async Task<bool> IsReleaseAvailable(string version)
         {
             SemVersion semVersion;
@@ -86,8 +125,8 @@ namespace FFRK_LabMem.Services
             }
 
             var latestRelease = await GetLatestRelease();
-            if (latestRelease.Value == null) return false;
-            return semVersion < latestRelease.Value;
+            if (latestRelease.Version == null) return false;
+            return semVersion < latestRelease.Version;
         }
 
         private static string CleanVersion(string version)
@@ -101,22 +140,22 @@ namespace FFRK_LabMem.Services
             return cleanedVersion;
         }
 
-        private async Task<KeyValuePair<string, SemVersion>> GetLatestRelease()
+        private async Task<ReleaseInfo> GetLatestRelease()
         {
             var releases = await GetReleasesAsync();
             var latestRelease = releases.FirstOrDefault();
 
             foreach (var release in releases)
-                if (SemVersion.Compare(release.Value, latestRelease.Value) > 0)
+                if (SemVersion.Compare(release.Version, latestRelease.Version) > 0)
                     latestRelease = release;
 
             return latestRelease;
         }
 
-        private async Task<Dictionary<string, SemVersion>> GetReleasesAsync()
+        private async Task<List<ReleaseInfo>> GetReleasesAsync()
         {
             var pageNumber = "1";
-            var releases = new Dictionary<string, SemVersion>();
+            var releases = new List<ReleaseInfo>();
             while (pageNumber != null)
             {
                 var response = await httpClient.GetAsync(new Uri(this.Endpoint + "?page=" + pageNumber));
@@ -133,7 +172,18 @@ namespace FFRK_LabMem.Services
                         string tagName = releaseJson["tag_name"].ToString();
                         var version = CleanVersion(tagName);
                         var semVersion = SemVersion.Parse(version);
-                        releases.Add(releaseId, semVersion);
+                        var url = "";
+                        var name = "";
+                        foreach (var asset in releaseJson["assets"])
+                        {
+                            if (asset["name"].ToString().EndsWith("-Installer.exe"))
+                            {
+                                name = asset["name"].ToString();
+                                url = asset["browser_download_url"].ToString();
+                            }
+                        }
+
+                        releases.Add(new ReleaseInfo() { Id = releaseId, Version = semVersion, InstallerUrl = url, InstallerName = name});
                     }
                     catch (Exception)
                     {
@@ -185,6 +235,14 @@ namespace FFRK_LabMem.Services
                     from link in links
                     where link.Contains(@"rel=""next""")
                     select Regex.Match(link, "(?<=page=)(.*)(?=>;)").Value).FirstOrDefault();
+        }
+
+        private class ReleaseInfo
+        {
+            public string Id { get; set; }
+            public SemVersion Version { get; set; }
+            public string InstallerUrl { get; set; }
+            public string InstallerName { get; set; }
         }
 
     }
