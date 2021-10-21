@@ -56,7 +56,7 @@ namespace FFRK_LabMem.Services
                 {
                     if (await checker.IsReleaseAvailable(versionCode))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to " + WEB_URL + " by pressing [Alt+U] to get it!", user, repo);
+                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to " + WEB_URL + " or press [Alt+U] to get it!", user, repo);
                     }
                 }
                 catch (Exception e)
