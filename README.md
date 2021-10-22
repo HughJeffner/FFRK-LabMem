@@ -119,6 +119,12 @@ Configuring the lab walker behavior and all the various options is documented [h
 Not enabled by default, set `Enable data logging` in general program options.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
 
 ## Upgrading
+
+### Automatic upgrade (v4.5+)
+If you previously installed using the installer .exe, Press `Alt+U` and confirm the download.  The installer should download (to app directory) and automatically run.
+If you upgrade a manual install (extract .zip) the automatic upgrade will install the new version in your `My Documents` folder.
+
+### Manual upgrade
 Verson codes are in the format (major.minor.patch)
 
 For a minor or patch release copy the main executeable to your install folder (and .pdb file if you want accurate error stack traces).
