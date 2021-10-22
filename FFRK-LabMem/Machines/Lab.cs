@@ -277,9 +277,9 @@ namespace FFRK_LabMem.Machines
             {
                 await this.StateMachine.FireAsync(Trigger.BattleFailed);
             });
-            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", (data, url) => {
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
                 recoverStopwatch.Stop();
-                return Task.CompletedTask;
+                await Task.CompletedTask;
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
             Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
