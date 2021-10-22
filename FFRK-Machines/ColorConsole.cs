@@ -8,21 +8,29 @@ namespace FFRK_Machines
         public static bool Timestamps { get; set; }
         private static bool stamped = false;
         private static object stampLock = new object();
+        private static object colorLock = new object();
 
         public static void Write(ConsoleColor color, string format, params object[] arg)
         {
-            var current = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            Write(format, arg);
-            Console.ForegroundColor = current;
+            lock (colorLock)
+            {
+                var current = Console.ForegroundColor;
+                Console.ForegroundColor = color;
+                Write(format, arg);
+                Console.ForegroundColor = current;
+            }
         }
 
         public static void Write(ConsoleColor color, string value)
         {
-            var current = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            Write(value);
-            Console.ForegroundColor = current;
+            lock (colorLock)
+            {
+                var current = Console.ForegroundColor;
+                Console.ForegroundColor = color;
+                Write(value);
+                Console.ForegroundColor = current;
+            }
+
         }
 
         public static void Write(string format, params object[] arg)
@@ -45,18 +53,25 @@ namespace FFRK_Machines
 
         public static void WriteLine(ConsoleColor color, string format, params object[] arg)
         {
-            var current = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            WriteLine(format, arg);
-            Console.ForegroundColor = current;
+            lock (colorLock)
+            {
+                var current = Console.ForegroundColor;
+                Console.ForegroundColor = color;
+                WriteLine(format, arg);
+                Console.ForegroundColor = current;
+            }
+            
         }
 
         public static void WriteLine(ConsoleColor color, string value)
         {
-            var current = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            WriteLine(value);
-            Console.ForegroundColor = current;
+            lock (colorLock)
+            {
+                var current = Console.ForegroundColor;
+                Console.ForegroundColor = color;
+                WriteLine(value);
+                Console.ForegroundColor = current;
+            }
         }
 
         public static void WriteLine(string value)
@@ -85,10 +100,13 @@ namespace FFRK_Machines
             {
                 if (!stamped)
                 {
-                    var current = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write("{0:HH:mm:ss} ", DateTime.Now);
-                    Console.ForegroundColor = current;
+                    lock (colorLock)
+                    {
+                        var current = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("{0:HH:mm:ss} ", DateTime.Now);
+                        Console.ForegroundColor = current;
+                    }
                 }
                 stamped = !newLine;
             }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using Semver;
+using Syroot.Windows.IO;
 
 namespace FFRK_LabMem.Services
 {
@@ -76,7 +77,7 @@ namespace FFRK_LabMem.Services
         public static void DownloadInstallerAndRun(string user, string repo, bool includePreRelease)
         {
 
-            ColorConsole.Write(ConsoleColor.DarkYellow, "You are about to download and install from an external website, are you sure (Y/N):");
+            ColorConsole.Write(ConsoleColor.DarkYellow, "Download and install from an external website? (Y/N):");
             var key = Console.ReadKey().Key;
             ColorConsole.WriteLine("");
             if (key != ConsoleKey.Y) return;
@@ -94,12 +95,21 @@ namespace FFRK_LabMem.Services
                         return;
                     }
 
+                    // Download with progress
                     ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloading installer: {0}", latestRelease.InstallerName);
                     WebClient client = new WebClient();
-                    client.DownloadFile(latestRelease.InstallerUrl, latestRelease.InstallerName);
-                    
+                    client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                    var targetFile = String.Format("{0}/{1}", new KnownFolder(KnownFolderType.Downloads).Path, latestRelease.InstallerName);
+                    await client.DownloadFileTaskAsync(latestRelease.InstallerUrl, targetFile);
+                    client.DownloadProgressChanged -= Client_DownloadProgressChanged;
+
+                    // Stop adb.exe now since installer kinda hangs on it
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Stopping adb.exe");
+                    Adb.KillAdb();
+
+                    // Run installer in silent mode and close bot
                     ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Starting installer and exiting");
-                    System.Diagnostics.Process.Start(latestRelease.InstallerName, "/SILENT");
+                    System.Diagnostics.Process.Start(targetFile, "/SILENT");
                     Environment.Exit(0);
 
                 }
@@ -110,6 +120,21 @@ namespace FFRK_LabMem.Services
             });
 
 
+        }
+
+        private static int progress = -1;
+        private static object conLock = new object();
+        private static void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            if (e.ProgressPercentage % 10 == 0 && e.ProgressPercentage > progress)
+            {
+                progress = e.ProgressPercentage;
+                lock (conLock)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloaded {0}%", e.ProgressPercentage);
+                }
+
+            }
         }
 
         public async Task<bool> IsReleaseAvailable(string version)

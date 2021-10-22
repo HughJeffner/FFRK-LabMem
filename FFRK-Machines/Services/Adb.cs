@@ -688,6 +688,14 @@ namespace FFRK_LabMem.Services
             return tcs.Task;
         }
 
+        public static void KillAdb()
+        {
+            foreach (var process in Process.GetProcessesByName("adb"))
+            {
+                process.Kill();
+            }
+        }
+
         public class RootCertInstalledStatus
         {
             public bool Installed { get; set; }

@@ -23,6 +23,9 @@ OutputBaseFilename=FFRK-LabMem-{#MyAppVersion}-Installer
 SetupIconFile=..\FFRK-LabMem\Resources\drop.ico
 Compression=lzma
 SolidCompression=yes
+AppendDefaultDirName=False
+WizardStyle=modern
+CloseApplications=force
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -33,9 +36,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\adb.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\AdbWinApi.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\AdbWinUsbApi.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\FFRK-LabMem\bin\Release\adb.exe"; DestDir: "{app}"; Flags: onlyifdoesntexist
+Source: "..\FFRK-LabMem\bin\Release\AdbWinApi.dll"; DestDir: "{app}"
+Source: "..\FFRK-LabMem\bin\Release\AdbWinUsbApi.dll"; DestDir: "{app}"
 Source: "..\FFRK-LabMem\bin\Release\blocklist.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.pdb"; DestDir: "{app}"; Flags: ignoreversion
