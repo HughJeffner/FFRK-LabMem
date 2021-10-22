@@ -22,11 +22,13 @@ namespace FFRK_LabMem.Services
         private HttpClient httpClient;
         private const String API_URL = "https://api.github.com/repos/{0}/{1}/releases";
         private const String WEB_URL = "https://github.com/{0}/{1}/releases";
+        private const string GITHUB_USER = "hughjeffner";
+        private const string GITHUB_REPO = "ffrk-labmem";
 
-        public Updates(String user, String repo, bool includePreRelease)
+        public Updates(bool includePreRelease)
         {
 
-            this.Endpoint = string.Format(API_URL, user, repo);
+            this.Endpoint = string.Format(API_URL, GITHUB_USER, GITHUB_REPO);
             this.IncludePreRelease = includePreRelease;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             httpClient = new HttpClient();
@@ -34,7 +36,7 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public static String GetVersionCode(String preRelease)
+        public static String GetVersionCode(String preRelease = "beta")
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var suffix = (String.IsNullOrEmpty(preRelease))?"":"-" + preRelease;
@@ -46,18 +48,18 @@ namespace FFRK_LabMem.Services
             return Assembly.GetExecutingAssembly().GetName().Name;
         }
 
-        public static void Check(String user, String repo, bool includePreRelease, String versionCode)
+        public static void Check(bool includePreRelease)
         {
             
             ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases...");
             var checkerTask = Task.Run(async () =>
             {
-                var checker = new Updates(user, repo, includePreRelease);
+                var checker = new Updates(includePreRelease);
                 try
                 {
-                    if (await checker.IsReleaseAvailable(versionCode))
+                    if (await checker.IsReleaseAvailable(GetVersionCode()))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version of FFRK-LabMem has been released. Go to " + WEB_URL + " or press [Alt+U] to get it!", user, repo);
+                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version has been released! Go to " + WEB_URL + " or press [Alt+U] to get it!", GITHUB_USER, GITHUB_REPO);
                     }
                 }
                 catch (Exception e)
@@ -74,7 +76,7 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
-        public static void DownloadInstallerAndRun(string user, string repo, bool includePreRelease)
+        public static void DownloadInstallerAndRun(bool includePreRelease)
         {
 
             ColorConsole.Write(ConsoleColor.DarkYellow, "Download and install from an external website? (Y/N):");
@@ -84,7 +86,7 @@ namespace FFRK_LabMem.Services
 
             var updaterTask = Task.Run(async () =>
             {
-                var checker = new Updates(user, repo, includePreRelease);
+                var checker = new Updates(includePreRelease);
                 try
                 {
                     var latestRelease = await checker.GetLatestRelease();

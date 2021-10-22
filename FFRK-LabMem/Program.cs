@@ -25,7 +25,7 @@ namespace FFRK_LabMem
             ColorConsole.WriteLine(versionTitle);
             Console.Title = versionTitle;
             if (config.GetBool("updates.checkForUpdates", false)) 
-                Updates.Check("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", false), versionCode);
+                Updates.Check(config.GetBool("updates.includePrerelease", false));
 
             // Data logging
             DataLogger.Initalize(config);
@@ -43,7 +43,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers);
                 if (key.Key == ConsoleKey.C) ConfigForm.CreateAndShow(config, controller);
-                if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun("hughjeffner", "ffrk-labmem", config.GetBool("updates.includePrerelease", false));
+                if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false));
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
                 if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.Machine.ManualCrashRecovery();
