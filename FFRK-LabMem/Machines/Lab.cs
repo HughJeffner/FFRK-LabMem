@@ -142,6 +142,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
+                .OnEntryFromAsync(Trigger.FoundDoor, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
                 .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.MoveOn, State.Ready)
@@ -385,7 +386,7 @@ namespace FFRK_LabMem.Machines
                         break;
                     case 5:  // Spring
                         ColorConsole.WriteLine("Discovered a mysterious spring");
-                        await this.StateMachine.FireAsync(Trigger.FoundPortal);
+                        await this.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     case 10: // Fatigue
                         ParseAbrasionMap(data);

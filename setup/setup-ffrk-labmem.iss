@@ -1,6 +1,6 @@
 #define MyAppName "FFRK-LabMem"
-#define MyAppVersion "4.4.0-Beta"
-#define MyAppPublisher "Hugh Jeffner"
+#define MyAppVersion "4.5.0-Beta"
+#define MyAppPublisher "HughJeffner"
 #define MyAppURL "https://github.com/HughJeffner/FFRK-LabMem"
 #define MyAppExeName "FFRK-LabMem.exe"
 
