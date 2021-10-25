@@ -63,6 +63,7 @@ namespace FFRK_LabMem.Config
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabScreenshotRadiant = new System.Windows.Forms.CheckBox();
             this.checkBoxLabUseTeleport = new System.Windows.Forms.CheckBox();
             this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -109,7 +110,7 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxLabScreenshotRadiant = new System.Windows.Forms.CheckBox();
+            this.buttonCheckForUpdates = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -186,6 +187,7 @@ namespace FFRK_LabMem.Config
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.buttonCheckForUpdates);
             this.tabPage1.Controls.Add(this.numericUpDownScreenBottom);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.numericUpDownScreenTop);
@@ -545,6 +547,17 @@ namespace FFRK_LabMem.Config
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxLabScreenshotRadiant
+            // 
+            this.checkBoxLabScreenshotRadiant.AutoSize = true;
+            this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(6, 202);
+            this.checkBoxLabScreenshotRadiant.Name = "checkBoxLabScreenshotRadiant";
+            this.checkBoxLabScreenshotRadiant.Size = new System.Drawing.Size(259, 17);
+            this.checkBoxLabScreenshotRadiant.TabIndex = 14;
+            this.checkBoxLabScreenshotRadiant.Text = "Take screenshot when a radiant painting is found";
+            this.toolTip1.SetToolTip(this.checkBoxLabScreenshotRadiant, "Saves a PNG file to the bot\'s current directory");
+            this.checkBoxLabScreenshotRadiant.UseVisualStyleBackColor = true;
             // 
             // checkBoxLabUseTeleport
             // 
@@ -1041,16 +1054,15 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // checkBoxLabScreenshotRadiant
+            // buttonCheckForUpdates
             // 
-            this.checkBoxLabScreenshotRadiant.AutoSize = true;
-            this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(6, 202);
-            this.checkBoxLabScreenshotRadiant.Name = "checkBoxLabScreenshotRadiant";
-            this.checkBoxLabScreenshotRadiant.Size = new System.Drawing.Size(259, 17);
-            this.checkBoxLabScreenshotRadiant.TabIndex = 14;
-            this.checkBoxLabScreenshotRadiant.Text = "Take screenshot when a radiant painting is found";
-            this.toolTip1.SetToolTip(this.checkBoxLabScreenshotRadiant, "Saves a PNG file to the bot\'s current directory");
-            this.checkBoxLabScreenshotRadiant.UseVisualStyleBackColor = true;
+            this.buttonCheckForUpdates.Location = new System.Drawing.Point(202, 42);
+            this.buttonCheckForUpdates.Name = "buttonCheckForUpdates";
+            this.buttonCheckForUpdates.Size = new System.Drawing.Size(75, 23);
+            this.buttonCheckForUpdates.TabIndex = 9;
+            this.buttonCheckForUpdates.Text = "Check Now";
+            this.buttonCheckForUpdates.UseVisualStyleBackColor = true;
+            this.buttonCheckForUpdates.Click += new System.EventHandler(this.buttonCheckForUpdates_Click);
             // 
             // ConfigForm
             // 
@@ -1182,5 +1194,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button buttonTimingDefaults;
         private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
+        private System.Windows.Forms.Button buttonCheckForUpdates;
     }
 }

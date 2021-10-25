@@ -554,5 +554,25 @@ namespace FFRK_LabMem.Config
         {
             checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
         }
+
+        private async void buttonCheckForUpdates_Click(object sender, EventArgs e)
+        {
+
+            if (await Services.Updates.Check(checkBoxPrerelease.Checked))
+            {
+                var ret = MessageBox.Show(this, "There is a new version available, download and install it now?", "Check For Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            
+                if (ret == DialogResult.Yes)
+                {
+                    Services.Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false);
+                    this.Close();
+                }
+            
+            } else
+            {
+                MessageBox.Show(this, "This version is up-to-date!", "Check For Updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+        }
     }
 }

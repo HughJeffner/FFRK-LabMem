@@ -48,25 +48,24 @@ namespace FFRK_LabMem.Services
             return Assembly.GetExecutingAssembly().GetName().Name;
         }
 
-        public static void Check(bool includePreRelease)
+        public static async Task<bool> Check(bool includePreRelease)
         {
             
             ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases...");
-            var checkerTask = Task.Run(async () =>
+            var checker = new Updates(includePreRelease);
+            try
             {
-                var checker = new Updates(includePreRelease);
-                try
+                if (await checker.IsReleaseAvailable(GetVersionCode()))
                 {
-                    if (await checker.IsReleaseAvailable(GetVersionCode()))
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version has been released! Go to " + WEB_URL + " or press [Alt+U] to get it!", GITHUB_USER, GITHUB_REPO);
-                    }
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version has been released! Go to " + WEB_URL + " or press [Alt+U] to get it!", GITHUB_USER, GITHUB_REPO);
+                    return true;
                 }
-                catch (Exception e)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to check for new version: {0}", e.Message);
-                }
-            });
+            }
+            catch (Exception e)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to check for new version: {0}", e.Message);
+            }
+            return false;
 
         }
 
@@ -76,13 +75,16 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
-        public static void DownloadInstallerAndRun(bool includePreRelease)
+        public static void DownloadInstallerAndRun(bool includePreRelease, bool confirm = true)
         {
 
-            ColorConsole.Write(ConsoleColor.DarkYellow, "Download and install from an external website? (Y/N):");
-            var key = Console.ReadKey().Key;
-            ColorConsole.WriteLine("");
-            if (key != ConsoleKey.Y) return;
+            if (confirm)
+            {
+                ColorConsole.Write(ConsoleColor.DarkYellow, "Download and install from an external website? (Y/N):");
+                var key = Console.ReadKey().Key;
+                ColorConsole.WriteLine("");
+                if (key != ConsoleKey.Y) return;
+            }
 
             var updaterTask = Task.Run(async () =>
             {
@@ -139,7 +141,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        public async Task<bool> IsReleaseAvailable(string version)
+        private async Task<bool> IsReleaseAvailable(string version)
         {
             SemVersion semVersion;
             try

@@ -24,8 +24,8 @@ namespace FFRK_LabMem
             var versionTitle = String.Format("{0} {1}", Updates.GetName(), versionCode);
             ColorConsole.WriteLine(versionTitle);
             Console.Title = versionTitle;
-            if (config.GetBool("updates.checkForUpdates", false)) 
-                Updates.Check(config.GetBool("updates.includePrerelease", false));
+            if (config.GetBool("updates.checkForUpdates", false))
+                _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
             // Data logging
             DataLogger.Initalize(config);
