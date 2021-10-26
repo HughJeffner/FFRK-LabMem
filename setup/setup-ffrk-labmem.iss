@@ -22,13 +22,14 @@ DefaultDirName={userdocs}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputBaseFilename=FFRK-LabMem-{#MyAppVersion}-Installer
-SetupIconFile=..\FFRK-LabMem\Resources\drop.ico
 Compression=lzma
 SolidCompression=yes
 AppendDefaultDirName=False
 WizardStyle=modern
 CloseApplications=force
 UsedUserAreasWarning=no
+SetupIconFile=setup.ico
+UninstallDisplayIcon={app}\FFRK-LabMem.exe
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
