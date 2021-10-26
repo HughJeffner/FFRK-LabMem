@@ -191,6 +191,7 @@
       $(PostBuildEventDependsOn);
       ILRepacker;
     </PostBuildEventDependsOn>
-    <PostBuildEvent>if $(ConfigurationName) == Release (powershell.exe -Command $null=mkdir '$(SolutionDir)PublishOutput'; Compress-Archive -CompressionLevel Optimal -Path '$(TargetDir)*' -DestinationPath '$(SolutionDir)PublishOutput\$(ProjectName)-@(VersionNumber)-Beta.zip' -Force)</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release (powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(TargetDir)*' -DestinationPath '$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-Beta.zip' -Force)
+if $(ConfigurationName) == Release ("%25programfiles%25\Inno Setup 6\iscc.exe" /O"$(SolutionDir)publish\" /F"$(ProjectName)-@(VersionNumber)-Beta-Installer" /DMyAppVersion=@(VersionNumber)-Beta "$(SolutionDir)setup/setup-ffrk-labmem.iss")</PostBuildEvent>
   </PropertyGroup>
 </Project>

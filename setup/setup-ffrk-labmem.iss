@@ -1,5 +1,7 @@
 #define MyAppName "FFRK-LabMem"
-#define MyAppVersion "4.5.0-Beta"
+#ifndef MyAppVersion
+#define MyAppVersion GetFileVersion('..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe') + '-Beta'
+#endif
 #define MyAppPublisher "HughJeffner"
 #define MyAppURL "https://github.com/HughJeffner/FFRK-LabMem"
 #define MyAppExeName "FFRK-LabMem.exe"
@@ -26,6 +28,7 @@ SolidCompression=yes
 AppendDefaultDirName=False
 WizardStyle=modern
 CloseApplications=force
+UsedUserAreasWarning=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -48,7 +51,7 @@ Source: "..\FFRK-LabMem\bin\Release\Config\*.json"; DestDir: "{app}\Config"; Fla
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\View GitHub Project"; Filename: "{#MyAppURL}";
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
