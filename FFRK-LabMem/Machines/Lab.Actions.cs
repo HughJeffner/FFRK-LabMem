@@ -29,15 +29,15 @@ namespace FFRK_LabMem.Machines
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             this.CurrentPainting = null;
 
-            // Insert Priority Field in the first 3 items
-            foreach (var item in paintings.Take(3))
-            {
-                item["priority"] = await GetPaintingPriority(item);
-            }
-
             // Is there a treasure vault or explore visible?
             var isTreasure = paintings.Any(p => (int)p["type"] == 3);
             var isExplore = paintings.Any(p => (int)p["type"] == 4);
+
+            // Insert Priority Field in the first 3 items
+            foreach (var item in paintings.Take(3))
+            {
+                item["priority"] = await GetPaintingPriority(item, isTreasure, isExplore, total, (this.CurrentFloor==15 || this.CurrentFloor == 20));
+            }
 
             // Select top 1 priority from the first 3
             this.CurrentPainting = paintings
@@ -46,33 +46,6 @@ namespace FFRK_LabMem.Machines
                 .OrderBy(p => (int)p["priority"])   // Priority ordering
                 .ThenBy(p => rng.Next())            // Random for matching priority
                 .FirstOrDefault();
-
-            // There's a treasure visible but picked a explore (unless last floor)
-            // TODO: Determine if the last floor
-            if (this.Config.AvoidExploreIfTreasure && isTreasure && (int)this.CurrentPainting["type"] == 4 && this.CurrentFloor != 15 && this.CurrentFloor != 20)
-            {
-                this.CurrentPainting = paintings
-                .Take(3)
-                .Select(p => p)
-                .Where(p => (int)p["type"] != 4)
-                .OrderBy(p => (int)p["priority"])
-                .FirstOrDefault();
-
-                // No choice
-                if (this.CurrentPainting == null) this.CurrentPainting = paintings[rng.Next(2)];
-
-            }
-
-            // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
-            if (this.Config.AvoidPortal && (int)this.CurrentPainting["type"] == 6 && (isTreasure || isExplore || (total > 9)))
-            {
-                this.CurrentPainting = paintings
-                .Take(3)
-                .Select(p => p)
-                .Where(p => (int)p["type"] != 6)
-                .OrderBy(p => (int)p["priority"])
-                .FirstOrDefault();
-            }
 
             // Get selected painting id
             int selectedPaintingIndex = 0;
@@ -124,7 +97,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task<int> GetPaintingPriority(JToken painting)
+        private async Task<int> GetPaintingPriority(JToken painting, bool isTreasure, bool isExplore, int total, bool isLastFloor)
         {
 
             // Type as string
@@ -144,7 +117,7 @@ namespace FFRK_LabMem.Machines
                 return 0;
             }
 
-            // Subtype for combatant (1)
+            // Combatant (1)
             if (type.Equals("1"))
             {
                 type += "." + painting["display_type"].ToString();
@@ -154,8 +127,22 @@ namespace FFRK_LabMem.Machines
                 if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.Contains(b.Name)))
                 {
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding due to blocklist: {0}", enemyName);
-                    return 256;
+                    return 512;
                 }
+            }
+
+            // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
+            if (type.Equals("6") && this.Config.AvoidPortal && (isTreasure || isExplore || (total > 9)))
+            {
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding portal due to option");
+                return 256;
+            }
+
+            // There's a treasure visible but explore (unless last floor)
+            if (type.Equals("4") && this.Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
+            {
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding explore due to option");
+                return 128;
             }
 
             // Lookup or default
@@ -166,7 +153,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown painting id: {0}", type);
-                return 128;
+                return 1024;
             }
 
         }
