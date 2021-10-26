@@ -29,8 +29,8 @@ namespace FFRK_LabMem.Machines
             var paintings = (JArray)this.Data["labyrinth_dungeon_session"]["display_paintings"];
             this.CurrentPainting = null;
 
-            // Insert Priority Field
-            foreach (var item in paintings)
+            // Insert Priority Field in the first 3 items
+            foreach (var item in paintings.Take(3))
             {
                 item["priority"] = await GetPaintingPriority(item);
             }
@@ -127,8 +127,10 @@ namespace FFRK_LabMem.Machines
         private async Task<int> GetPaintingPriority(JToken painting)
         {
 
+            // Type as string
             var type = painting["type"].ToString();
 
+            // Radiant painting
             if ((bool)painting["is_special_effect"])
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
@@ -146,8 +148,17 @@ namespace FFRK_LabMem.Machines
             if (type.Equals("1"))
             {
                 type += "." + painting["display_type"].ToString();
+
+                // Enemy blocklist
+                var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
+                if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.Contains(b.Name)))
+                {
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding due to blocklist: {0}", enemyName);
+                    return 256;
+                }
             }
 
+            // Lookup or default
             if (this.Config.PaintingPriorityMap.ContainsKey(type))
             {
                 return this.Config.PaintingPriorityMap[type];
@@ -155,7 +166,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown painting id: {0}", type);
-                return 99;
+                return 128;
             }
 
         }

@@ -36,6 +36,7 @@ namespace FFRK_LabMem.Config
             this.listCategory = new System.Windows.Forms.ListBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.buttonCheckForUpdates = new System.Windows.Forms.Button();
             this.numericUpDownScreenBottom = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDownScreenTop = new System.Windows.Forms.NumericUpDown();
@@ -110,7 +111,10 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.buttonCheckForUpdates = new System.Windows.Forms.Button();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.checkedListBoxBlocklist = new System.Windows.Forms.CheckedListBox();
+            this.buttonAddBlocklist = new System.Windows.Forms.Button();
+            this.buttonRemoveBlocklist = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -129,6 +133,7 @@ namespace FFRK_LabMem.Config
             this.tabPage7.SuspendLayout();
             this.tabPage9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabPage10.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -203,6 +208,16 @@ namespace FFRK_LabMem.Config
             this.tabPage1.Size = new System.Drawing.Size(449, 337);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
+            // 
+            // buttonCheckForUpdates
+            // 
+            this.buttonCheckForUpdates.Location = new System.Drawing.Point(202, 42);
+            this.buttonCheckForUpdates.Name = "buttonCheckForUpdates";
+            this.buttonCheckForUpdates.Size = new System.Drawing.Size(75, 23);
+            this.buttonCheckForUpdates.TabIndex = 9;
+            this.buttonCheckForUpdates.Text = "Check Now";
+            this.buttonCheckForUpdates.UseVisualStyleBackColor = true;
+            this.buttonCheckForUpdates.Click += new System.EventHandler(this.buttonCheckForUpdates_Click);
             // 
             // numericUpDownScreenBottom
             // 
@@ -519,6 +534,7 @@ namespace FFRK_LabMem.Config
             this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Controls.Add(this.tabPage10);
             this.tabControl1.Controls.Add(this.tabPage9);
             this.tabControl1.Location = new System.Drawing.Point(3, 27);
             this.tabControl1.Name = "tabControl1";
@@ -819,7 +835,7 @@ namespace FFRK_LabMem.Config
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage6.Size = new System.Drawing.Size(435, 279);
             this.tabPage6.TabIndex = 1;
-            this.tabPage6.Text = "Painting Priority";
+            this.tabPage6.Text = "Paintings";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
             // checkBoxSwap
@@ -865,7 +881,7 @@ namespace FFRK_LabMem.Config
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(6, 6);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(423, 232);
+            this.listViewPaintings.Size = new System.Drawing.Size(423, 229);
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
             this.listViewPaintings.View = System.Windows.Forms.View.Details;
@@ -890,7 +906,7 @@ namespace FFRK_LabMem.Config
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Size = new System.Drawing.Size(435, 279);
             this.tabPage7.TabIndex = 2;
-            this.tabPage7.Text = "Treasure Priority";
+            this.tabPage7.Text = "Treasures";
             this.tabPage7.UseVisualStyleBackColor = true;
             // 
             // label9
@@ -949,7 +965,7 @@ namespace FFRK_LabMem.Config
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(6, 6);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(423, 232);
+            this.listViewTreasures.Size = new System.Drawing.Size(423, 229);
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
             this.listViewTreasures.View = System.Windows.Forms.View.Details;
@@ -1054,15 +1070,48 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // buttonCheckForUpdates
+            // tabPage10
             // 
-            this.buttonCheckForUpdates.Location = new System.Drawing.Point(202, 42);
-            this.buttonCheckForUpdates.Name = "buttonCheckForUpdates";
-            this.buttonCheckForUpdates.Size = new System.Drawing.Size(75, 23);
-            this.buttonCheckForUpdates.TabIndex = 9;
-            this.buttonCheckForUpdates.Text = "Check Now";
-            this.buttonCheckForUpdates.UseVisualStyleBackColor = true;
-            this.buttonCheckForUpdates.Click += new System.EventHandler(this.buttonCheckForUpdates_Click);
+            this.tabPage10.Controls.Add(this.buttonRemoveBlocklist);
+            this.tabPage10.Controls.Add(this.buttonAddBlocklist);
+            this.tabPage10.Controls.Add(this.checkedListBoxBlocklist);
+            this.tabPage10.Location = new System.Drawing.Point(4, 22);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage10.Size = new System.Drawing.Size(435, 279);
+            this.tabPage10.TabIndex = 5;
+            this.tabPage10.Text = "Blocklist";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // checkedListBoxBlocklist
+            // 
+            this.checkedListBoxBlocklist.CheckOnClick = true;
+            this.checkedListBoxBlocklist.FormattingEnabled = true;
+            this.checkedListBoxBlocklist.Location = new System.Drawing.Point(6, 6);
+            this.checkedListBoxBlocklist.Name = "checkedListBoxBlocklist";
+            this.checkedListBoxBlocklist.Size = new System.Drawing.Size(423, 229);
+            this.checkedListBoxBlocklist.TabIndex = 0;
+            // 
+            // buttonAddBlocklist
+            // 
+            this.buttonAddBlocklist.Location = new System.Drawing.Point(6, 243);
+            this.buttonAddBlocklist.Name = "buttonAddBlocklist";
+            this.buttonAddBlocklist.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddBlocklist.TabIndex = 2;
+            this.buttonAddBlocklist.Text = "Add";
+            this.buttonAddBlocklist.UseVisualStyleBackColor = true;
+            this.buttonAddBlocklist.Click += new System.EventHandler(this.buttonAddBlocklist_Click);
+            // 
+            // buttonRemoveBlocklist
+            // 
+            this.buttonRemoveBlocklist.Enabled = false;
+            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(87, 243);
+            this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
+            this.buttonRemoveBlocklist.Size = new System.Drawing.Size(75, 23);
+            this.buttonRemoveBlocklist.TabIndex = 3;
+            this.buttonRemoveBlocklist.Text = "Remove";
+            this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
+            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.buttonRemoveBlocklist_Click);
             // 
             // ConfigForm
             // 
@@ -1109,6 +1158,7 @@ namespace FFRK_LabMem.Config
             this.tabPage7.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabPage10.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1195,5 +1245,9 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.Button buttonTimingDefaults;
         private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
         private System.Windows.Forms.Button buttonCheckForUpdates;
+        private System.Windows.Forms.TabPage tabPage10;
+        private System.Windows.Forms.Button buttonRemoveBlocklist;
+        private System.Windows.Forms.Button buttonAddBlocklist;
+        private System.Windows.Forms.CheckedListBox checkedListBoxBlocklist;
     }
 }

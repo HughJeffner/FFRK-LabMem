@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
 using FFRK_Machines;
-using System.Diagnostics;
+using Microsoft.VisualBasic;
 
 namespace FFRK_LabMem.Config
 {
@@ -180,6 +180,14 @@ namespace FFRK_LabMem.Config
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
             }
 
+            labConfig.EnemyBlocklist.Clear();
+            for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
+            {
+                LabConfiguration.EnemyBlocklistEntry item = (LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[i];
+                item.Enabled = checkedListBoxBlocklist.GetItemChecked(i);
+                labConfig.EnemyBlocklist.Add(item);
+            }
+
             labConfig.Timings.Clear();
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
@@ -248,7 +256,7 @@ namespace FFRK_LabMem.Config
             checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
-
+            
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {
@@ -268,6 +276,13 @@ namespace FFRK_LabMem.Config
                 newItem.Tag = item.Key;
                 listViewTreasures.Items.Add(newItem);
             }
+
+            checkedListBoxBlocklist.Items.Clear();
+            foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
+            {
+                checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
+            }
+            buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
 
             dataGridView1.Rows.Clear();
             foreach (KeyValuePair<string, int> item in labConfig.Timings)
@@ -573,6 +588,26 @@ namespace FFRK_LabMem.Config
                 MessageBox.Show(this, "This version is up-to-date!", "Check For Updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
+        }
+
+        private void buttonAddBlocklist_Click(object sender, EventArgs e)
+        {
+            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Blocklist Entry");
+            if (!String.IsNullOrEmpty(input))
+            {
+                var newItem = new LabConfiguration.EnemyBlocklistEntry() { Name = input, Enabled = true };
+                checkedListBoxBlocklist.Items.Add(newItem, true);
+                buttonRemoveBlocklist.Enabled = true;
+            }
+        }
+
+        private void buttonRemoveBlocklist_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                checkedListBoxBlocklist.Items.Remove(checkedListBoxBlocklist.SelectedItem);
+            }
         }
     }
 }

@@ -8,7 +8,6 @@ namespace FFRK_LabMem.Machines
 {
     public class LabConfiguration : MachineConfiguration
     {
-
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = true;
         public bool AvoidPortal { get; set; } = true;
@@ -23,20 +22,28 @@ namespace FFRK_LabMem.Machines
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
         public bool ScreenshotRadiantPainting { get; set; } = false;
-        public Dictionary<String, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
-        public Dictionary<String, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
-        public Dictionary<String, int> Timings { get; set; } = new Dictionary<string, int>();
-
+        public Dictionary<string, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
+        public Dictionary<string, int> Timings { get; set; } = new Dictionary<string, int>();
         public LabConfiguration() {
 
-            // Default timings
+            // Defaults
             this.Timings = GetDefaultTimings();
+            this.EnemyBlocklist = new List<EnemyBlocklistEntry>
+            {
+                new EnemyBlocklistEntry(){Name="Alexander",Enabled=false},
+                new EnemyBlocklistEntry(){Name="Atomos",Enabled=false},
+                new EnemyBlocklistEntry(){Name="Octomammoth",Enabled=false},
+                new EnemyBlocklistEntry(){Name="Lunasaurs",Enabled=true}
+            };
 
         }
 
-        public Dictionary<String, int> GetDefaultTimings()
+        public Dictionary<string, int> GetDefaultTimings()
         {
-            Dictionary<String, int> defaults = new Dictionary<string, int>
+            Dictionary<string, int> defaults = new Dictionary<string, int>
             {
                 { "Pre-SelectPainting", 5000 },
                 { "Inter-SelectPainting", 1000 },
@@ -54,5 +61,14 @@ namespace FFRK_LabMem.Machines
             public int MaxKeys { get; set; }
         }
 
+        public class EnemyBlocklistEntry
+        {
+            public string Name { get; set; }
+            public bool Enabled { get; set; } = false;
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
     }
 }
