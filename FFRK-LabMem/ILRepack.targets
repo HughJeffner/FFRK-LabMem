@@ -17,6 +17,7 @@
         InputAssemblies="@(InputAssemblies)"
         TargetKind="SameAsPrimaryAssembly"
         OutputFile="$(OutputPath)$(TargetName)$(TargetExt)"
+        LibraryPath="$(OutputPath)"
     />
     
     <ItemGroup>
