@@ -7,6 +7,7 @@ using Stateless;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Machines
@@ -46,6 +47,14 @@ namespace FFRK_LabMem.Machines
                 .OrderBy(p => (int)p["priority"])   // Priority ordering
                 .ThenBy(p => rng.Next())            // Random for matching priority
                 .FirstOrDefault();
+
+            // Debug message
+            if (Config.Debug)
+            {
+                StringBuilder builder = new StringBuilder("Priority: ");
+                paintings.Take(3).ToList().ForEach(p => builder.AppendFormat("({0}) ", p["priority"]));
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, builder.ToString());
+            }
 
             // Get selected painting id
             int selectedPaintingIndex = 0;
@@ -127,7 +136,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.Contains(b.Name)))
                 {
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding due to blocklist: {0}", enemyName);
-                    return 512;
+                    return (Config.EnemyBlocklistAvoidOptionOverride ? 512 : 64);
                 }
             }
 

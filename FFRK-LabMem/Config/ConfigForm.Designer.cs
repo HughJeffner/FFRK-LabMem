@@ -102,6 +102,10 @@ namespace FFRK_LabMem.Config
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.buttonRemoveBlocklist = new System.Windows.Forms.Button();
+            this.buttonAddBlocklist = new System.Windows.Forms.Button();
+            this.checkedListBoxBlocklist = new System.Windows.Forms.CheckedListBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
             this.buttonTimingDefaults = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -111,10 +115,7 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tabPage10 = new System.Windows.Forms.TabPage();
-            this.checkedListBoxBlocklist = new System.Windows.Forms.CheckedListBox();
-            this.buttonAddBlocklist = new System.Windows.Forms.Button();
-            this.buttonRemoveBlocklist = new System.Windows.Forms.Button();
+            this.checkBoxLabBlockListOverride = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -131,9 +132,9 @@ namespace FFRK_LabMem.Config
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
+            this.tabPage10.SuspendLayout();
             this.tabPage9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.tabPage10.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -986,6 +987,50 @@ namespace FFRK_LabMem.Config
             this.columnHeader5.Text = "Treasure Type";
             this.columnHeader5.Width = 267;
             // 
+            // tabPage10
+            // 
+            this.tabPage10.Controls.Add(this.checkBoxLabBlockListOverride);
+            this.tabPage10.Controls.Add(this.buttonRemoveBlocklist);
+            this.tabPage10.Controls.Add(this.buttonAddBlocklist);
+            this.tabPage10.Controls.Add(this.checkedListBoxBlocklist);
+            this.tabPage10.Location = new System.Drawing.Point(4, 22);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage10.Size = new System.Drawing.Size(435, 279);
+            this.tabPage10.TabIndex = 5;
+            this.tabPage10.Text = "Blocklist";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // buttonRemoveBlocklist
+            // 
+            this.buttonRemoveBlocklist.Enabled = false;
+            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(87, 243);
+            this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
+            this.buttonRemoveBlocklist.Size = new System.Drawing.Size(75, 23);
+            this.buttonRemoveBlocklist.TabIndex = 3;
+            this.buttonRemoveBlocklist.Text = "Remove";
+            this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
+            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.buttonRemoveBlocklist_Click);
+            // 
+            // buttonAddBlocklist
+            // 
+            this.buttonAddBlocklist.Location = new System.Drawing.Point(6, 243);
+            this.buttonAddBlocklist.Name = "buttonAddBlocklist";
+            this.buttonAddBlocklist.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddBlocklist.TabIndex = 2;
+            this.buttonAddBlocklist.Text = "Add";
+            this.buttonAddBlocklist.UseVisualStyleBackColor = true;
+            this.buttonAddBlocklist.Click += new System.EventHandler(this.buttonAddBlocklist_Click);
+            // 
+            // checkedListBoxBlocklist
+            // 
+            this.checkedListBoxBlocklist.CheckOnClick = true;
+            this.checkedListBoxBlocklist.FormattingEnabled = true;
+            this.checkedListBoxBlocklist.Location = new System.Drawing.Point(6, 6);
+            this.checkedListBoxBlocklist.Name = "checkedListBoxBlocklist";
+            this.checkedListBoxBlocklist.Size = new System.Drawing.Size(423, 229);
+            this.checkedListBoxBlocklist.TabIndex = 0;
+            // 
             // tabPage9
             // 
             this.tabPage9.Controls.Add(this.buttonTimingDefaults);
@@ -1070,48 +1115,17 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // tabPage10
+            // checkBoxLabBlockListOverride
             // 
-            this.tabPage10.Controls.Add(this.buttonRemoveBlocklist);
-            this.tabPage10.Controls.Add(this.buttonAddBlocklist);
-            this.tabPage10.Controls.Add(this.checkedListBoxBlocklist);
-            this.tabPage10.Location = new System.Drawing.Point(4, 22);
-            this.tabPage10.Name = "tabPage10";
-            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(435, 279);
-            this.tabPage10.TabIndex = 5;
-            this.tabPage10.Text = "Blocklist";
-            this.tabPage10.UseVisualStyleBackColor = true;
-            // 
-            // checkedListBoxBlocklist
-            // 
-            this.checkedListBoxBlocklist.CheckOnClick = true;
-            this.checkedListBoxBlocklist.FormattingEnabled = true;
-            this.checkedListBoxBlocklist.Location = new System.Drawing.Point(6, 6);
-            this.checkedListBoxBlocklist.Name = "checkedListBoxBlocklist";
-            this.checkedListBoxBlocklist.Size = new System.Drawing.Size(423, 229);
-            this.checkedListBoxBlocklist.TabIndex = 0;
-            // 
-            // buttonAddBlocklist
-            // 
-            this.buttonAddBlocklist.Location = new System.Drawing.Point(6, 243);
-            this.buttonAddBlocklist.Name = "buttonAddBlocklist";
-            this.buttonAddBlocklist.Size = new System.Drawing.Size(75, 23);
-            this.buttonAddBlocklist.TabIndex = 2;
-            this.buttonAddBlocklist.Text = "Add";
-            this.buttonAddBlocklist.UseVisualStyleBackColor = true;
-            this.buttonAddBlocklist.Click += new System.EventHandler(this.buttonAddBlocklist_Click);
-            // 
-            // buttonRemoveBlocklist
-            // 
-            this.buttonRemoveBlocklist.Enabled = false;
-            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(87, 243);
-            this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
-            this.buttonRemoveBlocklist.Size = new System.Drawing.Size(75, 23);
-            this.buttonRemoveBlocklist.TabIndex = 3;
-            this.buttonRemoveBlocklist.Text = "Remove";
-            this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
-            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.buttonRemoveBlocklist_Click);
+            this.checkBoxLabBlockListOverride.AutoSize = true;
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(297, 249);
+            this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
+            this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(132, 17);
+            this.checkBoxLabBlockListOverride.TabIndex = 4;
+            this.checkBoxLabBlockListOverride.Text = "Override avoid options";
+            this.toolTip1.SetToolTip(this.checkBoxLabBlockListOverride, "When enabled, the enemy blocklist takes priority over the avoidance options in th" +
+        "e Options tab");
+            this.checkBoxLabBlockListOverride.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -1156,9 +1170,10 @@ namespace FFRK_LabMem.Config
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
+            this.tabPage10.ResumeLayout(false);
+            this.tabPage10.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.tabPage10.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1249,5 +1264,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.Button buttonRemoveBlocklist;
         private System.Windows.Forms.Button buttonAddBlocklist;
         private System.Windows.Forms.CheckedListBox checkedListBoxBlocklist;
+        private System.Windows.Forms.CheckBox checkBoxLabBlockListOverride;
     }
 }

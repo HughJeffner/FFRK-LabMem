@@ -1,8 +1,6 @@
 ﻿using FFRK_Machines.Machines;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace FFRK_LabMem.Machines
 {
@@ -22,6 +20,7 @@ namespace FFRK_LabMem.Machines
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
         public bool ScreenshotRadiantPainting { get; set; } = false;
+        public bool EnemyBlocklistAvoidOptionOverride { get; set; } = false;
         public Dictionary<string, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]

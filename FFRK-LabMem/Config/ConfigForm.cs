@@ -164,6 +164,7 @@ namespace FFRK_LabMem.Config
             if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 0);
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
+            labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
 
             labConfig.PaintingPriorityMap.Clear();
             foreach (ListViewItem item in listViewPaintings.Items)
@@ -256,6 +257,7 @@ namespace FFRK_LabMem.Config
             checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
+            checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
