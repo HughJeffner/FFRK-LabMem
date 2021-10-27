@@ -7,7 +7,7 @@ namespace FFRK_LabMem.Machines
     public class LabConfiguration : MachineConfiguration
     {
         public bool OpenDoors { get; set; } = true;
-        public bool AvoidExploreIfTreasure { get; set; } = true;
+        public bool AvoidExploreIfTreasure { get; set; } = false;
         public bool AvoidPortal { get; set; } = true;
         public int WatchdogMinutes { get; set; } = 10;
         public bool RestartFailedBattle { get; set; } = false;
@@ -35,12 +35,12 @@ namespace FFRK_LabMem.Machines
             this.PaintingPriorityMap = new Dictionary<string, int>
             {
                 { "3", 1 },
-                { "4", 2 },
-                { "7", 3 },
-                { "5", 4 },
-                { "6", 5 },
-                { "1.3", 6 },
-                { "1.2", 7 },
+                { "1.3", 2 },
+                { "1.2", 3 },
+                { "4", 4 },
+                { "7", 5 },
+                { "5", 6 },
+                { "6", 7 },
                 { "1.1", 8 },
                 { "2", 9 }
             };
