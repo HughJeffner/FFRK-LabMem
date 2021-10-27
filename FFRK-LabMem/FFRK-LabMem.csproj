@@ -137,6 +137,8 @@
     <None Include="Resources\lab_segment.bmp" />
     <None Include="Resources\button_blue_play.bmp" />
     <None Include="Resources\button_brown_ok.bmp" />
+    <None Include="Resources\button_inventory.bmp" />
+    <None Include="Resources\button_skip.bmp" />
     <Content Include="Resources\drop.ico" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\error.png" />

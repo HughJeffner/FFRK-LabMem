@@ -36,6 +36,7 @@ namespace FFRK_LabMem.Services
         {
             public Bitmap Image { get; set; }
             public float Simalarity { get; set; }
+            public Tuple<double, double> Location { get; set; }
         }
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
@@ -374,9 +375,9 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
-        public async Task<Tuple<double,double>> FindImages(List<ImageDef> images, int scaleFactor, CancellationToken cancellationToken)
+        public async Task<ImageDef> FindImages(List<ImageDef> images, int scaleFactor, CancellationToken cancellationToken)
         {
-            Tuple<double, double> ret = null;
+            ImageDef ret = null;
 
             using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
             {
@@ -401,10 +402,12 @@ namespace FFRK_LabMem.Services
                         {
                             // Return the center of the found image as a pct
                             var match = matches[0].Rectangle;
-                            ret = new Tuple<double, double>(
+
+                            item.Location = new Tuple<double, double>(
                                 ((match.X + (match.Width/2)) / (double)width) * 100, 
                                 ((match.Y + (match.Height/2)) / (double)height) * 100
                             );
+                            ret = item;
                             System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             break;

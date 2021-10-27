@@ -15,8 +15,53 @@ namespace FFRK_LabMem.Machines
     public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
 
-        private void DetermineState()
+        private async Task DetermineState()
         {
+
+            if (!Config.AutoStart) return;
+            try
+            {
+                await Task.Delay(1);
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Trying to auto-start");
+
+                // Images to find
+                List<Adb.ImageDef> items = new List<Adb.ImageDef>();
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_inventory, Simalarity = 0.90f });
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_skip, Simalarity = 0.90f });
+
+                // Find
+                var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                if (ret != null)
+                {
+                    // Tap it
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Found area {0}", ret);
+
+                    // Check inventory
+                    if (ret.Equals(items[0]))
+                    {
+                        await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
+                        await Task.Delay(1000, this.CancellationToken);
+                        await Adb.TapPct(5, 96, this.CancellationToken);
+                    }
+
+                    // Skip button
+                    if (ret.Equals(items[1]))
+                    {
+                        await StateMachine.FireAsync(Trigger.BattleSuccess);
+                    }
+
+                    ColorConsole.WriteLine(ConsoleColor.DarkGray, "Auto-start complete, Have fun!");
+                    return;
+                }
+
+                
+
+            } catch (Exception)
+            {
+
+            }
+
+            ColorConsole.WriteLine(ConsoleColor.DarkGray, "Could not auto-start");
 
         }
 
@@ -409,7 +454,7 @@ namespace FFRK_LabMem.Machines
             await this.Adb.TapPct(50, 85, this.CancellationToken);
 
             // Check if we defeated the boss
-            if (this.Data["result"]["labyrinth_dungeon_result"] != null)
+            if (this.Data != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
                 await this.StateMachine.FireAsync(Trigger.FinishedLab);
 
 
@@ -706,7 +751,7 @@ namespace FFRK_LabMem.Machines
                         if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tapping lab...");
                         await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
                         ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
-                        ConfigureStateMachine(State.Unknown);
+                        ConfigureStateMachine();
                     }
 
                 }
@@ -722,7 +767,7 @@ namespace FFRK_LabMem.Machines
             {
 
                 // Reset state
-                ConfigureStateMachine(State.Unknown);
+                ConfigureStateMachine();
 
                 // Images to find
                 List<Adb.ImageDef> items = new List<Adb.ImageDef>();
@@ -743,7 +788,7 @@ namespace FFRK_LabMem.Machines
                     if (ret != null)
                     {
                         // Tap it
-                        await Adb.TapPct(ret.Item1, ret.Item2, this.CancellationToken);
+                        await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
                     }
                     // Delay between finds
                     await Task.Delay(5000, this.CancellationToken);

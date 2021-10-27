@@ -21,7 +21,6 @@ namespace FFRK_Machines.Machines
         where C : MachineConfiguration
     {
 
-        private S unknownState;
         private bool enabled = false;
         private bool proxySecure = false;
         public M Machine { get; set; }
@@ -51,10 +50,8 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, S unkownState, int consumers = 2)
+        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, int consumers = 2)
         {
-
-            unknownState = unkownState;
 
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, debug, proxyBlocklist);
@@ -78,7 +75,7 @@ namespace FFRK_Machines.Machines
             {
                 // Hook up events
                 await EngageMachine();
-                this.enabled = true;
+                this.Enable();
 
             } else
             {
@@ -164,7 +161,7 @@ namespace FFRK_Machines.Machines
                 enabled = true;
                 this.cancelMachineSource = new CancellationTokenSource();
                 this.Machine.CancellationToken = this.cancelMachineSource.Token;
-                this.Machine.ConfigureStateMachine(unknownState);
+                this.Machine.ConfigureStateMachine();
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
             }
 

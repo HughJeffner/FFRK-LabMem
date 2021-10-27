@@ -65,8 +65,7 @@ namespace FFRK_Machines.Machines
         /// <summary>
         /// Configures the internal state machine.  Implementors should override this method
         /// </summary>
-        /// <param name="initialState">The inital state of the internal state machine</param>
-        public virtual void ConfigureStateMachine(S initialState)
+        public virtual void ConfigureStateMachine()
         {
 
             if (StateMachine == null) return;

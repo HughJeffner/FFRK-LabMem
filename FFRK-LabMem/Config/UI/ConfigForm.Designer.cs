@@ -117,6 +117,7 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkBoxLabAutoStart = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -557,6 +558,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBoxLabAutoStart);
             this.tabPage5.Controls.Add(this.checkBoxLabScreenshotRadiant);
             this.tabPage5.Controls.Add(this.checkBoxLabUseTeleport);
             this.tabPage5.Controls.Add(this.checkBoxLabOldRecovery);
@@ -1139,6 +1141,17 @@ namespace FFRK_LabMem.Config.UI
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // checkBoxLabAutoStart
+            // 
+            this.checkBoxLabAutoStart.AutoSize = true;
+            this.checkBoxLabAutoStart.Location = new System.Drawing.Point(6, 225);
+            this.checkBoxLabAutoStart.Name = "checkBoxLabAutoStart";
+            this.checkBoxLabAutoStart.Size = new System.Drawing.Size(141, 17);
+            this.checkBoxLabAutoStart.TabIndex = 15;
+            this.checkBoxLabAutoStart.Text = "Auto-start when enabled";
+            this.toolTip1.SetToolTip(this.checkBoxLabAutoStart, "Attempts to automaticaly get things going");
+            this.checkBoxLabAutoStart.UseVisualStyleBackColor = true;
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1278,5 +1291,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckedListBox checkedListBoxBlocklist;
         private System.Windows.Forms.CheckBox checkBoxLabBlockListOverride;
         private System.Windows.Forms.Button buttonLabConfigurations;
+        private System.Windows.Forms.CheckBox checkBoxLabAutoStart;
     }
 }

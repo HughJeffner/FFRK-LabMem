@@ -92,27 +92,18 @@ namespace FFRK_LabMem.Machines
                 watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             }
 
-            // State machine
-            ConfigureStateMachine(State.Starting);
-                       
-            // Activate
-            this.StateMachine.Fire(Trigger.Started);
-
-            // Debug graph
-            //string graph = UmlDotGraph.Format(this.StateMachine.GetInfo());
-            
         }
 
-        public override void ConfigureStateMachine(State initialState)
+        public override void ConfigureStateMachine()
         {
 
-            this.StateMachine = new StateMachine<State, Trigger>(initialState);
+            this.StateMachine = new StateMachine<State, Trigger>(State.Starting);
             
             this.StateMachine.Configure(State.Starting)
                 .Permit(Trigger.Started, State.Unknown);
 
             this.StateMachine.Configure(State.Unknown)
-                .OnEntry(t => DetermineState())
+                .OnEntry(async (t) => await DetermineState())
                 .Ignore(Trigger.WatchdogTimer)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.FoundThing, State.FoundThing)
@@ -225,7 +216,10 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .PermitReentry(Trigger.BattleFailed);
 
-            base.ConfigureStateMachine(initialState);
+            base.ConfigureStateMachine();
+
+            // Start machine
+            StateMachine.FireAsync(Trigger.Started);
 
             if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
                 if (state.Trigger != Trigger.WatchdogTimer)

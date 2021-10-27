@@ -124,6 +124,12 @@
   <data name="button_brown_ok" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_brown_ok.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="button_inventory" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button_inventory.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_skip" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button_skip.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="error" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

@@ -33,7 +33,6 @@ namespace FFRK_LabMem.Machines
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
-                unkownState: Lab.State.Unknown,
                 consumers: 2);
             
             // Auto-detect offsets

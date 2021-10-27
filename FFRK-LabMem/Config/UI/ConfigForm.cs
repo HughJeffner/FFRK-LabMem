@@ -142,6 +142,7 @@ namespace FFRK_LabMem.Config.UI
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
+            labConfig.AutoStart = checkBoxLabAutoStart.Checked;
 
             labConfig.PaintingPriorityMap.Clear();
             foreach (ListViewItem item in listViewPaintings.Items)
@@ -225,6 +226,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
+            checkBoxLabAutoStart.Checked = labConfig.AutoStart;
             
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)

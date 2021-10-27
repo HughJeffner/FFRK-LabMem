@@ -6,6 +6,7 @@ namespace FFRK_LabMem.Machines
 {
     public class LabConfiguration : MachineConfiguration
     {
+        public bool AutoStart { get; set; } = false;
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
         public bool AvoidPortal { get; set; } = true;
