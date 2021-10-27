@@ -133,7 +133,7 @@ namespace FFRK_LabMem.Machines
 
                 // Enemy blocklist
                 var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
-                if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.Contains(b.Name)))
+                if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower())))
                 {
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Avoiding due to blocklist: {0}", enemyName);
                     return (Config.EnemyBlocklistAvoidOptionOverride ? 512 : 64);

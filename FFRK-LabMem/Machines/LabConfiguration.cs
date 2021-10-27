@@ -54,10 +54,13 @@ namespace FFRK_LabMem.Machines
             };
             this.EnemyBlocklist = new List<EnemyBlocklistEntry>
             {
-                new EnemyBlocklistEntry(){Name="Alexander",Enabled=false},
-                new EnemyBlocklistEntry(){Name="Atomos",Enabled=false},
-                new EnemyBlocklistEntry(){Name="Octomammoth",Enabled=false},
-                new EnemyBlocklistEntry(){Name="Lunasaurs",Enabled=true}
+                new EnemyBlocklistEntry(){Name="Alexander", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Atomos" ,Enabled=false},
+                new EnemyBlocklistEntry(){Name="Diablos", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Lani & Scarlet Hair", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Lunasaurs", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Octomammoth", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Marilith", Enabled=false}
             };
 
         }
