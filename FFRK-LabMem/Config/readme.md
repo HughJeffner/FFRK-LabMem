@@ -65,7 +65,7 @@
 | Alexander            | High resistance                  | false           |
 | Atomos               | Slowga, High Damage              | false           |
 | Diablos              | High Damage                      | false           |
-| Lani & Scarlet Hair  | HP Sponge                        | false           |
+| Lani & Scarlet Hair  | Damage Sponge                    | false           |
 | Lunasaurs            | Reflect                          | false           |
 | Octomammoth          | Reflect                          | false           |
 | Marilith             | High resistance, Blind           | false           |
