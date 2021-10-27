@@ -5,6 +5,7 @@
 | Property              | Description                        | Default |
 | --------------------- | ---------------------------------- | ------- |
 | Debug                 | Prints lab-specific debug info to the console   | false   |
+| AutoStart             | Attempts to auto start the bot when enabled | false |
 | OpenDoors             | Choose to open sealed doors or not | true    |
 | AvoidExploreIfTreasure| Tries to avoid exploration paintings if a treasure vault is visible behind them | true |
 | AvoidPortal           | Avoids the portal if an exploration or treasure vault is visible behind it, or if there are more paintings to reveal | true |
@@ -20,8 +21,10 @@
 | LetheTearsFatigue     | Fatigue level before using lethe tears on the units in `LetheTearsSlot` | 7 |
 | UseTeleportStoneOnMasterPainting | Instead of fighting the master painting, use a teleport stone | false |
 | ScreenshotRadiantPainting | Saves a PNG screenshot to the bot directory if a radiant painting is seen | false |
+| EnemyBlocklistAvoidOptionOverride | Enemy blocklist priorities override the Avoid.. options | false |
 | PaintingPriorityMap   | A list of key-value pairs that assign a priority to paintings for selection.  Lower priority values are preferred.  If a priority is tied, then one is chosen randomly. See painting table below for values | see below |
 | TreasureFilterMap     | A list of key-value pairs that filters treasures.  A priority of 0 will skip that type of treasure, otherwise lower priority values are preferred.  If a priority is tied, then one is chosen at random. MaxKeys will filter treasures depending on the number of keys it would cost, sane values are 0, 1 or 3. See treasure table below for values | see below |
+| EnemyBlocklist | A list of enemies to avoid if possible | see below |
 | Timings | A list of configurable timings in milliseconds | see below |
 
 ## Painting Types
@@ -55,3 +58,14 @@
 | Pre-Door             | Delay before either opening or leaving a sealed door | 5000    |
 | Pre-MoveOn           | Delay before moving on after most explore results    | 5000    |
 | Post-Battle          | Delay before pressing skip after a battle ends       | 7000    |
+
+## Enemy Blocklist
+| Name                 | Description                      | Default Enabled |
+| -------------------- | -------------------------------- | --------------- |
+| Alexander            | High resistance                  | false           |
+| Atomos               | Slowga, High Damage              | false           |
+| Diablos              | High Damage                      | false           |
+| Lani & Scarlet Hair  | HP Sponge                        | false           |
+| Lunasaurs            | Reflect                          | false           |
+| Octomammoth          | Reflect                          | false           |
+| Marilith             | High resistance, Blind           | false           |
