@@ -1,5 +1,6 @@
 ﻿using System;
 using FFRK_LabMem.Config;
+using FFRK_LabMem.Config.UI;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;

@@ -5,46 +5,13 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Collections;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
 
-namespace FFRK_LabMem.Config
+namespace FFRK_LabMem.Config.UI
 {
     public partial class ConfigForm : Form
     {
-
-        public static string CONFIG_FOLDER = @".\Config\";
-
-        private Dictionary<String, String> paintingLookup = new Dictionary<string, string>() {
-            {"1.1", "Combatant Painting (Green)"},
-            {"1.2", "Combatant Painting (Orange)"},
-            {"1.3", "Combatant Painting (Red)"},
-            {"2", "Master Painting"},
-            {"3", "Treasure Painting"},
-            {"4", "Exploration Painting"},
-            {"5", "Onslaught Painting"},
-            {"6", "Portal Painting"},
-            {"7", "Restoration Painting"}
-        };
-
-        private Dictionary<String, String> treasureLookup = new Dictionary<string, string>() {
-            {"5", "Hero Equipment"},
-            {"4", "Anima Lenses, Bookmark, 5* Rat Tails, Map x2, Teleport Stone"},
-            {"3", "6* Motes, 4* Rat Tails, Magic Key, Treasure Map, Lethe Potion"},
-            {"2", "6* Crystals, Rainbow Crystal, Rosetta Stone of Wisdom"},
-            {"1", "5* Orbs, 5* Motes"}
-        };
-
-        private List<AdbHostItem> adbHosts = new List<AdbHostItem>() { 
-            new AdbHostItem { Name = "MuMu", Value = "127.0.0.1:7555"} ,
-            new AdbHostItem { Name = "Nox 5", Value = "127.0.0.1:62001"} ,
-            new AdbHostItem { Name = "Nox", Value = "127.0.0.1:5037"} ,
-            new AdbHostItem { Name = "MEmu", Value = "127.0.0.1:21503"} ,
-            new AdbHostItem { Name = "MEmu Instance 2", Value = "127.0.0.1:21513"} ,
-            new AdbHostItem { Name = "MEmu Instance 3", Value = "127.0.0.1:21523"} ,
-            new AdbHostItem { Name = "LD Player", Value = "127.0.0.1:5555"}
-        };
 
         public ConfigHelper configHelper = null;
         public LabController controller = null;
@@ -67,9 +34,11 @@ namespace FFRK_LabMem.Config
 
             // Show form
             Application.EnableVisualStyles();
-            var form = new ConfigForm();
-            form.configHelper = configHelper;
-            form.controller = controller;
+            var form = new ConfigForm
+            {
+                configHelper = configHelper,
+                controller = controller
+            };
             form.ShowDialog();
 
             // Re-enable if needed
@@ -102,7 +71,7 @@ namespace FFRK_LabMem.Config
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
-            comboBoxAdbHost.DataSource = adbHosts;
+            comboBoxAdbHost.DataSource = Lookups.AdbHosts;
             comboBoxAdbHost.DisplayMember = "Display";
             comboBoxAdbHost.ValueMember = "Value";
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
@@ -112,8 +81,8 @@ namespace FFRK_LabMem.Config
             LoadConfigs();
 
             // List sorting
-            listViewPaintings.ListViewItemSorter = new PaintingSorter();
-            listViewTreasures.ListViewItemSorter = new TreasureSorter();
+            listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
+            listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
 
             // Hide restart warning
             lblRestart.Visible = false;
@@ -124,10 +93,10 @@ namespace FFRK_LabMem.Config
         {
             var targetConfig = configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower();
             comboBoxLab.Items.Clear();
-            foreach (var item in Directory.GetFiles(CONFIG_FOLDER, "*.json"))
+            foreach (var item in ConfigFile.GetFiles())
             {
-                comboBoxLab.Items.Add(item.Replace(CONFIG_FOLDER,""));
-                if (item.ToLower().EndsWith(targetConfig)) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
+                comboBoxLab.Items.Add(item);
+                if (item.Path.ToLower().EndsWith(targetConfig)) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
             }
             if (comboBoxLab.SelectedItem == null) comboBoxLab.SelectedIndex = 0;
         }
@@ -149,7 +118,7 @@ namespace FFRK_LabMem.Config
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
-            configHelper.SetValue("lab.configFile", CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString());
+            configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
 
             // Lab
             labConfig.Debug = checkBoxLabDebug.Checked;
@@ -204,7 +173,7 @@ namespace FFRK_LabMem.Config
             }
 
             // Save to .json
-            File.WriteAllText(CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString(), JsonConvert.SerializeObject(labConfig,Formatting.Indented));
+            File.WriteAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path, JsonConvert.SerializeObject(labConfig,Formatting.Indented));
 
             // Update machine
             controller.Machine.Config = labConfig;
@@ -230,33 +199,23 @@ namespace FFRK_LabMem.Config
             this.Close();
         }
 
-        private void BtnBrowseIn_Click(object sender, EventArgs e)
-        {
-            folderBrowserDialog1.SelectedPath = textBoxProxyBlocklist.Text;
-
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-            {
-                textBoxProxyBlocklist.Text = folderBrowserDialog1.SelectedPath;
-            }
-        }
-
         private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
-            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString()));
+            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path));
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
             checkBoxLabRestartFailedBattle.Checked = labConfig.RestartFailedBattle;
             checkBoxLabStopOnMasterPainting.Checked = labConfig.StopOnMasterPainting;
-            checkBoxLabStopOnMasterPainting_CheckedChanged(sender, e);
+            CheckBoxLabStopOnMasterPainting_CheckedChanged(sender, e);
             checkBoxLabRestart.Checked = labConfig.RestartLab;
-            checkBoxLabRestart_CheckedChanged(sender, e);
+            CheckBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
             numericUpDownWatchdog.Value = labConfig.WatchdogMinutes;
             checkBoxLabOldRecovery.Checked = labConfig.UseOldCrashRecovery;
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
-            checkBoxLabUseLetheTears_CheckedChanged(sender, e);
+            CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
             checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot >> 4) & 1) != 0;
             checkBoxSlot2.Checked = ((labConfig.LetheTearsSlot >> 3) & 1) != 0;
@@ -271,7 +230,7 @@ namespace FFRK_LabMem.Config
             foreach (var item in labConfig.PaintingPriorityMap)
             {
                 var newItem = new ListViewItem(item.Value.ToString());
-                newItem.SubItems.Add(paintingLookup[item.Key]);
+                newItem.SubItems.Add(Lookups.Paintings[item.Key]);
                 newItem.Tag = item.Key;
                 listViewPaintings.Items.Add(newItem);
             }
@@ -283,7 +242,7 @@ namespace FFRK_LabMem.Config
                 var newItem = new ListViewItem();
                 newItem.Text = item.Value.Priority.ToString();
                 newItem.SubItems.Add(item.Value.MaxKeys.ToString());
-                newItem.SubItems.Add(treasureLookup[item.Key]);
+                newItem.SubItems.Add(Lookups.Treasures[item.Key]);
                 newItem.Checked = item.Value.Priority > 0;
                 newItem.Tag = item.Key;
                 listViewTreasures.Items.Add(newItem);
@@ -412,69 +371,6 @@ namespace FFRK_LabMem.Config
 
         }
 
-        public class PaintingSorter : IComparer
-        {
-            public int Compare(object x, object y)
-            {
-                ListViewItem listviewX, listviewY;
-
-                // Cast the objects to be compared to ListViewItem objects
-                listviewX = (ListViewItem)x;
-                listviewY = (ListViewItem)y;
-
-                // Get values
-                int priorityX = int.Parse(listviewX.Text);
-                int priorityY = int.Parse(listviewY.Text);
-
-                return priorityX.CompareTo(priorityY);
-
-            }
-        }
-
-        public class TreasureSorter : IComparer
-        {
-            public int Compare(object x, object y)
-            {
-                ListViewItem listviewX, listviewY;
-
-                // Cast the objects to be compared to ListViewItem objects
-                listviewX = (ListViewItem)x;
-                listviewY = (ListViewItem)y;
-
-                // Get values
-                int priorityX = int.Parse(listviewX.Text);
-                int priorityY = int.Parse(listviewY.Text);
-                int keysX = int.Parse(listviewX.SubItems[1].Text);
-                int keysY = int.Parse(listviewY.SubItems[1].Text);
-
-                if (priorityX == 0) priorityX = 1000;
-                if (priorityY == 0) priorityY = 1000;
-
-                var cmp1 = priorityX.CompareTo(priorityY);
-                if (cmp1 == 0)
-                {
-                    return keysX.CompareTo(keysY);
-                } else
-                {
-                    return cmp1;
-                }
-
-            }
-        }
-
-        public class AdbHostItem
-        {
-            public String Name { get; set; }
-            public String Value { get; set; }
-            public String Display
-            {
-                get
-                {
-                    return String.Format("{0} [{1}]", Value, Name);
-                }
-            }
-        }
-
         private void NeedsRestart_Changed(object sender, EventArgs e)
         {
 
@@ -524,12 +420,12 @@ namespace FFRK_LabMem.Config
             MessageBox.Show(this, "Copied!","", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void checkBoxLabRestart_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxLabUsePotions.Enabled = checkBoxLabRestart.Checked;
         }
 
-        private void checkBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownFatigue.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot1.Enabled = checkBoxLabUseLetheTears.Checked;
@@ -540,7 +436,7 @@ namespace FFRK_LabMem.Config
 
         }
 
-        private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
 
             if (e.ColumnIndex == 1)
@@ -558,7 +454,7 @@ namespace FFRK_LabMem.Config
 
         }
 
-        private void buttonTimingDefaults_Click(object sender, EventArgs e)
+        private void ButtonTimingDefaults_Click(object sender, EventArgs e)
         {
 
             var ret = MessageBox.Show(this, "Are you sure you want to reset all timings to the defaults?",
@@ -578,12 +474,12 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void checkBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
         }
 
-        private async void buttonCheckForUpdates_Click(object sender, EventArgs e)
+        private async void ButtonCheckForUpdates_Click(object sender, EventArgs e)
         {
 
             if (await Services.Updates.Check(checkBoxPrerelease.Checked))
@@ -603,7 +499,7 @@ namespace FFRK_LabMem.Config
 
         }
 
-        private void buttonAddBlocklist_Click(object sender, EventArgs e)
+        private void ButtonAddBlocklist_Click(object sender, EventArgs e)
         {
             var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Blocklist Entry");
             if (!String.IsNullOrEmpty(input))
@@ -614,7 +510,7 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void buttonRemoveBlocklist_Click(object sender, EventArgs e)
+        private void ButtonRemoveBlocklist_Click(object sender, EventArgs e)
         {
             var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
@@ -623,12 +519,10 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void buttonLabConfigurations_Click(object sender, EventArgs e)
+        private void ButtonLabConfigurations_Click(object sender, EventArgs e)
         {
-
             ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
             LoadConfigs();
-
         }
     }
 }

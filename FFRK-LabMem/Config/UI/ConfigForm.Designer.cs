@@ -1,5 +1,5 @@
 ﻿
-namespace FFRK_LabMem.Config
+namespace FFRK_LabMem.Config.UI
 {
     partial class ConfigForm
     {
@@ -62,6 +62,7 @@ namespace FFRK_LabMem.Config
             this.textBoxAdbPath = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.buttonLabConfigurations = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.checkBoxLabScreenshotRadiant = new System.Windows.Forms.CheckBox();
@@ -116,7 +117,6 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.buttonLabConfigurations = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -219,7 +219,7 @@ namespace FFRK_LabMem.Config
             this.buttonCheckForUpdates.TabIndex = 9;
             this.buttonCheckForUpdates.Text = "Check Now";
             this.buttonCheckForUpdates.UseVisualStyleBackColor = true;
-            this.buttonCheckForUpdates.Click += new System.EventHandler(this.buttonCheckForUpdates_Click);
+            this.buttonCheckForUpdates.Click += new System.EventHandler(this.ButtonCheckForUpdates_Click);
             // 
             // numericUpDownScreenBottom
             // 
@@ -396,7 +396,6 @@ namespace FFRK_LabMem.Config
             this.buttonProxyBlocklist.TabIndex = 4;
             this.buttonProxyBlocklist.UseVisualStyleBackColor = true;
             this.buttonProxyBlocklist.Visible = false;
-            this.buttonProxyBlocklist.Click += new System.EventHandler(this.BtnBrowseIn_Click);
             // 
             // textBoxProxyBlocklist
             // 
@@ -521,6 +520,7 @@ namespace FFRK_LabMem.Config
             // 
             // tabPage4
             // 
+            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage4.Controls.Add(this.buttonLabConfigurations);
             this.tabPage4.Controls.Add(this.tabControl1);
             this.tabPage4.Controls.Add(this.comboBoxLab);
@@ -529,7 +529,16 @@ namespace FFRK_LabMem.Config
             this.tabPage4.Size = new System.Drawing.Size(449, 337);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Lab";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // buttonLabConfigurations
+            // 
+            this.buttonLabConfigurations.Location = new System.Drawing.Point(424, -1);
+            this.buttonLabConfigurations.Name = "buttonLabConfigurations";
+            this.buttonLabConfigurations.Size = new System.Drawing.Size(22, 22);
+            this.buttonLabConfigurations.TabIndex = 2;
+            this.buttonLabConfigurations.Text = "...";
+            this.buttonLabConfigurations.UseVisualStyleBackColor = true;
+            this.buttonLabConfigurations.Click += new System.EventHandler(this.ButtonLabConfigurations_Click);
             // 
             // tabControl1
             // 
@@ -539,7 +548,7 @@ namespace FFRK_LabMem.Config
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Controls.Add(this.tabPage10);
             this.tabControl1.Controls.Add(this.tabPage9);
-            this.tabControl1.Location = new System.Drawing.Point(3, 27);
+            this.tabControl1.Location = new System.Drawing.Point(3, 30);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(443, 305);
@@ -647,7 +656,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabRestart.Text = "Restart lab when completed";
             this.toolTip1.SetToolTip(this.checkBoxLabRestart, "Restarts the lab run once completed, use for degenerate 24/7 farming");
             this.checkBoxLabRestart.UseVisualStyleBackColor = true;
-            this.checkBoxLabRestart.CheckedChanged += new System.EventHandler(this.checkBoxLabRestart_CheckedChanged);
+            this.checkBoxLabRestart.CheckedChanged += new System.EventHandler(this.CheckBoxLabRestart_CheckedChanged);
             // 
             // checkBoxLabStopOnMasterPainting
             // 
@@ -659,7 +668,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabStopOnMasterPainting.Text = "Stop when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabStopOnMasterPainting, "Disables the bot when the Master painting is reached");
             this.checkBoxLabStopOnMasterPainting.UseVisualStyleBackColor = true;
-            this.checkBoxLabStopOnMasterPainting.CheckedChanged += new System.EventHandler(this.checkBoxLabStopOnMasterPainting_CheckedChanged);
+            this.checkBoxLabStopOnMasterPainting.CheckedChanged += new System.EventHandler(this.CheckBoxLabStopOnMasterPainting_CheckedChanged);
             // 
             // checkBoxLabRestartFailedBattle
             // 
@@ -790,7 +799,7 @@ namespace FFRK_LabMem.Config
             this.checkBoxLabUseLetheTears.TabIndex = 3;
             this.checkBoxLabUseLetheTears.Text = "Use Lethe Tears when fatigue reaches";
             this.checkBoxLabUseLetheTears.UseVisualStyleBackColor = true;
-            this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.checkBoxLabUseLetheTears_CheckedChanged);
+            this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.CheckBoxLabUseLetheTears_CheckedChanged);
             // 
             // checkBoxLabAvoidPortal
             // 
@@ -1024,7 +1033,7 @@ namespace FFRK_LabMem.Config
             this.buttonRemoveBlocklist.TabIndex = 3;
             this.buttonRemoveBlocklist.Text = "Remove";
             this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
-            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.buttonRemoveBlocklist_Click);
+            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.ButtonRemoveBlocklist_Click);
             // 
             // buttonAddBlocklist
             // 
@@ -1034,7 +1043,7 @@ namespace FFRK_LabMem.Config
             this.buttonAddBlocklist.TabIndex = 2;
             this.buttonAddBlocklist.Text = "Add";
             this.buttonAddBlocklist.UseVisualStyleBackColor = true;
-            this.buttonAddBlocklist.Click += new System.EventHandler(this.buttonAddBlocklist_Click);
+            this.buttonAddBlocklist.Click += new System.EventHandler(this.ButtonAddBlocklist_Click);
             // 
             // checkedListBoxBlocklist
             // 
@@ -1065,7 +1074,7 @@ namespace FFRK_LabMem.Config
             this.buttonTimingDefaults.TabIndex = 1;
             this.buttonTimingDefaults.Text = "Reset Defaults";
             this.buttonTimingDefaults.UseVisualStyleBackColor = true;
-            this.buttonTimingDefaults.Click += new System.EventHandler(this.buttonTimingDefaults_Click);
+            this.buttonTimingDefaults.Click += new System.EventHandler(this.ButtonTimingDefaults_Click);
             // 
             // dataGridView1
             // 
@@ -1083,7 +1092,7 @@ namespace FFRK_LabMem.Config
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(423, 230);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
+            this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
             // 
             // Timing
             // 
@@ -1102,10 +1111,11 @@ namespace FFRK_LabMem.Config
             this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLab.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBoxLab.FormattingEnabled = true;
-            this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
+            this.comboBoxLab.Location = new System.Drawing.Point(3, 0);
             this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(412, 21);
+            this.comboBoxLab.Size = new System.Drawing.Size(416, 21);
             this.comboBoxLab.TabIndex = 0;
             this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
             // 
@@ -1128,16 +1138,6 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.Description = "Choose blocklist file";
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
-            // buttonLabConfigurations
-            // 
-            this.buttonLabConfigurations.Location = new System.Drawing.Point(418, 0);
-            this.buttonLabConfigurations.Name = "buttonLabConfigurations";
-            this.buttonLabConfigurations.Size = new System.Drawing.Size(24, 21);
-            this.buttonLabConfigurations.TabIndex = 2;
-            this.buttonLabConfigurations.Text = "...";
-            this.buttonLabConfigurations.UseVisualStyleBackColor = true;
-            this.buttonLabConfigurations.Click += new System.EventHandler(this.buttonLabConfigurations_Click);
             // 
             // ConfigForm
             // 

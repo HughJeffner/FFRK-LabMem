@@ -1,5 +1,5 @@
 ﻿
-namespace FFRK_LabMem.Config
+namespace FFRK_LabMem.Config.UI
 {
     partial class ConfigListForm
     {
@@ -34,6 +34,7 @@ namespace FFRK_LabMem.Config
             this.buttonAdd = new System.Windows.Forms.Button();
             this.buttonRename = new System.Windows.Forms.Button();
             this.buttonRemove = new System.Windows.Forms.Button();
+            this.labelPath = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -50,49 +51,59 @@ namespace FFRK_LabMem.Config
             // listBoxConfigs
             // 
             this.listBoxConfigs.FormattingEnabled = true;
-            this.listBoxConfigs.Location = new System.Drawing.Point(12, 12);
+            this.listBoxConfigs.Location = new System.Drawing.Point(12, 38);
             this.listBoxConfigs.Name = "listBoxConfigs";
-            this.listBoxConfigs.Size = new System.Drawing.Size(244, 303);
+            this.listBoxConfigs.Size = new System.Drawing.Size(244, 277);
             this.listBoxConfigs.TabIndex = 6;
             // 
             // buttonAdd
             // 
             this.buttonAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAdd.Location = new System.Drawing.Point(262, 11);
+            this.buttonAdd.Location = new System.Drawing.Point(261, 38);
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.Size = new System.Drawing.Size(106, 29);
             this.buttonAdd.TabIndex = 7;
             this.buttonAdd.Text = "Add";
             this.buttonAdd.UseVisualStyleBackColor = true;
-            this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
+            this.buttonAdd.Click += new System.EventHandler(this.ButtonAdd_Click);
             // 
             // buttonRename
             // 
             this.buttonRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRename.Location = new System.Drawing.Point(262, 46);
+            this.buttonRename.Location = new System.Drawing.Point(261, 73);
             this.buttonRename.Name = "buttonRename";
             this.buttonRename.Size = new System.Drawing.Size(106, 29);
             this.buttonRename.TabIndex = 8;
             this.buttonRename.Text = "Rename";
             this.buttonRename.UseVisualStyleBackColor = true;
-            this.buttonRename.Click += new System.EventHandler(this.buttonRename_Click);
+            this.buttonRename.Click += new System.EventHandler(this.ButtonRename_Click);
             // 
             // buttonRemove
             // 
             this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRemove.Location = new System.Drawing.Point(261, 81);
+            this.buttonRemove.Location = new System.Drawing.Point(260, 108);
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.Size = new System.Drawing.Size(106, 29);
             this.buttonRemove.TabIndex = 9;
             this.buttonRemove.Text = "Remove";
             this.buttonRemove.UseVisualStyleBackColor = true;
-            this.buttonRemove.Click += new System.EventHandler(this.buttonRemove_Click);
+            this.buttonRemove.Click += new System.EventHandler(this.ButtonRemove_Click);
+            // 
+            // labelPath
+            // 
+            this.labelPath.Location = new System.Drawing.Point(13, 13);
+            this.labelPath.Name = "labelPath";
+            this.labelPath.Size = new System.Drawing.Size(353, 18);
+            this.labelPath.TabIndex = 10;
+            this.labelPath.Text = "Config files path:";
+            this.labelPath.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ConfigListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(379, 328);
+            this.Controls.Add(this.labelPath);
             this.Controls.Add(this.buttonRemove);
             this.Controls.Add(this.buttonRename);
             this.Controls.Add(this.buttonAdd);
@@ -117,5 +128,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.Button buttonAdd;
         private System.Windows.Forms.Button buttonRename;
         private System.Windows.Forms.Button buttonRemove;
+        private System.Windows.Forms.Label labelPath;
     }
 }

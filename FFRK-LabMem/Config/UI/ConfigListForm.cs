@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace FFRK_LabMem.Config
+namespace FFRK_LabMem.Config.UI
 {
     public partial class ConfigListForm : Form
     {
@@ -20,35 +20,39 @@ namespace FFRK_LabMem.Config
         public static void CreateAndShow(string currentConfig)
         {
             // Show form
-            var form = new ConfigListForm();
-            form.currentConfig = currentConfig;
+            var form = new ConfigListForm
+            {
+                currentConfig = currentConfig
+            };
             form.ShowDialog();
         }
 
         private void ConfigListForm_Load(object sender, EventArgs e)
         {
 
-            foreach (var item in Directory.GetFiles(ConfigForm.CONFIG_FOLDER, "*.json"))
+            labelPath.Text = String.Format("Config files path: {0}", ConfigFile.CONFIG_FOLDER);
+            foreach (var item in ConfigFile.GetFiles())
             {
-                listBoxConfigs.Items.Add(item.Replace(ConfigForm.CONFIG_FOLDER,""));
+                listBoxConfigs.Items.Add(item);
             }
             listBoxConfigs.SelectedIndex = 0;
 
         }
 
-        private void buttonAdd_Click(object sender, EventArgs e)
+        private void ButtonAdd_Click(object sender, EventArgs e)
         {
-            var input = Interaction.InputBox("Enter new name", "Add Configuration", "lab.new.json");
+            var input = Interaction.InputBox("Enter new name", "Add Configuration", "New");
             if (!String.IsNullOrEmpty(input))
             {
+                var file = ConfigFile.FromName(input);
                 try
                 {
-                    if(File.Exists(ConfigForm.CONFIG_FOLDER + input)){
+                    if(File.Exists(file.Path)){
                         MessageBox.Show(this, "File already exists!  Try a different name.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    File.WriteAllText(ConfigForm.CONFIG_FOLDER + input, JsonConvert.SerializeObject(new LabConfiguration(), Formatting.Indented));
-                    listBoxConfigs.Items.Add(input);
+                    File.WriteAllText(file.Path, JsonConvert.SerializeObject(new LabConfiguration(), Formatting.Indented));
+                    listBoxConfigs.Items.Add(file);
                 }
                 catch (Exception ex)
                 {
@@ -58,16 +62,17 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void buttonRename_Click(object sender, EventArgs e)
+        private void ButtonRename_Click(object sender, EventArgs e)
         {
-            var target = listBoxConfigs.SelectedItem.ToString();
-            var input = Interaction.InputBox("Enter new name", "Rename Configuration", target);
+            var target = (ConfigFile)listBoxConfigs.SelectedItem;
+            var input = Interaction.InputBox("Enter new name", "Rename Configuration", target.Name);
             if (!String.IsNullOrEmpty(input))
             {
+                var file = ConfigFile.FromName(input);
                 try
                 {
-                    File.Move(ConfigForm.CONFIG_FOLDER + target, ConfigForm.CONFIG_FOLDER + input);
-                    listBoxConfigs.Items[listBoxConfigs.SelectedIndex] = input;
+                    File.Move(target.Path, file.Path);
+                    listBoxConfigs.Items[listBoxConfigs.SelectedIndex] = file;
                 } catch (Exception ex)
                 {
                     MessageBox.Show(this, ex.Message, "Error renaming configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -76,23 +81,24 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        private void buttonRemove_Click(object sender, EventArgs e)
+        private void ButtonRemove_Click(object sender, EventArgs e)
         {
 
-            if (listBoxConfigs.SelectedItem.ToString().ToLower().Equals(currentConfig))
+            if (ConfigFile.FromObject(listBoxConfigs.SelectedItem).Path.ToLower().Equals(currentConfig.ToLower()))
             {
                 MessageBox.Show(this, "Can't delete current config!","Warning",MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var target = listBoxConfigs.SelectedItem.ToString();
-            var result = MessageBox.Show(this, "Are you sure?", "Remove Configuration", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var target = (ConfigFile)listBoxConfigs.SelectedItem;
+            var result = MessageBox.Show(this, "Are you sure you wish to delete " + target.Name  + "?", "Remove Configuration", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
                 try
                 {
-                    File.Delete(ConfigForm.CONFIG_FOLDER + target);
+                    File.Delete(target.Path);
                     listBoxConfigs.Items.Remove(listBoxConfigs.SelectedItem);
+                    listBoxConfigs.SelectedIndex = 0;
                 }
                 catch (Exception ex)
                 {
