@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using FFRK_LabMem.Config;
 using FFRK_Machines;
@@ -14,7 +15,14 @@ namespace FFRK_LabMem.Machines
             
             // Create instance
             var ret = new LabController();
-            
+
+            // Validate config file
+            var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
+            if (!File.Exists(configFilePath)){
+                ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", configFilePath);
+                return ret;
+            }
+
             // Start it
             await ret.Start(debug: config.GetBool("console.debug", false),
                 adbPath: config.GetString("adb.path", "adb.exe"),

@@ -103,6 +103,7 @@ namespace FFRK_LabMem.Config
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabBlockListOverride = new System.Windows.Forms.CheckBox();
             this.buttonRemoveBlocklist = new System.Windows.Forms.Button();
             this.buttonAddBlocklist = new System.Windows.Forms.Button();
             this.checkedListBoxBlocklist = new System.Windows.Forms.CheckedListBox();
@@ -115,7 +116,7 @@ namespace FFRK_LabMem.Config
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxLabBlockListOverride = new System.Windows.Forms.CheckBox();
+            this.buttonLabConfigurations = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -520,6 +521,7 @@ namespace FFRK_LabMem.Config
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.buttonLabConfigurations);
             this.tabPage4.Controls.Add(this.tabControl1);
             this.tabPage4.Controls.Add(this.comboBoxLab);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
@@ -1001,6 +1003,18 @@ namespace FFRK_LabMem.Config
             this.tabPage10.Text = "Blocklist";
             this.tabPage10.UseVisualStyleBackColor = true;
             // 
+            // checkBoxLabBlockListOverride
+            // 
+            this.checkBoxLabBlockListOverride.AutoSize = true;
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(297, 249);
+            this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
+            this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(132, 17);
+            this.checkBoxLabBlockListOverride.TabIndex = 4;
+            this.checkBoxLabBlockListOverride.Text = "Override avoid options";
+            this.toolTip1.SetToolTip(this.checkBoxLabBlockListOverride, "When enabled, the enemy blocklist takes priority over the avoidance options in th" +
+        "e Options tab");
+            this.checkBoxLabBlockListOverride.UseVisualStyleBackColor = true;
+            // 
             // buttonRemoveBlocklist
             // 
             this.buttonRemoveBlocklist.Enabled = false;
@@ -1091,7 +1105,7 @@ namespace FFRK_LabMem.Config
             this.comboBoxLab.FormattingEnabled = true;
             this.comboBoxLab.Location = new System.Drawing.Point(0, 0);
             this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(446, 21);
+            this.comboBoxLab.Size = new System.Drawing.Size(412, 21);
             this.comboBoxLab.TabIndex = 0;
             this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
             // 
@@ -1115,17 +1129,15 @@ namespace FFRK_LabMem.Config
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // checkBoxLabBlockListOverride
+            // buttonLabConfigurations
             // 
-            this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(297, 249);
-            this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
-            this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(132, 17);
-            this.checkBoxLabBlockListOverride.TabIndex = 4;
-            this.checkBoxLabBlockListOverride.Text = "Override avoid options";
-            this.toolTip1.SetToolTip(this.checkBoxLabBlockListOverride, "When enabled, the enemy blocklist takes priority over the avoidance options in th" +
-        "e Options tab");
-            this.checkBoxLabBlockListOverride.UseVisualStyleBackColor = true;
+            this.buttonLabConfigurations.Location = new System.Drawing.Point(418, 0);
+            this.buttonLabConfigurations.Name = "buttonLabConfigurations";
+            this.buttonLabConfigurations.Size = new System.Drawing.Size(24, 21);
+            this.buttonLabConfigurations.TabIndex = 2;
+            this.buttonLabConfigurations.Text = "...";
+            this.buttonLabConfigurations.UseVisualStyleBackColor = true;
+            this.buttonLabConfigurations.Click += new System.EventHandler(this.buttonLabConfigurations_Click);
             // 
             // ConfigForm
             // 
@@ -1265,5 +1277,6 @@ namespace FFRK_LabMem.Config
         private System.Windows.Forms.Button buttonAddBlocklist;
         private System.Windows.Forms.CheckedListBox checkedListBoxBlocklist;
         private System.Windows.Forms.CheckBox checkBoxLabBlockListOverride;
+        private System.Windows.Forms.Button buttonLabConfigurations;
     }
 }

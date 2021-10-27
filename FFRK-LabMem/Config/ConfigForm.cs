@@ -14,6 +14,8 @@ namespace FFRK_LabMem.Config
     public partial class ConfigForm : Form
     {
 
+        public static string CONFIG_FOLDER = @".\Config\";
+
         private Dictionary<String, String> paintingLookup = new Dictionary<string, string>() {
             {"1.1", "Combatant Painting (Green)"},
             {"1.2", "Combatant Painting (Orange)"},
@@ -47,6 +49,7 @@ namespace FFRK_LabMem.Config
         public ConfigHelper configHelper = null;
         public LabController controller = null;
         public LabConfiguration labConfig = new LabConfiguration();
+        private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
 
         public ConfigForm()
@@ -106,15 +109,7 @@ namespace FFRK_LabMem.Config
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
 
             // Load lab .json
-            foreach (var item in Directory.GetFiles("./Config/", "*.json"))
-            {
-                comboBoxLab.Items.Add(item);
-                if (item.ToLower().EndsWith(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower())) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
-            }
-            if (comboBoxLab.SelectedItem != null)
-            {
-                labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
-            }
+            LoadConfigs();
 
             // List sorting
             listViewPaintings.ListViewItemSorter = new PaintingSorter();
@@ -124,6 +119,19 @@ namespace FFRK_LabMem.Config
             lblRestart.Visible = false;
 
         }
+
+        private void LoadConfigs()
+        {
+            var targetConfig = configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower();
+            comboBoxLab.Items.Clear();
+            foreach (var item in Directory.GetFiles(CONFIG_FOLDER, "*.json"))
+            {
+                comboBoxLab.Items.Add(item.Replace(CONFIG_FOLDER,""));
+                if (item.ToLower().EndsWith(targetConfig)) comboBoxLab.SelectedIndex = comboBoxLab.Items.Count - 1;
+            }
+            if (comboBoxLab.SelectedItem == null) comboBoxLab.SelectedIndex = 0;
+        }
+
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             ColorConsole.Write("Saving configuration... ");
@@ -141,7 +149,7 @@ namespace FFRK_LabMem.Config
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
-            configHelper.SetValue("lab.configFile",comboBoxLab.SelectedItem.ToString());
+            configHelper.SetValue("lab.configFile", CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString());
 
             // Lab
             labConfig.Debug = checkBoxLabDebug.Checked;
@@ -196,7 +204,7 @@ namespace FFRK_LabMem.Config
             }
 
             // Save to .json
-            File.WriteAllText(comboBoxLab.SelectedItem.ToString(), JsonConvert.SerializeObject(labConfig,Formatting.Indented));
+            File.WriteAllText(CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString(), JsonConvert.SerializeObject(labConfig,Formatting.Indented));
 
             // Update machine
             controller.Machine.Config = labConfig;
@@ -234,7 +242,7 @@ namespace FFRK_LabMem.Config
 
         private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
-            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(comboBoxLab.SelectedItem.ToString()));
+            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(CONFIG_FOLDER + comboBoxLab.SelectedItem.ToString()));
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
@@ -268,16 +276,19 @@ namespace FFRK_LabMem.Config
                 listViewPaintings.Items.Add(newItem);
             }
 
+            treasuresLoaded = false;
             listViewTreasures.Items.Clear();
             foreach (var item in labConfig.TreasureFilterMap)
             {
-                var newItem = new ListViewItem(item.Value.Priority.ToString());
+                var newItem = new ListViewItem();
+                newItem.Text = item.Value.Priority.ToString();
                 newItem.SubItems.Add(item.Value.MaxKeys.ToString());
                 newItem.SubItems.Add(treasureLookup[item.Key]);
                 newItem.Checked = item.Value.Priority > 0;
                 newItem.Tag = item.Key;
                 listViewTreasures.Items.Add(newItem);
             }
+            treasuresLoaded = true;
 
             checkedListBoxBlocklist.Items.Clear();
             foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
@@ -377,7 +388,7 @@ namespace FFRK_LabMem.Config
 
         private void ListViewTreasures_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            if (!treasuresLoaded) return;
+            if (!treasuresLoaded || !treasuresTabLoaded) return;
             if (e.Item.Checked)
             {
                 e.Item.Text = "1";
@@ -504,7 +515,7 @@ namespace FFRK_LabMem.Config
 
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedTab == tabPage7) treasuresLoaded = true;
+            if (tabControl1.SelectedTab == tabPage7) treasuresTabLoaded = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -610,6 +621,14 @@ namespace FFRK_LabMem.Config
             {
                 checkedListBoxBlocklist.Items.Remove(checkedListBoxBlocklist.SelectedItem);
             }
+        }
+
+        private void buttonLabConfigurations_Click(object sender, EventArgs e)
+        {
+
+            ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
+            LoadConfigs();
+
         }
     }
 }

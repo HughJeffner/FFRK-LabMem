@@ -21,7 +21,9 @@ namespace FFRK_LabMem.Machines
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
         public bool ScreenshotRadiantPainting { get; set; } = false;
         public bool EnemyBlocklistAvoidOptionOverride { get; set; } = false;
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public Dictionary<string, int> PaintingPriorityMap { get; set; } = new Dictionary<string, int>();
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
@@ -30,6 +32,26 @@ namespace FFRK_LabMem.Machines
 
             // Defaults
             this.Timings = GetDefaultTimings();
+            this.PaintingPriorityMap = new Dictionary<string, int>
+            {
+                { "3", 1 },
+                { "4", 2 },
+                { "7", 3 },
+                { "5", 4 },
+                { "6", 5 },
+                { "1.3", 6 },
+                { "1.2", 7 },
+                { "1.1", 8 },
+                { "2", 9 }
+            };
+            this.TreasureFilterMap = new Dictionary<string, TreasureFilter>
+            {
+                {"5", new TreasureFilter(){ Priority=1, MaxKeys=1}},
+                {"4", new TreasureFilter(){ Priority=1, MaxKeys=1}},
+                {"3", new TreasureFilter(){ Priority=2, MaxKeys=1}},
+                {"2", new TreasureFilter(){ Priority=0, MaxKeys=0}},
+                {"1", new TreasureFilter(){ Priority=0, MaxKeys=0}}
+            };
             this.EnemyBlocklist = new List<EnemyBlocklistEntry>
             {
                 new EnemyBlocklistEntry(){Name="Alexander",Enabled=false},
