@@ -70,13 +70,16 @@ namespace FFRK_LabMem.Machines
         public void ManualCrashRecovery()
         {
 
-            CancelTasks();
-            ResetCancelTasks();
-
-            Task.Run(async () =>
+            if (Enabled)
             {
-                await this.Machine.ManualCrashRecovery();
-            });
+                CancelTasks();
+                ResetCancelTasks();
+
+                Task.Run(async () =>
+                {
+                    await this.Machine.ManualCrashRecovery();
+                });
+            }
 
         }
     }
