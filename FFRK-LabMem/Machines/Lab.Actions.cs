@@ -82,7 +82,7 @@ namespace FFRK_LabMem.Machines
             // Insert Priority Field in the first 3 items
             foreach (var item in paintings.Take(3))
             {
-                item["priority"] = await GetPaintingPriority(item, isTreasure, isExplore, total, (this.CurrentFloor==15 || this.CurrentFloor == 20));
+                item["priority"] = await GetPaintingPriority(item, isTreasure, isExplore, total, this.CurrentFloor.Equals(this.FinalFloor));
             }
 
             // Select top 1 priority from the first 3

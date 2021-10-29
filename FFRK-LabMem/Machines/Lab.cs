@@ -64,6 +64,7 @@ namespace FFRK_LabMem.Machines
         private int CurrentKeys { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
+        public int FinalFloor { get; set; }
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
@@ -433,6 +434,7 @@ namespace FFRK_LabMem.Machines
             this.Data = null;
             this.CurrentPainting = null;
             this.CurrentFloor = 0;
+            this.FinalFloor = 0;
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
@@ -471,7 +473,8 @@ namespace FFRK_LabMem.Machines
                 var floor = session["current_floor"];
                 if (floor != null)
                 {
-                    if ((int)floor != CurrentFloor)
+                    int newFloor = (int)floor;
+                    if (newFloor != CurrentFloor)
                     {
                         if (CurrentFloor != 0)
                         {
@@ -480,9 +483,19 @@ namespace FFRK_LabMem.Machines
                         {
                             ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Starting on Floor {0}!", floor);
                         }
-                        
+
+                        // Check if final floor
+                        if (IsFinalFloor().Result)
+                        {
+                            this.FinalFloor = newFloor;
+                        } else
+                        {
+                            this.FinalFloor = 0;
+                        }
+
                     }
-                    this.CurrentFloor = (int)floor;
+                    this.CurrentFloor = newFloor;
+
                 }
             }
 
@@ -532,6 +545,18 @@ namespace FFRK_LabMem.Machines
                 if (value != null) item.Fatigue = (int)value["value"];
             }
             return true;
+        }
+
+        private async Task<bool> IsFinalFloor()
+        {
+            try
+            {
+                await Task.Delay(2000, this.CancellationToken);
+                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking if final floor");
+                return (await Adb.FindButton("#75377a", 2000, 48.6, 23, 24, 0, this.CancellationToken) != null);
+
+            } catch (OperationCanceledException){};
+            return false;
         }
 
         public async Task ManualCrashRecovery()
