@@ -43,6 +43,10 @@ namespace FFRK_LabMem.Machines
             
             return ret;
         }
+        protected override Lab CreateMachine(LabConfiguration config)
+        {
+            return new Lab(this.Adb, config);
+        }
 
         public async void AutoDetectOffsets(ConfigHelper config) {
 
@@ -63,10 +67,17 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        protected override Lab CreateMachine(LabConfiguration config)
+        public void ManualCrashRecovery()
         {
-            return new Lab(this.Adb, config);
-        }
 
+            CancelTasks();
+            ResetCancelTasks();
+
+            Task.Run(async () =>
+            {
+                await this.Machine.ManualCrashRecovery();
+            });
+
+        }
     }
 }

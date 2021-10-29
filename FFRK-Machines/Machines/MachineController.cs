@@ -134,6 +134,17 @@ namespace FFRK_Machines.Machines
             this.Disable();
         }
 
+        protected void ResetCancelTasks()
+        {
+            this.cancelMachineSource = new CancellationTokenSource();
+            this.Machine.CancellationToken = this.cancelMachineSource.Token;
+        }
+
+        protected void CancelTasks()
+        {
+            this.cancelMachineSource.CancelAfter(0);
+        }
+
         // Event handlers
         void Machine_MachineError(object sender, Exception e)
         {
@@ -159,8 +170,7 @@ namespace FFRK_Machines.Machines
             if (!enabled && Machine != null && this.Adb.HasDevice)
             {
                 enabled = true;
-                this.cancelMachineSource = new CancellationTokenSource();
-                this.Machine.CancellationToken = this.cancelMachineSource.Token;
+                ResetCancelTasks();
                 this.Machine.ConfigureStateMachine();
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
             }
@@ -176,7 +186,7 @@ namespace FFRK_Machines.Machines
             if (enabled && Machine != null)
             {
                 enabled = false;
-                this.cancelMachineSource.CancelAfter(0);
+                CancelTasks();
                 this.Machine.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled {0}", typeof(M).Name);
             }

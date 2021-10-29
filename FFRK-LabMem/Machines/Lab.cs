@@ -534,10 +534,11 @@ namespace FFRK_LabMem.Machines
             return true;
         }
 
-        public void ManualCrashRecovery()
+        public async Task ManualCrashRecovery()
         {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated crash recovery");
             watchdogTimer.Stop();
-            this.StateMachine.FireAsync(Trigger.WatchdogTimer);
+            await RecoverCrash();
         }
 
     }
