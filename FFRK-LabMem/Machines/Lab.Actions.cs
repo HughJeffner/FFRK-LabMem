@@ -18,7 +18,7 @@ namespace FFRK_LabMem.Machines
         private async Task DetermineState()
         {
 
-            if (!Config.AutoStart) return;
+            if (!Config.AutoStart || this.Data != null) return;
             try
             {
                 await Task.Delay(1);
