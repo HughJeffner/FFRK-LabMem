@@ -37,6 +37,11 @@ namespace FFRK_LabMem.Services
             public Bitmap Image { get; set; }
             public float Simalarity { get; set; }
             public Tuple<double, double> Location { get; set; }
+
+            public override string ToString()
+            {
+                return string.Format("{0}: {1} {2}", Image, Simalarity, Location);
+            }
         }
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
