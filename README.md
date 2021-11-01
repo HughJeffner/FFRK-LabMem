@@ -11,12 +11,12 @@ Built using Visual Studio 2019 Community, Installer using Inno Setup 6, pre-comp
 | Android Version                 | GL FFRK Version | Compatible |
 | ------------------------------- | --------------- | ---------- |
 | Android (Any)                   | 7.7.0 and lower | Not Supported|
-| Android 5 (Lollipop)            | 8.0.0           | Yes        |
-| Android 6 (Marshmallow)         | 8.0.0           | Yes        |
-| Android 7 (Nougat)              | 8.0.0           | Yes (root) |
-| Android 8 (Oreo)                | 8.0.0           | Yes (root) |
-| Android 9 (Nougat)              | 8.0.0           | Yes (root) |
-| Android 10 +                    | 8.0.0           | No ([maybe?](https://docs.mitmproxy.org/stable/howto-install-system-trusted-ca-android/#instructions-for-api-level--28))|        |
+| Android 5 (Lollipop)            | 8.0.0+          | Yes        |
+| Android 6 (Marshmallow)         | 8.0.0+          | Yes        |
+| Android 7 (Nougat)              | 8.0.0+          | Yes (root) |
+| Android 8 (Oreo)                | 8.0.0+          | Yes (root) |
+| Android 9 (Nougat)              | 8.0.0+          | Yes (root) |
+| Android 10 +                    | 8.0.0 +         | No ([maybe?](https://docs.mitmproxy.org/stable/howto-install-system-trusted-ca-android/#instructions-for-api-level--28))|        |
 
 _All compatible versions using FFRK 8.0.0+ must install a certificate_
 
