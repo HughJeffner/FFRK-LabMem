@@ -130,7 +130,6 @@ namespace FFRK_LabMem.Config.UI
             labConfig.RestartLab = checkBoxLabRestart.Checked;
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
             labConfig.WatchdogMinutes = (int)numericUpDownWatchdog.Value;
-            labConfig.UseOldCrashRecovery = checkBoxLabOldRecovery.Checked;
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
             labConfig.LetheTearsSlot = 0;
@@ -214,7 +213,6 @@ namespace FFRK_LabMem.Config.UI
             CheckBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
             numericUpDownWatchdog.Value = labConfig.WatchdogMinutes;
-            checkBoxLabOldRecovery.Checked = labConfig.UseOldCrashRecovery;
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
@@ -262,6 +260,10 @@ namespace FFRK_LabMem.Config.UI
             foreach (KeyValuePair<string, int> item in labConfig.Timings)
             {
                 dataGridView1.Rows.Add(item.Key, item.Value);
+            }
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                row.Cells[0].ToolTipText = Lookups.Timings[row.Cells[0].Value.ToString()];
             }
 
         }
@@ -525,6 +527,37 @@ namespace FFRK_LabMem.Config.UI
         {
             ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
             LoadConfigs();
+        }
+
+        // Class variable to keep track of which row is currently selected:
+        int hoveredIndex = -1;
+        private void checkedListBoxBlocklist_MouseMove(object sender, MouseEventArgs e)
+        {
+            // See which row is currently under the mouse:
+            int newHoveredIndex = checkedListBoxBlocklist.IndexFromPoint(e.Location);
+
+            // If the row has changed since last moving the mouse:
+            if (hoveredIndex != newHoveredIndex)
+            {
+                // Change the variable for the next time we move the mouse:
+                hoveredIndex = newHoveredIndex;
+
+                // If over a row showing data (rather than blank space):
+                if (hoveredIndex > -1)
+                {
+                    //Set tooltip text for the row now under the mouse:
+                    toolTip1.Active = false;
+                    var name = ((LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[hoveredIndex]).Name;
+                    if (Lookups.Blocklist.ContainsKey(name))
+                    {
+                        toolTip1.SetToolTip(checkedListBoxBlocklist, Lookups.Blocklist[name]);
+                    } else
+                    {
+                        toolTip1.SetToolTip(checkedListBoxBlocklist, "User-defined");
+                    }
+                    toolTip1.Active = true;
+                }
+            }
         }
     }
 }

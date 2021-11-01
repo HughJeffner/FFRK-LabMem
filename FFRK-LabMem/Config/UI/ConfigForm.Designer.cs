@@ -65,9 +65,9 @@ namespace FFRK_LabMem.Config.UI
             this.buttonLabConfigurations = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBoxLabAutoStart = new System.Windows.Forms.CheckBox();
             this.checkBoxLabScreenshotRadiant = new System.Windows.Forms.CheckBox();
             this.checkBoxLabUseTeleport = new System.Windows.Forms.CheckBox();
-            this.checkBoxLabOldRecovery = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDownWatchdog = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -117,7 +117,6 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBoxLabAutoStart = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -561,7 +560,6 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Controls.Add(this.checkBoxLabAutoStart);
             this.tabPage5.Controls.Add(this.checkBoxLabScreenshotRadiant);
             this.tabPage5.Controls.Add(this.checkBoxLabUseTeleport);
-            this.tabPage5.Controls.Add(this.checkBoxLabOldRecovery);
             this.tabPage5.Controls.Add(this.label8);
             this.tabPage5.Controls.Add(this.numericUpDownWatchdog);
             this.tabPage5.Controls.Add(this.label7);
@@ -578,10 +576,21 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // checkBoxLabAutoStart
+            // 
+            this.checkBoxLabAutoStart.AutoSize = true;
+            this.checkBoxLabAutoStart.Location = new System.Drawing.Point(6, 205);
+            this.checkBoxLabAutoStart.Name = "checkBoxLabAutoStart";
+            this.checkBoxLabAutoStart.Size = new System.Drawing.Size(141, 17);
+            this.checkBoxLabAutoStart.TabIndex = 15;
+            this.checkBoxLabAutoStart.Text = "Auto-start when enabled";
+            this.toolTip1.SetToolTip(this.checkBoxLabAutoStart, "Attempts to automaticaly get things going");
+            this.checkBoxLabAutoStart.UseVisualStyleBackColor = true;
+            // 
             // checkBoxLabScreenshotRadiant
             // 
             this.checkBoxLabScreenshotRadiant.AutoSize = true;
-            this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(6, 202);
+            this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(6, 182);
             this.checkBoxLabScreenshotRadiant.Name = "checkBoxLabScreenshotRadiant";
             this.checkBoxLabScreenshotRadiant.Size = new System.Drawing.Size(259, 17);
             this.checkBoxLabScreenshotRadiant.TabIndex = 14;
@@ -599,16 +608,6 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
             this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxLabOldRecovery
-            // 
-            this.checkBoxLabOldRecovery.AutoSize = true;
-            this.checkBoxLabOldRecovery.Location = new System.Drawing.Point(6, 179);
-            this.checkBoxLabOldRecovery.Name = "checkBoxLabOldRecovery";
-            this.checkBoxLabOldRecovery.Size = new System.Drawing.Size(135, 17);
-            this.checkBoxLabOldRecovery.TabIndex = 7;
-            this.checkBoxLabOldRecovery.Text = "Use old crash recovery";
-            this.checkBoxLabOldRecovery.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
@@ -1055,6 +1054,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxBlocklist.Name = "checkedListBoxBlocklist";
             this.checkedListBoxBlocklist.Size = new System.Drawing.Size(423, 229);
             this.checkedListBoxBlocklist.TabIndex = 0;
+            this.checkedListBoxBlocklist.MouseMove += new System.Windows.Forms.MouseEventHandler(this.checkedListBoxBlocklist_MouseMove);
             // 
             // tabPage9
             // 
@@ -1140,17 +1140,6 @@ namespace FFRK_LabMem.Config.UI
             this.folderBrowserDialog1.Description = "Choose blocklist file";
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
-            // checkBoxLabAutoStart
-            // 
-            this.checkBoxLabAutoStart.AutoSize = true;
-            this.checkBoxLabAutoStart.Location = new System.Drawing.Point(6, 225);
-            this.checkBoxLabAutoStart.Name = "checkBoxLabAutoStart";
-            this.checkBoxLabAutoStart.Size = new System.Drawing.Size(141, 17);
-            this.checkBoxLabAutoStart.TabIndex = 15;
-            this.checkBoxLabAutoStart.Text = "Auto-start when enabled";
-            this.toolTip1.SetToolTip(this.checkBoxLabAutoStart, "Attempts to automaticaly get things going");
-            this.checkBoxLabAutoStart.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -1265,7 +1254,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.CheckBox checkBoxLabOldRecovery;
         private System.Windows.Forms.CheckBox checkBoxLabUseTeleport;
         private System.Windows.Forms.TabPage tabPage8;
         private System.Windows.Forms.CheckBox checkBoxLabAvoidPortal;

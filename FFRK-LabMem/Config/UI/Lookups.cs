@@ -28,12 +28,30 @@ namespace FFRK_LabMem.Config.UI
 
         public static List<AdbHostItem> AdbHosts = new List<AdbHostItem>() {
             new AdbHostItem { Name = "MuMu", Value = "127.0.0.1:7555"} ,
-            new AdbHostItem { Name = "Nox 5", Value = "127.0.0.1:62001"} ,
-            new AdbHostItem { Name = "Nox", Value = "127.0.0.1:5037"} ,
+            new AdbHostItem { Name = "Nox", Value = "127.0.0.1:62001"} ,
             new AdbHostItem { Name = "MEmu", Value = "127.0.0.1:21503"} ,
             new AdbHostItem { Name = "MEmu Instance 2", Value = "127.0.0.1:21513"} ,
             new AdbHostItem { Name = "MEmu Instance 3", Value = "127.0.0.1:21523"} ,
             new AdbHostItem { Name = "LD Player", Value = "127.0.0.1:5555"}
+        };
+
+        public static Dictionary<String, String> Timings = new Dictionary<string, string>() {
+            {"Pre-SelectPainting", "Delay before selecting a painting"},
+            {"Inter-SelectPainting", "Delay between selecting a painting and confirming it"},
+            {"Pre-SelectTreasure", "Delay before selecting the first treasure"},
+            {"Pre-Door", "Delay before either opening or leaving a sealed door"},
+            {"Pre-MoveOn", "Delay before moving on after most explore results"},
+            {"Post-Battle","Delay before pressing skip after a battle ends" }
+        };
+
+        public static Dictionary<String, String> Blocklist = new Dictionary<string, string>() {
+            {"Alexander", "High resistance"},
+            {"Atomos", "Slowga, High Damage"},
+            {"Diablos", "High Damage"},
+            {"Lani & Scarlet Hair", "Damage Sponge"},
+            {"Lunasaurs", "Reflect"},
+            {"Octomammoth","Reflect" },
+            {"Marilith", "High resistance, Blind" }
         };
 
     }
