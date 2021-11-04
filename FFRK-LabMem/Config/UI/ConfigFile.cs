@@ -26,7 +26,7 @@ namespace FFRK_LabMem.Config.UI
         public static List<ConfigFile> GetFiles()
         {
             var ret = new List<ConfigFile>();
-            foreach (var item in Directory.GetFiles(CONFIG_FOLDER, "*.json"))
+            foreach (var item in Directory.GetFiles(CONFIG_FOLDER, "lab.*.json"))
             {
                 ret.Add(new ConfigFile(item));
             }

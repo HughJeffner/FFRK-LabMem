@@ -30,7 +30,6 @@ namespace FFRK_LabMem.Machines
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
         public Dictionary<string, int> Timings { get; set; } = new Dictionary<string, int>();
-        public List<Schedule> Schedules { get; set; } = new List<Schedule>();
         public LabConfiguration() {
 
             // Defaults
@@ -97,14 +96,6 @@ namespace FFRK_LabMem.Machines
                 return Name;
             }
         }
-
-        public class Schedule
-        {
-            public string Name { get; set; }
-            public bool Enable { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime EndDate { get; set; } = DateTime.MaxValue;
-            public String CronTab { get; set; }
-        }
+        
     }
 }

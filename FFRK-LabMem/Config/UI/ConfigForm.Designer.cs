@@ -30,10 +30,14 @@ namespace FFRK_LabMem.Config.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Schedule", 4);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.listCategory = new System.Windows.Forms.ListBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.buttonCheckForUpdates = new System.Windows.Forms.Button();
@@ -117,6 +121,17 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.tabPage11 = new System.Windows.Forms.TabPage();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listViewSchedule = new System.Windows.Forms.ListView();
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.buttonScheduleAdd = new System.Windows.Forms.Button();
+            this.buttonScheduleDelete = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -136,6 +151,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage10.SuspendLayout();
             this.tabPage9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabPage11.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -160,23 +176,6 @@ namespace FFRK_LabMem.Config.UI
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
-            // listCategory
-            // 
-            this.listCategory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listCategory.FormattingEnabled = true;
-            this.listCategory.ItemHeight = 20;
-            this.listCategory.Items.AddRange(new object[] {
-            "General",
-            "Proxy",
-            "Adb",
-            "Lab"});
-            this.listCategory.Location = new System.Drawing.Point(15, 12);
-            this.listCategory.Name = "listCategory";
-            this.listCategory.Size = new System.Drawing.Size(120, 362);
-            this.listCategory.TabIndex = 0;
-            this.listCategory.SelectedIndexChanged += new System.EventHandler(this.ListCategory_SelectedIndexChanged);
-            // 
             // tabControl
             // 
             this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -185,6 +184,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl.Controls.Add(this.tabPage2);
             this.tabControl.Controls.Add(this.tabPage3);
             this.tabControl.Controls.Add(this.tabPage4);
+            this.tabControl.Controls.Add(this.tabPage11);
             this.tabControl.Location = new System.Drawing.Point(141, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -1141,6 +1141,118 @@ namespace FFRK_LabMem.Config.UI
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyDocuments;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader6});
+            this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listView1.HideSelection = false;
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
+            this.listView1.LabelWrap = false;
+            this.listView1.LargeImageList = this.imageList1;
+            this.listView1.Location = new System.Drawing.Point(13, 12);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Scrollable = false;
+            this.listView1.ShowGroups = false;
+            this.listView1.Size = new System.Drawing.Size(120, 360);
+            this.listView1.SmallImageList = this.imageList1;
+            this.listView1.TabIndex = 19;
+            this.listView1.TileSize = new System.Drawing.Size(120, 32);
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "setting_general.png");
+            this.imageList1.Images.SetKeyName(1, "setting_proxy.png");
+            this.imageList1.Images.SetKeyName(2, "setting_adb.png");
+            this.imageList1.Images.SetKeyName(3, "setting_lab.png");
+            this.imageList1.Images.SetKeyName(4, "setting_schedule.png");
+            // 
+            // tabPage11
+            // 
+            this.tabPage11.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage11.Controls.Add(this.buttonScheduleAdd);
+            this.tabPage11.Controls.Add(this.buttonScheduleDelete);
+            this.tabPage11.Controls.Add(this.listViewSchedule);
+            this.tabPage11.Location = new System.Drawing.Point(4, 22);
+            this.tabPage11.Name = "tabPage11";
+            this.tabPage11.Size = new System.Drawing.Size(449, 337);
+            this.tabPage11.TabIndex = 4;
+            this.tabPage11.Text = "Schedule";
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Category";
+            this.columnHeader6.Width = 115;
+            // 
+            // listViewSchedule
+            // 
+            this.listViewSchedule.CheckBoxes = true;
+            this.listViewSchedule.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8,
+            this.columnHeader9,
+            this.columnHeader10});
+            this.listViewSchedule.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewSchedule.FullRowSelect = true;
+            this.listViewSchedule.HideSelection = false;
+            this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
+            this.listViewSchedule.Name = "listViewSchedule";
+            this.listViewSchedule.Size = new System.Drawing.Size(443, 305);
+            this.listViewSchedule.TabIndex = 1;
+            this.listViewSchedule.UseCompatibleStateImageBehavior = false;
+            this.listViewSchedule.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Name";
+            this.columnHeader7.Width = 76;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Start";
+            this.columnHeader8.Width = 100;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Stop";
+            this.columnHeader9.Width = 100;
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "Repeat";
+            this.columnHeader10.Width = 142;
+            // 
+            // buttonScheduleAdd
+            // 
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(3, 311);
+            this.buttonScheduleAdd.Name = "buttonScheduleAdd";
+            this.buttonScheduleAdd.Size = new System.Drawing.Size(75, 23);
+            this.buttonScheduleAdd.TabIndex = 3;
+            this.buttonScheduleAdd.Text = "Add";
+            this.buttonScheduleAdd.UseVisualStyleBackColor = true;
+            // 
+            // buttonScheduleDelete
+            // 
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(84, 311);
+            this.buttonScheduleDelete.Name = "buttonScheduleDelete";
+            this.buttonScheduleDelete.Size = new System.Drawing.Size(75, 23);
+            this.buttonScheduleDelete.TabIndex = 4;
+            this.buttonScheduleDelete.Text = "Delete";
+            this.buttonScheduleDelete.UseVisualStyleBackColor = true;
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1148,8 +1260,8 @@ namespace FFRK_LabMem.Config.UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(610, 416);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.listCategory);
             this.Controls.Add(this.lblRestart);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
@@ -1188,6 +1300,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage10.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabPage11.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1197,7 +1310,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonCancel;
         internal System.Windows.Forms.Label lblRestart;
-        internal System.Windows.Forms.ListBox listCategory;
         internal System.Windows.Forms.TabControl tabControl;
         internal System.Windows.Forms.TabPage tabPage1;
         internal System.Windows.Forms.TabPage tabPage2;
@@ -1280,5 +1392,16 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxLabBlockListOverride;
         private System.Windows.Forms.Button buttonLabConfigurations;
         private System.Windows.Forms.CheckBox checkBoxLabAutoStart;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.TabPage tabPage11;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.Button buttonScheduleAdd;
+        private System.Windows.Forms.Button buttonScheduleDelete;
+        private System.Windows.Forms.ListView listViewSchedule;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }

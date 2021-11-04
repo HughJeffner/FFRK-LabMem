@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
+using FFRK_LabMem.Services;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -16,6 +17,7 @@ namespace FFRK_LabMem.Config.UI
         public ConfigHelper configHelper = null;
         public LabController controller = null;
         public LabConfiguration labConfig = new LabConfiguration();
+        protected Scheduler scheduler = null;
         private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
 
@@ -24,37 +26,42 @@ namespace FFRK_LabMem.Config.UI
             InitializeComponent();
         }
 
-        public static void CreateAndShow(ConfigHelper configHelper, LabController controller)
+        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller)
         {
 
             bool initalState = controller.Enabled;
+            var defaultScheduler = Scheduler.Default(controller);
 
             // Disable Lab
             if (controller.Enabled) controller.Disable();
+            await defaultScheduler.Stop();
 
             // Show form
             Application.EnableVisualStyles();
             var form = new ConfigForm
             {
                 configHelper = configHelper,
-                controller = controller
+                controller = controller,
+                scheduler = defaultScheduler
             };
             form.ShowDialog();
 
             // Re-enable if needed
             if (initalState) controller.Enable();
+            await defaultScheduler.Start();
 
         }
-
-        private void ListCategory_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            tabControl.SelectedIndex = listCategory.SelectedIndex;
+            if (listView1.SelectedItems.Count == 0) return;
+            tabControl.SelectedIndex = listView1.SelectedItems[0].Index;
         }
 
         private void ConfigForm_Load(object sender, EventArgs e)
         {
             // Tab fakery
-            listCategory.SelectedIndex = 0;
+            listView1.Items[0].Selected = true;
+            listView1.Items[0].Focused = true;
             tabControl.Top -= tabControl.ItemSize.Height;
             tabControl.Height += tabControl.ItemSize.Height;
             tabControl.Region = new Region(new RectangleF(tabPage1.Left, tabPage1.Top, tabPage1.Width, tabPage1.Height + tabControl.ItemSize.Height-20));
@@ -80,6 +87,18 @@ namespace FFRK_LabMem.Config.UI
             // Load lab .json
             LoadConfigs();
 
+            // Schedules
+            foreach(var schedule in scheduler.Schedules)
+            {
+                var newItem = new ListViewItem(schedule.Name);
+                newItem.Checked = schedule.Enabled;
+                newItem.SubItems.Add(schedule.StartDate.ToString());
+                newItem.SubItems.Add(schedule.EndDate.ToString());
+                newItem.SubItems.Add(schedule.CronTab);
+                newItem.Tag = schedule;
+                listViewSchedule.Items.Add(newItem);
+            }
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
@@ -101,7 +120,7 @@ namespace FFRK_LabMem.Config.UI
             if (comboBoxLab.SelectedItem == null) comboBoxLab.SelectedIndex = 0;
         }
 
-        private void ButtonOk_Click(object sender, EventArgs e)
+        private async void ButtonOk_Click(object sender, EventArgs e)
         {
             ColorConsole.Write("Saving configuration... ");
 
@@ -172,8 +191,18 @@ namespace FFRK_LabMem.Config.UI
                 labConfig.Timings.Add(item.Cells[0].Value.ToString(), int.Parse(item.Cells[1].Value.ToString()));
             }
 
-            // Save to .json
+            // Save Lab to .json
             File.WriteAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path, JsonConvert.SerializeObject(labConfig,Formatting.Indented));
+
+            // Save Schedule
+            scheduler.Schedules.Clear();
+            foreach (ListViewItem item in listViewSchedule.Items)
+            {
+                var schedule = (Scheduler.Schedule)item.Tag;
+                schedule.Enabled = item.Checked;
+                scheduler.Schedules.Add(schedule);
+            }
+            await scheduler.Save();
 
             // Update machine
             controller.Machine.Config = labConfig;
@@ -559,5 +588,6 @@ namespace FFRK_LabMem.Config.UI
                 }
             }
         }
+        
     }
 }
