@@ -26,7 +26,7 @@ namespace FFRK_LabMem.Machines
             } else
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabling due to schedule: {0}", context.Trigger.Description);
-                controller.Disable();
+                controller.Machine.DisableSafe();
             }
             return Task.CompletedTask;
         }

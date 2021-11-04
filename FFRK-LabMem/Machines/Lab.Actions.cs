@@ -67,6 +67,8 @@ namespace FFRK_LabMem.Machines
 
         private async Task SelectPainting()
         {
+            // Check if safe disable requested
+            if (await CheckDisableSafeRequested()) return;
 
             // Logic to determine painting
             CancellationToken.ThrowIfCancellationRequested();
@@ -446,6 +448,9 @@ namespace FFRK_LabMem.Machines
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
             fatigueAutoResetEvent.Reset();
+
+            // Check if safe disable requested
+            if (await CheckDisableSafeRequested()) return;
 
             //Tappy taps
             await Task.Delay(Config.Timings["Post-Battle"], this.CancellationToken);

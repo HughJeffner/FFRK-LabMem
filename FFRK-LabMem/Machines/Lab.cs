@@ -65,6 +65,7 @@ namespace FFRK_LabMem.Machines
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
+        private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
@@ -420,6 +421,11 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        public void DisableSafe()
+        {
+            disableSafeRequested = true;
+        }
+
         public override async Task Disable()
         {
             // Stop timers
@@ -439,6 +445,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
+            disableSafeRequested = false;
             
             // Base
             await base.Disable();
@@ -558,6 +565,16 @@ namespace FFRK_LabMem.Machines
 
             } catch (OperationCanceledException){};
             return false;
+        }
+
+        private Task<bool> CheckDisableSafeRequested()
+        {
+            if (disableSafeRequested)
+            {
+                OnMachineFinished();
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
         }
 
         public async Task ManualCrashRecovery()
