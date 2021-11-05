@@ -118,20 +118,19 @@ namespace FFRK_LabMem.Config.UI
             this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
-            this.lblRestart = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabPage11 = new System.Windows.Forms.TabPage();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.buttonScheduleAdd = new System.Windows.Forms.Button();
+            this.buttonScheduleDelete = new System.Windows.Forms.Button();
             this.listViewSchedule = new System.Windows.Forms.ListView();
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.buttonScheduleAdd = new System.Windows.Forms.Button();
-            this.buttonScheduleDelete = new System.Windows.Forms.Button();
+            this.lblRestart = new System.Windows.Forms.Label();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -1121,6 +1120,70 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxLab.TabIndex = 0;
             this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLab_SelectedIndexChanged);
             // 
+            // tabPage11
+            // 
+            this.tabPage11.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage11.Controls.Add(this.buttonScheduleAdd);
+            this.tabPage11.Controls.Add(this.buttonScheduleDelete);
+            this.tabPage11.Controls.Add(this.listViewSchedule);
+            this.tabPage11.Location = new System.Drawing.Point(4, 22);
+            this.tabPage11.Name = "tabPage11";
+            this.tabPage11.Size = new System.Drawing.Size(449, 337);
+            this.tabPage11.TabIndex = 4;
+            this.tabPage11.Text = "Schedule";
+            // 
+            // buttonScheduleAdd
+            // 
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(3, 311);
+            this.buttonScheduleAdd.Name = "buttonScheduleAdd";
+            this.buttonScheduleAdd.Size = new System.Drawing.Size(75, 23);
+            this.buttonScheduleAdd.TabIndex = 3;
+            this.buttonScheduleAdd.Text = "Add";
+            this.buttonScheduleAdd.UseVisualStyleBackColor = true;
+            this.buttonScheduleAdd.Click += new System.EventHandler(this.buttonScheduleAdd_Click);
+            // 
+            // buttonScheduleDelete
+            // 
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(84, 311);
+            this.buttonScheduleDelete.Name = "buttonScheduleDelete";
+            this.buttonScheduleDelete.Size = new System.Drawing.Size(75, 23);
+            this.buttonScheduleDelete.TabIndex = 4;
+            this.buttonScheduleDelete.Text = "Delete";
+            this.buttonScheduleDelete.UseVisualStyleBackColor = true;
+            this.buttonScheduleDelete.Click += new System.EventHandler(this.buttonScheduleDelete_Click);
+            // 
+            // listViewSchedule
+            // 
+            this.listViewSchedule.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8,
+            this.columnHeader9});
+            this.listViewSchedule.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewSchedule.FullRowSelect = true;
+            this.listViewSchedule.HideSelection = false;
+            this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
+            this.listViewSchedule.Name = "listViewSchedule";
+            this.listViewSchedule.Size = new System.Drawing.Size(443, 305);
+            this.listViewSchedule.TabIndex = 1;
+            this.listViewSchedule.UseCompatibleStateImageBehavior = false;
+            this.listViewSchedule.View = System.Windows.Forms.View.Details;
+            this.listViewSchedule.DoubleClick += new System.EventHandler(this.listViewSchedule_DoubleClick);
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Name";
+            this.columnHeader7.Width = 140;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Start";
+            this.columnHeader8.Width = 130;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Stop";
+            this.columnHeader9.Width = 130;
+            // 
             // lblRestart
             // 
             this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1170,88 +1233,20 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "setting_general.png");
-            this.imageList1.Images.SetKeyName(1, "setting_proxy.png");
-            this.imageList1.Images.SetKeyName(2, "setting_adb.png");
-            this.imageList1.Images.SetKeyName(3, "setting_lab.png");
-            this.imageList1.Images.SetKeyName(4, "setting_schedule.png");
-            // 
-            // tabPage11
-            // 
-            this.tabPage11.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage11.Controls.Add(this.buttonScheduleAdd);
-            this.tabPage11.Controls.Add(this.buttonScheduleDelete);
-            this.tabPage11.Controls.Add(this.listViewSchedule);
-            this.tabPage11.Location = new System.Drawing.Point(4, 22);
-            this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Size = new System.Drawing.Size(449, 337);
-            this.tabPage11.TabIndex = 4;
-            this.tabPage11.Text = "Schedule";
-            // 
             // columnHeader6
             // 
             this.columnHeader6.Text = "Category";
             this.columnHeader6.Width = 115;
             // 
-            // listViewSchedule
+            // imageList1
             // 
-            this.listViewSchedule.CheckBoxes = true;
-            this.listViewSchedule.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader7,
-            this.columnHeader8,
-            this.columnHeader9,
-            this.columnHeader10});
-            this.listViewSchedule.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listViewSchedule.FullRowSelect = true;
-            this.listViewSchedule.HideSelection = false;
-            this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
-            this.listViewSchedule.Name = "listViewSchedule";
-            this.listViewSchedule.Size = new System.Drawing.Size(443, 305);
-            this.listViewSchedule.TabIndex = 1;
-            this.listViewSchedule.UseCompatibleStateImageBehavior = false;
-            this.listViewSchedule.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Name";
-            this.columnHeader7.Width = 76;
-            // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "Start";
-            this.columnHeader8.Width = 100;
-            // 
-            // columnHeader9
-            // 
-            this.columnHeader9.Text = "Stop";
-            this.columnHeader9.Width = 100;
-            // 
-            // columnHeader10
-            // 
-            this.columnHeader10.Text = "Repeat";
-            this.columnHeader10.Width = 142;
-            // 
-            // buttonScheduleAdd
-            // 
-            this.buttonScheduleAdd.Location = new System.Drawing.Point(3, 311);
-            this.buttonScheduleAdd.Name = "buttonScheduleAdd";
-            this.buttonScheduleAdd.Size = new System.Drawing.Size(75, 23);
-            this.buttonScheduleAdd.TabIndex = 3;
-            this.buttonScheduleAdd.Text = "Add";
-            this.buttonScheduleAdd.UseVisualStyleBackColor = true;
-            // 
-            // buttonScheduleDelete
-            // 
-            this.buttonScheduleDelete.Location = new System.Drawing.Point(84, 311);
-            this.buttonScheduleDelete.Name = "buttonScheduleDelete";
-            this.buttonScheduleDelete.Size = new System.Drawing.Size(75, 23);
-            this.buttonScheduleDelete.TabIndex = 4;
-            this.buttonScheduleDelete.Text = "Delete";
-            this.buttonScheduleDelete.UseVisualStyleBackColor = true;
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "icons8-settings-32.png");
+            this.imageList1.Images.SetKeyName(1, "icons8-globe-network-32.png");
+            this.imageList1.Images.SetKeyName(2, "icons8-android-os-32.png");
+            this.imageList1.Images.SetKeyName(3, "icons8-test-tube-32.png");
+            this.imageList1.Images.SetKeyName(4, "icons8-clock-32.png");
             // 
             // ConfigForm
             // 
@@ -1402,6 +1397,5 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
-        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }

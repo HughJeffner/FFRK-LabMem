@@ -12,7 +12,7 @@ namespace FFRK_LabMem.Machines
     {
         public Task Execute(IJobExecutionContext context)
         {
-            JobDataMap dataMap = context.JobDetail.JobDataMap;
+            JobDataMap dataMap = context.MergedJobDataMap;
             var enabled = dataMap.GetBoolean("enabled");
             var controller = (LabController)dataMap["controller"];
 

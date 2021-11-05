@@ -40,6 +40,9 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Title Screen");
             }
+
+            // Scheduler
+            await Services.Scheduler.Default(ret).Start();
             
             return ret;
         }

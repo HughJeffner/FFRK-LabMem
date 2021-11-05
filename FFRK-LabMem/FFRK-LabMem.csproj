@@ -92,6 +92,12 @@
     <Compile Include="Config\UI\ConfigListForm.Designer.cs">
       <DependentUpon>ConfigListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config\UI\ConfigScheduleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\UI\ConfigScheduleForm.Designer.cs">
+      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\UI\Lookups.cs" />
     <Compile Include="Config\UI\Sorters.cs" />
     <Compile Include="Data\DataLogger.cs" />
@@ -181,6 +187,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Config\UI\ConfigListForm.resx">
       <DependentUpon>ConfigListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\UI\ConfigScheduleForm.resx">
+      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

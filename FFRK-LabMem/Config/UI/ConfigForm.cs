@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
+using Quartz;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -90,13 +91,7 @@ namespace FFRK_LabMem.Config.UI
             // Schedules
             foreach(var schedule in scheduler.Schedules)
             {
-                var newItem = new ListViewItem(schedule.Name);
-                newItem.Checked = schedule.Enabled;
-                newItem.SubItems.Add(schedule.StartDate.ToString());
-                newItem.SubItems.Add(schedule.EndDate.ToString());
-                newItem.SubItems.Add(schedule.CronTab);
-                newItem.Tag = schedule;
-                listViewSchedule.Items.Add(newItem);
+                AddScheduleListViewItem(schedule);
             }
 
             // List sorting
@@ -199,7 +194,6 @@ namespace FFRK_LabMem.Config.UI
             foreach (ListViewItem item in listViewSchedule.Items)
             {
                 var schedule = (Scheduler.Schedule)item.Tag;
-                schedule.Enabled = item.Checked;
                 scheduler.Schedules.Add(schedule);
             }
             await scheduler.Save();
@@ -588,6 +582,71 @@ namespace FFRK_LabMem.Config.UI
                 }
             }
         }
-        
+
+        private void buttonScheduleAdd_Click(object sender, EventArgs e)
+        {
+            var item = ConfigScheduleForm.EditSchedule(null);
+            if (item!=null) AddScheduleListViewItem(item);
+        }
+
+        private void listViewSchedule_DoubleClick(object sender, EventArgs e)
+        {
+            var item = listViewSchedule.SelectedItems[0];
+            if (item == null) return;
+            var newItem = ConfigScheduleForm.EditSchedule((Scheduler.Schedule)item.Tag);
+            if (newItem != null)
+            {
+                listViewSchedule.Items.Remove(item);
+                AddScheduleListViewItem(newItem);
+            }
+        }
+
+        private void buttonScheduleDelete_Click(object sender, EventArgs e)
+        {
+            var item = listViewSchedule.SelectedItems[0];
+            if (item == null) return;
+            var result = MessageBox.Show(this, "Are you sure?", "Remove Schedule", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                listViewSchedule.Items.Remove(item);
+            }
+        }
+
+        private void AddScheduleListViewItem(Scheduler.Schedule schedule)
+        {
+            var newItem = new ListViewItem(schedule.Name);
+            if (schedule.EnableEnabled)
+            {
+                if (String.IsNullOrEmpty(schedule.EnableCronTab))
+                {
+                    newItem.SubItems.Add(schedule.EnableDate.ToString());
+                } else
+                {
+                    newItem.SubItems.Add(schedule.EnableDate.ToString("hh:mm tt"));
+                }
+            } else
+            {
+                newItem.SubItems.Add("-");
+            }
+            if (schedule.DisableEnabled)
+            {
+                if (String.IsNullOrEmpty(schedule.DisableCronTab))
+                {
+                    newItem.SubItems.Add(schedule.DisableDate.ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add(schedule.DisableDate.ToString("hh:mm tt"));
+                }
+            }
+            else
+            {
+                newItem.SubItems.Add("-");
+            }
+            newItem.SubItems.Add(schedule.EnableCronTab);
+            newItem.Tag = schedule;
+            listViewSchedule.Items.Add(newItem);
+        }
+
     }
 }

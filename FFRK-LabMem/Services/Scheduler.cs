@@ -1,4 +1,5 @@
 ﻿using FFRK_LabMem.Machines;
+using FFRK_Machines;
 using Newtonsoft.Json;
 using Quartz;
 using Quartz.Impl;
@@ -19,8 +20,7 @@ namespace FFRK_LabMem.Services
 
         StdSchedulerFactory factory = new StdSchedulerFactory();
         IScheduler scheduler;
-        IJobDetail enableJob;
-        IJobDetail disableJob;
+        IJobDetail job;
 
         public List<Schedule> Schedules { get; set; }
 
@@ -41,19 +41,12 @@ namespace FFRK_LabMem.Services
             scheduler = await factory.GetScheduler();
 
             // define the jobs
-            enableJob = JobBuilder.Create<LabStateJob>()
+            job = JobBuilder.Create<LabStateJob>()
                 .WithIdentity("enableJob", "group1")
                 .WithDescription("Enables the bot")
-                .UsingJobData("enabled", true)
+                .StoreDurably(true)
                 .Build();
-            enableJob.JobDataMap.Put("controller", controller);
-
-            disableJob = JobBuilder.Create<LabStateJob>()
-                .WithIdentity("disableJob", "group1")
-                .WithDescription("Disables the bot")
-                .UsingJobData("enabled", false)
-                .Build();
-            disableJob.JobDataMap.Put("controller", controller);
+            job.JobDataMap.Put("controller", controller);
 
             // Load from disk
             await Load();
@@ -63,36 +56,69 @@ namespace FFRK_LabMem.Services
         public async Task Start()
         {
 
+            await scheduler.AddJob(job, true);
+
             foreach(var schedule in Schedules)
             {
 
-                if (!schedule.Enabled) continue;
+               if (schedule.EnableEnabled)
+               {
+                    // Build the trigger
+                    var builder = TriggerBuilder.Create()
+                        .WithIdentity(schedule.Name + "_enable")
+                        .ForJob(job)
+                        .UsingJobData("enabled", true)
+                        .UsingJobData("hardstart", schedule.EnableHardStart)
+                        .WithDescription(schedule.Name);
 
-                // Build the trigger
-                var builder = TriggerBuilder.Create()
-                    .WithDescription(schedule.Name)
-                    .StartAt(schedule.StartDate);
+                    if (schedule.EnableDate >= DateTime.Now) builder.StartAt(schedule.EnableDate);
 
-                // Optional end time
-                if (schedule.EndDate != DateTime.MaxValue) builder.EndAt(schedule.EndDate);
+                    // Repeat
+                    if (!String.IsNullOrEmpty(schedule.EnableCronTab))
+                    {
+                        builder.WithCronSchedule(schedule.EnableCronTab);
+                    }
 
-                // Crontab or simple schedule
-                if (!String.IsNullOrEmpty(schedule.CronTab))
-                {
-                    builder.WithCronSchedule(schedule.CronTab);
-                } else
-                {
-                    builder.WithSimpleSchedule(x => x
-                        .WithIntervalInHours(24)
-                        .RepeatForever()
-                    );
+                    // Schedule the job
+                    await scheduler.ScheduleJob(builder.Build());
                 }
 
-                // Schedule the job
-                await scheduler.ScheduleJob((schedule.Enabled)?enableJob:disableJob, builder.Build());
+                if (schedule.DisableEnabled)
+                {
+                    // Build the trigger
+                    var builder = TriggerBuilder.Create()
+                        .WithIdentity(schedule.Name + "_disable")
+                        .ForJob(job)
+                        .UsingJobData("enabled", false)
+                        .UsingJobData("closeapp", schedule.DisableCloseApp)
+                        .WithDescription(schedule.Name);
+
+                    if (schedule.DisableDate >= DateTime.Now) builder.StartAt(schedule.DisableDate);
+
+                    // Repeat
+                    if (!String.IsNullOrEmpty(schedule.DisableCronTab))
+                    {
+                        builder.WithCronSchedule(schedule.DisableCronTab);
+                    }
+
+                    // Schedule the job
+                    await scheduler.ScheduleJob(builder.Build());
+                }
+
             }
-           
+
+            // Start the service
             await scheduler.Start();
+            if (Schedules.Count > 0)
+            {
+                var triggs = await scheduler.GetTriggersOfJob(job.Key);
+                var next = triggs.Min(t => t.GetNextFireTimeUtc());
+                if (next.HasValue)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Scheduler started, {0} schedule(s) registered, next: {1}", Schedules.Count, next.Value.ToLocalTime());
+                }
+                
+            }
         }
 
         public async Task Stop()
@@ -122,10 +148,14 @@ namespace FFRK_LabMem.Services
         public class Schedule
         {
             public string Name { get; set; }
-            public bool Enabled { get; set; }
-            public DateTime StartDate { get; set; }
-            public DateTime EndDate { get; set; } = DateTime.MaxValue;
-            public String CronTab { get; set; }
+            public bool EnableEnabled { get; set; }
+            public DateTime EnableDate { get; set; }
+            public String EnableCronTab { get; set; }
+            public Boolean EnableHardStart { get; set; }
+            public bool DisableEnabled { get; set; }
+            public DateTime DisableDate { get; set; }
+            public String DisableCronTab { get; set; }
+            public Boolean DisableCloseApp { get; set; }
         }
 
     }
