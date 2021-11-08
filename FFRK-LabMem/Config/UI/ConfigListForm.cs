@@ -107,5 +107,29 @@ namespace FFRK_LabMem.Config.UI
                 
             }
         }
+
+        private void ButtonDupe_Click(object sender, EventArgs e)
+        {
+
+            var target = (ConfigFile)listBoxConfigs.SelectedItem;
+            var input = Interaction.InputBox("Enter new name", "Duplicate Configuration", target.Name + " Copy");
+            if (!String.IsNullOrEmpty(input))
+            {
+                var file = ConfigFile.FromName(input);
+                try
+                {
+                    File.Copy(target.Path, file.Path);
+                    listBoxConfigs.Items.Add(file);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.Message, "Error duplicating configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+
+
+        }
+
     }
 }
