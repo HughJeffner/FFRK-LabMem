@@ -115,7 +115,7 @@ namespace FFRK_LabMem.Services
                 var next = triggs.Min(t => t.GetNextFireTimeUtc());
                 if (next.HasValue)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Scheduler started, {0} schedule(s) registered, next: {1}", Schedules.Count, next.Value.ToLocalTime());
+                    ColorConsole.WriteLine(ConsoleColor.DarkGreen, "{0} Schedule(s) loaded, next: {1}", Schedules.Count, next.Value.ToLocalTime());
                 }
                 
             }

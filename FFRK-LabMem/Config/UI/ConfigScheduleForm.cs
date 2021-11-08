@@ -25,6 +25,8 @@ namespace FFRK_LabMem.Config.UI
             {
                 schedule = new Scheduler.Schedule();
                 schedule.Name = "New Schedule";
+                schedule.EnableDate = DateTime.Now;
+                schedule.DisableDate = DateTime.Now;
             }
 
             // Show form
@@ -52,14 +54,14 @@ namespace FFRK_LabMem.Config.UI
             textBoxName.Text = schedule.Name;
             dateTimePickerEnable.Value = schedule.EnableDate;
             dateTimePickerEnable.Checked = schedule.EnableEnabled;
-            comboBoxEnableRepeat.SelectedIndex = GetRepeatTypeFromCron(schedule.EnableCronTab);
-            SetCheckBoxesInPanelForCron(flowLayoutPanelEnable, schedule.EnableCronTab);
+            comboBoxEnableRepeat.SelectedIndex = GetRepeatType(schedule.EnableCronTab);
+            SetCheckBoxes(flowLayoutPanelEnable, schedule.EnableCronTab);
             checkBoxHardStart.Checked = schedule.EnableHardStart;
 
             dateTimePickerDisable.Value = schedule.DisableDate;
             dateTimePickerDisable.Checked = schedule.DisableEnabled;
-            comboBoxDisableRepeat.SelectedIndex = GetRepeatTypeFromCron(schedule.DisableCronTab);
-            SetCheckBoxesInPanelForCron(flowLayoutPanelDisable, schedule.DisableCronTab);
+            comboBoxDisableRepeat.SelectedIndex = GetRepeatType(schedule.DisableCronTab);
+            SetCheckBoxes(flowLayoutPanelDisable, schedule.DisableCronTab);
             checkBoxHardStop.Checked = schedule.DisableCloseApp;
         }
 
@@ -74,7 +76,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxHardStop.Enabled = dateTimePickerDisable.Checked;
         }
 
-        private void SetCheckBoxesInPanelForCron(Panel panel, string cron)
+        private void SetCheckBoxes(Panel panel, string cron)
         {
             String[] days = new string[7];
             if (!String.IsNullOrEmpty(cron))
@@ -88,7 +90,7 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private int GetRepeatTypeFromCron(string cron)
+        private int GetRepeatType(string cron)
         {
             if (!String.IsNullOrEmpty(cron))
             {
@@ -100,22 +102,22 @@ namespace FFRK_LabMem.Config.UI
             }
         }
 
-        private string GetCronForRepeatTypeAndPanel(int repeatType, Panel panel)
+        private string GetCron(int repeatType, Panel panel, DateTime date)
         {
             CronScheduleBuilder builderEnable = null;
             if (repeatType == 1)
             {
-                builderEnable = CronScheduleBuilder.DailyAtHourAndMinute(dateTimePickerEnable.Value.Hour, dateTimePickerEnable.Value.Minute);
+                builderEnable = CronScheduleBuilder.DailyAtHourAndMinute(date.Hour, date.Minute);
             }
             else if (repeatType == 2)
             {
-                builderEnable = CronScheduleBuilder.AtHourAndMinuteOnGivenDaysOfWeek(dateTimePickerEnable.Value.Hour, dateTimePickerEnable.Value.Minute, GetDaysForPanel(flowLayoutPanelEnable));
+                builderEnable = CronScheduleBuilder.AtHourAndMinuteOnGivenDaysOfWeek(date.Hour, date.Minute, GetDays(panel));
             }
             if (builderEnable != null) return ((CronTriggerImpl)builderEnable.Build()).CronExpressionString;
             return "";
         }
 
-        private DayOfWeek[] GetDaysForPanel(Panel panel)
+        private DayOfWeek[] GetDays(Panel panel)
         {
             var ret = new List<DayOfWeek>();
             foreach (CheckBox item in panel.Controls)
@@ -135,14 +137,14 @@ namespace FFRK_LabMem.Config.UI
             schedule.Name = textBoxName.Text;
 
             schedule.EnableEnabled = dateTimePickerEnable.Checked;
-            schedule.EnableDate = dateTimePickerEnable.Value;
+            schedule.EnableDate = dateTimePickerEnable.Value.AddSeconds(-dateTimePickerEnable.Value.Second);
             schedule.EnableHardStart = checkBoxHardStart.Checked;
-            schedule.EnableCronTab = GetCronForRepeatTypeAndPanel(comboBoxEnableRepeat.SelectedIndex, flowLayoutPanelEnable);
+            schedule.EnableCronTab = GetCron(comboBoxEnableRepeat.SelectedIndex, flowLayoutPanelEnable, dateTimePickerEnable.Value);
 
             schedule.DisableEnabled = dateTimePickerDisable.Checked;
-            schedule.DisableDate = dateTimePickerDisable.Value;
+            schedule.DisableDate = dateTimePickerDisable.Value.AddSeconds(-dateTimePickerDisable.Value.Second);
             schedule.DisableCloseApp = checkBoxHardStop.Checked;
-            schedule.DisableCronTab = GetCronForRepeatTypeAndPanel(comboBoxDisableRepeat.SelectedIndex, flowLayoutPanelDisable);
+            schedule.DisableCronTab = GetCron(comboBoxDisableRepeat.SelectedIndex, flowLayoutPanelDisable, dateTimePickerDisable.Value);
 
         }
     }
