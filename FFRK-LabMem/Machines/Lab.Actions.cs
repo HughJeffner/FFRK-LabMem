@@ -717,10 +717,10 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task RecoverCrash()
+        private async Task RestartFFRK()
         {
 
-            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash detected, attempting recovery!");
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting FFRK");
 
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
@@ -811,13 +811,13 @@ namespace FFRK_LabMem.Machines
                 // Disable lab if timeout
                 if (recoverStopwatch.Elapsed > TimeSpan.FromSeconds(loopTimeout))
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery timed out");
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
                     OnMachineFinished();
                     await Notify();
                 }
                 else
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery completed!");
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
                     if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
                 }
 

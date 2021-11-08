@@ -207,7 +207,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.PickedCombatant);
 
             this.StateMachine.Configure(State.Crashed)
-                .OnEntryAsync(async (t) => await RecoverCrash())
+                .OnEntryAsync(async (t) => await RestartFFRK())
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
@@ -577,11 +577,11 @@ namespace FFRK_LabMem.Machines
             return Task.FromResult(false);
         }
 
-        public async Task ManualCrashRecovery()
+        public async Task ManualFFRKRestart(bool showMessage = true)
         {
-            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated crash recovery");
+            if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
             watchdogTimer.Stop();
-            await RecoverCrash();
+            await RestartFFRK();
         }
 
     }

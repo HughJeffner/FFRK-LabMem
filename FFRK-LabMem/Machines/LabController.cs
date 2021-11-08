@@ -70,7 +70,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public void ManualCrashRecovery()
+        public void ManualFFRKRestart()
         {
 
             if (Enabled)
@@ -80,7 +80,7 @@ namespace FFRK_LabMem.Machines
 
                 Task.Run(async () =>
                 {
-                    await this.Machine.ManualCrashRecovery();
+                    await this.Machine.ManualFFRKRestart();
                 });
             }
 

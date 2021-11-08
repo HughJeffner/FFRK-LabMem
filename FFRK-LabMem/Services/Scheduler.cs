@@ -61,17 +61,18 @@ namespace FFRK_LabMem.Services
             foreach(var schedule in Schedules)
             {
 
-               if (schedule.EnableEnabled)
-               {
+                // Only if in the future or schedule present
+                if (schedule.EnableEnabled && (schedule.EnableDate > DateTime.Now || !String.IsNullOrEmpty(schedule.EnableCronTab)))
+                {
+
                     // Build the trigger
                     var builder = TriggerBuilder.Create()
                         .WithIdentity(schedule.Name + "_enable")
                         .ForJob(job)
+                        .StartAt(schedule.EnableDate)
                         .UsingJobData("enabled", true)
                         .UsingJobData("hardstart", schedule.EnableHardStart)
                         .WithDescription(schedule.Name);
-
-                    if (schedule.EnableDate >= DateTime.Now) builder.StartAt(schedule.EnableDate);
 
                     // Repeat
                     if (!String.IsNullOrEmpty(schedule.EnableCronTab))
@@ -83,17 +84,16 @@ namespace FFRK_LabMem.Services
                     await scheduler.ScheduleJob(builder.Build());
                 }
 
-                if (schedule.DisableEnabled)
+                if (schedule.DisableEnabled && (schedule.DisableDate > DateTime.Now || !String.IsNullOrEmpty(schedule.DisableCronTab)))
                 {
                     // Build the trigger
                     var builder = TriggerBuilder.Create()
                         .WithIdentity(schedule.Name + "_disable")
                         .ForJob(job)
+                        .StartAt(schedule.DisableDate)
                         .UsingJobData("enabled", false)
                         .UsingJobData("closeapp", schedule.DisableCloseApp)
                         .WithDescription(schedule.Name);
-
-                    if (schedule.DisableDate >= DateTime.Now) builder.StartAt(schedule.DisableDate);
 
                     // Repeat
                     if (!String.IsNullOrEmpty(schedule.DisableCronTab))
