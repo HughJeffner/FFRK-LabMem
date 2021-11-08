@@ -65,7 +65,7 @@ namespace FFRK_Machines.Machines
 
             // Machine
             ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
-            Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
+            Machine = this.CreateMachine(await MachineConfiguration.Load<C>(configFile));
             Machine.MachineFinished += Machine_MachineFinished;
             Machine.MachineError += Machine_MachineError;
             Machine.CancellationToken = this.cancelMachineSource.Token;

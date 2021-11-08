@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Machines
 {
@@ -29,7 +31,8 @@ namespace FFRK_LabMem.Machines
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
-        public Dictionary<string, int> Timings { get; set; } = new Dictionary<string, int>();
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public Dictionary<string, Timing> Timings { get; set; } = new Dictionary<string, Timing>();
         public LabConfiguration() {
 
             // Defaults
@@ -67,16 +70,16 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public Dictionary<string, int> GetDefaultTimings()
+        public Dictionary<string, Timing> GetDefaultTimings()
         {
-            Dictionary<string, int> defaults = new Dictionary<string, int>
+            Dictionary<string, Timing> defaults = new Dictionary<string, Timing>
             {
-                { "Pre-SelectPainting", 5000 },
-                { "Inter-SelectPainting", 1000 },
-                { "Pre-SelectTreasure", 5000 },
-                { "Pre-Door", 5000 },
-                { "Pre-MoveOn", 5000 },
-                { "Post-Battle", 7000 }
+                { "Pre-SelectPainting", new Timing()},
+                { "Inter-SelectPainting", new Timing(){ Delay=1000 } },
+                { "Pre-SelectTreasure", new Timing() },
+                { "Pre-Door", new Timing() },
+                { "Pre-MoveOn", new Timing() },
+                { "Post-Battle", new Timing(){ Delay=7000 } }
             };
             return defaults;
         }
@@ -94,6 +97,16 @@ namespace FFRK_LabMem.Machines
             public override string ToString()
             {
                 return Name;
+            }
+        }
+
+        public class Timing
+        {
+            public int Delay { get; set; } = 5000;
+            public int Jitter { get; set; } = 0;
+            public Task Wait(CancellationToken cancellationToken)
+            {
+                return Task.Delay(this.Delay);
             }
         }
         

@@ -122,26 +122,26 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
             }
             ColorConsole.WriteLine("");
-            await Task.Delay(Config.Timings["Pre-SelectPainting"], this.CancellationToken);
+            await Config.Timings["Pre-SelectPainting"].Wait(this.CancellationToken);
 
             // TODO: clean this painting placement handling up
             // 2 or less paintings remaining change position
             if (total >= 3)
             {
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
+                await Config.Timings["Inter-SelectPainting"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else if (total == 2)
             {
                 await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
+                await Config.Timings["Inter-SelectPainting"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
             }
             else
             {
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
-                await Task.Delay(Config.Timings["Inter-SelectPainting"], this.CancellationToken);
+                await Config.Timings["Inter-SelectPainting"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
             }
 
@@ -269,7 +269,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                await Task.Delay(Config.Timings["Pre-SelectTreasure"], this.CancellationToken);
+                await Config.Timings["Pre-SelectTreasure"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(17 + (33 * (selectedTreasureIndex)), 50, this.CancellationToken);
                 await Task.Delay(2000, this.CancellationToken);
 
@@ -329,14 +329,14 @@ namespace FFRK_LabMem.Machines
             if (this.Config.OpenDoors)
             {
                 ColorConsole.WriteLine("Opening Door...");
-                await Task.Delay(Config.Timings["Pre-Door"], this.CancellationToken);
+                await Config.Timings["Pre-Door"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(70, 74, this.CancellationToken);
                 await Task.Delay(1000, this.CancellationToken);
             }
             else
             {
                 ColorConsole.WriteLine("Leaving Door...");
-                await Task.Delay(Config.Timings["Pre-Door"], this.CancellationToken);
+                await Config.Timings["Pre-Door"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(30, 74, this.CancellationToken);
                 await Task.Delay(1000, this.CancellationToken);
             }
@@ -348,7 +348,7 @@ namespace FFRK_LabMem.Machines
 
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
-            await Task.Delay(Config.Timings["Pre-MoveOn"], this.CancellationToken);
+            await Config.Timings["Pre-MoveOn"].Wait(this.CancellationToken);
 
             var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30, this.CancellationToken);
             if (b)
@@ -453,7 +453,7 @@ namespace FFRK_LabMem.Machines
             if (await CheckDisableSafeRequested()) return;
 
             //Tappy taps
-            await Task.Delay(Config.Timings["Post-Battle"], this.CancellationToken);
+            await Config.Timings["Post-Battle"].Wait(this.CancellationToken);
             await this.Adb.TapPct(85, 85, this.CancellationToken);
             await Task.Delay(1000, this.CancellationToken);
             await this.Adb.TapPct(50, 85, this.CancellationToken);

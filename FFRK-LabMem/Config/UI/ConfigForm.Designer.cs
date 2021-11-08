@@ -115,8 +115,6 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage9 = new System.Windows.Forms.TabPage();
             this.buttonTimingDefaults = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.tabPage11 = new System.Windows.Forms.TabPage();
             this.buttonScheduleAdd = new System.Windows.Forms.Button();
@@ -131,6 +129,9 @@ namespace FFRK_LabMem.Config.UI
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.Timing = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Delay = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Jitter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -1088,24 +1089,13 @@ namespace FFRK_LabMem.Config.UI
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Timing,
-            this.Value});
+            this.Delay,
+            this.Jitter});
             this.dataGridView1.Location = new System.Drawing.Point(6, 6);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(423, 230);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
-            // 
-            // Timing
-            // 
-            this.Timing.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Timing.HeaderText = "Timing";
-            this.Timing.Name = "Timing";
-            this.Timing.ReadOnly = true;
-            // 
-            // Value
-            // 
-            this.Value.HeaderText = "Value (ms)";
-            this.Value.Name = "Value";
             // 
             // comboBoxLab
             // 
@@ -1248,6 +1238,23 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1.Images.SetKeyName(3, "icons8-test-tube-32.png");
             this.imageList1.Images.SetKeyName(4, "icons8-clock-32.png");
             // 
+            // Timing
+            // 
+            this.Timing.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Timing.HeaderText = "Timing";
+            this.Timing.Name = "Timing";
+            this.Timing.ReadOnly = true;
+            // 
+            // Delay
+            // 
+            this.Delay.HeaderText = "Delay (ms)";
+            this.Delay.Name = "Delay";
+            // 
+            // Jitter
+            // 
+            this.Jitter.HeaderText = "Jitter (ms)";
+            this.Jitter.Name = "Jitter";
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1375,8 +1382,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxLabUseLetheTears;
         private System.Windows.Forms.TabPage tabPage9;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Timing;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button buttonTimingDefaults;
         private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
         private System.Windows.Forms.Button buttonCheckForUpdates;
@@ -1397,5 +1402,8 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Timing;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Delay;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Jitter;
     }
 }

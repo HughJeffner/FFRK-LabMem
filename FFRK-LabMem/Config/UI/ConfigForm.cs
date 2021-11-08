@@ -183,11 +183,14 @@ namespace FFRK_LabMem.Config.UI
             labConfig.Timings.Clear();
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
-                labConfig.Timings.Add(item.Cells[0].Value.ToString(), int.Parse(item.Cells[1].Value.ToString()));
+                labConfig.Timings.Add(item.Cells[0].Value.ToString(), new LabConfiguration.Timing() {
+                    Delay = int.Parse(item.Cells[1].Value.ToString()),
+                    Jitter = int.Parse(item.Cells[2].Value.ToString()) 
+                });
             }
 
             // Save Lab to .json
-            File.WriteAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path, JsonConvert.SerializeObject(labConfig,Formatting.Indented));
+            await labConfig.Save(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
 
             // Save Schedule
             scheduler.Schedules.Clear();
@@ -222,9 +225,9 @@ namespace FFRK_LabMem.Config.UI
             this.Close();
         }
 
-        private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
+        private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
-            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path));
+            labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
@@ -280,9 +283,9 @@ namespace FFRK_LabMem.Config.UI
             buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
 
             dataGridView1.Rows.Clear();
-            foreach (KeyValuePair<string, int> item in labConfig.Timings)
+            foreach (KeyValuePair<string, LabConfiguration.Timing> item in labConfig.Timings)
             {
-                dataGridView1.Rows.Add(item.Key, item.Value);
+                dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
             }
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -494,9 +497,9 @@ namespace FFRK_LabMem.Config.UI
             {
                 labConfig.Timings = labConfig.GetDefaultTimings();
                 dataGridView1.Rows.Clear();
-                foreach (KeyValuePair<string, int> item in labConfig.Timings)
+                foreach (KeyValuePair<string, LabConfiguration.Timing> item in labConfig.Timings)
                 {
-                    dataGridView1.Rows.Add(item.Key, item.Value);
+                    dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
                 }
             }
         }
