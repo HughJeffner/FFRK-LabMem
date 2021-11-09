@@ -213,7 +213,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.StartBattle, State.Battle);
 
             this.StateMachine.Configure(State.Failed)
-                .OnEntryAsync(async (t) => await RecoverFailed())
+                .OnEntryAsync(async (t) => await RestartBattle())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)

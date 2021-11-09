@@ -289,7 +289,8 @@ namespace FFRK_LabMem.Config.UI
             }
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                row.Cells[0].ToolTipText = Lookups.Timings[row.Cells[0].Value.ToString()];
+                var key = row.Cells[0].Value.ToString();
+                if (Lookups.Timings.ContainsKey(key)) row.Cells[0].ToolTipText = Lookups.Timings[key];
             }
 
         }

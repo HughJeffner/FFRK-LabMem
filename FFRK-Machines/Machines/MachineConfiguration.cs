@@ -28,7 +28,7 @@ namespace FFRK_Machines.Machines
 
         protected static void HandleDeserializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
         {
-            ColorConsole.WriteLine(ConsoleColor.Red, "Error reading configuraiton: {0}", e.ErrorContext.Error);
+            ColorConsole.WriteLine(ConsoleColor.Red, "Error reading configuration: {0}", e.ErrorContext.Error.Message);
             e.ErrorContext.Handled = true;
         }
 
