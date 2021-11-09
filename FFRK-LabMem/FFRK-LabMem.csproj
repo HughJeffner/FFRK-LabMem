@@ -100,6 +100,7 @@
     </Compile>
     <Compile Include="Config\UI\Lookups.cs" />
     <Compile Include="Config\UI\Sorters.cs" />
+    <Compile Include="Data\Counters.cs" />
     <Compile Include="Data\DataLogger.cs" />
     <Compile Include="Machines\Lab.Actions.cs" />
     <Compile Include="Machines\LabConfiguration.cs" />

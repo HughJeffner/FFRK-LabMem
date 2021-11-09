@@ -54,5 +54,12 @@ namespace FFRK_LabMem.Config.UI
             {"Marilith", "High resistance, Blind" }
         };
 
+        public static Dictionary<String, String> Counters = new Dictionary<string, string>() {
+            {"LabRunsCompleted", "Lab Runs Completed"},
+            {"PaintingsSelected", "Paintings Selected"},
+            {"BattlesWon", "Battles Won"},
+            {"TreasuresOpened", "Treasures Opened"}
+        };
+
     }
 }

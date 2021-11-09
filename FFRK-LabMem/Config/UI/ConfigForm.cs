@@ -96,12 +96,53 @@ namespace FFRK_LabMem.Config.UI
                 AddScheduleListViewItem(schedule);
             }
 
+            // Counters
+            Data.Counters.OnUpdated += LoadCounters;
+            LoadCounters(sender, e);
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
 
             // Hide restart warning
             lblRestart.Visible = false;
+
+        }
+
+        private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Data.Counters.OnUpdated -= LoadCounters;
+        }
+
+        private void LoadCounters(object sender, EventArgs e)
+        {
+            listViewCounters.Items.Clear();
+            foreach (var item in Data.Counters.Default().Total.Counters)
+            {
+                var newItem = new ListViewItem();
+                newItem.Text = Lookups.Counters[item.Key];
+                newItem.SubItems.Add(item.Value.ToString());
+                newItem.Group = listViewCounters.Groups["Total"];
+                listViewCounters.Items.Add(newItem);
+            }
+            foreach (var item in Data.Counters.Default().Session.Counters)
+            {
+                var newItem = new ListViewItem();
+                newItem.Text = Lookups.Counters[item.Key];
+                newItem.SubItems.Add(item.Value.ToString());
+                newItem.Group = listViewCounters.Groups["Session"];
+                listViewCounters.Items.Add(newItem);
+            }
+            var newRuntimeItem = new ListViewItem();
+            newRuntimeItem.Text = "Runtime";
+            newRuntimeItem.SubItems.Add(Data.Counters.Default().Total.Runtime.ToString());
+            newRuntimeItem.Group = listViewCounters.Groups["Total"];
+            listViewCounters.Items.Add(newRuntimeItem);
+            var newRuntimeItem2 = new ListViewItem();
+            newRuntimeItem2.Text = "Runtime";
+            newRuntimeItem2.SubItems.Add(Data.Counters.Default().Session.Runtime.ToString());
+            newRuntimeItem2.Group = listViewCounters.Groups["Session"];
+            listViewCounters.Items.Add(newRuntimeItem2);
 
         }
 
@@ -670,6 +711,23 @@ namespace FFRK_LabMem.Config.UI
             newItem.Tag = schedule;
             listViewSchedule.Items.Add(newItem);
         }
-       
+
+        private async void ButtonCountersSession_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show(this, "Are you sure?", "Reset Session Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                await Data.Counters.Reset(true);
+            }
+        }
+
+        private async void ButtonCountersReset_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show(this, "Are you sure?", "Reset All Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                await Data.Counters.Reset(false);
+            }
+        }
     }
 }

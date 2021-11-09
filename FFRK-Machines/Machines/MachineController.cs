@@ -19,6 +19,9 @@ namespace FFRK_Machines.Machines
         where C : MachineConfiguration
     {
 
+        public event EventHandler OnEnabled;
+        public event EventHandler OnDisabled;
+
         private bool enabled = false;
         private bool proxySecure = false;
         private bool proxyAutoConfig = false;
@@ -175,6 +178,7 @@ namespace FFRK_Machines.Machines
                 ResetCancelTasks();
                 this.Machine.ConfigureStateMachine();
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
+                if (OnEnabled != null) OnEnabled.Invoke(this, new EventArgs());
             }
 
         }
@@ -191,6 +195,7 @@ namespace FFRK_Machines.Machines
                 CancelTasks();
                 this.Machine.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled {0}", typeof(M).Name);
+                if (OnDisabled != null) OnDisabled.Invoke(this, new EventArgs());
             }
 
         }

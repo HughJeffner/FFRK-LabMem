@@ -23,6 +23,9 @@ namespace FFRK_LabMem.Machines
                 return ret;
             }
 
+            // Counters
+            await Data.Counters.Initalize(ret);
+
             // Start it
             await ret.Start(debug: config.GetBool("console.debug", false),
                 adbPath: config.GetString("adb.path", "adb.exe"),

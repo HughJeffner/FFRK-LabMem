@@ -144,7 +144,7 @@ namespace FFRK_LabMem.Machines
                 await Config.Timings["Inter-SelectPainting"].Wait(this.CancellationToken);
                 await this.Adb.TapPct(50, 50, this.CancellationToken);
             }
-
+            await Counters.PaintingSelected();
             CancellationToken.ThrowIfCancellationRequested();
             if ((int)this.CurrentPainting["type"] == 6)
             {
@@ -285,6 +285,7 @@ namespace FFRK_LabMem.Machines
 
                 // Confirm
                 await this.Adb.TapPct(70, 64, this.CancellationToken);
+                await Counters.TreausreOpened();
 
             }
             else
@@ -448,6 +449,7 @@ namespace FFRK_LabMem.Machines
 
             // Drops
             await DataLogger.LogBattleDrops(this);
+            await Counters.BattleWon();
 
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
@@ -614,6 +616,8 @@ namespace FFRK_LabMem.Machines
                     await this.StateMachine.FireAsync(Trigger.Restart);
                 }
             }
+
+            await Counters.LabRunCompleted();
 
         }
 
