@@ -30,6 +30,7 @@ namespace FFRK_LabMem.Machines
                 proxyPort: config.GetInt("proxy.port", 8081),
                 proxySecure: config.GetBool("proxy.secure", false),
                 proxyBlocklist: config.GetString("proxy.blocklist",""),
+                proxyAutoConfig: config.GetBool("proxy.autoconfig", false),
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),

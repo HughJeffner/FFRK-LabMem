@@ -17,6 +17,8 @@ namespace FFRK_LabMem.Services
     public class Proxy
     {
 
+        public const string PROXY_BYPASS = "127.0.0.1,lcd-prod.appspot.com,live.chartboost.com,android.clients.google.com,googleapis.com,ssl.sp.mbga-platform.jp,ssl.sp.mbga.jp,app.adjust.io";
+
         public interface IProxyMachine
         {
             /// <summary>
@@ -46,6 +48,7 @@ namespace FFRK_LabMem.Services
         public List<Registration> Registrations { get; set; } = new List<Registration>();
         private bool debug;
         private bool secure;
+        public int Port { get; set; }
         private List<string> Blocklist { get; set; } = new List<string>();
 
         public Proxy (int port, bool secure, bool debug) : this(port, secure, debug, null) { }
@@ -54,6 +57,7 @@ namespace FFRK_LabMem.Services
         {
             this.debug = debug;
             this.secure = secure;
+            this.Port = port;
 
             // Proxy Setup
             proxyServer = new ProxyServer(false);

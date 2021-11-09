@@ -9,6 +9,7 @@ using FFRK_Machines;
 using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
 using Quartz;
+using System.Threading;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -78,6 +79,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
+            checkBoxProxyAutoConfig.Checked = configHelper.GetBool("proxy.autoconfig", false);
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
             comboBoxAdbHost.DataSource = Lookups.AdbHosts;
             comboBoxAdbHost.DisplayMember = "Display";
@@ -130,6 +132,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.port", numericUpDownProxyPort.Value);
             configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked);
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
+            configHelper.SetValue("proxy.autoconfig", checkBoxProxyAutoConfig.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
@@ -411,6 +414,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
             checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
             textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
+            checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
             textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
             ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
             numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
@@ -445,10 +449,25 @@ namespace FFRK_LabMem.Config.UI
             if (tabControl1.SelectedTab == tabPage7) treasuresTabLoaded = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Services.Clipboard.CopyProxyBypassToClipboard();
             MessageBox.Show(this, "Copied!","", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async void ButtonProxyReset_Click(object sender, EventArgs e)
+        {
+            var ret = MessageBox.Show(this,
+                "Remove system proxy settings?  (Requires device restart)",
+                "Proxy Auto-Configure",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (ret == DialogResult.OK)
+            {
+                await controller.Adb.SetProxySettings(0, CancellationToken.None);
+            }
         }
 
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
@@ -651,6 +670,6 @@ namespace FFRK_LabMem.Config.UI
             newItem.Tag = schedule;
             listViewSchedule.Items.Add(newItem);
         }
-
+       
     }
 }
