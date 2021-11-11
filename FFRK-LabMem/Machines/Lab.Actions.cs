@@ -118,8 +118,10 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, this.CurrentPainting["name"]);
             if ((int)this.CurrentPainting["type"] <= 2)
             {
+                var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"];
                 ColorConsole.Write(": ");
-                ColorConsole.Write(ConsoleColor.Yellow, "{0}", this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"]);
+                ColorConsole.Write(ConsoleColor.Yellow, "{0}", title);
+                if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
             }
             ColorConsole.WriteLine("");
             await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
@@ -172,6 +174,7 @@ namespace FFRK_LabMem.Machines
                     await LabTimings.Delay("Pre-RadiantPaintingScreenshot", this.CancellationToken);
                     await Adb.SaveScrenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
                 }
+                await Counters.FoundRadiantPainting();
                 return 0;
             }
 
@@ -285,6 +288,7 @@ namespace FFRK_LabMem.Machines
 
                 // Confirm
                 await this.Adb.TapPct(70, 64, this.CancellationToken);
+                await Counters.UsedKeys(picked);
                 await Counters.TreausreOpened();
 
             }
@@ -445,11 +449,12 @@ namespace FFRK_LabMem.Machines
             battleStopwatch.Stop();
             ColorConsole.Write("Battle Won!");
             ColorConsole.Write(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
+            await Counters.BattleWon(battleStopwatch.Elapsed);
             battleStopwatch.Reset();
 
             // Drops
             await DataLogger.LogBattleDrops(this);
-            await Counters.BattleWon();
+            
 
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
@@ -483,8 +488,8 @@ namespace FFRK_LabMem.Machines
         private async Task<bool> UseLetheTears()
         {
 
-            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0}",
-                Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1'));
+            int numberUsed = Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1');
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0}", numberUsed);
 
             await LabTimings.Delay("Pre-LetheTears", this.CancellationToken);
 
@@ -519,6 +524,7 @@ namespace FFRK_LabMem.Machines
                         if (await Adb.FindButtonAndTap("#2060ce", 3000, 38.8, 55, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
+                            await Counters.UsedTears(numberUsed);
                             return true;
                         } else
                         {
@@ -561,6 +567,7 @@ namespace FFRK_LabMem.Machines
                 if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
                 {
                     await LabTimings.Delay("Post-TeleportStone", this.CancellationToken);
+                    await Counters.UsedTeleportStone();
                     return true;
                 }
                 else
@@ -587,6 +594,7 @@ namespace FFRK_LabMem.Machines
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     await Notify();
                     base.OnMachineFinished();
+                    await Counters.LabRunCompleted();
                 } 
                 if (Config.UseTeleportStoneOnMasterPainting)
                 {
@@ -602,6 +610,7 @@ namespace FFRK_LabMem.Machines
                 
                 // Notify complete
                 await Notify();
+                await Counters.LabRunCompleted();
 
                 // Restart or not
                 ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
@@ -616,8 +625,6 @@ namespace FFRK_LabMem.Machines
                     await this.StateMachine.FireAsync(Trigger.Restart);
                 }
             }
-
-            await Counters.LabRunCompleted();
 
         }
 
@@ -693,7 +700,7 @@ namespace FFRK_LabMem.Machines
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
                             await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-
+                            await Counters.UsedStaminaPot();
                         }
                         else
                         {
@@ -843,6 +850,7 @@ namespace FFRK_LabMem.Machines
                 else
                 {
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
+                    await Counters.FFRKRestarted();
                     if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
                 }
                 await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);

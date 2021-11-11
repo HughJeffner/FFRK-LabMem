@@ -1,9 +1,11 @@
 ﻿using FFRK_LabMem.Machines;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Data
@@ -16,23 +18,37 @@ namespace FFRK_LabMem.Data
 
         public static event EventHandler OnUpdated;
 
-        public CounterSet Total { get; set; } = new CounterSet();
-        public CounterSet Session { get; set; } = new CounterSet();
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public Dictionary<string, CounterSet> CounterSets { get; set; }
 
         private LabController controller;
         private Stopwatch runtimeStopwatch = new Stopwatch();
 
         private Counters(LabController controller)
         {
+            this.CounterSets = GetDefaultCounterSets();
             this.controller = controller;
             controller.OnEnabled += Controller_OnEnabled;
             controller.OnDisabled += Controller_OnDisabled;
         }
 
-        public static Counters Default()
+        private Dictionary<string, CounterSet> GetDefaultCounterSets()
         {
-            if (_instance == null) throw new InvalidOperationException();
-            return _instance;
+            return new Dictionary<string, CounterSet>
+            {
+                {"Total", new CounterSet() },
+                {"Session", new CounterSet() },
+                {"CurrentLab", new CounterSet() },
+            };
+        }
+
+        public static Counters Default
+        {
+            get
+            {
+                if (_instance == null) throw new InvalidOperationException();
+                return _instance;
+            }
         }
 
         public static async Task Initalize(LabController controller)
@@ -43,116 +59,251 @@ namespace FFRK_LabMem.Data
                 await _instance.Load();
             }
 
-         }
+        }
+
+        public static void Uninitalize()
+        {
+            _instance.controller.OnEnabled -= _instance.Controller_OnEnabled;
+            _instance.controller.OnDisabled -= _instance.Controller_OnDisabled;
+        }
 
         private async void Controller_OnDisabled(object sender, EventArgs e)
         {
             await Save();
             runtimeStopwatch.Stop();
-            this.Total.Runtime += runtimeStopwatch.Elapsed;
-            this.Session.Runtime += runtimeStopwatch.Elapsed;
         }
 
         private void Controller_OnEnabled(object sender, EventArgs e)
         {
-            runtimeStopwatch.Start();
+            runtimeStopwatch.Restart();
         }
 
         public static async Task LabRunCompleted()
         {
-            await _instance.IncrementCounters("LabRunsCompleted");
+            _instance.CounterSets["CurrentLab"].Reset();
+            await _instance.IncrementCounterAndSave("LabRunsCompleted");
         }
 
         public static async Task PaintingSelected()
         {
-            await _instance.IncrementCounters("PaintingsSelected");
+            await _instance.IncrementCounterAndSave("PaintingsSelected");
         }
 
-        public static async Task BattleWon()
+        public static async Task BattleWon(TimeSpan runtime)
         {
-            await _instance.IncrementCounters("BattlesWon");
+            _instance.IncrementRuntime("Battle", runtime);
+            await _instance.IncrementCounterAndSave("BattlesWon");
         }
 
         public static async Task TreausreOpened()
         {
-            await _instance.IncrementCounters("TreasuresOpened");
+            await _instance.IncrementCounterAndSave("TreasuresOpened");
+        }
+        public static async Task FoundRadiantPainting()
+        {
+            await _instance.IncrementCounterAndSave("RadiantPaintings");
+        }
+        public static async Task FoundMagicPot()
+        {
+            await _instance.IncrementCounterAndSave("MagicPots");
+        }
+        public static async Task UsedTears(int amt)
+        {
+            await _instance.IncrementCounterAndSave("UsedTears", amt);
+        }
+        public static async Task UsedKeys(int amt)
+        {
+            await _instance.IncrementCounterAndSave("UsedKeys", amt);
+        }
+        public static async Task UsedTeleportStone()
+        {
+            await _instance.IncrementCounterAndSave("UsedTeleportStones");
+        }
+        public static async Task UsedStaminaPot()
+        {
+            await _instance.IncrementCounterAndSave("UsedStaminaPots");
+        }
+        public static async Task PulledInPortal()
+        {
+            await _instance.IncrementCounterAndSave("PulledInPortal");
+        }
+        public static async Task FFRKRestarted()
+        {
+            await _instance.IncrementCounterAndSave("FFRKRestarts");
         }
 
-        private async Task IncrementCounters(string key)
+        public static async Task FoundHE(string name)
         {
-            Session.Counters[key] += 1;
-            Total.Counters[key] += 1;
+            _instance.IncrementHE(name);
+            await _instance.IncrementCounterAndSave("HeroEquipmentGot");
+        }
+
+        private async Task IncrementCounterAndSave(string key, int amt = 1)
+        {
+            if (amt == 0) return;
+            foreach (var set in CounterSets)
+            {
+                set.Value.Counters[key] += amt;
+            }
             await _instance.Save();
         }
 
-        private async Task Load()
+        private void IncrementRuntime(string key, TimeSpan amt)
+        {
+            if (amt.TotalMilliseconds <= 0) return;
+            foreach (var set in CounterSets)
+            {
+                set.Value.Runtime[key] += amt;
+            }
+        }
+
+        private void IncrementHE(string name)
+        {
+            foreach (var set in CounterSets)
+            {
+                if (!set.Key.Equals("Total"))
+                {
+                    if (set.Value.HeroEquipment.ContainsKey(name))
+                    {
+                        set.Value.HeroEquipment[name] += 1;
+                    } else
+                    {
+                        set.Value.HeroEquipment.Add(name, 1);
+                    }
+                }
+            }
+        }
+
+        private async Task Load(string path = CONFIG_PATH)
         {
             try
             {
-                Total = JsonConvert.DeserializeObject<CounterSet>(File.ReadAllText(CONFIG_PATH));
+                JsonConvert.PopulateObject(File.ReadAllText(path), CounterSets);
             }
             catch (Exception)
             {
+                CounterSets = GetDefaultCounterSets();
             }
             await Task.CompletedTask;
         }
 
-        public async Task Save()
+        public async Task Save(string path = CONFIG_PATH)
         {
             if (runtimeStopwatch.IsRunning)
             {
-                this.Total.Runtime += runtimeStopwatch.Elapsed;
-                this.Session.Runtime += runtimeStopwatch.Elapsed;
+                IncrementRuntime("Total", runtimeStopwatch.Elapsed);
                 runtimeStopwatch.Restart();
             }
             if (OnUpdated != null) OnUpdated.Invoke(this, new EventArgs());
             try
             {
-                File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(this.Total, Formatting.Indented));
-            } 
+                File.WriteAllText(path, 
+                    JsonConvert.SerializeObject(this.CounterSets, 
+                    Formatting.Indented, 
+                    new ExcludeSessionDictionaryItemConverter<IDictionary<string, CounterSet>, CounterSet>()));
+            }
             catch (Exception)
-            { 
+            {
             }
             await Task.CompletedTask;
         }
 
-        public static async Task Reset(bool sessionOnly)
+        public static async Task Reset(string key)
         {
-            _instance.Session.Reset();
-            if (!sessionOnly) _instance.Total.Reset();
-            await Data.Counters.Default().Save();
+            if (key == null)
+            {
+                foreach (var item in _instance.CounterSets)
+                {
+                    item.Value.Reset();
+                }
+            } else
+            {
+                _instance.CounterSets[key].Reset();
+            }
+            await _instance.Save();
 
         }
 
         public class CounterSet
         {
-
             public Dictionary<string, int> Counters { get; set; }
-            public TimeSpan Runtime { get; set; }
+            public Dictionary<string, TimeSpan> Runtime { get; set; }
+            public Dictionary<string, int> HeroEquipment { get; set; }
 
             public CounterSet()
             {
-                this.Counters = GetDefaults();
+                this.Counters = GetDefaultCounters();
+                this.Runtime = GetDefaultRuntimes();
+                this.HeroEquipment = new Dictionary<string, int>();
             }
 
-            private Dictionary<string, int> GetDefaults()
+            private Dictionary<string, int> GetDefaultCounters()
             {
                 return new Dictionary<string, int>()
                 {
                     {"LabRunsCompleted",0},
                     {"PaintingsSelected",0},
                     {"BattlesWon",0},
-                    {"TreasuresOpened",0}
+                    {"TreasuresOpened",0},
+                    {"RadiantPaintings",0},
+                    {"MagicPots",0},
+                    {"UsedTears",0},
+                    {"UsedKeys",0},
+                    {"UsedTeleportStones",0},
+                    {"UsedStaminaPots",0},
+                    {"PulledInPortal",0},
+                    {"FFRKRestarts",0},
+                    {"HeroEquipmentGot",0},
+                };
+            }
+
+            private Dictionary<string, TimeSpan> GetDefaultRuntimes()
+            {
+                return new Dictionary<string, TimeSpan>()
+                {
+                    {"Total", new TimeSpan()},
+                    {"Battle", new TimeSpan()},
                 };
             }
 
             public void Reset()
             {
-                this.Counters = GetDefaults();
-                this.Runtime = new TimeSpan();
+                this.Counters = GetDefaultCounters();
+                this.Runtime = GetDefaultRuntimes();
+                this.HeroEquipment = new Dictionary<string, int>();
             }
 
         }
 
+        public class ExcludeSessionDictionaryItemConverter<TDictionary, TValue> : JsonConverter where TDictionary : IDictionary<string, TValue>
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(TDictionary).IsAssignableFrom(objectType);
+            }
+
+            public override bool CanRead => false;
+            public override bool CanWrite => true;
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                JToken t = JToken.FromObject(value);
+                if (t.Type != JTokenType.Object)
+                {
+                    t.WriteTo(writer);
+                }
+                else
+                {
+                    JObject o = (JObject)t;
+                    o.Remove("Session");
+                    o.WriteTo(writer);
+                }
+            }
+        }
     }
 }

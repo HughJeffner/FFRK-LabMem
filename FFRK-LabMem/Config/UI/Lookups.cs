@@ -58,7 +58,16 @@ namespace FFRK_LabMem.Config.UI
             {"LabRunsCompleted", "Lab Runs Completed"},
             {"PaintingsSelected", "Paintings Selected"},
             {"BattlesWon", "Battles Won"},
-            {"TreasuresOpened", "Treasures Opened"}
+            {"TreasuresOpened", "Treasures Opened"},
+            {"RadiantPaintings", "Radiant Paintings Found"},
+            {"MagicPots", "Magic Pots Found"},
+            {"UsedTears", "Lethe Tears Used"},
+            {"UsedKeys", "Magic Keys Used"},
+            {"UsedTeleportStones", "Teleport Stones Used"},
+            {"UsedStaminaPots", "Stamina Pots Used"},
+            {"PulledInPortal", "Pulled Into Portals"},
+            {"FFRKRestarts", "FFRK Restarted"},
+            {"HeroEquipmentGot", "Hero Equipment Found"},
         };
 
     }

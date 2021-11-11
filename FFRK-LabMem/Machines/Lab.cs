@@ -384,6 +384,7 @@ namespace FFRK_LabMem.Machines
                         break;
                     case 8:  // Portal
                         ColorConsole.WriteLine("Pulled into a portal painting!");
+                        await Counters.PulledInPortal();
                         await this.StateMachine.FireAsync(Trigger.FoundPortal);
                         break;
                     case 5:  // Spring

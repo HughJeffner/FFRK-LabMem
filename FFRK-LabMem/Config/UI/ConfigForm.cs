@@ -134,32 +134,45 @@ namespace FFRK_LabMem.Config.UI
         private void LoadCounters(object sender, EventArgs e)
         {
             listViewCounters.Items.Clear();
-            foreach (var item in Data.Counters.Default().Total.Counters)
+            foreach(var set in Data.Counters.Default.CounterSets)
             {
-                var newItem = new ListViewItem();
-                newItem.Text = Lookups.Counters[item.Key];
-                newItem.SubItems.Add(item.Value.ToString());
-                newItem.Group = listViewCounters.Groups["Total"];
-                listViewCounters.Items.Add(newItem);
+                // Counters
+                foreach (var item in set.Value.Counters)
+                {
+                    var newItem = new ListViewItem();
+                    if (Lookups.Counters.ContainsKey(item.Key))
+                    {
+                        newItem.Text = Lookups.Counters[item.Key];
+                    } else
+                    {
+                        newItem.Text = item.Key;
+                    }
+                    newItem.SubItems.Add(item.Value.ToString());
+                    newItem.Group = listViewCounters.Groups[set.Key];
+                    listViewCounters.Items.Add(newItem);
+                }
+
+                // HE
+                foreach (var item in set.Value.HeroEquipment)
+                {
+                    var newItem = new ListViewItem();
+                    newItem.Text = $"    {item.Key}";
+                    newItem.SubItems.Add(item.Value.ToString());
+                    newItem.Group = listViewCounters.Groups[set.Key];
+                    listViewCounters.Items.Add(newItem);
+                }
+
+                // Runtime
+                foreach (var item in set.Value.Runtime)
+                {
+                    var newItem = new ListViewItem();
+                    newItem.Text = $"{item.Key} Runtime";
+                    newItem.SubItems.Add(item.Value.ToString());
+                    newItem.Group = listViewCounters.Groups[set.Key];
+                    listViewCounters.Items.Add(newItem);
+                }
+                
             }
-            foreach (var item in Data.Counters.Default().Session.Counters)
-            {
-                var newItem = new ListViewItem();
-                newItem.Text = Lookups.Counters[item.Key];
-                newItem.SubItems.Add(item.Value.ToString());
-                newItem.Group = listViewCounters.Groups["Session"];
-                listViewCounters.Items.Add(newItem);
-            }
-            var newRuntimeItem = new ListViewItem();
-            newRuntimeItem.Text = "Runtime";
-            newRuntimeItem.SubItems.Add(Data.Counters.Default().Total.Runtime.ToString());
-            newRuntimeItem.Group = listViewCounters.Groups["Total"];
-            listViewCounters.Items.Add(newRuntimeItem);
-            var newRuntimeItem2 = new ListViewItem();
-            newRuntimeItem2.Text = "Runtime";
-            newRuntimeItem2.SubItems.Add(Data.Counters.Default().Session.Runtime.ToString());
-            newRuntimeItem2.Group = listViewCounters.Groups["Session"];
-            listViewCounters.Items.Add(newRuntimeItem2);
 
         }
 
@@ -725,21 +738,14 @@ namespace FFRK_LabMem.Config.UI
             listViewSchedule.Items.Add(newItem);
         }
 
-        private async void ButtonCountersSession_Click(object sender, EventArgs e)
-        {
-            var result = MessageBox.Show(this, "Are you sure?", "Reset Session Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                await Data.Counters.Reset(true);
-            }
-        }
-
         private async void ButtonCountersReset_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show(this, "Are you sure?", "Reset All Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            String tag = (string)((Button)sender).Tag;
+            var result = MessageBox.Show(this, $"Are you sure you want to reset {tag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
-                await Data.Counters.Reset(false);
+                var target = tag.Equals("All") ? null : tag;
+                await Data.Counters.Reset(target);
             }
         }
     }
