@@ -14,10 +14,10 @@ namespace FFRK_LabMem.Machines
         private const string CONFIG_PATH = "./Config/timings.json";
         private static LabTimings _instance = null;
         private static readonly Random rng = new Random();
-        private Dictionary<string, Timing> timings { get; set; } = new Dictionary<string, Timing>();
+        private TimingDictionary timings { get; set; } = new TimingDictionary();
         public LabTimings()
         {
-           
+            this.timings = GetDefaultTimings();
         }
         private static int DelayWithJitter(Timing timing)
         {
@@ -35,7 +35,7 @@ namespace FFRK_LabMem.Machines
         /// <summary>
         /// The current timings dictionary
         /// </summary>
-        public static Dictionary<string, Timing> Timings
+        public static TimingDictionary Timings
         {
             get
             {
@@ -51,7 +51,8 @@ namespace FFRK_LabMem.Machines
         {
             try
             {
-                (await GetInstance()).timings = JsonConvert.DeserializeObject<Dictionary<string, Timing>>(File.ReadAllText(path));
+                var t = (await GetInstance()).timings;
+                JsonConvert.PopulateObject(File.ReadAllText(path), t);
             }
             catch (Exception)
             {
@@ -94,7 +95,12 @@ namespace FFRK_LabMem.Machines
         /// <returns></returns>
         public static async Task ResetToDefaults()
         {
-            (await GetInstance()).timings = new Dictionary<string, Timing>
+            (await GetInstance()).timings = GetDefaultTimings();
+        }
+
+        private static TimingDictionary GetDefaultTimings()
+        {
+            return new TimingDictionary()
             {
                 { "Pre-AutoStart", new Timing() { Delay=10} },
                 { "Inter-AutoStart", new Timing() { Delay=1000} },
@@ -138,6 +144,12 @@ namespace FFRK_LabMem.Machines
                 { "Post-RestartBattle", new Timing(){ Delay=0 } },
             };
         }
+
+        public class TimingDictionary : Dictionary<string, Timing>
+        {
+            public TimingDictionary() { }
+        }
+
         public class Timing
         {
             public int Delay { get; set; } = 5000;
