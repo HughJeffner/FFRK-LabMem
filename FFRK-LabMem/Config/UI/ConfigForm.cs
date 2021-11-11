@@ -90,8 +90,11 @@ namespace FFRK_LabMem.Config.UI
             // Load lab .json
             LoadConfigs();
 
+            // Timings
+            LoadTimings();
+
             // Schedules
-            foreach(var schedule in scheduler.Schedules)
+            foreach (var schedule in scheduler.Schedules)
             {
                 AddScheduleListViewItem(schedule);
             }
@@ -112,6 +115,20 @@ namespace FFRK_LabMem.Config.UI
         private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Data.Counters.OnUpdated -= LoadCounters;
+        }
+
+        private void LoadTimings()
+        {
+            dataGridView1.Rows.Clear();
+            foreach (KeyValuePair<string, LabTimings.Timing> item in LabTimings.Timings)
+            {
+                dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
+            }
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                var key = row.Cells[0].Value.ToString();
+                if (Lookups.Timings.ContainsKey(key)) row.Cells[0].ToolTipText = Lookups.Timings[key];
+            }
         }
 
         private void LoadCounters(object sender, EventArgs e)
@@ -201,12 +218,14 @@ namespace FFRK_LabMem.Config.UI
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
 
+            // Paintings
             labConfig.PaintingPriorityMap.Clear();
             foreach (ListViewItem item in listViewPaintings.Items)
             {
                 labConfig.PaintingPriorityMap.Add(item.Tag.ToString(), int.Parse(item.Text));
             }
 
+            // Treasures
             labConfig.TreasureFilterMap.Clear();
             foreach (ListViewItem item in listViewTreasures.Items)
             {
@@ -216,6 +235,7 @@ namespace FFRK_LabMem.Config.UI
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
             }
 
+            // Enemy blocklist
             labConfig.EnemyBlocklist.Clear();
             for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
             {
@@ -224,17 +244,20 @@ namespace FFRK_LabMem.Config.UI
                 labConfig.EnemyBlocklist.Add(item);
             }
 
-            labConfig.Timings.Clear();
-            foreach (DataGridViewRow item in dataGridView1.Rows)
-            {
-                labConfig.Timings.Add(item.Cells[0].Value.ToString(), new LabConfiguration.Timing() {
-                    Delay = int.Parse(item.Cells[1].Value.ToString()),
-                    Jitter = int.Parse(item.Cells[2].Value.ToString()) 
-                });
-            }
-
             // Save Lab to .json
             await labConfig.Save(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
+
+            // Save Timings
+            LabTimings.Timings.Clear();
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                LabTimings.Timings.Add(item.Cells[0].Value.ToString(), new LabTimings.Timing()
+                {
+                    Delay = int.Parse(item.Cells[1].Value.ToString()),
+                    Jitter = int.Parse(item.Cells[2].Value.ToString())
+                });
+            }
+            await LabTimings.Save();
 
             // Save Schedule
             scheduler.Schedules.Clear();
@@ -271,6 +294,7 @@ namespace FFRK_LabMem.Config.UI
 
         private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Options
             labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
@@ -295,6 +319,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
             
+            // Painting priorities
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {
@@ -304,6 +329,7 @@ namespace FFRK_LabMem.Config.UI
                 listViewPaintings.Items.Add(newItem);
             }
 
+            // Treasure priorities
             treasuresLoaded = false;
             listViewTreasures.Items.Clear();
             foreach (var item in labConfig.TreasureFilterMap)
@@ -318,23 +344,13 @@ namespace FFRK_LabMem.Config.UI
             }
             treasuresLoaded = true;
 
+            // Enemy blocklist
             checkedListBoxBlocklist.Items.Clear();
             foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
             {
                 checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
             }
             buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
-
-            dataGridView1.Rows.Clear();
-            foreach (KeyValuePair<string, LabConfiguration.Timing> item in labConfig.Timings)
-            {
-                dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
-            }
-            foreach (DataGridViewRow row in dataGridView1.Rows)
-            {
-                var key = row.Cells[0].Value.ToString();
-                if (Lookups.Timings.ContainsKey(key)) row.Cells[0].ToolTipText = Lookups.Timings[key];
-            }
 
         }
 
@@ -546,7 +562,7 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private void ButtonTimingDefaults_Click(object sender, EventArgs e)
+        private async void ButtonTimingDefaults_Click(object sender, EventArgs e)
         {
 
             var ret = MessageBox.Show(this, "Are you sure you want to reset all timings to the defaults?",
@@ -557,12 +573,8 @@ namespace FFRK_LabMem.Config.UI
 
             if (ret == DialogResult.Yes)
             {
-                labConfig.Timings = labConfig.GetDefaultTimings();
-                dataGridView1.Rows.Clear();
-                foreach (KeyValuePair<string, LabConfiguration.Timing> item in labConfig.Timings)
-                {
-                    dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
-                }
+                await LabTimings.ResetToDefaults();
+                LoadTimings();
             }
         }
 

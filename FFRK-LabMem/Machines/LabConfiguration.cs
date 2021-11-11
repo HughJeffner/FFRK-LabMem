@@ -2,8 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Machines
 {
@@ -30,11 +28,9 @@ namespace FFRK_LabMem.Machines
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
-        public Dictionary<string, Timing> Timings { get; set; } = new Dictionary<string, Timing>();
         public LabConfiguration() {
 
             // Defaults
-            this.Timings = GetDefaultTimings();
             this.PaintingPriorityMap = new Dictionary<string, int>
             {
                 { "3", 1 },
@@ -68,54 +64,6 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public Dictionary<string, Timing> GetDefaultTimings()
-        {
-            Dictionary<string, Timing> defaults = new Dictionary<string, Timing>
-            {
-                { "Pre-AutoStart", new Timing() { Delay=10} },
-                { "Inter-AutoStart", new Timing() { Delay=1000} },
-                { "Post-AutoStart", new Timing() { Delay=0} },
-                { "Pre-SelectPainting", new Timing()},
-                { "Inter-SelectPainting", new Timing(){ Delay=1000 } },
-                { "Post-SelectPainting", new Timing(){ Delay=0 } },
-                { "Pre-RadiantPaintingScreenshot", new Timing(){ Delay=4000 } },
-                { "Pre-SelectTreasure", new Timing() },
-                { "Inter-SelectTreasure", new Timing() {Delay=2000 } }, 
-                { "Post-SelectTreasure", new Timing() {Delay=0 } },
-                { "Pre-Door", new Timing() },
-                { "Post-Door", new Timing(){ Delay=1000} },
-                { "Pre-MoveOn", new Timing() },
-                { "Post-MoveOn", new Timing() { Delay=1000 } },
-                { "Post-MoveOn-Portal", new Timing() { Delay=5000} },
-                { "Pre-StartBattle", new Timing() { Delay=0} },
-                { "Pre-StartBattle-Fatigue", new Timing() { Delay=20000} },
-                { "Inter-StartBattle", new Timing() { Delay=500} },
-                { "Post-StartBattle", new Timing() { Delay=0} },
-                { "Post-Battle", new Timing(){ Delay=7000 } },
-                { "Pre-ConfirmPortal", new Timing(){ Delay=5000 } },
-                { "Post-ConfirmPortal", new Timing(){ Delay=2000 } },
-                { "Pre-LetheTears", new Timing(){ Delay=4000 } },
-                { "Inter-LetheTears", new Timing(){ Delay=2000 } },
-                { "Inter-LetheTears-Unit", new Timing(){ Delay=500 } },
-                { "Post-LetheTears", new Timing(){ Delay=0 } },
-                { "Pre-TeleportStone", new Timing(){ Delay=2000 } },
-                { "Inter-TeleportStone", new Timing(){ Delay=2000 } },
-                { "Post-TeleportStone", new Timing(){ Delay=0 } },
-                { "Pre-RestartLab", new Timing(){ Delay=60000 } },
-                { "Inter-RestartLab", new Timing(){ Delay=5000 } },
-                { "Inter-RestartLab-Stamina", new Timing(){ Delay=2000 } },
-                { "Post-RestartLab", new Timing(){ Delay=4000 } },
-                { "Pre-RestartFFRK", new Timing(){ Delay=5000 } },
-                { "Inter-RestartFFRK", new Timing(){ Delay=4000 } },
-                { "Inter-RestartFFRK-Timeout", new Timing(){ Delay=180000 } },
-                { "Post-RestartFFRK", new Timing(){ Delay=0 } },
-                { "Pre-RestartBattle", new Timing(){ Delay=5000 } },
-                { "Inter-RestartBattle", new Timing(){ Delay=2000 } },
-                { "Post-RestartBattle", new Timing(){ Delay=0 } },
-            };
-            return defaults;
-        }
-
         public class TreasureFilter
         {
             public int Priority { get; set; }
@@ -131,23 +79,6 @@ namespace FFRK_LabMem.Machines
                 return Name;
             }
         }
-
-        public class Timing
-        {
-            private static Random rng = new Random();
-            public int Delay { get; set; } = 5000;
-            public int Jitter { get; set; } = 0;
-            public int DelayWithJitter
-            {
-                get
-                {
-                    return rng.Next(this.Delay, this.Delay + this.Jitter);
-                }
-            }
-            public Task Wait(CancellationToken cancellationToken)
-            {
-                return Task.Delay(this.DelayWithJitter, cancellationToken);
-            }
-        }
+        
     }
 }
