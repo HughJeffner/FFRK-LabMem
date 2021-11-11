@@ -10,11 +10,14 @@ namespace FFRK_LabMem.Machines
     public class LabController : MachineController<Lab, Lab.State, Lab.Trigger, LabConfiguration>
     {
 
+        private int watchdogMinutes;
+
         public static async Task<LabController> CreateAndStart(ConfigHelper config)
         {
             
             // Create instance
             var ret = new LabController();
+            ret.watchdogMinutes = config.GetInt("lab.watchdogMinutes", 10);
 
             // Validate config file
             var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
@@ -52,7 +55,7 @@ namespace FFRK_LabMem.Machines
         }
         protected override Lab CreateMachine(LabConfiguration config)
         {
-            return new Lab(this.Adb, config);
+            return new Lab(this.Adb, config, watchdogMinutes);
         }
 
         public async void AutoDetectOffsets(ConfigHelper config) {
@@ -84,7 +87,16 @@ namespace FFRK_LabMem.Machines
 
                 Task.Run(async () =>
                 {
-                    await this.Machine.ManualFFRKRestart();
+                    try
+                    {
+                        await this.Machine.ManualFFRKRestart();
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception ex)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                    }
+
                 });
             }
 

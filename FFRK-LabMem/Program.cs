@@ -34,6 +34,9 @@ namespace FFRK_LabMem
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
 
+            // Enable visual styles in forms
+            System.Windows.Forms.Application.EnableVisualStyles();
+
             // Ad-hoc command loop
             Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'Ctrl+X' to Exit");
             while (true)

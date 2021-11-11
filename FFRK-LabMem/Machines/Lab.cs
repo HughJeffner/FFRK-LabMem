@@ -60,7 +60,8 @@ namespace FFRK_LabMem.Machines
             Crashed,
             Restarting
         }
-                
+
+        private int WatchdogMinutes { get; set; } = 10;
         private int CurrentKeys { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
@@ -79,18 +80,19 @@ namespace FFRK_LabMem.Machines
 
         private List<BuddyInfo> FatigueInfo = new List<BuddyInfo>();
 
-        public Lab(Adb adb, LabConfiguration config)
+        public Lab(Adb adb, LabConfiguration config, int watchdogMinutes)
         {
 
             // Config
             this.Config = config;
             this.Adb = adb;
+            this.WatchdogMinutes = watchdogMinutes;
            
             // Timer
-            if (this.Config.WatchdogMinutes > 0)
+            if (this.WatchdogMinutes > 0)
             {
                 watchdogTimer.AutoReset = false;
-                watchdogTimer.Interval = TimeSpan.FromMinutes(this.Config.WatchdogMinutes).TotalMilliseconds;
+                watchdogTimer.Interval = TimeSpan.FromMinutes(this.WatchdogMinutes).TotalMilliseconds;
                 watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             }
 
@@ -224,7 +226,7 @@ namespace FFRK_LabMem.Machines
             // Start machine
             StateMachine.FireAsync(Trigger.Started);
 
-            if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
+            if (this.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
                 if (state.Trigger != Trigger.WatchdogTimer)
                 {
                     watchdogTimer.Stop();

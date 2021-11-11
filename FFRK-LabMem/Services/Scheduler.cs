@@ -77,7 +77,7 @@ namespace FFRK_LabMem.Services
                     // Repeat
                     if (!String.IsNullOrEmpty(schedule.EnableCronTab))
                     {
-                        builder.WithCronSchedule(schedule.EnableCronTab);
+                        builder.WithCronSchedule(schedule.EnableCronTab, b => b.WithMisfireHandlingInstructionDoNothing());
                     }
 
                     // Schedule the job
@@ -98,7 +98,7 @@ namespace FFRK_LabMem.Services
                     // Repeat
                     if (!String.IsNullOrEmpty(schedule.DisableCronTab))
                     {
-                        builder.WithCronSchedule(schedule.DisableCronTab);
+                        builder.WithCronSchedule(schedule.DisableCronTab, b => b.WithMisfireHandlingInstructionDoNothing());
                     }
 
                     // Schedule the job

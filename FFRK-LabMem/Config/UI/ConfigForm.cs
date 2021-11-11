@@ -39,7 +39,6 @@ namespace FFRK_LabMem.Config.UI
             await defaultScheduler.Stop();
 
             // Show form
-            Application.EnableVisualStyles();
             var form = new ConfigForm
             {
                 configHelper = configHelper,
@@ -76,6 +75,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
+            numericUpDownWatchdog.Value = configHelper.GetInt("lab.watchdogMinutes", 10);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
@@ -177,6 +177,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
+            configHelper.SetValue("lab.watchdogMinutes", (int)numericUpDownWatchdog.Value);
 
             // Lab
             labConfig.Debug = checkBoxLabDebug.Checked;
@@ -187,7 +188,6 @@ namespace FFRK_LabMem.Config.UI
             labConfig.StopOnMasterPainting = checkBoxLabStopOnMasterPainting.Checked;
             labConfig.RestartLab = checkBoxLabRestart.Checked;
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
-            labConfig.WatchdogMinutes = (int)numericUpDownWatchdog.Value;
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
             labConfig.LetheTearsSlot = 0;
@@ -282,7 +282,6 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabRestart.Checked = labConfig.RestartLab;
             CheckBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
-            numericUpDownWatchdog.Value = labConfig.WatchdogMinutes;
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
@@ -449,16 +448,18 @@ namespace FFRK_LabMem.Config.UI
         private void NeedsRestart_Changed(object sender, EventArgs e)
         {
 
-            var changed = (checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-            checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
-            checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
-            numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
-            checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
-            textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
-            checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
-            textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-            ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-            numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
+            var changed = (
+                checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
+                checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
+                checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
+                numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
+                checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
+                textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
+                checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
+                textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+                numericUpDownWatchdog.Value != configHelper.GetInt("lab.watchdogMinutes", 10)
+            );
 
             lblRestart.Visible = changed;
 
