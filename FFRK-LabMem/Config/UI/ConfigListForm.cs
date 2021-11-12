@@ -39,7 +39,7 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private void ButtonAdd_Click(object sender, EventArgs e)
+        private async void ButtonAdd_Click(object sender, EventArgs e)
         {
             var input = Interaction.InputBox("Enter new name", "Add Configuration", "New");
             if (!String.IsNullOrEmpty(input))
@@ -51,7 +51,7 @@ namespace FFRK_LabMem.Config.UI
                         MessageBox.Show(this, "File already exists!  Try a different name.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    File.WriteAllText(file.Path, JsonConvert.SerializeObject(new LabConfiguration(), Formatting.Indented));
+                    await new LabConfiguration().Save(file.Path);
                     listBoxConfigs.Items.Add(file);
                 }
                 catch (Exception ex)
@@ -107,5 +107,29 @@ namespace FFRK_LabMem.Config.UI
                 
             }
         }
+
+        private void ButtonDupe_Click(object sender, EventArgs e)
+        {
+
+            var target = (ConfigFile)listBoxConfigs.SelectedItem;
+            var input = Interaction.InputBox("Enter new name", "Duplicate Configuration", target.Name + " Copy");
+            if (!String.IsNullOrEmpty(input))
+            {
+                var file = ConfigFile.FromName(input);
+                try
+                {
+                    File.Copy(target.Path, file.Path);
+                    listBoxConfigs.Items.Add(file);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.Message, "Error duplicating configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+
+
+        }
+
     }
 }

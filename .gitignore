@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/FFRK-LabMem/obj
+/FFRK-Machines/obj
+/FFRK-LabMem/bin
+/FFRK-Machines/bin
+/packages
+/publish
+/setup/Output

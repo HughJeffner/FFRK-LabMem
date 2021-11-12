@@ -1,5 +1,6 @@
 ﻿using FFRK_Machines.Machines;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace FFRK_LabMem.Machines
@@ -10,7 +11,6 @@ namespace FFRK_LabMem.Machines
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
         public bool AvoidPortal { get; set; } = true;
-        public int WatchdogMinutes { get; set; } = 10;
         public bool RestartFailedBattle { get; set; } = false;
         public bool StopOnMasterPainting { get; set; } = false;
         public bool RestartLab { get; set; } = false;
@@ -28,11 +28,9 @@ namespace FFRK_LabMem.Machines
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
-        public Dictionary<string, int> Timings { get; set; } = new Dictionary<string, int>();
         public LabConfiguration() {
 
             // Defaults
-            this.Timings = GetDefaultTimings();
             this.PaintingPriorityMap = new Dictionary<string, int>
             {
                 { "3", 1 },
@@ -66,20 +64,6 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public Dictionary<string, int> GetDefaultTimings()
-        {
-            Dictionary<string, int> defaults = new Dictionary<string, int>
-            {
-                { "Pre-SelectPainting", 5000 },
-                { "Inter-SelectPainting", 1000 },
-                { "Pre-SelectTreasure", 5000 },
-                { "Pre-Door", 5000 },
-                { "Pre-MoveOn", 5000 },
-                { "Post-Battle", 7000 }
-            };
-            return defaults;
-        }
-
         public class TreasureFilter
         {
             public int Priority { get; set; }
@@ -95,5 +79,6 @@ namespace FFRK_LabMem.Machines
                 return Name;
             }
         }
+        
     }
 }

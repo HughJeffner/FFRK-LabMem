@@ -1,5 +1,4 @@
 ﻿using FFRK_LabMem.Machines;
-using Newtonsoft.Json;
 using System;
 using System.Drawing;
 using System.IO;
@@ -7,54 +6,64 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
+using FFRK_LabMem.Services;
+using System.Threading;
+using System.Linq;
 
 namespace FFRK_LabMem.Config.UI
 {
     public partial class ConfigForm : Form
     {
 
+        private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
+        private bool treasuresTabLoaded = false;
+        private bool treasuresLoaded = false;
+
         public ConfigHelper configHelper = null;
         public LabController controller = null;
         public LabConfiguration labConfig = new LabConfiguration();
-        private bool treasuresTabLoaded = false;
-        private bool treasuresLoaded = false;
+        protected Scheduler scheduler = null;
 
         public ConfigForm()
         {
             InitializeComponent();
         }
 
-        public static void CreateAndShow(ConfigHelper configHelper, LabController controller)
+        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller)
         {
 
             bool initalState = controller.Enabled;
+            var defaultScheduler = Scheduler.Default(controller);
 
             // Disable Lab
             if (controller.Enabled) controller.Disable();
+            await defaultScheduler.Stop();
 
             // Show form
-            Application.EnableVisualStyles();
             var form = new ConfigForm
             {
                 configHelper = configHelper,
-                controller = controller
+                controller = controller,
+                scheduler = defaultScheduler
             };
             form.ShowDialog();
 
             // Re-enable if needed
             if (initalState) controller.Enable();
+            await defaultScheduler.Start();
 
         }
-
-        private void ListCategory_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            tabControl.SelectedIndex = listCategory.SelectedIndex;
+            if (listView1.SelectedItems.Count == 0) return;
+            tabControl.SelectedIndex = listView1.SelectedItems[0].Index;
         }
 
         private void ConfigForm_Load(object sender, EventArgs e)
         {
             // Tab fakery
-            listCategory.SelectedIndex = 0;
+            listView1.Items[0].Selected = true;
+            listView1.Items[0].Focused = true;
             tabControl.Top -= tabControl.ItemSize.Height;
             tabControl.Height += tabControl.ItemSize.Height;
             tabControl.Region = new Region(new RectangleF(tabPage1.Left, tabPage1.Top, tabPage1.Width, tabPage1.Height + tabControl.ItemSize.Height-20));
@@ -67,9 +76,11 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
+            numericUpDownWatchdog.Value = configHelper.GetInt("lab.watchdogMinutes", 10);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
+            checkBoxProxyAutoConfig.Checked = configHelper.GetBool("proxy.autoconfig", false);
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
             comboBoxAdbHost.DataSource = Lookups.AdbHosts;
             comboBoxAdbHost.DisplayMember = "Display";
@@ -80,12 +91,110 @@ namespace FFRK_LabMem.Config.UI
             // Load lab .json
             LoadConfigs();
 
+            // Timings
+            LoadTimings();
+
+            // Schedules
+            foreach (var schedule in scheduler.Schedules)
+            {
+                AddScheduleListViewItem(schedule);
+            }
+
+            // Counters
+            Data.Counters.OnUpdated += LoadCounters;
+            LoadCounters(sender, e);
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
 
             // Hide restart warning
             lblRestart.Visible = false;
+
+        }
+
+        private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Data.Counters.OnUpdated -= LoadCounters;
+        }
+
+        private void LoadTimings()
+        {
+            dataGridView1.Rows.Clear();
+            foreach (KeyValuePair<string, LabTimings.Timing> item in LabTimings.Timings)
+            {
+                dataGridView1.Rows.Add(item.Key, item.Value.Delay, item.Value.Jitter);
+            }
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                var key = row.Cells[0].Value.ToString();
+                if (Lookups.Timings.ContainsKey(key)) row.Cells[0].ToolTipText = Lookups.Timings[key];
+            }
+        }
+
+        private void LoadCounters(object sender, EventArgs e)
+        {
+            listViewCounters.Items.Clear();
+
+            // Counters
+            var sessionCounters = Data.Counters.Default.CounterSets["Session"].Counters.ToList();
+            foreach (var item in sessionCounters)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Counters"];
+                if (Lookups.Counters.ContainsKey(item.Key))
+                {
+                    newItem.Text = Lookups.Counters[item.Key];
+                }
+                else
+                {
+                    newItem.Text = item.Key;
+                }
+                newItem.SubItems.Add(item.Value.ToString());
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString());
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Counters[item.Key].ToString());
+                listViewCounters.Items.Add(newItem);  
+            }
+
+            // Runtime
+            string runtimeFormat = @"hh\:mm\:ss";
+            var sessionRuntime = Data.Counters.Default.CounterSets["Session"].Runtime.ToList();
+            foreach (var item in sessionRuntime)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Runtime"];
+                newItem.Text = item.Key;
+                newItem.SubItems.Add(item.Value.ToString(runtimeFormat));
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat));
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat));
+                listViewCounters.Items.Add(newItem);
+            }
+
+            // Merge HE Keys
+            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct();
+            foreach (var item in heKeys)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["HE"];
+                newItem.Text = item;
+                if (Data.Counters.Default.CounterSets["Session"].HeroEquipment.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].HeroEquipment[item].ToString());
+                } else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                if (Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                newItem.SubItems.Add("-");
+                listViewCounters.Items.Add(newItem);
+            }
 
         }
 
@@ -101,7 +210,7 @@ namespace FFRK_LabMem.Config.UI
             if (comboBoxLab.SelectedItem == null) comboBoxLab.SelectedIndex = 0;
         }
 
-        private void ButtonOk_Click(object sender, EventArgs e)
+        private async void ButtonOk_Click(object sender, EventArgs e)
         {
             ColorConsole.Write("Saving configuration... ");
 
@@ -116,9 +225,11 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.port", numericUpDownProxyPort.Value);
             configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked);
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
+            configHelper.SetValue("proxy.autoconfig", checkBoxProxyAutoConfig.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
+            configHelper.SetValue("lab.watchdogMinutes", (int)numericUpDownWatchdog.Value);
 
             // Lab
             labConfig.Debug = checkBoxLabDebug.Checked;
@@ -129,7 +240,6 @@ namespace FFRK_LabMem.Config.UI
             labConfig.StopOnMasterPainting = checkBoxLabStopOnMasterPainting.Checked;
             labConfig.RestartLab = checkBoxLabRestart.Checked;
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
-            labConfig.WatchdogMinutes = (int)numericUpDownWatchdog.Value;
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
             labConfig.LetheTearsSlot = 0;
@@ -143,12 +253,14 @@ namespace FFRK_LabMem.Config.UI
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
 
+            // Paintings
             labConfig.PaintingPriorityMap.Clear();
             foreach (ListViewItem item in listViewPaintings.Items)
             {
                 labConfig.PaintingPriorityMap.Add(item.Tag.ToString(), int.Parse(item.Text));
             }
 
+            // Treasures
             labConfig.TreasureFilterMap.Clear();
             foreach (ListViewItem item in listViewTreasures.Items)
             {
@@ -158,6 +270,7 @@ namespace FFRK_LabMem.Config.UI
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
             }
 
+            // Enemy blocklist
             labConfig.EnemyBlocklist.Clear();
             for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
             {
@@ -166,14 +279,29 @@ namespace FFRK_LabMem.Config.UI
                 labConfig.EnemyBlocklist.Add(item);
             }
 
-            labConfig.Timings.Clear();
+            // Save Lab to .json
+            await labConfig.Save(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
+
+            // Save Timings
+            LabTimings.Timings.Clear();
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
-                labConfig.Timings.Add(item.Cells[0].Value.ToString(), int.Parse(item.Cells[1].Value.ToString()));
+                LabTimings.Timings.Add(item.Cells[0].Value.ToString(), new LabTimings.Timing()
+                {
+                    Delay = int.Parse(item.Cells[1].Value.ToString()),
+                    Jitter = int.Parse(item.Cells[2].Value.ToString())
+                });
             }
+            await LabTimings.Save();
 
-            // Save to .json
-            File.WriteAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path, JsonConvert.SerializeObject(labConfig,Formatting.Indented));
+            // Save Schedule
+            scheduler.Schedules.Clear();
+            foreach (ListViewItem item in listViewSchedule.Items)
+            {
+                var schedule = (Scheduler.Schedule)item.Tag;
+                scheduler.Schedules.Add(schedule);
+            }
+            await scheduler.Save();
 
             // Update machine
             controller.Machine.Config = labConfig;
@@ -199,9 +327,10 @@ namespace FFRK_LabMem.Config.UI
             this.Close();
         }
 
-        private void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
+        private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
         {
-            labConfig = JsonConvert.DeserializeObject<LabConfiguration>(File.ReadAllText(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path));
+            // Options
+            labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
@@ -212,7 +341,6 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabRestart.Checked = labConfig.RestartLab;
             CheckBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
-            numericUpDownWatchdog.Value = labConfig.WatchdogMinutes;
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
@@ -226,6 +354,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
             
+            // Painting priorities
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {
@@ -235,6 +364,7 @@ namespace FFRK_LabMem.Config.UI
                 listViewPaintings.Items.Add(newItem);
             }
 
+            // Treasure priorities
             treasuresLoaded = false;
             listViewTreasures.Items.Clear();
             foreach (var item in labConfig.TreasureFilterMap)
@@ -249,22 +379,13 @@ namespace FFRK_LabMem.Config.UI
             }
             treasuresLoaded = true;
 
+            // Enemy blocklist
             checkedListBoxBlocklist.Items.Clear();
             foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
             {
                 checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
             }
             buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
-
-            dataGridView1.Rows.Clear();
-            foreach (KeyValuePair<string, int> item in labConfig.Timings)
-            {
-                dataGridView1.Rows.Add(item.Key, item.Value);
-            }
-            foreach (DataGridViewRow row in dataGridView1.Rows)
-            {
-                row.Cells[0].ToolTipText = Lookups.Timings[row.Cells[0].Value.ToString()];
-            }
 
         }
 
@@ -378,15 +499,18 @@ namespace FFRK_LabMem.Config.UI
         private void NeedsRestart_Changed(object sender, EventArgs e)
         {
 
-            var changed = (checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-            checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
-            checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
-            numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
-            checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
-            textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
-            textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-            ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-            numericUpDownWatchdog.Value != labConfig.WatchdogMinutes);
+            var changed = (
+                checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
+                checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
+                checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
+                numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
+                checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
+                textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
+                checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
+                textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+                numericUpDownWatchdog.Value != configHelper.GetInt("lab.watchdogMinutes", 10)
+            );
 
             lblRestart.Visible = changed;
 
@@ -418,10 +542,25 @@ namespace FFRK_LabMem.Config.UI
             if (tabControl1.SelectedTab == tabPage7) treasuresTabLoaded = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             Services.Clipboard.CopyProxyBypassToClipboard();
             MessageBox.Show(this, "Copied!","", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async void ButtonProxyReset_Click(object sender, EventArgs e)
+        {
+            var ret = MessageBox.Show(this,
+                "Remove system proxy settings?  (Requires device restart)",
+                "Proxy Auto-Configure",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (ret == DialogResult.OK)
+            {
+                await controller.Adb.SetProxySettings(0, CancellationToken.None);
+            }
         }
 
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
@@ -443,7 +582,7 @@ namespace FFRK_LabMem.Config.UI
         private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
 
-            if (e.ColumnIndex == 1)
+            if (e.ColumnIndex >= 1)
             {
                 int i;
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
@@ -457,8 +596,28 @@ namespace FFRK_LabMem.Config.UI
             }
 
         }
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            var row = dataGridView1.Rows[e.RowIndex];
+            var key = row.Cells[0].Value.ToString();
 
-        private void ButtonTimingDefaults_Click(object sender, EventArgs e)
+            // Featured timings
+            if (Lookups.Timings.ContainsKey(key)) e.CellStyle.BackColor = SystemColors.Menu;
+
+            // Changed timings
+            int i;
+            if (e.ColumnIndex == 1 && int.TryParse(row.Cells[1].Value.ToString(), out i))
+            {
+                if (DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+            }
+            if (e.ColumnIndex == 2 && int.TryParse(row.Cells[2].Value.ToString(), out i))
+            {
+                if (DefaultTimings[key].Jitter != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+            }
+
+        }
+
+        private async void ButtonTimingDefaults_Click(object sender, EventArgs e)
         {
 
             var ret = MessageBox.Show(this, "Are you sure you want to reset all timings to the defaults?",
@@ -469,12 +628,8 @@ namespace FFRK_LabMem.Config.UI
 
             if (ret == DialogResult.Yes)
             {
-                labConfig.Timings = labConfig.GetDefaultTimings();
-                dataGridView1.Rows.Clear();
-                foreach (KeyValuePair<string, int> item in labConfig.Timings)
-                {
-                    dataGridView1.Rows.Add(item.Key, item.Value);
-                }
+                await LabTimings.ResetToDefaults();
+                LoadTimings();
             }
         }
 
@@ -557,6 +712,82 @@ namespace FFRK_LabMem.Config.UI
                     }
                     toolTip1.Active = true;
                 }
+            }
+        }
+
+        private void buttonScheduleAdd_Click(object sender, EventArgs e)
+        {
+            var item = ConfigScheduleForm.EditSchedule(null);
+            if (item!=null) AddScheduleListViewItem(item);
+        }
+
+        private void listViewSchedule_DoubleClick(object sender, EventArgs e)
+        {
+            var item = listViewSchedule.SelectedItems[0];
+            if (item == null) return;
+            var newItem = ConfigScheduleForm.EditSchedule((Scheduler.Schedule)item.Tag);
+            if (newItem != null)
+            {
+                listViewSchedule.Items.Remove(item);
+                AddScheduleListViewItem(newItem);
+            }
+        }
+
+        private void buttonScheduleDelete_Click(object sender, EventArgs e)
+        {
+            var item = listViewSchedule.SelectedItems[0];
+            if (item == null) return;
+            var result = MessageBox.Show(this, "Are you sure?", "Remove Schedule", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                listViewSchedule.Items.Remove(item);
+            }
+        }
+
+        private void AddScheduleListViewItem(Scheduler.Schedule schedule)
+        {
+            var newItem = new ListViewItem(schedule.Name);
+            if (schedule.EnableEnabled)
+            {
+                if (String.IsNullOrEmpty(schedule.EnableCronTab))
+                {
+                    newItem.SubItems.Add(schedule.EnableDate.ToString());
+                } else
+                {
+                    newItem.SubItems.Add(schedule.EnableDate.ToString("hh:mm tt"));
+                }
+            } else
+            {
+                newItem.SubItems.Add("-");
+            }
+            if (schedule.DisableEnabled)
+            {
+                if (String.IsNullOrEmpty(schedule.DisableCronTab))
+                {
+                    newItem.SubItems.Add(schedule.DisableDate.ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add(schedule.DisableDate.ToString("hh:mm tt"));
+                }
+            }
+            else
+            {
+                newItem.SubItems.Add("-");
+            }
+            newItem.SubItems.Add(schedule.EnableCronTab);
+            newItem.Tag = schedule;
+            listViewSchedule.Items.Add(newItem);
+        }
+
+        private async void ButtonCountersReset_Click(object sender, EventArgs e)
+        {
+            String tag = (string)((Button)sender).Tag;
+            var result = MessageBox.Show(this, $"Are you sure you want to reset {tag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                var target = tag.Equals("All") ? null : tag;
+                await Data.Counters.Reset(target);
             }
         }
     }

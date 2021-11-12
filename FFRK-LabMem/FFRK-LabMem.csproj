@@ -48,6 +48,9 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Quartz, Version=3.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.3.3.3\lib\net461\Quartz.dll</HintPath>
+    </Reference>
     <Reference Include="Semver, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Semver.2.0.6\lib\net452\Semver.dll</HintPath>
       <Private>True</Private>
@@ -65,6 +68,7 @@
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -88,13 +92,22 @@
     <Compile Include="Config\UI\ConfigListForm.Designer.cs">
       <DependentUpon>ConfigListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config\UI\ConfigScheduleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\UI\ConfigScheduleForm.Designer.cs">
+      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\UI\Lookups.cs" />
     <Compile Include="Config\UI\Sorters.cs" />
+    <Compile Include="Data\Counters.cs" />
     <Compile Include="Data\DataLogger.cs" />
     <Compile Include="Machines\Lab.Actions.cs" />
     <Compile Include="Machines\LabConfiguration.cs" />
     <Compile Include="Machines\LabController.cs" />
     <Compile Include="Machines\Lab.cs" />
+    <Compile Include="Machines\LabStateJob.cs" />
+    <Compile Include="Machines\LabTimings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -103,6 +116,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\Clipboard.cs" />
+    <Compile Include="Services\Scheduler.cs" />
     <Compile Include="Services\Tray.cs" />
     <Compile Include="Services\Updates.cs" />
   </ItemGroup>
@@ -175,6 +189,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Config\UI\ConfigListForm.resx">
       <DependentUpon>ConfigListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\UI\ConfigScheduleForm.resx">
+      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

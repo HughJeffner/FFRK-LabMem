@@ -60,11 +60,13 @@ namespace FFRK_LabMem.Machines
             Crashed,
             Restarting
         }
-                
+
+        private int WatchdogMinutes { get; set; } = 10;
         private int CurrentKeys { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
+        private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
@@ -78,18 +80,19 @@ namespace FFRK_LabMem.Machines
 
         private List<BuddyInfo> FatigueInfo = new List<BuddyInfo>();
 
-        public Lab(Adb adb, LabConfiguration config)
+        public Lab(Adb adb, LabConfiguration config, int watchdogMinutes)
         {
 
             // Config
             this.Config = config;
             this.Adb = adb;
+            this.WatchdogMinutes = watchdogMinutes;
            
             // Timer
-            if (this.Config.WatchdogMinutes > 0)
+            if (this.WatchdogMinutes > 0)
             {
                 watchdogTimer.AutoReset = false;
-                watchdogTimer.Interval = TimeSpan.FromMinutes(this.Config.WatchdogMinutes).TotalMilliseconds;
+                watchdogTimer.Interval = TimeSpan.FromMinutes(this.WatchdogMinutes).TotalMilliseconds;
                 watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
             }
 
@@ -206,13 +209,13 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.PickedCombatant);
 
             this.StateMachine.Configure(State.Crashed)
-                .OnEntryAsync(async (t) => await RecoverCrash())
+                .OnEntryAsync(async (t) => await RestartFFRK())
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle);
 
             this.StateMachine.Configure(State.Failed)
-                .OnEntryAsync(async (t) => await RecoverFailed())
+                .OnEntryAsync(async (t) => await RestartBattle())
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
@@ -223,7 +226,7 @@ namespace FFRK_LabMem.Machines
             // Start machine
             StateMachine.FireAsync(Trigger.Started);
 
-            if (Config.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
+            if (this.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
                 if (state.Trigger != Trigger.WatchdogTimer)
                 {
                     watchdogTimer.Stop();
@@ -381,6 +384,7 @@ namespace FFRK_LabMem.Machines
                         break;
                     case 8:  // Portal
                         ColorConsole.WriteLine("Pulled into a portal painting!");
+                        await Counters.PulledInPortal();
                         await this.StateMachine.FireAsync(Trigger.FoundPortal);
                         break;
                     case 5:  // Spring
@@ -420,6 +424,11 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        public void DisableSafe()
+        {
+            disableSafeRequested = true;
+        }
+
         public override async Task Disable()
         {
             // Stop timers
@@ -439,6 +448,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
+            disableSafeRequested = false;
             
             // Base
             await base.Disable();
@@ -560,11 +570,21 @@ namespace FFRK_LabMem.Machines
             return false;
         }
 
-        public async Task ManualCrashRecovery()
+        private Task<bool> CheckDisableSafeRequested()
         {
-            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated crash recovery");
+            if (disableSafeRequested)
+            {
+                OnMachineFinished();
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
+        }
+
+        public async Task ManualFFRKRestart(bool showMessage = true)
+        {
+            if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
             watchdogTimer.Stop();
-            await RecoverCrash();
+            await RestartFFRK();
         }
 
     }

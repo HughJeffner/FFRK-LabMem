@@ -10,11 +10,14 @@ namespace FFRK_LabMem.Machines
     public class LabController : MachineController<Lab, Lab.State, Lab.Trigger, LabConfiguration>
     {
 
+        private int watchdogMinutes;
+
         public static async Task<LabController> CreateAndStart(ConfigHelper config)
         {
             
             // Create instance
             var ret = new LabController();
+            ret.watchdogMinutes = config.GetInt("lab.watchdogMinutes", 10);
 
             // Validate config file
             var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
@@ -23,6 +26,9 @@ namespace FFRK_LabMem.Machines
                 return ret;
             }
 
+            // Counters
+            await Data.Counters.Initalize(ret);
+
             // Start it
             await ret.Start(debug: config.GetBool("console.debug", false),
                 adbPath: config.GetString("adb.path", "adb.exe"),
@@ -30,6 +36,7 @@ namespace FFRK_LabMem.Machines
                 proxyPort: config.GetInt("proxy.port", 8081),
                 proxySecure: config.GetBool("proxy.secure", false),
                 proxyBlocklist: config.GetString("proxy.blocklist",""),
+                proxyAutoConfig: config.GetBool("proxy.autoconfig", false),
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
@@ -40,12 +47,15 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Title Screen");
             }
+
+            // Scheduler
+            await Services.Scheduler.Default(ret).Start();
             
             return ret;
         }
         protected override Lab CreateMachine(LabConfiguration config)
         {
-            return new Lab(this.Adb, config);
+            return new Lab(this.Adb, config, watchdogMinutes);
         }
 
         public async void AutoDetectOffsets(ConfigHelper config) {
@@ -67,7 +77,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public void ManualCrashRecovery()
+        public void ManualFFRKRestart()
         {
 
             if (Enabled)
@@ -77,7 +87,16 @@ namespace FFRK_LabMem.Machines
 
                 Task.Run(async () =>
                 {
-                    await this.Machine.ManualCrashRecovery();
+                    try
+                    {
+                        await this.Machine.ManualFFRKRestart();
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception ex)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                    }
+
                 });
             }
 

@@ -47,6 +47,7 @@ Source: "..\FFRK-LabMem\bin\Release\blocklist.txt"; DestDir: "{app}"; Flags: ign
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\FFRK-LabMem\bin\Release\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
+Source: "{app}\DataLog\*"; DestDir: "{app}\Data\"; Flags: external skipifsourcedoesntexist onlyifdoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -58,3 +59,4 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent unchecked; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
 Filename: "{app}\{#MyAppExeName}"; Flags: nowait skipifnotsilent; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
+Filename: "{cmd}"; Parameters: "/C RD /S /Q DataLog"; WorkingDir: "{app}"; Flags: runhidden; Description: "Clean up old DataLog folder"; StatusMsg: "Migrating DataLog to Data"

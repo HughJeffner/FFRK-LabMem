@@ -163,6 +163,94 @@ namespace FFRK_LabMem.Services
 
         }
 
+        public async Task<bool> SetProxySettings(int proxyPort, CancellationToken cancellationToken)
+        {
+            var receiver = new ConsoleOutputReceiver();
+
+            // Remove or set
+            if (proxyPort == 0)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Removing proxy settings...");
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings put global http_proxy :0",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings delete global global_http_proxy_exclusion_list",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Please restart your device/emulator to finish applying proxy settings");
+            } 
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detecting proxy settings...");
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("ip route list match 0 table all scope global",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                string defaultRoute = "10.0.2.2";
+                if (receiver.ToString().ToLower().StartsWith("default via"))
+                {
+                    defaultRoute = receiver.ToString().Split(' ')[2];
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Could not determine default route, using default: {0}", defaultRoute);
+                }
+                receiver = new ConsoleOutputReceiver();
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_host",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                bool proxyHostMatch = receiver.ToString().TrimEnd().ToLower().Equals(defaultRoute);
+                receiver = new ConsoleOutputReceiver();
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_port",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                bool proxyPortMatch = receiver.ToString().TrimEnd().Equals(proxyPort.ToString());
+                receiver = new ConsoleOutputReceiver();
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_exclusion_list",
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                bool proxyExclusionMatch = receiver.ToString().TrimEnd().ToLower().Equals(Proxy.PROXY_BYPASS.ToLower());
+                if (!proxyHostMatch || !proxyPortMatch || !proxyExclusionMatch)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Auto-setting system proxy settings...");
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("settings put global http_proxy {0}:{1}", defaultRoute, proxyPort),
+                    this.Device,
+                    receiver,
+                    cancellationToken,
+                    2000);
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync("settings put global global_http_proxy_exclusion_list " + Proxy.PROXY_BYPASS,
+                        this.Device,
+                        receiver,
+                        cancellationToken,
+                        2000);
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync("settings delete global http_proxy",
+                        this.Device,
+                        receiver,
+                        cancellationToken,
+                        2000);
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Please restart your device/emulator to apply proxy settings");
+                    return await Task.FromResult(false);
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Proxy settings OK (trouble loading?, try changing port)");
+                }
+                
+            }
+
+            return await Task.FromResult(true);
+
+        }
+
         public async Task<bool> CopyUserCertsToSystem(CancellationToken cancellationToken)
         {
 

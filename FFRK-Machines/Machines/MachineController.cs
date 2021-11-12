@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FFRK_Machines.Machines
@@ -21,8 +19,12 @@ namespace FFRK_Machines.Machines
         where C : MachineConfiguration
     {
 
+        public event EventHandler OnEnabled;
+        public event EventHandler OnDisabled;
+
         private bool enabled = false;
         private bool proxySecure = false;
+        private bool proxyAutoConfig = false;
         public M Machine { get; set; }
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
@@ -46,17 +48,19 @@ namespace FFRK_Machines.Machines
         /// <param name="proxyPort">Port to listen for http proxy requests</param>
         /// <param name="proxySecure">Intercept and decrypt https requests</param>
         /// <param name="proxyBlocklist">Path to proxy blocklist file</param>
+        /// <param name="proxyBlocklist">Automatic configure of system proxy settings</param>
         /// <param name="topOffset">Top offset of screen</param>
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, int topOffset, int bottomOffset, string configFile, int consumers = 2)
+        public async Task Start(bool debug, string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, int topOffset, int bottomOffset, string configFile, int consumers = 2)
         {
 
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, debug, proxyBlocklist);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             this.proxySecure = proxySecure;
+            this.proxyAutoConfig = proxyAutoConfig;
             Proxy.Start();
 
             // Adb
@@ -65,7 +69,7 @@ namespace FFRK_Machines.Machines
 
             // Machine
             ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
-            Machine = this.CreateMachine(JsonConvert.DeserializeObject<C>(File.ReadAllText(configFile)));
+            Machine = this.CreateMachine(await MachineConfiguration.Load<C>(configFile));
             Machine.MachineFinished += Machine_MachineFinished;
             Machine.MachineError += Machine_MachineError;
             Machine.CancellationToken = this.cancelMachineSource.Token;
@@ -117,6 +121,7 @@ namespace FFRK_Machines.Machines
         {
             Machine.RegisterWithProxy(Proxy);
             if (this.proxySecure) await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
+            if (this.proxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
         }
 
         private void Adb_DeviceAvailable(object sender, SharpAdbClient.DeviceDataEventArgs e)
@@ -173,6 +178,7 @@ namespace FFRK_Machines.Machines
                 ResetCancelTasks();
                 this.Machine.ConfigureStateMachine();
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
+                if (OnEnabled != null) OnEnabled.Invoke(this, new EventArgs());
             }
 
         }
@@ -189,6 +195,7 @@ namespace FFRK_Machines.Machines
                 CancelTasks();
                 this.Machine.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled {0}", typeof(M).Name);
+                if (OnDisabled != null) OnDisabled.Invoke(this, new EventArgs());
             }
 
         }

@@ -35,6 +35,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonRename = new System.Windows.Forms.Button();
             this.buttonRemove = new System.Windows.Forms.Button();
             this.labelPath = new System.Windows.Forms.Label();
+            this.buttonDupe = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonCancel
@@ -81,7 +82,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonRemove
             // 
             this.buttonRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRemove.Location = new System.Drawing.Point(260, 108);
+            this.buttonRemove.Location = new System.Drawing.Point(260, 143);
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.Size = new System.Drawing.Size(106, 29);
             this.buttonRemove.TabIndex = 9;
@@ -98,11 +99,23 @@ namespace FFRK_LabMem.Config.UI
             this.labelPath.Text = "Config files path:";
             this.labelPath.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // buttonDupe
+            // 
+            this.buttonDupe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDupe.Location = new System.Drawing.Point(260, 108);
+            this.buttonDupe.Name = "buttonDupe";
+            this.buttonDupe.Size = new System.Drawing.Size(106, 29);
+            this.buttonDupe.TabIndex = 11;
+            this.buttonDupe.Text = "Duplicate";
+            this.buttonDupe.UseVisualStyleBackColor = true;
+            this.buttonDupe.Click += new System.EventHandler(this.ButtonDupe_Click);
+            // 
             // ConfigListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(379, 328);
+            this.Controls.Add(this.buttonDupe);
             this.Controls.Add(this.labelPath);
             this.Controls.Add(this.buttonRemove);
             this.Controls.Add(this.buttonRename);
@@ -129,5 +142,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Button buttonRename;
         private System.Windows.Forms.Button buttonRemove;
         private System.Windows.Forms.Label labelPath;
+        private System.Windows.Forms.Button buttonDupe;
     }
 }

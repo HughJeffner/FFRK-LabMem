@@ -41,7 +41,9 @@ namespace FFRK_LabMem.Config.UI
             {"Pre-SelectTreasure", "Delay before selecting the first treasure"},
             {"Pre-Door", "Delay before either opening or leaving a sealed door"},
             {"Pre-MoveOn", "Delay before moving on after most explore results"},
-            {"Post-Battle","Delay before pressing skip after a battle ends" }
+            {"Post-Battle","Delay before pressing skip after a battle ends" },
+            {"Pre-RestartLab","Delay before starting a new lab run when degenerate mode is enabled" },
+            {"Inter-RestartFFRK-Timeout","How long to wait when restarting FFRK before giving up" },
         };
 
         public static Dictionary<String, String> Blocklist = new Dictionary<string, string>() {
@@ -52,6 +54,22 @@ namespace FFRK_LabMem.Config.UI
             {"Lunasaurs", "Reflect"},
             {"Octomammoth","Reflect" },
             {"Marilith", "High resistance, Blind" }
+        };
+
+        public static Dictionary<String, String> Counters = new Dictionary<string, string>() {
+            {"LabRunsCompleted", "Lab Runs Completed"},
+            {"PaintingsSelected", "Paintings Selected"},
+            {"BattlesWon", "Battles Won"},
+            {"TreasuresOpened", "Treasures Opened"},
+            {"RadiantPaintings", "Radiant Paintings Found"},
+            {"MagicPots", "Magic Pots Found"},
+            {"UsedTears", "Lethe Tears Used"},
+            {"UsedKeys", "Magic Keys Used"},
+            {"UsedTeleportStones", "Teleport Stones Used"},
+            {"UsedStaminaPots", "Stamina Pots Used"},
+            {"PulledInPortal", "Pulled Into Portals"},
+            {"FFRKRestarts", "FFRK Restarted"},
+            {"HeroEquipmentGot", "Hero Equipment Found"},
         };
 
     }

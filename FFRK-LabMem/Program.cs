@@ -34,6 +34,9 @@ namespace FFRK_LabMem
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
 
+            // Enable visual styles in forms
+            System.Windows.Forms.Application.EnableVisualStyles();
+
             // Ad-hoc command loop
             Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'Ctrl+X' to Exit");
             while (true)
@@ -47,7 +50,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false));
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
-                if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualCrashRecovery();
+                if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
             }
             
             // Stop

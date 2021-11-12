@@ -12,8 +12,9 @@ namespace FFRK_LabMem.Data
     class DataLogger
     {
 
-        private static Boolean enabled = false;
-        private static String folder = @"./DataLog";
+        private static bool enabled = false;
+        private static readonly string folder = @"./Data";
+        private static readonly string fileSuffix = "_v01.csv";
 
         public static void Initalize(ConfigHelper config)
         {
@@ -37,7 +38,7 @@ namespace FFRK_LabMem.Data
                         WriteLine(writer, row.ToArray(), row.Count, ',');
                         i++;
                     }
-                    await AppendFile("treasures_v01.csv", writer);
+                    await AppendFile("treasures", writer);
                 }
             }
 
@@ -72,7 +73,7 @@ namespace FFRK_LabMem.Data
                     }
                     row.Add(insideDoor?"1":"0");
                     WriteLine(writer, row.ToArray(), row.Count, ',');
-                    await AppendFile("explores_v01.csv", writer);
+                    await AppendFile("explores", writer);
                 }
             }
                         
@@ -97,8 +98,9 @@ namespace FFRK_LabMem.Data
                             row[3].Replace("★", "*"),
                             row[4]);
 
+                        await InspectDrop(item, "item_type_name", "item_name");
                     }
-                    await AppendFile("drops_v01.csv", writer);
+                    await AppendFile("drops", writer);
                 }
             }
 
@@ -127,12 +129,24 @@ namespace FFRK_LabMem.Data
                             row[3].Replace("★", "*"),
                             row[4]);
 
+                        await InspectDrop(item.First, "type_name", "name");
                     }
-                    await AppendFile("drops_battle_v01.csv", writer);
+                    await AppendFile("drops_battle", writer);
                 }
 
             }
 
+        }
+
+        private static async Task InspectDrop(JToken item, string typeField, string nameField)
+        {
+            var typeName = item[typeField];
+            if (typeName != null)
+            {
+                if (typeName.ToString().Equals("EQUIPMENT")) await Counters.FoundHE(item[nameField].ToString());
+                // SPHERE_MATERIAL, ABILITY_MATERIAL, LABYRINTH_ITEM, EQUIPMENT_SP_MATERIAL
+            }
+            
         }
 
         private static List<String> CreateDataRow(Lab lab)
@@ -164,7 +178,7 @@ namespace FFRK_LabMem.Data
 
             try
             {
-                using (var stream = new StreamWriter(folder + "/" + fileName, true))
+                using (var stream = new StreamWriter(folder + "/" + fileName + fileSuffix, true))
                 {
                     await stream.WriteAsync(data.ToString());
                 }
