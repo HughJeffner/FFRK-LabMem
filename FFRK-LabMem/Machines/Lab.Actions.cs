@@ -334,19 +334,18 @@ namespace FFRK_LabMem.Machines
 
         private async Task OpenSealedDoor()
         {
-
+            ColorConsole.WriteLine("{0} Door...", this.Config.OpenDoors ? "Opening" : "Leaving");
+            await LabTimings.Delay("Pre-Door", this.CancellationToken);
+            bool foundButton;
             if (this.Config.OpenDoors)
             {
-                ColorConsole.WriteLine("Opening Door...");
-                await LabTimings.Delay("Pre-Door", this.CancellationToken);
-                await this.Adb.TapPct(70, 74, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap("#2060ce", 4000, 70, 73, 75, 3, this.CancellationToken);
             }
             else
             {
-                ColorConsole.WriteLine("Leaving Door...");
-                await LabTimings.Delay("Pre-Door", this.CancellationToken);
-                await this.Adb.TapPct(30, 74, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap("#6c3518", 4000, 30, 73, 75, 3, this.CancellationToken);
             }
+            if (!foundButton) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
             await LabTimings.Delay("Post-Door", this.CancellationToken);
 
         }

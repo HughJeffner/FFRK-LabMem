@@ -112,7 +112,7 @@ namespace FFRK_LabMem.Machines
                 { "Pre-SelectTreasure", new Timing() },
                 { "Inter-SelectTreasure", new Timing() {Delay=2000 } },
                 { "Post-SelectTreasure", new Timing() {Delay=0 } },
-                { "Pre-Door", new Timing() },
+                { "Pre-Door", new Timing() {Delay=1000} },
                 { "Post-Door", new Timing(){ Delay=1000} },
                 { "Pre-MoveOn", new Timing() },
                 { "Post-MoveOn", new Timing() { Delay=1000 } },
