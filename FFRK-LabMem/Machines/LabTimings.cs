@@ -98,7 +98,7 @@ namespace FFRK_LabMem.Machines
             (await GetInstance()).timings = GetDefaultTimings();
         }
 
-        private static TimingDictionary GetDefaultTimings()
+        public static TimingDictionary GetDefaultTimings()
         {
             return new TimingDictionary()
             {

@@ -15,12 +15,14 @@ namespace FFRK_LabMem.Config.UI
     public partial class ConfigForm : Form
     {
 
+        private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
+        private bool treasuresTabLoaded = false;
+        private bool treasuresLoaded = false;
+
         public ConfigHelper configHelper = null;
         public LabController controller = null;
         public LabConfiguration labConfig = new LabConfiguration();
         protected Scheduler scheduler = null;
-        private bool treasuresTabLoaded = false;
-        private bool treasuresLoaded = false;
 
         public ConfigForm()
         {
@@ -580,7 +582,7 @@ namespace FFRK_LabMem.Config.UI
         private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
 
-            if (e.ColumnIndex == 1)
+            if (e.ColumnIndex >= 1)
             {
                 int i;
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
@@ -591,6 +593,26 @@ namespace FFRK_LabMem.Config.UI
                 {
                     if (i < 0) e.Cancel = true;
                 }
+            }
+
+        }
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            var row = dataGridView1.Rows[e.RowIndex];
+            var key = row.Cells[0].Value.ToString();
+
+            // Featured timings
+            if (Lookups.Timings.ContainsKey(key)) e.CellStyle.BackColor = SystemColors.Menu;
+
+            // Changed timings
+            int i;
+            if (e.ColumnIndex == 1 && int.TryParse(row.Cells[1].Value.ToString(), out i))
+            {
+                if (DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+            }
+            if (e.ColumnIndex == 2 && int.TryParse(row.Cells[2].Value.ToString(), out i))
+            {
+                if (DefaultTimings[key].Jitter != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
             }
 
         }

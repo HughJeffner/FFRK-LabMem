@@ -13,8 +13,8 @@ namespace FFRK_LabMem.Data
     {
 
         private static bool enabled = false;
-        private static string folder = @"./Data";
-        private static string fileSuffix = "_v01.csv";
+        private static readonly string folder = @"./Data";
+        private static readonly string fileSuffix = "_v01.csv";
 
         public static void Initalize(ConfigHelper config)
         {
