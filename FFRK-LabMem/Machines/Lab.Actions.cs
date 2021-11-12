@@ -637,7 +637,7 @@ namespace FFRK_LabMem.Machines
             timer.Start();
             while (timer.Elapsed <= duration)
             {
-                await Task.Delay(500);
+                await Task.Delay(500, this.CancellationToken);
                 int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
                 var notify = notifies.Where(n => n >= seconds).FirstOrDefault();
                 if (notify > 0)
@@ -653,6 +653,7 @@ namespace FFRK_LabMem.Machines
 
             // Inital delay
             await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
+            this.CancellationToken.ThrowIfCancellationRequested();
             ColorConsole.WriteLine("Restarting Lab");
 
             // Dungeon Complete
