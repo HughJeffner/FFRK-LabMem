@@ -14,7 +14,7 @@ namespace FFRK_LabMem.Data
     {
 
         private static Counters _instance = null;
-        private const string CONFIG_PATH = "./DataLog/counters.json";
+        private const string CONFIG_PATH = "./Data/counters.json";
 
         public static event EventHandler OnUpdated;
 
@@ -182,6 +182,8 @@ namespace FFRK_LabMem.Data
             if (OnUpdated != null) OnUpdated.Invoke(this, new EventArgs());
             try
             {
+                
+                new FileInfo(path).Directory.Create();
                 File.WriteAllText(path, 
                     JsonConvert.SerializeObject(this.CounterSets, 
                     Formatting.Indented, 
