@@ -16,6 +16,9 @@ namespace FFRK_LabMem.Machines
     public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
 
+        private const string BUTTON_BLUE = "#2060ce";
+        private const string BUTTON_BROWN = "#6c3518";
+
         private async Task DetermineState()
         {
 
@@ -297,7 +300,7 @@ namespace FFRK_LabMem.Machines
 
                 // Move On
                 ColorConsole.WriteLine("Moving On...");
-                var b = await Adb.FindButtonAndTap("#2060ce", 4000, 40, 62, 80, 10, this.CancellationToken);
+                var b = await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 40, 62, 80, 10, this.CancellationToken);
                 if (b)
                 {
                     await LabTimings.Delay("Inter-SelectTreasure", this.CancellationToken);
@@ -339,11 +342,11 @@ namespace FFRK_LabMem.Machines
             bool foundButton;
             if (this.Config.OpenDoors)
             {
-                foundButton = await this.Adb.FindButtonAndTap("#2060ce", 4000, 70, 73, 75, 3, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 70, 73, 75, 3, this.CancellationToken);
             }
             else
             {
-                foundButton = await this.Adb.FindButtonAndTap("#6c3518", 4000, 30, 73, 75, 3, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BROWN, 4000, 30, 73, 75, 3, this.CancellationToken);
             }
             if (!foundButton) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
             await LabTimings.Delay("Post-Door", this.CancellationToken);
@@ -357,7 +360,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Moving On...");
             await LabTimings.Delay("Pre-MoveOn", this.CancellationToken);
 
-            var b = await Adb.FindButtonAndTap("#2060ce", 4000, 42.7, 65, 81, 30, this.CancellationToken);
+            var b = await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 42.7, 65, 81, 30, this.CancellationToken);
             if (b)
             {
                 await LabTimings.Delay("Post-MoveOn", this.CancellationToken);
@@ -378,7 +381,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Enter Dungeon");
-            var b = await Adb.FindButtonAndTap("#2060ce", 2000, 56.6, 80, 95, 30, this.CancellationToken);
+            var b = await Adb.FindButtonAndTap(BUTTON_BLUE, 2000, 56.6, 80, 95, 30, this.CancellationToken);
             if (b)
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
@@ -424,11 +427,11 @@ namespace FFRK_LabMem.Machines
             }
 
             // Enter
-            if (await Adb.FindButtonAndTap("#2060ce", 3000, 42.7, 85, 95, 30, this.CancellationToken))
+            if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 42.7, 85, 95, 30, this.CancellationToken))
             {
                 await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 // Fatigue warning
-                await Adb.FindButtonAndTap("#2060ce", 2000, 56, 55, 65, 5, this.CancellationToken);
+                await Adb.FindButtonAndTap(BUTTON_BLUE, 2000, 56, 55, 65, 5, this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
                 battleStopwatch.Start();
             }
@@ -508,19 +511,19 @@ namespace FFRK_LabMem.Machines
 
             // Confirm button
             await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
-            if (await Adb.FindButtonAndTap("#2060ce", 3000, 37.5, 74, 87, 20, this.CancellationToken))
+            if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 37.5, 74, 87, 20, this.CancellationToken))
             {
                 //Use Lethe Tears brown button
                 await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
-                if (await Adb.FindButtonAndTap("#6c3518", 2000, 50, 29, 42, 20, this.CancellationToken))
+                if (await Adb.FindButtonAndTap(BUTTON_BROWN, 2000, 50, 29, 42, 20, this.CancellationToken))
                 {
                     // Confirmation
                     await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
-                    if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                     {
                         // OK
                         await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
-                        if (await Adb.FindButtonAndTap("#2060ce", 3000, 38.8, 55, 70, 5, this.CancellationToken))
+                        if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 38.8, 55, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
                             await Counters.UsedTears(numberUsed);
@@ -559,11 +562,11 @@ namespace FFRK_LabMem.Machines
 
             // Use a stone brown button
             await LabTimings.Delay("Inter-TeleportStone", this.CancellationToken);
-            if (await Adb.FindButtonAndTap("#6c3518", 2000, 58, 23, 37.5, 20, this.CancellationToken))
+            if (await Adb.FindButtonAndTap(BUTTON_BROWN, 2000, 58, 23, 37.5, 20, this.CancellationToken))
             {
                 // Confirmation
                 await LabTimings.Delay("Inter-TeleportStone", this.CancellationToken);
-                if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                 {
                     await LabTimings.Delay("Post-TeleportStone", this.CancellationToken);
                     await Counters.UsedTeleportStone();
@@ -638,7 +641,7 @@ namespace FFRK_LabMem.Machines
             {
                 await Task.Delay(500, this.CancellationToken);
                 int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
-                var notify = notifies.Where(n => n >= seconds).FirstOrDefault();
+                var notify = notifies.Where(n => n == seconds).FirstOrDefault();
                 if (notify > 0)
                 {
                     ColorConsole.WriteLine("Restarting Lab in {0} seconds...", seconds);
@@ -647,7 +650,7 @@ namespace FFRK_LabMem.Machines
             }
         }
 
-        public async Task RestartLab()
+        private async Task RestartLab()
         {
 
             // Inital delay
@@ -657,7 +660,7 @@ namespace FFRK_LabMem.Machines
 
             // Dungeon Complete
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Dismissing dungeon complete dialog");
-            var closeButton = await Adb.FindButton("#6c3518", 2000, 39, 81, 91, 10, this.CancellationToken);
+            var closeButton = await Adb.FindButton(BUTTON_BROWN, 2000, 39, 81, 91, 10, this.CancellationToken);
             if (closeButton != null)
             {
                 await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
@@ -669,24 +672,24 @@ namespace FFRK_LabMem.Machines
             // Mission Complete
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for mission complete dialog");
-            await Adb.FindButtonAndTap("#6c3518", 2000, 39, 61, 82, 5, this.CancellationToken);
+            await Adb.FindButtonAndTap(BUTTON_BROWN, 2000, 39, 61, 82, 5, this.CancellationToken);
 
             // Enter button 1
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for enter button 1");
-            if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 84, 94, 20, this.CancellationToken))
+            if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 84, 94, 20, this.CancellationToken))
             {
 
                 // Enter button 2
                 await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                 if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for enter button 2");
-                if (await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken))
+                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken))
                 {
 
                     // Stamina dialog
                     await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for stamina dialog");
-                    var staminaButton = await Adb.FindButton("#6c3518", 2000, 50, 36, 50, 5, this.CancellationToken);
+                    var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
                     if (staminaButton != null)
                     {
                         if (Config.UsePotions)
@@ -694,11 +697,11 @@ namespace FFRK_LabMem.Machines
                             ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Stamina Potion] x1");
                             await Adb.TapPct(staminaButton.Item1, staminaButton.Item2, this.CancellationToken); // Select potions
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
+                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap("#2060ce", 3000, 47, 57, 70, 5, this.CancellationToken);  // Potion used dialog
+                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 47, 57, 70, 5, this.CancellationToken);  // Potion used dialog
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap("#2060ce", 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
+                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
                             await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
                             await Counters.UsedStaminaPot();
                         }
@@ -714,13 +717,13 @@ namespace FFRK_LabMem.Machines
                     // Confirm equipment box or enter
                     await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for enter button 3");
-                    if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                     {
 
                         // Enter if equipment confirmed, otherwise should find nothing
                         await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                         if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for confirm equipment box");
-                        if (await Adb.FindButtonAndTap("#2060ce", 3000, 61, 57, 70, 5, this.CancellationToken))
+                        if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
                         }
@@ -738,7 +741,18 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
+                    if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking for inventory full");
+                    var b = Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
+                    if (b!= null)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
+                        await Notify();
+                        OnMachineFinished();
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
+                    }
+                    
                 }
 
             }
@@ -768,11 +782,11 @@ namespace FFRK_LabMem.Machines
             {
                 // Press start button
                 if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for start button...");
-                if (await Adb.FindButtonAndTap("#2060ce", 4000, 40, 70, 83, 20, this.CancellationToken))
+                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 40, 70, 83, 20, this.CancellationToken))
                 {
                     // Press continue battle button
                     if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Wating for continue battle button...");
-                    if (await Adb.FindButtonAndTap("#2060ce", 4000, 61, 57, 68, 10, this.CancellationToken))
+                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 61, 57, 68, 10, this.CancellationToken))
                     {
                         ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
                         await this.StateMachine.FireAsync(Trigger.StartBattle);
