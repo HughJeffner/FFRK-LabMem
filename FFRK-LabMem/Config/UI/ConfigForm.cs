@@ -1,5 +1,4 @@
 ﻿using FFRK_LabMem.Machines;
-using Newtonsoft.Json;
 using System;
 using System.Drawing;
 using System.IO;
@@ -8,8 +7,8 @@ using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
-using Quartz;
 using System.Threading;
+using System.Linq;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -134,44 +133,65 @@ namespace FFRK_LabMem.Config.UI
         private void LoadCounters(object sender, EventArgs e)
         {
             listViewCounters.Items.Clear();
-            foreach(var set in Data.Counters.Default.CounterSets)
+
+            // Counters
+            var sessionCounters = Data.Counters.Default.CounterSets["Session"].Counters.ToList();
+            foreach (var item in sessionCounters)
             {
-                // Counters
-                foreach (var item in set.Value.Counters)
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Counters"];
+                if (Lookups.Counters.ContainsKey(item.Key))
                 {
-                    var newItem = new ListViewItem();
-                    if (Lookups.Counters.ContainsKey(item.Key))
-                    {
-                        newItem.Text = Lookups.Counters[item.Key];
-                    } else
-                    {
-                        newItem.Text = item.Key;
-                    }
-                    newItem.SubItems.Add(item.Value.ToString());
-                    newItem.Group = listViewCounters.Groups[set.Key];
-                    listViewCounters.Items.Add(newItem);
+                    newItem.Text = Lookups.Counters[item.Key];
                 }
+                else
+                {
+                    newItem.Text = item.Key;
+                }
+                newItem.SubItems.Add(item.Value.ToString());
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString());
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Counters[item.Key].ToString());
+                listViewCounters.Items.Add(newItem);  
+            }
 
-                // HE
-                foreach (var item in set.Value.HeroEquipment)
-                {
-                    var newItem = new ListViewItem();
-                    newItem.Text = $"    {item.Key}";
-                    newItem.SubItems.Add(item.Value.ToString());
-                    newItem.Group = listViewCounters.Groups[set.Key];
-                    listViewCounters.Items.Add(newItem);
-                }
+            // Runtime
+            string runtimeFormat = @"hh\:mm\:ss";
+            var sessionRuntime = Data.Counters.Default.CounterSets["Session"].Runtime.ToList();
+            foreach (var item in sessionRuntime)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Runtime"];
+                newItem.Text = item.Key;
+                newItem.SubItems.Add(item.Value.ToString(runtimeFormat));
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat));
+                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat));
+                listViewCounters.Items.Add(newItem);
+            }
 
-                // Runtime
-                foreach (var item in set.Value.Runtime)
+            // Merge HE Keys
+            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct();
+            foreach (var item in heKeys)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["HE"];
+                newItem.Text = item;
+                if (Data.Counters.Default.CounterSets["Session"].HeroEquipment.ContainsKey(item))
                 {
-                    var newItem = new ListViewItem();
-                    newItem.Text = $"{item.Key} Runtime";
-                    newItem.SubItems.Add(item.Value.ToString());
-                    newItem.Group = listViewCounters.Groups[set.Key];
-                    listViewCounters.Items.Add(newItem);
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].HeroEquipment[item].ToString());
+                } else
+                {
+                    newItem.SubItems.Add("-");
                 }
-                
+                if (Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                newItem.SubItems.Add("-");
+                listViewCounters.Items.Add(newItem);
             }
 
         }

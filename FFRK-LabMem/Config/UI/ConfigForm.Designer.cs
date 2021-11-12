@@ -30,9 +30,9 @@ namespace FFRK_LabMem.Config.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("Current Lab", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("Session", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("Total", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
@@ -134,18 +134,20 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.buttonCountersResetLab = new System.Windows.Forms.Button();
             this.buttonCountersResetAll = new System.Windows.Forms.Button();
             this.listViewCounters = new System.Windows.Forms.ListView();
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
@@ -1245,6 +1247,17 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
             // 
+            // buttonCountersResetSession
+            // 
+            this.buttonCountersResetSession.Location = new System.Drawing.Point(99, 311);
+            this.buttonCountersResetSession.Name = "buttonCountersResetSession";
+            this.buttonCountersResetSession.Size = new System.Drawing.Size(90, 23);
+            this.buttonCountersResetSession.TabIndex = 7;
+            this.buttonCountersResetSession.Tag = "Session";
+            this.buttonCountersResetSession.Text = "Reset Session";
+            this.buttonCountersResetSession.UseVisualStyleBackColor = true;
+            this.buttonCountersResetSession.Click += new System.EventHandler(this.ButtonCountersReset_Click);
+            // 
             // buttonCountersResetLab
             // 
             this.buttonCountersResetLab.Location = new System.Drawing.Point(3, 311);
@@ -1271,18 +1284,20 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.listViewCounters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader10,
-            this.columnHeader11});
+            this.columnHeader12,
+            this.columnHeader11,
+            this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup7.Header = "Current Lab";
-            listViewGroup7.Name = "CurrentLab";
-            listViewGroup8.Header = "Session";
-            listViewGroup8.Name = "Session";
-            listViewGroup9.Header = "Total";
-            listViewGroup9.Name = "Total";
+            listViewGroup1.Header = "Counters";
+            listViewGroup1.Name = "Counters";
+            listViewGroup2.Header = "Runtime";
+            listViewGroup2.Name = "Runtime";
+            listViewGroup3.Header = "Hero Equipment";
+            listViewGroup3.Name = "HE";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup7,
-            listViewGroup8,
-            listViewGroup9});
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(3, 0);
             this.listViewCounters.Name = "listViewCounters";
@@ -1293,13 +1308,23 @@ namespace FFRK_LabMem.Config.UI
             // 
             // columnHeader10
             // 
-            this.columnHeader10.Text = "Counter";
-            this.columnHeader10.Width = 271;
+            this.columnHeader10.Text = "";
+            this.columnHeader10.Width = 140;
             // 
             // columnHeader11
             // 
-            this.columnHeader11.Text = "Value";
-            this.columnHeader11.Width = 136;
+            this.columnHeader11.Text = "Current Lab";
+            this.columnHeader11.Width = 90;
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "Session";
+            this.columnHeader12.Width = 90;
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "All-Time";
+            this.columnHeader13.Width = 90;
             // 
             // lblRestart
             // 
@@ -1363,22 +1388,11 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "general-32.png");
             this.imageList1.Images.SetKeyName(1, "proxy-32.png");
-            this.imageList1.Images.SetKeyName(2, "android-32.png");
+            this.imageList1.Images.SetKeyName(2, "adb-32.png");
             this.imageList1.Images.SetKeyName(3, "lab-32.png");
-            this.imageList1.Images.SetKeyName(4, "timing-32.png");
+            this.imageList1.Images.SetKeyName(4, "timings-32.png");
             this.imageList1.Images.SetKeyName(5, "schedule-32.png");
             this.imageList1.Images.SetKeyName(6, "counters-32.png");
-            // 
-            // buttonCountersResetSession
-            // 
-            this.buttonCountersResetSession.Location = new System.Drawing.Point(99, 311);
-            this.buttonCountersResetSession.Name = "buttonCountersResetSession";
-            this.buttonCountersResetSession.Size = new System.Drawing.Size(90, 23);
-            this.buttonCountersResetSession.TabIndex = 7;
-            this.buttonCountersResetSession.Tag = "Session";
-            this.buttonCountersResetSession.Text = "Reset Session";
-            this.buttonCountersResetSession.UseVisualStyleBackColor = true;
-            this.buttonCountersResetSession.Click += new System.EventHandler(this.ButtonCountersReset_Click);
             // 
             // ConfigForm
             // 
@@ -1541,5 +1555,7 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.DataGridViewTextBoxColumn Delay;
         private System.Windows.Forms.DataGridViewTextBoxColumn Jitter;
         private System.Windows.Forms.Button buttonCountersResetSession;
+        private System.Windows.Forms.ColumnHeader columnHeader12;
+        private System.Windows.Forms.ColumnHeader columnHeader13;
     }
 }

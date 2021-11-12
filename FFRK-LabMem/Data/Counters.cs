@@ -35,9 +35,9 @@ namespace FFRK_LabMem.Data
         {
             return new Dictionary<string, CounterSet>
             {
-                {"Total", new CounterSet() },
                 {"Session", new CounterSet() },
                 {"CurrentLab", new CounterSet() },
+                {"Total", new CounterSet() },
             };
         }
         public static Counters Default
@@ -244,8 +244,8 @@ namespace FFRK_LabMem.Data
             {
                 return new Dictionary<string, TimeSpan>()
                 {
-                    {"Total", new TimeSpan()},
                     {"Battle", new TimeSpan()},
+                    {"Total", new TimeSpan()},
                 };
             }
 
