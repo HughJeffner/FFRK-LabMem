@@ -610,9 +610,12 @@ namespace FFRK_LabMem.Machines
             if (t.Destination == State.Completed)
             {
                 
-                // Notify complete
-                await Notify();
-                await Counters.LabRunCompleted();
+                // Notify complete (only if not restarting)
+                if (t.Source != State.Starting)
+                {
+                    await Notify();
+                    await Counters.LabRunCompleted();
+                }
 
                 // Restart or not
                 ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
