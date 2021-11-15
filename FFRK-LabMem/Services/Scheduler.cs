@@ -109,8 +109,14 @@ namespace FFRK_LabMem.Services
 
             // Start the service
             await scheduler.Start();
+
+            // Show status
             if (Schedules.Count > 0)
             {
+                // Need a delay before getting the next trigger time so any misfires can be handled and triggers get updated accordingly
+                await Task.Delay(50);
+
+                // Get all triggers for our job and filter out the next one
                 var triggs = await scheduler.GetTriggersOfJob(job.Key);
                 var next = triggs.Min(t => t.GetNextFireTimeUtc());
                 if (next.HasValue)
