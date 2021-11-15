@@ -157,7 +157,7 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Runtime
-            string runtimeFormat = @"hh\:mm\:ss";
+            string runtimeFormat = @"d\.hh\:mm\:ss";
             var sessionRuntime = Data.Counters.Default.CounterSets["Session"].Runtime.ToList();
             foreach (var item in sessionRuntime)
             {
