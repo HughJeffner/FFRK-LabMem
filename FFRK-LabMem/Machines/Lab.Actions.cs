@@ -611,7 +611,7 @@ namespace FFRK_LabMem.Machines
             {
                 
                 // Notify complete (only if not restarting)
-                if (t.Source != State.Starting)
+                if (t.Source != State.Unknown)
                 {
                     await Notify();
                     await Counters.LabRunCompleted();
