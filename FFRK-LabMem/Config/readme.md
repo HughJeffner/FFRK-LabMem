@@ -52,12 +52,46 @@
 ## Timings
 | Name                 | Description                                          | Default |
 | -------------------- | ---------------------------------------------------- | ------- |
+| Pre-AutoStart		   | Delay before attempting to auto-start                | 10	    |
+| Inter-AutoStart	   | Delay between actions during auto-start              | 1000    |
+| Post-AutoStart	   | Delay after auto-start completed		              | 0       |
 | Pre-SelectPainting   | Delay before selecting a painting                    | 5000    |
 | Inter-SelectPainting | Delay between selecting a painting and confirming it | 1000    |
+| Post-SelectPainting  | Delay after painting is confirmed					  | 0       |
+| Pre-RadiantPaintingScreenshot  | Delay before taking a screenshot of a radiant painting | 4000       |
 | Pre-SelectTreasure   | Delay before selecting the first treasure            | 5000    |
-| Pre-Door             | Delay before either opening or leaving a sealed door | 5000    |
-| Pre-MoveOn           | Delay before moving on after most explore results    | 5000    |
+| Inter-SelectTreasure | Delay between actions when selecting treasures       | 2000    |
+| Post-SelectTreasure  | Delay after selecting the last treasure to be opened | 0       |
+| Pre-Door             | Delay before either opening or leaving a sealed door | 1000    |
+| Post-Door            | Delay after opening or leaving a sealed door		  | 5000    |
+| Pre-MoveOn           | Delay before moving on after explore results		  | 5000    |
+| Post-MoveOn          | Delay after moving on after explore results		  | 1000    |
+| Post-MoveOn-Portal   | Delay after moving on after a suprise portal		  | 5000    |
+| Pre-StartBattle	   | Delay before starting a battle						  | 0	    |
+| Pre-StartBattle-Fatigue | How long to wait for fatigue values to download   | 20000   |
+| Inter-StartBattle	   | Delay between actions when starting a battle   	  | 500	    |
+| Post-StartBattle	   | Delay after starting a battle						  | 0	    |
 | Post-Battle          | Delay before pressing skip after a battle ends       | 7000    |
+| Pre-ConfirmPortal    | Delay before confirming a portal painting		      | 5000    |
+| Post-ConfirmPortal   | Delay after confirming a portal painting             | 2000    |
+| Pre-LetheTears       | Delay before using lethe tears					      | 4000    |
+| Inter-LetheTears     | Delay between actions when using lethe tears         | 2000    |
+| Inter-LetheTears-Unit| Delay between selecting usings when using lethe tears| 500     |
+| Post-LetheTears      | Delay after using lethe tears					      | 0       |
+| Pre-TeleportStone    | Delay before using a teleport stone			      | 2000    |
+| Inter-TeleportStone  | Delay between actions when using a teleport stone    | 2000    |
+| Post-TeleportStone   | Delay after using a teleport stone				      | 0       |
+| Pre-RestartLab       | Delay before restaring a new lab run			      | 60000   |
+| Inter-RestartLab     | Delay between actions when starting a lab run	      | 5000    |
+| Inter-RestartLab-Stamina | Delay betwen action when using a stamina potion  | 2000    |
+| Post-RestartLab      | Delay after restarting a lab run				      | 4000    |
+| Pre-RestartFFRK      | Delay before restarting FFRK					      | 5000    |
+| Inter-RestartFFRK    | Delay between screen captures when restarting FFRK   | 4000    |
+| Inter-RestartFFRK-Timeout | Total time before giving up on restarting FFRK  | 180000  |
+| Post-RestartFFRK     | Delay after restaring FFRK						      | 0       |
+| Pre-RestartBattle    | Delay before restarting a failed battle		      | 5000    |
+| Inter-RestartBattle  | Delay between actions when restarting a battle	      | 2000    |
+| Post-RestartBattle   | Delay after restarting a battle				      | 0       |
 
 ## Enemy Blocklist
 | Name                 | Description                      | Default Enabled |
