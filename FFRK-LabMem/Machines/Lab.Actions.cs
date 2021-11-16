@@ -342,11 +342,11 @@ namespace FFRK_LabMem.Machines
             bool foundButton;
             if (this.Config.OpenDoors)
             {
-                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 70, 73, 75, 3, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 70, 66, 80, 3, this.CancellationToken);
             }
             else
             {
-                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BROWN, 4000, 30, 73, 75, 3, this.CancellationToken);
+                foundButton = await this.Adb.FindButtonAndTap(BUTTON_BROWN, 4000, 30, 66, 80, 3, this.CancellationToken);
             }
             if (!foundButton) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
             await LabTimings.Delay("Post-Door", this.CancellationToken);
