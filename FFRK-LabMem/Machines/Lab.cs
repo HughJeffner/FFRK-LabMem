@@ -16,7 +16,6 @@ namespace FFRK_LabMem.Machines
 {
     public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
-
         public enum Trigger
         {
             Started,
@@ -69,7 +68,8 @@ namespace FFRK_LabMem.Machines
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
-        private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
+        private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
+        private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
         private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
 
         private class BuddyInfo
@@ -91,10 +91,14 @@ namespace FFRK_LabMem.Machines
             // Timer
             if (this.WatchdogMinutes > 0)
             {
-                watchdogTimer.AutoReset = false;
-                watchdogTimer.Interval = TimeSpan.FromMinutes(this.WatchdogMinutes).TotalMilliseconds;
-                watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
+                watchdogHangTimer.AutoReset = false;
+                watchdogHangTimer.Interval = TimeSpan.FromMinutes(this.WatchdogMinutes).TotalMilliseconds;
+                watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
             }
+
+            watchdogCrashTimer.AutoReset = true;
+            watchdogCrashTimer.Interval = TimeSpan.FromSeconds(15).TotalMilliseconds;
+            watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
 
         }
 
@@ -229,10 +233,10 @@ namespace FFRK_LabMem.Machines
             if (this.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
                 if (state.Trigger != Trigger.WatchdogTimer)
                 {
-                    watchdogTimer.Stop();
+                    watchdogHangTimer.Stop();
                     if (this.Data != null)
                     {
-                        watchdogTimer.Start();
+                        watchdogHangTimer.Start();
                         if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
                     } else
                     {
@@ -243,16 +247,21 @@ namespace FFRK_LabMem.Machines
                 
             });
 
-
         }
 
-        async void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
+        async void WatchdogHangTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
 
             await this.StateMachine.FireAsync(Trigger.WatchdogTimer);
 
         }
-        
+
+        private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var state = await Adb.IsPackageRunning(Services.Adb.FFRK_PACKAGE_NAME, CancellationToken);
+            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "crash watchdog state: {0}", state ? "Running" : "Not Running");
+        }
+
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", Handle_GetDisplayPaintings);
@@ -428,11 +437,18 @@ namespace FFRK_LabMem.Machines
         {
             disableSafeRequested = true;
         }
+        
+        protected override Task OnEnabled()
+        {
+            watchdogCrashTimer.Start();
+            return base.OnEnabled();
+        }
 
-        public override async Task Disable()
+        protected override Task OnDisabled()
         {
             // Stop timers
-            if (watchdogTimer.Enabled) watchdogTimer.Stop();
+            watchdogHangTimer.Stop();
+            watchdogCrashTimer.Stop();
             if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
             if (battleStopwatch.IsRunning)
             {
@@ -449,9 +465,8 @@ namespace FFRK_LabMem.Machines
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
             disableSafeRequested = false;
-            
-            // Base
-            await base.Disable();
+
+            return base.OnDisabled();
         }
 
         protected override void OnDataChanged(JObject data)
@@ -583,7 +598,8 @@ namespace FFRK_LabMem.Machines
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
-            watchdogTimer.Stop();
+            InterruptTasks();
+            watchdogHangTimer.Stop();
             await RestartFFRK();
         }
 

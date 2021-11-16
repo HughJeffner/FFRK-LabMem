@@ -892,7 +892,7 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
                 await Notify();
-                watchdogTimer.Stop();
+                watchdogHangTimer.Stop();
                 if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);

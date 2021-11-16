@@ -30,8 +30,6 @@ namespace FFRK_Machines.Machines
         public Adb Adb { get; set; }
         public bool Enabled => enabled;
         private BlockingCollection<Proxy.ProxyEventArgs> queue = new BlockingCollection<Proxy.ProxyEventArgs>();
-        private CancellationTokenSource cancelMachineSource = new CancellationTokenSource();
-       
 
         /// <summary>
         /// Implementors create an instance of the machine you are controlling
@@ -72,7 +70,6 @@ namespace FFRK_Machines.Machines
             Machine = this.CreateMachine(await MachineConfiguration.Load<C>(configFile));
             Machine.MachineFinished += Machine_MachineFinished;
             Machine.MachineError += Machine_MachineError;
-            Machine.CancellationToken = this.cancelMachineSource.Token;
 
             // Start if connected
             if (await Adb.Connect())
@@ -139,17 +136,6 @@ namespace FFRK_Machines.Machines
             this.Disable();
         }
 
-        protected void ResetCancelTasks()
-        {
-            this.cancelMachineSource = new CancellationTokenSource();
-            this.Machine.CancellationToken = this.cancelMachineSource.Token;
-        }
-
-        protected void CancelTasks()
-        {
-            this.cancelMachineSource.CancelAfter(0);
-        }
-
         // Event handlers
         void Machine_MachineError(object sender, Exception e)
         {
@@ -175,8 +161,7 @@ namespace FFRK_Machines.Machines
             if (!enabled && Machine != null && this.Adb.HasDevice)
             {
                 enabled = true;
-                ResetCancelTasks();
-                this.Machine.ConfigureStateMachine();
+                this.Machine.Enable();
                 ColorConsole.WriteLine(ConsoleColor.Green, "Enabled {0}", typeof(M).Name);
                 if (OnEnabled != null) OnEnabled.Invoke(this, new EventArgs());
             }
@@ -192,7 +177,6 @@ namespace FFRK_Machines.Machines
             if (enabled && Machine != null)
             {
                 enabled = false;
-                CancelTasks();
                 this.Machine.Disable();
                 ColorConsole.WriteLine(ConsoleColor.Red, "Disabled {0}", typeof(M).Name);
                 if (OnDisabled != null) OnDisabled.Invoke(this, new EventArgs());

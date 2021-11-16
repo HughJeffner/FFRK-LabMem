@@ -82,8 +82,6 @@ namespace FFRK_LabMem.Machines
 
             if (Enabled)
             {
-                CancelTasks();
-                ResetCancelTasks();
 
                 Task.Run(async () =>
                 {

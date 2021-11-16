@@ -26,7 +26,8 @@ namespace FFRK_Machines.Machines
         public StateMachine<S, T> StateMachine { get; set; }
         public C Config { get; set; }
         protected Random rng = new Random();
-        protected internal CancellationToken CancellationToken { get; set; }
+        protected CancellationToken CancellationToken { get; set; }
+        private CancellationTokenSource cancelSource = new CancellationTokenSource();
 
         // Data property
         private JObject mData = null;
@@ -54,12 +55,49 @@ namespace FFRK_Machines.Machines
         /// <param name="Proxy">The proxy to register to</param>
         public abstract void RegisterWithProxy(Proxy Proxy);
 
+        public void InterruptTasks()
+        {
+            cancelSource.CancelAfter(0);
+            cancelSource = new CancellationTokenSource();
+            CancellationToken = cancelSource.Token;
+        }
+
+        /// <summary>
+        /// Configures and enables the state machine
+        /// </summary>
+        /// <returns></returns>
+        public Task Enable()
+        {
+            cancelSource = new CancellationTokenSource();
+            CancellationToken = cancelSource.Token;
+            ConfigureStateMachine();
+            return OnEnabled();
+        }
+
+        /// <summary>
+        /// Handles any tasks needed if the controller enables this machine.  Implementors of this class can override this method.
+        /// </summary>
+        protected virtual Task OnEnabled()
+        {
+            return Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Disables this machine
+        /// </summary>
+        /// <returns></returns>
+        public Task Disable()
+        {
+            cancelSource.CancelAfter(0);
+            return OnDisabled();
+        }
+
         /// <summary>
         /// Handles any tasks needed if the controller disables this machine.  Does nothing by default, implementors of this class should override this method.
         /// </summary>
-        public virtual Task Disable()
+        protected virtual Task OnDisabled()
         {
-            return Task.FromResult(0);
+            return Task.FromResult(true);
         }
 
         /// <summary>

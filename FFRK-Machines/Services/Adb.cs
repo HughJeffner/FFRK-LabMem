@@ -141,6 +141,17 @@ namespace FFRK_LabMem.Services
                 2000);
         }
 
+        public async Task<bool> IsPackageRunning(string packageName, CancellationToken cancellationToken)
+        {
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("pidof {0}", packageName),
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            return !string.IsNullOrEmpty(receiver.ToString());
+        }
+
         public async Task StartActivity(String packageName, String activityName, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -n {0}/{1}", packageName, activityName),
