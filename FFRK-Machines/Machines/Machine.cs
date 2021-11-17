@@ -55,9 +55,10 @@ namespace FFRK_Machines.Machines
         /// <param name="Proxy">The proxy to register to</param>
         public abstract void RegisterWithProxy(Proxy Proxy);
 
-        public void InterruptTasks()
+        public async void InterruptTasks()
         {
             cancelSource.CancelAfter(0);
+            await Task.Delay(0);
             cancelSource = new CancellationTokenSource();
             CancellationToken = cancelSource.Token;
         }
@@ -71,16 +72,14 @@ namespace FFRK_Machines.Machines
             cancelSource = new CancellationTokenSource();
             CancellationToken = cancelSource.Token;
             ConfigureStateMachine();
-            return OnEnabled();
+            OnEnabled();
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Handles any tasks needed if the controller enables this machine.  Implementors of this class can override this method.
         /// </summary>
-        protected virtual Task OnEnabled()
-        {
-            return Task.FromResult(true);
-        }
+        protected virtual void OnEnabled() {}
 
         /// <summary>
         /// Disables this machine
@@ -89,16 +88,14 @@ namespace FFRK_Machines.Machines
         public Task Disable()
         {
             cancelSource.CancelAfter(0);
-            return OnDisabled();
+            OnDisabled();
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Handles any tasks needed if the controller disables this machine.  Does nothing by default, implementors of this class should override this method.
         /// </summary>
-        protected virtual Task OnDisabled()
-        {
-            return Task.FromResult(true);
-        }
+        protected virtual void OnDisabled() {}
 
         /// <summary>
         /// Configures the internal state machine.  Implementors should override this method
@@ -125,10 +122,7 @@ namespace FFRK_Machines.Machines
         /// Called every time the Data propery is set
         /// </summary>
         /// <param name="data"></param>
-        protected virtual void OnDataChanged(JObject data)
-        {
-
-        }
+        protected virtual void OnDataChanged(JObject data) {}
 
         /// <summary>
         /// Called when a state machine error occurs

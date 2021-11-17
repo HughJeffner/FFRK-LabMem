@@ -76,7 +76,8 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
-            numericUpDownWatchdog.Value = configHelper.GetInt("lab.watchdogMinutes", 10);
+            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
+            numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
@@ -229,7 +230,8 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            configHelper.SetValue("lab.watchdogMinutes", (int)numericUpDownWatchdog.Value);
+            configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
 
             // Lab
             labConfig.Debug = checkBoxLabDebug.Checked;
@@ -302,11 +304,12 @@ namespace FFRK_LabMem.Config.UI
                 scheduler.Schedules.Add(schedule);
             }
             await scheduler.Save();
+            
+            ColorConsole.WriteLine("Done!");
 
             // Update machine
             controller.Machine.Config = labConfig;
-            
-            ColorConsole.WriteLine("Done!");
+            controller.Machine.Watchdog.Update(labConfig.Debug, (int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
 
             // Restart warning
             if (lblRestart.Visible)
@@ -508,8 +511,7 @@ namespace FFRK_LabMem.Config.UI
                 textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
                 checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-                numericUpDownWatchdog.Value != configHelper.GetInt("lab.watchdogMinutes", 10)
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555")
             );
 
             lblRestart.Visible = changed;

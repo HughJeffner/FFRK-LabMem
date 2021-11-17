@@ -30,16 +30,16 @@ namespace FFRK_LabMem.Config.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Proxy", 1);
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Adb", 2);
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Lab", 3);
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Timings", 4);
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Schedule", 5);
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Counters", 6);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Timings", 4);
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Schedule", 5);
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Counters", 6);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -47,7 +47,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.numericUpDownWatchdog = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownWatchdogHang = new System.Windows.Forms.NumericUpDown();
             this.buttonCheckForUpdates = new System.Windows.Forms.Button();
             this.numericUpDownScreenBottom = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -148,9 +148,12 @@ namespace FFRK_LabMem.Config.UI
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.label10 = new System.Windows.Forms.Label();
+            this.numericUpDownWatchdogCrash = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogHang)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenTop)).BeginInit();
             this.tabPage2.SuspendLayout();
@@ -169,6 +172,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage11.SuspendLayout();
             this.tabPage12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -213,9 +217,12 @@ namespace FFRK_LabMem.Config.UI
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.label11);
+            this.tabPage1.Controls.Add(this.label10);
+            this.tabPage1.Controls.Add(this.numericUpDownWatchdogCrash);
             this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.label8);
-            this.tabPage1.Controls.Add(this.numericUpDownWatchdog);
+            this.tabPage1.Controls.Add(this.numericUpDownWatchdogHang);
             this.tabPage1.Controls.Add(this.buttonCheckForUpdates);
             this.tabPage1.Controls.Add(this.numericUpDownScreenBottom);
             this.tabPage1.Controls.Add(this.label2);
@@ -251,15 +258,14 @@ namespace FFRK_LabMem.Config.UI
             this.label8.TabIndex = 16;
             this.label8.Text = "minute(s) pass with no activity";
             // 
-            // numericUpDownWatchdog
+            // numericUpDownWatchdogHang
             // 
-            this.numericUpDownWatchdog.Location = new System.Drawing.Point(128, 166);
-            this.numericUpDownWatchdog.Name = "numericUpDownWatchdog";
-            this.numericUpDownWatchdog.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDownWatchdog.TabIndex = 14;
-            this.toolTip1.SetToolTip(this.numericUpDownWatchdog, "If an action doesn\'t complete in this number of minutes, crash recovery is perfor" +
-        "med. Set to \'0\' for no crash recovery");
-            this.numericUpDownWatchdog.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
+            this.numericUpDownWatchdogHang.Location = new System.Drawing.Point(128, 166);
+            this.numericUpDownWatchdogHang.Name = "numericUpDownWatchdogHang";
+            this.numericUpDownWatchdogHang.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDownWatchdogHang.TabIndex = 14;
+            this.toolTip1.SetToolTip(this.numericUpDownWatchdogHang, "If an action doesn\'t complete in this number of minutes, FFRK restart is performe" +
+        "d. Set to \'0\' to disable");
             // 
             // buttonCheckForUpdates
             // 
@@ -1290,16 +1296,16 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader11,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup4.Header = "Counters";
-            listViewGroup4.Name = "Counters";
-            listViewGroup5.Header = "Runtime";
-            listViewGroup5.Name = "Runtime";
-            listViewGroup6.Header = "Hero Equipment";
-            listViewGroup6.Name = "HE";
+            listViewGroup1.Header = "Counters";
+            listViewGroup1.Name = "Counters";
+            listViewGroup2.Header = "Runtime";
+            listViewGroup2.Name = "Runtime";
+            listViewGroup3.Header = "Hero Equipment";
+            listViewGroup3.Name = "HE";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup4,
-            listViewGroup5,
-            listViewGroup6});
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(3, 0);
             this.listViewCounters.Name = "listViewCounters";
@@ -1357,13 +1363,13 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem8,
-            listViewItem9,
-            listViewItem10,
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(13, 12);
@@ -1396,6 +1402,32 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1.Images.SetKeyName(5, "schedule-32.png");
             this.imageList1.Images.SetKeyName(6, "counters-32.png");
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(182, 196);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(200, 13);
+            this.label10.TabIndex = 19;
+            this.label10.Text = "second(s) if FFRK is running and restart it";
+            // 
+            // numericUpDownWatchdogCrash
+            // 
+            this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(128, 192);
+            this.numericUpDownWatchdogCrash.Name = "numericUpDownWatchdogCrash";
+            this.numericUpDownWatchdogCrash.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDownWatchdogCrash.TabIndex = 18;
+            this.toolTip1.SetToolTip(this.numericUpDownWatchdogCrash, "Checks if FFRK is running and starts it if not.  Set to \'0\' to disable");
+            // 
+            // label11
+            // 
+            this.label11.Location = new System.Drawing.Point(-3, 192);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(123, 20);
+            this.label11.TabIndex = 20;
+            this.label11.Text = "Check every";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1420,7 +1452,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdog)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogHang)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenTop)).EndInit();
             this.tabPage2.ResumeLayout(false);
@@ -1446,6 +1478,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage11.ResumeLayout(false);
             this.tabPage12.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1549,7 +1582,7 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Button buttonCountersResetAll;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.NumericUpDown numericUpDownWatchdog;
+        private System.Windows.Forms.NumericUpDown numericUpDownWatchdogHang;
         private System.Windows.Forms.TabPage tabPage13;
         private System.Windows.Forms.Button buttonTimingDefaults;
         private System.Windows.Forms.DataGridView dataGridView1;
@@ -1559,5 +1592,8 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Button buttonCountersResetSession;
         private System.Windows.Forms.ColumnHeader columnHeader12;
         private System.Windows.Forms.ColumnHeader columnHeader13;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown numericUpDownWatchdogCrash;
+        private System.Windows.Forms.Label label11;
     }
 }

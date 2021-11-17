@@ -24,6 +24,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
+        private int cachedApiLevel = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -143,13 +144,29 @@ namespace FFRK_LabMem.Services
 
         public async Task<bool> IsPackageRunning(string packageName, CancellationToken cancellationToken)
         {
+
+            int apiLevel = await GetAPILevel(cancellationToken);
             var receiver = new ConsoleOutputReceiver();
-            await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("pidof {0}", packageName),
+
+            // Android 7 or higher has pidof
+            if (apiLevel >= 24)
+            {
+                await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("pidof {0}", packageName),
                 this.Device,
                 receiver,
                 cancellationToken,
                 2000);
-            return !string.IsNullOrEmpty(receiver.ToString());
+                return !string.IsNullOrEmpty(receiver.ToString());
+            } else
+            {
+                await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("ps {0}", packageName.Substring(packageName.Length - 15)),
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+                return receiver.ToString().Contains(packageName);
+            }
+            
         }
 
         public async Task StartActivity(String packageName, String activityName, CancellationToken cancellationToken)
@@ -164,13 +181,16 @@ namespace FFRK_LabMem.Services
         public async Task<int> GetAPILevel(CancellationToken cancellationToken)
         {
 
+            if (cachedApiLevel != 0) return cachedApiLevel;
+
             var receiver = new ConsoleOutputReceiver();
             await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.build.version.sdk",
                 this.Device,
                 receiver,
                 cancellationToken,
                 2000);
-            return int.Parse(receiver.ToString());
+            cachedApiLevel = int.Parse(receiver.ToString());
+            return cachedApiLevel;
 
         }
 
