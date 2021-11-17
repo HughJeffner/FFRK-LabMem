@@ -27,7 +27,7 @@ namespace FFRK_LabMem.Machines
             await Data.Counters.Initalize(ret);
 
             // Start it
-            await ret.Start(debug: config.GetBool("console.debug", false),
+            await ret.Start(
                 adbPath: config.GetString("adb.path", "adb.exe"),
                 adbHost: config.GetString("adb.host", "127.0.0.1:7555"),
                 proxyPort: config.GetInt("proxy.port", 8081),

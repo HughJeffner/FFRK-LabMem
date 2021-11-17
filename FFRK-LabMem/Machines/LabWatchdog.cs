@@ -14,8 +14,6 @@ namespace FFRK_LabMem.Machines
         private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
         private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
         private readonly Adb adb;
-        
-        public bool Debug { get; set; }
         public double HangCheckInterval => watchdogHangTimer.Interval;
         public double CrashCheckInterval => watchdogCrashTimer.Interval;
         public bool Enabled { get; set; } = false;
@@ -36,18 +34,16 @@ namespace FFRK_LabMem.Machines
             }
         }
 
-        public LabWatchdog(Adb adb, bool debug, int hangCheckMinutes, int crashCheckSeconds) : this(
+        public LabWatchdog(Adb adb, int hangCheckMinutes, int crashCheckSeconds) : this(
             adb,
-            debug,
             TimeSpan.FromMinutes(hangCheckMinutes).TotalMilliseconds, 
             TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds
         ) { }
 
-        public LabWatchdog(Adb adb, bool debug, double hangCheckInterval, double crashCheckInterval)
+        public LabWatchdog(Adb adb, double hangCheckInterval, double crashCheckInterval)
         {
 
             this.adb = adb;
-            this.Debug = debug;
 
             if (hangCheckInterval > 0)
             {
@@ -80,11 +76,11 @@ namespace FFRK_LabMem.Machines
             {
                 watchdogHangTimer.Start();
                 watchdogCrashTimer.Start();
-                if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
             }
             else
             {
-                if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog paused");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Watchdog paused");
             }
         }
 
@@ -93,7 +89,7 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         public void Enable(bool start = false)
         {
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog enabled");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Watchdog enabled");
             this.Enabled = true;
             if (start) Kick(true);
         }
@@ -103,15 +99,14 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         public void Disable()
         {
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog disabled");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Watchdog disabled");
             this.Enabled = false;
             watchdogHangTimer.Stop();
             watchdogCrashTimer.Stop();
         }
 
-        public void Update(bool debug, int hangCheckMinutes, int crashCheckSeconds)
+        public void Update(int hangCheckMinutes, int crashCheckSeconds)
         {
-            this.Debug = debug;
             watchdogHangTimer.Elapsed -= WatchdogHangTimer_Elapsed;
             if (hangCheckMinutes > 0)
             {
@@ -124,13 +119,13 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Updated watchdog timers; hang:{0}m, crash:{0}s", hangCheckMinutes, crashCheckSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Updated watchdog timers; hang:{0}m, crash:{0}s", hangCheckMinutes, crashCheckSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var state = await adb.IsPackageRunning(Adb.FFRK_PACKAGE_NAME, System.Threading.CancellationToken.None);
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog ffrk state: {0}", state ? "Running" : "Not Running");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Watchdog ffrk state: {0}", state ? "Running" : "Not Running");
             if (!state)
             {
                 InvokeTimeout(sender, WatchdogEventArgs.TYPE.Crash, e);
@@ -145,7 +140,7 @@ namespace FFRK_LabMem.Machines
         private void InvokeTimeout(object sender, WatchdogEventArgs.TYPE type, ElapsedEventArgs e)
         {
             var e2 = new WatchdogEventArgs() { ElapsedEventArgs = e, Type = type };
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog fault: {0}", e2);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, ConsoleColor.DarkGray, "Watchdog fault: {0}", e2);
             Timeout?.Invoke(sender, e2);
         }
     }

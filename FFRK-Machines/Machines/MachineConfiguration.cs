@@ -11,8 +11,6 @@ namespace FFRK_Machines.Machines
     public class MachineConfiguration
     {
 
-        public bool Debug { get; set; } = true;
-
         public MachineConfiguration() {}
 
         public async Task Save(string path)

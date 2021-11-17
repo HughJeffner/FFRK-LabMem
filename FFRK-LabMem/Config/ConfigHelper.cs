@@ -87,6 +87,12 @@ namespace FFRK_LabMem.Config
             if (this[key] == null) return defaultValue;
             return Int32.Parse(this[key]);
         }
+        
+        public short GetShort(String key, short defaultValue)
+        {
+            if (this[key] == null) return defaultValue;
+            return short.Parse(this[key]);
+        }
 
         public bool GetBool(String key, bool defaultValue)
         {

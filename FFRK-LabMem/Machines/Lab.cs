@@ -81,7 +81,7 @@ namespace FFRK_LabMem.Machines
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.Watchdog = new LabWatchdog(adb, config.Debug, config.WatchdogHangMinutes, config.WatchdogCrashSeconds);
+            this.Watchdog = new LabWatchdog(adb, config.WatchdogHangMinutes, config.WatchdogCrashSeconds);
             this.Watchdog.Timeout += Watchdog_Timeout;
 
         }
@@ -498,7 +498,7 @@ namespace FFRK_LabMem.Machines
 
                 }
             }
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
             fatigueAutoResetEvent.Set();
             await Task.CompletedTask;
         }
@@ -520,7 +520,7 @@ namespace FFRK_LabMem.Machines
             try
             {
                 await Task.Delay(2000, this.CancellationToken);
-                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking if final floor");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking if final floor");
                 return (await Adb.FindButton("#75377a", 2000, 48.6, 23, 24, 0, this.CancellationToken) != null);
 
             } catch (OperationCanceledException){};

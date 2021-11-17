@@ -19,6 +19,7 @@ namespace FFRK_LabMem
 
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
             
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
