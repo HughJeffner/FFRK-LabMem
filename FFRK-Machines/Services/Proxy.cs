@@ -118,7 +118,7 @@ namespace FFRK_LabMem.Services
             // read response headers
             //var responseHeaders = e.HttpClient.Response.Headers;
             System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
-            ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, ConsoleColor.DarkGray, e.HttpClient.Request.Url);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
             {
@@ -149,7 +149,7 @@ namespace FFRK_LabMem.Services
             {
                 e.TerminateSession();
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, ConsoleColor.DarkGray, "Blocked: {0}", hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
             }
 
             return Task.FromResult(true);
@@ -170,7 +170,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DenyConnect = true;
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, ConsoleColor.DarkGray, "Blocked: {0}", hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
                 return Task.FromResult(false);
             }
 
@@ -178,7 +178,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DecryptSsl = false;
                 System.Diagnostics.Debug.Print("Tunnel to: " + hostname);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, ConsoleColor.DarkGray, "Tunnel to: {0}", hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Tunnel to: {0}", hostname);
             }
 
             return Task.FromResult(true);

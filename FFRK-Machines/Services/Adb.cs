@@ -532,7 +532,7 @@ namespace FFRK_LabMem.Services
                             );
                             ret = item;
                             Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
-                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             break;
                         }
                     }
@@ -669,11 +669,11 @@ namespace FFRK_LabMem.Services
             {
                 var min = matches.Keys.Min();
                 System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Count, min);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Count, min);
                 return matches[min];
             }
             System.Diagnostics.Debug.Print("matches: {0}", matches.Count);
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, ConsoleColor.DarkGray, "matches: {0}", matches.Count);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}", matches.Count);
             return null;
 
         }

@@ -38,7 +38,7 @@ namespace FFRK_LabMem.Machines
                 if (ret != null)
                 {
                     // Tap it
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Found area {0}", ret);
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Found area {0}", ret);
 
                     // Check inventory
                     if (ret.Equals(items[0]))
@@ -190,7 +190,7 @@ namespace FFRK_LabMem.Machines
                 var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
                 if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower())))
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Avoiding due to blocklist: {0}", enemyName);
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding due to blocklist: {0}", enemyName);
                     return (Config.EnemyBlocklistAvoidOptionOverride ? 512 : 64);
                 }
             }
@@ -198,14 +198,14 @@ namespace FFRK_LabMem.Machines
             // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
             if (type.Equals("6") && this.Config.AvoidPortal && (isTreasure || isExplore || (total > 9)))
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Avoiding portal due to option");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
                 return 256;
             }
 
             // There's a treasure visible but explore (unless last floor)
             if (type.Equals("4") && this.Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Avoiding explore due to option");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding explore due to option");
                 return 128;
             }
 
@@ -414,7 +414,7 @@ namespace FFRK_LabMem.Machines
                 var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
                 if (gotFatigueValues)
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Fatigue values READ: {0}", fatigueAutoResetEvent);
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", fatigueAutoResetEvent);
                     if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
                     {
                         await UseLetheTears();
@@ -662,7 +662,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Restarting Lab");
 
             // Dungeon Complete
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Dismissing dungeon complete dialog");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing dungeon complete dialog");
             var closeButton = await Adb.FindButton(BUTTON_BROWN, 2000, 39, 81, 91, 10, this.CancellationToken);
             if (closeButton != null)
             {
@@ -674,24 +674,24 @@ namespace FFRK_LabMem.Machines
 
             // Mission Complete
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for mission complete dialog");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for mission complete dialog");
             await Adb.FindButtonAndTap(BUTTON_BROWN, 2000, 39, 61, 82, 5, this.CancellationToken);
 
             // Enter button 1
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for enter button 1");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 1");
             if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 84, 94, 20, this.CancellationToken))
             {
 
                 // Enter button 2
                 await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for enter button 2");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
                 if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken))
                 {
 
                     // Stamina dialog
                     await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for stamina dialog");
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina dialog");
                     var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
                     if (staminaButton != null)
                     {
@@ -719,13 +719,13 @@ namespace FFRK_LabMem.Machines
 
                     // Confirm equipment box or enter
                     await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for enter button 3");
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 3");
                     if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                     {
 
                         // Enter if equipment confirmed, otherwise should find nothing
                         await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for confirm equipment box");
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box");
                         if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
@@ -744,7 +744,7 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Checking for inventory full");
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
                     var b = Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
                     if (b!= null)
                     {
@@ -778,23 +778,23 @@ namespace FFRK_LabMem.Machines
             await InterruptTasks();
 
             // Kill FFRK
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Kill ffrk process...");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Kill ffrk process...");
             await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);
             await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
             // Launch app
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Launching app");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Launching app");
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
             await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
             if (Config.UseOldCrashRecovery)
             {
                 // Press start button
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Wating for start button...");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for start button...");
                 if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 40, 70, 83, 20, this.CancellationToken))
                 {
                     // Press continue battle button
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Wating for continue battle button...");
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for continue battle button...");
                     if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 61, 57, 68, 10, this.CancellationToken))
                     {
                         ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
@@ -803,7 +803,7 @@ namespace FFRK_LabMem.Machines
                     else
                     {
                         // Go back into lab
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Tapping lab...");
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Tapping lab...");
                         await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
                         ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
                         ConfigureStateMachine();
@@ -837,7 +837,7 @@ namespace FFRK_LabMem.Machines
                 // Button Finding Loop with timeout and break if stopwatch stopped
                 TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
                 bool labFinished = false;
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, ConsoleColor.DarkGray, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
                 while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
                 {
                     // Find images in order, breaking on first match
