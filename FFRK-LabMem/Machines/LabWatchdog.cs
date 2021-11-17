@@ -32,7 +32,7 @@ namespace FFRK_LabMem.Machines
             public TYPE Type;
             public override string ToString()
             {
-                return string.Format("{0}: {1}", Type, ElapsedEventArgs);
+                return Type.ToString();
             }
         }
 
@@ -124,7 +124,7 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Updated watchdog timers; hang:{0}, crash{0}", hangCheckMinutes, crashCheckSeconds);
+            if (Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Updated watchdog timers; hang:{0}m, crash:{0}s", hangCheckMinutes, crashCheckSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)

@@ -771,6 +771,12 @@ namespace FFRK_LabMem.Machines
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting FFRK");
 
+            // Pause watchdog
+            Watchdog.Kick(false);
+
+            // Stop any running tasks
+            await InterruptTasks();
+
             // Kill FFRK
             if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Kill ffrk process...");
             await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);

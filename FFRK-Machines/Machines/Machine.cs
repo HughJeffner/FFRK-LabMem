@@ -55,7 +55,7 @@ namespace FFRK_Machines.Machines
         /// <param name="Proxy">The proxy to register to</param>
         public abstract void RegisterWithProxy(Proxy Proxy);
 
-        public async void InterruptTasks()
+        public async Task InterruptTasks()
         {
             cancelSource.CancelAfter(0);
             await Task.Delay(0);
