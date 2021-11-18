@@ -144,29 +144,13 @@ namespace FFRK_LabMem.Services
 
         public async Task<bool> IsPackageRunning(string packageName, CancellationToken cancellationToken)
         {
-
-            int apiLevel = await GetAPILevel(cancellationToken);
             var receiver = new ConsoleOutputReceiver();
-
-            // Android 7 or higher has pidof
-            if (apiLevel >= 24)
-            {
-                await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("pidof {0}", packageName),
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-                return !string.IsNullOrEmpty(receiver.ToString());
-            } else
-            {
-                await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("ps {0}", packageName.Substring(packageName.Length - 15)),
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-                return receiver.ToString().Contains(packageName);
-            }
-            
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("ps | grep {0}", packageName),
+            this.Device,
+            receiver,
+            cancellationToken,
+            2000);
+            return receiver.ToString().Contains(packageName);
         }
 
         public async Task StartActivity(String packageName, String activityName, CancellationToken cancellationToken)
