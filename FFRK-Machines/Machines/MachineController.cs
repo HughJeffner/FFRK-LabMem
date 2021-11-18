@@ -51,11 +51,11 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, int topOffset, int bottomOffset, string configFile, int consumers = 2)
+        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, string configFile, int consumers = 2)
         {
 
             // Proxy Server
-            Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist);
+            Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist, proxyConnectionPooling);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             this.proxySecure = proxySecure;
             this.proxyAutoConfig = proxyAutoConfig;

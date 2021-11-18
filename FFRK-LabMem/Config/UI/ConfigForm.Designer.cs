@@ -30,10 +30,10 @@ namespace FFRK_LabMem.Config.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
@@ -152,6 +152,7 @@ namespace FFRK_LabMem.Config.UI
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.checkBoxProxyConnectionPool = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -292,7 +293,7 @@ namespace FFRK_LabMem.Config.UI
             this.numericUpDownWatchdogCrash.Name = "numericUpDownWatchdogCrash";
             this.numericUpDownWatchdogCrash.Size = new System.Drawing.Size(48, 20);
             this.numericUpDownWatchdogCrash.TabIndex = 18;
-            this.toolTip1.SetToolTip(this.numericUpDownWatchdogCrash, "Checks if FFRK is running and starts it if not.  Set to \'0\' to disable");
+            this.toolTip1.SetToolTip(this.numericUpDownWatchdogCrash, "Checks if FFRK is running and starts it if not. \r\nSet to \'0\' to disable");
             // 
             // label7
             // 
@@ -319,7 +320,7 @@ namespace FFRK_LabMem.Config.UI
             this.numericUpDownWatchdogHang.Size = new System.Drawing.Size(48, 20);
             this.numericUpDownWatchdogHang.TabIndex = 14;
             this.toolTip1.SetToolTip(this.numericUpDownWatchdogHang, "If an action doesn\'t complete in this number of minutes, FFRK restart is performe" +
-        "d. Set to \'0\' to disable");
+        "d.\r\nSet to \'0\' to disable");
             // 
             // buttonCheckForUpdates
             // 
@@ -347,7 +348,7 @@ namespace FFRK_LabMem.Config.UI
             this.numericUpDownScreenBottom.Name = "numericUpDownScreenBottom";
             this.numericUpDownScreenBottom.Size = new System.Drawing.Size(94, 20);
             this.numericUpDownScreenBottom.TabIndex = 8;
-            this.toolTip1.SetToolTip(this.numericUpDownScreenBottom, "Number of pixels of the gray bar at the bottom of FFRK, 0 for none, -1 to prompt " +
+            this.toolTip1.SetToolTip(this.numericUpDownScreenBottom, "Number of pixels of the gray bar at the bottom of FFRK\r\n0 for none, -1 to prompt " +
         "auto-detect");
             this.numericUpDownScreenBottom.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
@@ -376,7 +377,7 @@ namespace FFRK_LabMem.Config.UI
             this.numericUpDownScreenTop.Name = "numericUpDownScreenTop";
             this.numericUpDownScreenTop.Size = new System.Drawing.Size(94, 20);
             this.numericUpDownScreenTop.TabIndex = 6;
-            this.toolTip1.SetToolTip(this.numericUpDownScreenTop, "Number of pixels of the gray bar at the top of FFRK, 0 for none, -1 to prompt aut" +
+            this.toolTip1.SetToolTip(this.numericUpDownScreenTop, "Number of pixels of the gray bar at the top of FFRK\r\n0 for none, -1 to prompt aut" +
         "o-detect");
             this.numericUpDownScreenTop.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
@@ -439,6 +440,7 @@ namespace FFRK_LabMem.Config.UI
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.checkBoxProxyConnectionPool);
             this.tabPage2.Controls.Add(this.checkBoxProxyAutoConfig);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
@@ -462,8 +464,8 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxProxyAutoConfig.Size = new System.Drawing.Size(274, 17);
             this.checkBoxProxyAutoConfig.TabIndex = 7;
             this.checkBoxProxyAutoConfig.Text = "Auto-configure device system proxy settings via ADB";
-            this.toolTip1.SetToolTip(this.checkBoxProxyAutoConfig, "Attempts to automatically configure proxy settings on the device.  This does not " +
-        "show in the wifi settings UI!  Use the button below to revert.");
+            this.toolTip1.SetToolTip(this.checkBoxProxyAutoConfig, "Attempts to automatically configure proxy settings on the device. \r\nThis does not" +
+        " show in the wifi settings UI!  Use the button below to revert.");
             this.checkBoxProxyAutoConfig.UseVisualStyleBackColor = true;
             this.checkBoxProxyAutoConfig.CheckedChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
@@ -472,9 +474,9 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox1.Controls.Add(this.buttonProxyReset);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.buttonProxyRegenCert);
-            this.groupBox1.Location = new System.Drawing.Point(0, 131);
+            this.groupBox1.Location = new System.Drawing.Point(0, 159);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(257, 200);
+            this.groupBox1.Size = new System.Drawing.Size(257, 175);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Actions";
@@ -526,8 +528,8 @@ namespace FFRK_LabMem.Config.UI
             this.textBoxProxyBlocklist.Name = "textBoxProxyBlocklist";
             this.textBoxProxyBlocklist.Size = new System.Drawing.Size(241, 20);
             this.textBoxProxyBlocklist.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.textBoxProxyBlocklist, "Specifies a text file to block connections.  The file should contain a domain nam" +
-        "e on each line of the file.");
+            this.toolTip1.SetToolTip(this.textBoxProxyBlocklist, "Specifies a text file to block connections.  \r\nThe file should contain a domain n" +
+        "ame on each line of the file.");
             this.textBoxProxyBlocklist.TextChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
             // label4
@@ -610,8 +612,8 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxAdbHost.Name = "comboBoxAdbHost";
             this.comboBoxAdbHost.Size = new System.Drawing.Size(241, 21);
             this.comboBoxAdbHost.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.comboBoxAdbHost, "Host and port for connecting to the device adb service.  Not needed if connected " +
-        "via USB");
+            this.toolTip1.SetToolTip(this.comboBoxAdbHost, "Host and port for connecting to the device adb service. \r\nNot needed if connected" +
+        " via USB");
             this.comboBoxAdbHost.TextChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
             // label6
@@ -769,8 +771,8 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabRestartFailedBattle.Size = new System.Drawing.Size(168, 17);
             this.checkBoxLabRestartFailedBattle.TabIndex = 1;
             this.checkBoxLabRestartFailedBattle.Text = "Restart battles when defeated";
-            this.toolTip1.SetToolTip(this.checkBoxLabRestartFailedBattle, "Restarts the battle if you are defeated.  If not set then plays a tone and waits " +
-        "for your input.");
+            this.toolTip1.SetToolTip(this.checkBoxLabRestartFailedBattle, "Restarts the battle if you are defeated.  \r\nIf not set then plays a tone and wait" +
+        "s for your input.");
             this.checkBoxLabRestartFailedBattle.UseVisualStyleBackColor = true;
             // 
             // tabPage8
@@ -891,7 +893,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidPortal.Text = "Avoid the portal if an exploration is visible behind it, or if there are unknown " +
     "paintings";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure is visi" +
-        "ble in the background or there are more paintings to reveal.\r\n");
+        "ble in the background\r\nor there are more paintings to reveal.\r\n");
             this.checkBoxLabAvoidPortal.UseVisualStyleBackColor = true;
             // 
             // checkBoxLabAvoidExplore
@@ -903,7 +905,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidExplore.TabIndex = 1;
             this.checkBoxLabAvoidExplore.Text = "Avoid exploration paintings if treasure is visible";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidExplore, "Overrides the painting priority and avoids exploration paintings if a treasure is" +
-        " visible in the background to eliminate the chance of getting a Portal");
+        " visible in the background\r\nto eliminate the chance of getting a Portal");
             this.checkBoxLabAvoidExplore.UseVisualStyleBackColor = true;
             // 
             // checkBoxLabDoors
@@ -1326,19 +1328,19 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader11,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup1.Header = "Counters";
-            listViewGroup1.Name = "Counters";
-            listViewGroup2.Header = "Runtime";
-            listViewGroup2.Name = "Runtime";
-            listViewGroup3.Header = "Hero Equipment";
-            listViewGroup3.Name = "HE";
-            listViewGroup4.Header = "Drops";
-            listViewGroup4.Name = "Drops";
+            listViewGroup9.Header = "Counters";
+            listViewGroup9.Name = "Counters";
+            listViewGroup10.Header = "Runtime";
+            listViewGroup10.Name = "Runtime";
+            listViewGroup11.Header = "Hero Equipment";
+            listViewGroup11.Name = "HE";
+            listViewGroup12.Header = "Drops";
+            listViewGroup12.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2,
-            listViewGroup3,
-            listViewGroup4});
+            listViewGroup9,
+            listViewGroup10,
+            listViewGroup11,
+            listViewGroup12});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(3, 0);
             this.listViewCounters.Name = "listViewCounters";
@@ -1435,6 +1437,19 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1.Images.SetKeyName(5, "schedule-32.png");
             this.imageList1.Images.SetKeyName(6, "counters-32.png");
             this.imageList1.Images.SetKeyName(7, "");
+            // 
+            // checkBoxProxyConnectionPool
+            // 
+            this.checkBoxProxyConnectionPool.AutoSize = true;
+            this.checkBoxProxyConnectionPool.Location = new System.Drawing.Point(3, 107);
+            this.checkBoxProxyConnectionPool.Name = "checkBoxProxyConnectionPool";
+            this.checkBoxProxyConnectionPool.Size = new System.Drawing.Size(138, 17);
+            this.checkBoxProxyConnectionPool.TabIndex = 8;
+            this.checkBoxProxyConnectionPool.Text = "Use connection pooling";
+            this.toolTip1.SetToolTip(this.checkBoxProxyConnectionPool, "May improve performance by reusing existing connections.  \r\nDisable if you experi" +
+        "ence frequent connection issues");
+            this.checkBoxProxyConnectionPool.UseVisualStyleBackColor = true;
+            this.checkBoxProxyConnectionPool.CheckedChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
             // ConfigForm
             // 
@@ -1603,5 +1618,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBoxDebug;
+        private System.Windows.Forms.CheckBox checkBoxProxyConnectionPool;
     }
 }
