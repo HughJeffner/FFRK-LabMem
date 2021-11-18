@@ -76,7 +76,7 @@ namespace FFRK_LabMem.Machines
             {
                 watchdogHangTimer.Start();
                 watchdogCrashTimer.Start();
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog kicked");
             }
             else
             {

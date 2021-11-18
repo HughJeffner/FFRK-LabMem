@@ -82,7 +82,7 @@ namespace FFRK_Machines
         }
         public static void Debug(DebugCategory category, string value)
         {
-            if (CheckCategory(category)) WriteLine(ConsoleColor.Gray, value);
+            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, value);
         }
 
         public static void WriteLine(ConsoleColor color, string value)

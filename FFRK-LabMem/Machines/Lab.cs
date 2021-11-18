@@ -205,7 +205,17 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-            await RestartFFRK();
+            // On a timer thread, need to handle errors
+            try
+            {
+                await RestartFFRK();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+            }
+            
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
