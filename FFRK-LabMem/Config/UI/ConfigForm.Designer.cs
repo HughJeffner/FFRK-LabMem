@@ -33,6 +33,7 @@ namespace FFRK_LabMem.Config.UI
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
@@ -283,6 +284,11 @@ namespace FFRK_LabMem.Config.UI
             // numericUpDownWatchdogCrash
             // 
             this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(128, 192);
+            this.numericUpDownWatchdogCrash.Maximum = new decimal(new int[] {
+            300,
+            0,
+            0,
+            0});
             this.numericUpDownWatchdogCrash.Name = "numericUpDownWatchdogCrash";
             this.numericUpDownWatchdogCrash.Size = new System.Drawing.Size(48, 20);
             this.numericUpDownWatchdogCrash.TabIndex = 18;
@@ -1326,10 +1332,13 @@ namespace FFRK_LabMem.Config.UI
             listViewGroup2.Name = "Runtime";
             listViewGroup3.Header = "Hero Equipment";
             listViewGroup3.Name = "HE";
+            listViewGroup4.Header = "Drops";
+            listViewGroup4.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1,
             listViewGroup2,
-            listViewGroup3});
+            listViewGroup3,
+            listViewGroup4});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(3, 0);
             this.listViewCounters.Name = "listViewCounters";

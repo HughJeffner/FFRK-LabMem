@@ -205,6 +205,33 @@ namespace FFRK_LabMem.Config.UI
                 listViewCounters.Items.Add(newItem);
             }
 
+            // Merge Drops
+            var dropKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct();
+            foreach (var item in dropKeys)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Drops"];
+                newItem.Text = item;
+                if (Data.Counters.Default.CounterSets["Session"].Drops.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].Drops[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                if (Data.Counters.Default.CounterSets["CurrentLab"].Drops.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Drops[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                newItem.SubItems.Add("-");
+                listViewCounters.Items.Add(newItem);
+            }
+
         }
 
         private void LoadConfigs()
