@@ -47,7 +47,6 @@ namespace FFRK_LabMem.Services
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
-        public bool Debug { get; set; }
         public bool HasDevice
         {
             get
@@ -516,8 +515,8 @@ namespace FFRK_LabMem.Services
                                 ((match.Y + (match.Height/2)) / (double)height) * 100
                             );
                             ret = item;
-                            System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
-                            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             break;
                         }
                     }
@@ -612,7 +611,7 @@ namespace FFRK_LabMem.Services
         public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
         {
 
-            if (this.Debug)
+            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
             {
                 var dTargetStart = await ConvertPctToXY(xPct, yPctStart);
                 var dTargetEnd = await ConvertPctToXY(xPct, yPctEnd);
@@ -627,7 +626,7 @@ namespace FFRK_LabMem.Services
             var results = await GetPixelColorPct(coords, cancellationToken);
 
             // Target color
-            var target = System.Drawing.ColorTranslator.FromHtml(htmlButtonColor);
+            var target = ColorTranslator.FromHtml(htmlButtonColor);
 
             // Hold matches
             Dictionary<int, Tuple<double, double>> matches = new Dictionary<int,Tuple<double,double>>();
@@ -654,11 +653,11 @@ namespace FFRK_LabMem.Services
             {
                 var min = matches.Keys.Min();
                 System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
-                if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Count, min);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Count, min);
                 return matches[min];
             }
             System.Diagnostics.Debug.Print("matches: {0}", matches.Count);
-            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}", matches.Count);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}", matches.Count);
             return null;
 
         }

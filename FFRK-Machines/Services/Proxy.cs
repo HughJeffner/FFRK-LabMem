@@ -46,16 +46,14 @@ namespace FFRK_LabMem.Services
         readonly ProxyServer proxyServer = null;
         readonly ExplicitProxyEndPoint explicitEndPoint = null;
         public List<Registration> Registrations { get; set; } = new List<Registration>();
-        private bool debug;
         private bool secure;
         public int Port { get; set; }
         private List<string> Blocklist { get; set; } = new List<string>();
 
-        public Proxy (int port, bool secure, bool debug) : this(port, secure, debug, null) { }
+        public Proxy (int port, bool secure) : this(port, secure, null) { }
 
-        public Proxy(int port, bool secure, bool debug, string blocklist)
+        public Proxy(int port, bool secure, string blocklist)
         {
-            this.debug = debug;
             this.secure = secure;
             this.Port = port;
 
@@ -120,7 +118,7 @@ namespace FFRK_LabMem.Services
             // read response headers
             //var responseHeaders = e.HttpClient.Response.Headers;
             System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
-            if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, e.HttpClient.Request.Url);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
             {
@@ -151,7 +149,7 @@ namespace FFRK_LabMem.Services
             {
                 e.TerminateSession();
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
             }
 
             return Task.FromResult(true);
@@ -172,7 +170,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DenyConnect = true;
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
                 return Task.FromResult(false);
             }
 
@@ -180,7 +178,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DecryptSsl = false;
                 System.Diagnostics.Debug.Print("Tunnel to: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tunnel to: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Tunnel to: {0}", hostname);
             }
 
             return Task.FromResult(true);

@@ -113,8 +113,7 @@ namespace FFRK_Machines.Machines
 
             // Console output
             if (Config == null) return;
-            if (Config.Debug) StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
-            if (Adb != null) Adb.Debug = Config.Debug;
+            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Lab)) StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
 
         }
 

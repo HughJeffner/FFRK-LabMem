@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FFRK_Machines
 {
@@ -6,9 +8,19 @@ namespace FFRK_Machines
     {
 
         public static bool Timestamps { get; set; }
+        public static DebugCategory DebugCategories { get; set; }
         private static bool stamped = false;
         private static object stampLock = new object();
         private static object colorLock = new object();
+
+        [Flags]
+        public enum DebugCategory : short
+        {
+            Adb = 1 << 0,
+            Proxy = 1 << 1,
+            Lab = 1 << 2,
+            Watchdog = 1 << 3
+        }
 
         public static void Write(ConsoleColor color, string format, params object[] arg)
         {
@@ -51,6 +63,12 @@ namespace FFRK_Machines
             }
         }
 
+        public static void Debug(DebugCategory category, string format, params object[] arg)
+        {
+            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, format, arg);
+            
+        }
+
         public static void WriteLine(ConsoleColor color, string format, params object[] arg)
         {
             lock (colorLock)
@@ -61,6 +79,10 @@ namespace FFRK_Machines
                 Console.ForegroundColor = current;
             }
             
+        }
+        public static void Debug(DebugCategory category, string value)
+        {
+            if (CheckCategory(category)) WriteLine(ConsoleColor.Gray, value);
         }
 
         public static void WriteLine(ConsoleColor color, string value)
@@ -111,6 +133,32 @@ namespace FFRK_Machines
                 stamped = !newLine;
             }
 
+        }
+
+        public static bool CheckCategory(DebugCategory categoryToCheck)
+        {
+            return DebugCategories.HasFlag(categoryToCheck);
+        }
+
+        public static List<DebugCategory> GetCategories()
+        {
+            var ret = new List<DebugCategory>();
+            foreach (var item in Enum.GetValues(typeof(DebugCategory)).Cast<DebugCategory>())
+            {
+                ret.Add(item);
+            }
+            return ret;
+        }
+
+        public static String GetSelectedCategories(DebugCategory categories)
+        {
+            var selected = new List<string>();
+            foreach (var item in GetCategories())
+            {
+                if (categories.HasFlag(item)) selected.Add(item.ToString());
+            }
+            if (selected.Count == 0) return "None";
+            return String.Join(",", selected.ToArray());
         }
 
     }

@@ -68,9 +68,17 @@ namespace FFRK_LabMem.Config.UI
             tabControl.Height += tabControl.ItemSize.Height;
             tabControl.Region = new Region(new RectangleF(tabPage1.Left, tabPage1.Top, tabPage1.Width, tabPage1.Height + tabControl.ItemSize.Height-20));
 
+            // Debug values
+            foreach (var item in ColorConsole.GetCategories())
+            {
+                comboBoxDebug.Items.Add(item);
+            }
+            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
+            comboBoxDebug.SelectedIndex = 0;
+            comboBoxDebug.Tag = ColorConsole.DebugCategories;
+
             // Values
             checkBoxTimestamps.Checked = configHelper.GetBool("console.timestamps", true);
-            checkBoxDebug.Checked = configHelper.GetBool("console.debug", false);
             checkBoxUpdates.Checked = configHelper.GetBool("updates.checkForUpdates", true);
             checkBoxPrerelease.Checked = configHelper.GetBool("updates.includePrerelease", false);
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
@@ -217,7 +225,8 @@ namespace FFRK_LabMem.Config.UI
 
             // General
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
-            configHelper.SetValue("console.debug", checkBoxDebug.Checked);
+            configHelper.SetValue("console.debugCategories", (short)comboBoxDebug.Tag);
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
             configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
             configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
             configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
@@ -234,7 +243,6 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
 
             // Lab
-            labConfig.Debug = checkBoxLabDebug.Checked;
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
             labConfig.AvoidExploreIfTreasure = checkBoxLabAvoidExplore.Checked;
             labConfig.AvoidPortal = checkBoxLabAvoidPortal.Checked;
@@ -309,7 +317,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Update machine
             controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update(labConfig.Debug, (int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
+            controller.Machine.Watchdog.Update((int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
 
             // Restart warning
             if (lblRestart.Visible)
@@ -334,7 +342,6 @@ namespace FFRK_LabMem.Config.UI
         {
             // Options
             labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
@@ -504,7 +511,7 @@ namespace FFRK_LabMem.Config.UI
 
             var changed = (
                 checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-                checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
+                (short)comboBoxDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
                 checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
                 numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
                 checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
@@ -791,6 +798,17 @@ namespace FFRK_LabMem.Config.UI
                 var target = tag.Equals("All") ? null : tag;
                 await Data.Counters.Reset(target);
             }
+        }
+
+        private void ComboBoxDebug_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxDebug.SelectedIndex == 0) return;
+            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
+            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)comboBoxDebug.SelectedItem;
+            t ^= target;
+            comboBoxDebug.Tag = t;
+            comboBoxDebug.SelectedIndex = 0;
+            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(t));
         }
     }
 }
