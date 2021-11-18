@@ -180,7 +180,7 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Merge HE Keys
-            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct();
+            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s);
             foreach (var item in heKeys)
             {
                 var newItem = new ListViewItem();
@@ -206,7 +206,7 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Merge Drops
-            var dropKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct();
+            var dropKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s);
             foreach (var item in dropKeys)
             {
                 var newItem = new ListViewItem();
