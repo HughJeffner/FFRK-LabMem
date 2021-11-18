@@ -119,7 +119,7 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated watchdog timers; hang:{0}m, crash:{0}s", hangCheckMinutes, crashCheckSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated watchdog timers; hang:{0}m, crash:{1}s", hangCheckMinutes, crashCheckSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
