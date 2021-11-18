@@ -396,15 +396,16 @@ namespace FFRK_LabMem.Machines
 
         private async Task StartBattle()
         {
-            ColorConsole.Write("Starting Battle");
             await LabTimings.Delay("Pre-StartBattle", this.CancellationToken);
+            ColorConsole.Write("Starting Battle");
 
             // Dungeon info
             var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
             if (d != null)
             {
-                ColorConsole.Write(": ");
-                ColorConsole.Write(ConsoleColor.Yellow, "{0}", d["captures"][0]["tip_battle"]["title"]);
+                var title = d["captures"][0]["tip_battle"]["title"];
+                ColorConsole.Write(ConsoleColor.Yellow, ": {0}", title);
+                if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
             }
             ColorConsole.WriteLine("");
 
