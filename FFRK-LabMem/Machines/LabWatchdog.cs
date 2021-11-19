@@ -76,11 +76,11 @@ namespace FFRK_LabMem.Machines
             {
                 watchdogHangTimer.Start();
                 watchdogCrashTimer.Start();
-                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog kicked");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Kicked");
             }
             else
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog paused");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Paused");
             }
         }
 
@@ -89,7 +89,7 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         public void Enable(bool start = false)
         {
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog enabled");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Enabled");
             this.Enabled = true;
             if (start) Kick(true);
         }
@@ -99,7 +99,7 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         public void Disable()
         {
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog disabled");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Disabled");
             this.Enabled = false;
             watchdogHangTimer.Stop();
             watchdogCrashTimer.Stop();
@@ -119,13 +119,13 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated watchdog timers; hang:{0}m, crash:{1}s", hangCheckMinutes, crashCheckSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}m, crash:{1}s", hangCheckMinutes, crashCheckSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var state = await adb.IsPackageRunning(Adb.FFRK_PACKAGE_NAME, System.Threading.CancellationToken.None);
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog ffrk state: {0}", state ? "Running" : "Not Running");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "FFRK state: {0}", state ? "Running" : "Not Running");
             if (!state)
             {
                 InvokeTimeout(sender, WatchdogEventArgs.TYPE.Crash, e);
@@ -140,7 +140,7 @@ namespace FFRK_LabMem.Machines
         private void InvokeTimeout(object sender, WatchdogEventArgs.TYPE type, ElapsedEventArgs e)
         {
             var e2 = new WatchdogEventArgs() { ElapsedEventArgs = e, Type = type };
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Watchdog fault: {0}", e2);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Fault: {0}", e2);
             Timeout?.Invoke(sender, e2);
         }
     }

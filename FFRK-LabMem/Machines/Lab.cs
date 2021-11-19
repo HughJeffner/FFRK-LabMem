@@ -126,7 +126,7 @@ namespace FFRK_LabMem.Machines
                 .OnEntryFromAsync(Trigger.FoundDoor, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
                 .Permit(Trigger.MoveOn, State.Ready)
-                .Permit(Trigger.MissedButton, State.Ready);
+                .Permit(Trigger.MissedButton, State.Unknown);
 
             this.StateMachine.Configure(State.FoundTreasure)
                 .OnEntryAsync(async (t) => await SelectTreasures())
@@ -205,8 +205,10 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-            ColorConsole.Write(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle) return;
+
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
             // On a timer thread, need to handle errors
             try
             {
