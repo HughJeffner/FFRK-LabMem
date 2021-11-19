@@ -117,6 +117,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\Clipboard.cs" />
+    <Compile Include="Services\ConsoleExit.cs" />
     <Compile Include="Services\Scheduler.cs" />
     <Compile Include="Services\Tray.cs" />
     <Compile Include="Services\Updates.cs" />

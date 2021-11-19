@@ -97,6 +97,7 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.ValueMember = "Value";
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
+            checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
 
             // Load lab .json
             LoadConfigs();
@@ -267,6 +268,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.connectionPooling", checkBoxProxyConnectionPool.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
+            configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);

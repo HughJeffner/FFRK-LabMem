@@ -808,11 +808,8 @@ namespace FFRK_LabMem.Services
 
         public static void KillAdb()
         {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Killing");
             AdbClient.Instance.KillAdb();
-            foreach (var process in Process.GetProcessesByName("adb"))
-            {
-                process.Kill();
-            }
         }
 
         public class RootCertInstalledStatus

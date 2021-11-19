@@ -30,10 +30,10 @@ namespace FFRK_LabMem.Config.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup9 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup10 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup11 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup12 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
@@ -64,6 +64,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxUpdates = new System.Windows.Forms.CheckBox();
             this.checkBoxTimestamps = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBoxProxyConnectionPool = new System.Windows.Forms.CheckBox();
             this.checkBoxProxyAutoConfig = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonProxyReset = new System.Windows.Forms.Button();
@@ -152,7 +153,7 @@ namespace FFRK_LabMem.Config.UI
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.checkBoxProxyConnectionPool = new System.Windows.Forms.CheckBox();
+            this.checkBoxAdbClose = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -456,6 +457,19 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Proxy";
             // 
+            // checkBoxProxyConnectionPool
+            // 
+            this.checkBoxProxyConnectionPool.AutoSize = true;
+            this.checkBoxProxyConnectionPool.Location = new System.Drawing.Point(3, 107);
+            this.checkBoxProxyConnectionPool.Name = "checkBoxProxyConnectionPool";
+            this.checkBoxProxyConnectionPool.Size = new System.Drawing.Size(138, 17);
+            this.checkBoxProxyConnectionPool.TabIndex = 8;
+            this.checkBoxProxyConnectionPool.Text = "Use connection pooling";
+            this.toolTip1.SetToolTip(this.checkBoxProxyConnectionPool, "May improve performance by reusing existing connections.  \r\nDisable if you experi" +
+        "ence frequent connection issues");
+            this.checkBoxProxyConnectionPool.UseVisualStyleBackColor = true;
+            this.checkBoxProxyConnectionPool.CheckedChanged += new System.EventHandler(this.NeedsRestart_Changed);
+            // 
             // checkBoxProxyAutoConfig
             // 
             this.checkBoxProxyAutoConfig.AutoSize = true;
@@ -588,6 +602,7 @@ namespace FFRK_LabMem.Config.UI
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.checkBoxAdbClose);
             this.tabPage3.Controls.Add(this.comboBoxAdbHost);
             this.tabPage3.Controls.Add(this.label6);
             this.tabPage3.Controls.Add(this.textBoxAdbPath);
@@ -1328,19 +1343,19 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader11,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup9.Header = "Counters";
-            listViewGroup9.Name = "Counters";
-            listViewGroup10.Header = "Runtime";
-            listViewGroup10.Name = "Runtime";
-            listViewGroup11.Header = "Hero Equipment";
-            listViewGroup11.Name = "HE";
-            listViewGroup12.Header = "Drops";
-            listViewGroup12.Name = "Drops";
+            listViewGroup1.Header = "Counters";
+            listViewGroup1.Name = "Counters";
+            listViewGroup2.Header = "Runtime";
+            listViewGroup2.Name = "Runtime";
+            listViewGroup3.Header = "Hero Equipment";
+            listViewGroup3.Name = "HE";
+            listViewGroup4.Header = "Drops";
+            listViewGroup4.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup9,
-            listViewGroup10,
-            listViewGroup11,
-            listViewGroup12});
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3,
+            listViewGroup4});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(3, 0);
             this.listViewCounters.Name = "listViewCounters";
@@ -1438,18 +1453,15 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1.Images.SetKeyName(6, "counters-32.png");
             this.imageList1.Images.SetKeyName(7, "");
             // 
-            // checkBoxProxyConnectionPool
+            // checkBoxAdbClose
             // 
-            this.checkBoxProxyConnectionPool.AutoSize = true;
-            this.checkBoxProxyConnectionPool.Location = new System.Drawing.Point(3, 107);
-            this.checkBoxProxyConnectionPool.Name = "checkBoxProxyConnectionPool";
-            this.checkBoxProxyConnectionPool.Size = new System.Drawing.Size(138, 17);
-            this.checkBoxProxyConnectionPool.TabIndex = 8;
-            this.checkBoxProxyConnectionPool.Text = "Use connection pooling";
-            this.toolTip1.SetToolTip(this.checkBoxProxyConnectionPool, "May improve performance by reusing existing connections.  \r\nDisable if you experi" +
-        "ence frequent connection issues");
-            this.checkBoxProxyConnectionPool.UseVisualStyleBackColor = true;
-            this.checkBoxProxyConnectionPool.CheckedChanged += new System.EventHandler(this.NeedsRestart_Changed);
+            this.checkBoxAdbClose.AutoSize = true;
+            this.checkBoxAdbClose.Location = new System.Drawing.Point(3, 61);
+            this.checkBoxAdbClose.Name = "checkBoxAdbClose";
+            this.checkBoxAdbClose.Size = new System.Drawing.Size(107, 17);
+            this.checkBoxAdbClose.TabIndex = 6;
+            this.checkBoxAdbClose.Text = "Close adb on exit";
+            this.checkBoxAdbClose.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -1619,5 +1631,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBoxDebug;
         private System.Windows.Forms.CheckBox checkBoxProxyConnectionPool;
+        private System.Windows.Forms.CheckBox checkBoxAdbClose;
     }
 }

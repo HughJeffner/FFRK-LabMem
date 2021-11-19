@@ -1,7 +1,6 @@
 ﻿using System;
 using FFRK_LabMem.Config;
 using FFRK_LabMem.Config.UI;
-using FFRK_LabMem.Data;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
@@ -12,6 +11,9 @@ namespace FFRK_LabMem
     {
         static void Main(string[] args)
         {
+
+            // Listen for console exit
+            ConsoleExit.Listen(OnConsoleExit);
 
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
@@ -53,7 +55,14 @@ namespace FFRK_LabMem
             
             // Stop
             controller.Stop();
+            OnConsoleExit();
 
+        }
+
+        private static void OnConsoleExit()
+        {
+            // Kill adb option
+            if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
         }
 
     }
