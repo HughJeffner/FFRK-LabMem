@@ -206,7 +206,11 @@ namespace FFRK_LabMem.Machines
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
 
-            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle) return;
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang because in battle");
+                return;
+            }
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
             // On a timer thread, need to handle errors
