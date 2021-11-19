@@ -205,6 +205,8 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
+            ColorConsole.Write(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+
             // On a timer thread, need to handle errors
             try
             {

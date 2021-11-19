@@ -26,8 +26,8 @@ namespace FFRK_LabMem.Machines
                 Hang = 0,
                 Crash = 1,
             }
-            public ElapsedEventArgs ElapsedEventArgs;
-            public TYPE Type;
+            public ElapsedEventArgs ElapsedEventArgs { get; set; }
+            public TYPE Type { get; set; }
             public override string ToString()
             {
                 return Type.ToString();
