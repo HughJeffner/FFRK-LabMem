@@ -64,9 +64,13 @@ namespace FFRK_LabMem.Config.UI
             // Tab fakery
             listView1.Items[0].Selected = true;
             listView1.Items[0].Focused = true;
-            tabControl.Top -= tabControl.ItemSize.Height;
-            tabControl.Height += tabControl.ItemSize.Height;
-            tabControl.Region = new Region(new RectangleF(tabPage1.Left, tabPage1.Top, tabPage1.Width, tabPage1.Height + tabControl.ItemSize.Height-20));
+            tabControl.Appearance = TabAppearance.FlatButtons;
+            tabControl.ItemSize = new Size(0, 1);
+            tabControl.SizeMode = TabSizeMode.Fixed;
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                tab.Text = "";
+            }
 
             // Debug values
             foreach (var item in ColorConsole.GetCategories())
@@ -841,6 +845,11 @@ namespace FFRK_LabMem.Config.UI
             comboBoxDebug.Tag = t;
             comboBoxDebug.SelectedIndex = 0;
             comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(t));
+        }
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", toolTip1.GetToolTip(linkLabel1));
         }
     }
 }
