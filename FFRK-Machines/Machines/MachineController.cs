@@ -54,16 +54,16 @@ namespace FFRK_Machines.Machines
         public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, string configFile, int consumers = 2)
         {
 
+            // Adb
+            this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
+            this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
+
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist, proxyConnectionPooling);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
             this.proxySecure = proxySecure;
             this.proxyAutoConfig = proxyAutoConfig;
             Proxy.Start();
-
-            // Adb
-            this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
-            this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
 
             // Machine
             ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);

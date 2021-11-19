@@ -98,6 +98,7 @@ namespace FFRK_LabMem.Services
         public async Task<bool> Connect()
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Connecting to device via adb");
             this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device == null)
             {
@@ -783,7 +784,12 @@ namespace FFRK_LabMem.Services
 
             var process = new Process
             {
-                StartInfo = { FileName = fileName, Arguments = arguments, CreateNoWindow = true},
+                StartInfo = { 
+                    FileName = fileName, 
+                    Arguments = arguments,
+                    CreateNoWindow = true,
+                    WindowStyle= ProcessWindowStyle.Hidden
+                },
                 EnableRaisingEvents = true
             };
 
@@ -800,6 +806,7 @@ namespace FFRK_LabMem.Services
 
         public static void KillAdb()
         {
+            AdbClient.Instance.KillAdb();
             foreach (var process in Process.GetProcessesByName("adb"))
             {
                 process.Kill();
