@@ -61,6 +61,7 @@ namespace FFRK_LabMem.Services
         public Adb(string path, string host, int topOffset, int bottomOffset)
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting server");
             AdbServer server = new AdbServer();
             var result = server.StartServer(path, restartServerIfNewer: true);
             this.host = host;
@@ -98,10 +99,11 @@ namespace FFRK_LabMem.Services
         public async Task<bool> Connect()
         {
 
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Connecting to device via adb");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Connecting to device");
             this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device == null)
             {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
                 await RunProcessAsync("cmd.exe", "/c adb connect " + this.host);
             }
 

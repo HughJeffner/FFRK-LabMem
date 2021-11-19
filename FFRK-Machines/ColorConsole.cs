@@ -65,7 +65,7 @@ namespace FFRK_Machines
 
         public static void Debug(DebugCategory category, string format, params object[] arg)
         {
-            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, format, arg);
+            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, string.Format("[{0}] {1}", category, format), arg);
             
         }
 
@@ -82,7 +82,7 @@ namespace FFRK_Machines
         }
         public static void Debug(DebugCategory category, string value)
         {
-            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, value);
+            if (CheckCategory(category)) WriteLine(ConsoleColor.DarkGray, "[{0}] {1}", category, value);
         }
 
         public static void WriteLine(ConsoleColor color, string value)
