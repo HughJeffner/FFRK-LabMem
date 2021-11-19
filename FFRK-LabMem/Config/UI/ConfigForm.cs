@@ -90,7 +90,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
             checkBoxProxyAutoConfig.Checked = configHelper.GetBool("proxy.autoconfig", false);
-            checkBoxProxyConnectionPool.Checked = configHelper.GetBool("proxy.connectionpooling", false);
+            checkBoxProxyConnectionPool.Checked = configHelper.GetBool("proxy.connectionPooling", false);
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
             comboBoxAdbHost.DataSource = Lookups.AdbHosts;
             comboBoxAdbHost.DisplayMember = "Display";
@@ -264,7 +264,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked);
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
             configHelper.SetValue("proxy.autoconfig", checkBoxProxyAutoConfig.Checked);
-            configHelper.SetValue("proxy.connectionpooling", checkBoxProxyConnectionPool.Checked);
+            configHelper.SetValue("proxy.connectionPooling", checkBoxProxyConnectionPool.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
@@ -546,7 +546,7 @@ namespace FFRK_LabMem.Config.UI
                 checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
                 textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
                 checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
-                checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionpooling", false) |
+                checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
                 ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555")
             );

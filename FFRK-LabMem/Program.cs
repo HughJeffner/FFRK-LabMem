@@ -29,9 +29,6 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
-            // Data logging
-            DataLogger.Initalize(config);
-
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
 

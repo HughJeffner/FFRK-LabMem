@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using FFRK_LabMem.Config;
+using FFRK_LabMem.Data;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
 
@@ -23,8 +24,9 @@ namespace FFRK_LabMem.Machines
                 return ret;
             }
 
-            // Counters
-            await Data.Counters.Initalize(ret);
+            // Data logging
+            await DataLogger.Initalize(config);
+            await Counters.Initalize(config, ret);
 
             // Start it
             await ret.Start(
@@ -33,7 +35,7 @@ namespace FFRK_LabMem.Machines
                 proxyPort: config.GetInt("proxy.port", 8081),
                 proxySecure: config.GetBool("proxy.secure", false),
                 proxyBlocklist: config.GetString("proxy.blocklist",""),
-                proxyConnectionPooling: config.GetBool("proxy.connectionpooling", false),
+                proxyConnectionPooling: config.GetBool("proxy.connectionPooling", false),
                 proxyAutoConfig: config.GetBool("proxy.autoconfig", false),
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),

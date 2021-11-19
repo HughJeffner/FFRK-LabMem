@@ -6,7 +6,7 @@ namespace FFRK_LabMem.Config
     public class ConfigHelper
     {
 
-        private System.Configuration.Configuration config = null;
+        private Configuration config = null;
         private KeyValueConfigurationCollection appSettings = null;
 
         public ConfigHelper() : this(null) { }

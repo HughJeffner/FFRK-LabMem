@@ -16,10 +16,11 @@ namespace FFRK_LabMem.Data
         private static readonly string folder = @"./Data";
         private static readonly string fileSuffix = "_v01.csv";
 
-        public static void Initalize(ConfigHelper config)
+        public static Task Initalize(ConfigHelper config)
         {
             DataLogger.enabled = config.GetBool("datalogger.enabled", false);
             if (DataLogger.enabled) ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Data logging enabled, target folder: {0}", folder);
+            return Task.CompletedTask;
         }
 
         public static async Task LogTreasureRate(Lab lab, JArray treasures)

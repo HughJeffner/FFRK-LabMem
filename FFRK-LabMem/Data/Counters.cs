@@ -1,4 +1,5 @@
-﻿using FFRK_LabMem.Machines;
+﻿using FFRK_LabMem.Config;
+using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -67,12 +68,13 @@ namespace FFRK_LabMem.Data
                 return _instance;
             }
         }
-        public static async Task Initalize(LabController controller)
+        public static async Task Initalize(ConfigHelper config, LabController controller)
         {
             if (_instance == null)
             {
                 _instance = new Counters(controller);
                 await _instance.Load();
+                _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
             }
 
         }
