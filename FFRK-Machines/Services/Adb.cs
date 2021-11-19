@@ -618,7 +618,7 @@ namespace FFRK_LabMem.Services
             {
                 var dTargetStart = await ConvertPctToXY(xPct, yPctStart);
                 var dTargetEnd = await ConvertPctToXY(xPct, yPctEnd);
-                ColorConsole.Write(ConsoleColor.DarkGray, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
             }
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
@@ -655,17 +655,17 @@ namespace FFRK_LabMem.Services
             if (matches.Count > 0)
             {
                 var min = matches.Keys.Min();
-                System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
+                Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Count, min);
                 return matches[min];
             }
-            System.Diagnostics.Debug.Print("matches: {0}", matches.Count);
+            Debug.Print("matches: {0}", matches.Count);
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}", matches.Count);
             return null;
 
         }
 
-        public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
+        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
         {
             
             var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken);

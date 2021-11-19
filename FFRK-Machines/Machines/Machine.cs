@@ -113,7 +113,7 @@ namespace FFRK_Machines.Machines
 
             // Console output
             if (Config == null) return;
-            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Lab)) StateMachine.OnTransitioned((state) => { ColorConsole.WriteLine(ConsoleColor.DarkGray, "Entering state: {0}", state.Destination); });
+            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Lab)) StateMachine.OnTransitioned((state) => { ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Entering state: {0}", state.Destination); });
 
         }
 

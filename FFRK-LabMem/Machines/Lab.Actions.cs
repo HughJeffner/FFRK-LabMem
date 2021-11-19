@@ -103,7 +103,7 @@ namespace FFRK_LabMem.Machines
             {
                 StringBuilder builder = new StringBuilder("Priority: ");
                 paintings.Take(3).ToList().ForEach(p => builder.AppendFormat("({0}) ", p["priority"]));
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, builder.ToString());
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, builder.ToString());
             }
 
             // Get selected painting id
