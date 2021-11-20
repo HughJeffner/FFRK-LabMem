@@ -102,6 +102,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
+                .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed)
@@ -152,6 +153,7 @@ namespace FFRK_LabMem.Machines
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
+                .OnEntry((t) => battleStopwatch.Restart())
                 .PermitReentry(Trigger.StartBattle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.BattleFailed, State.Failed);
@@ -251,7 +253,7 @@ namespace FFRK_LabMem.Machines
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
                 recoverStopwatch.Stop();
-                await Task.CompletedTask;
+                await this.StateMachine.FireAsync(Trigger.StartBattle);
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
             Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);

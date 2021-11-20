@@ -435,8 +435,6 @@ namespace FFRK_LabMem.Machines
                 await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 // Fatigue warning
                 await Adb.FindButtonAndTap(BUTTON_BLUE, 2000, 56, 55, 65, 5, this.CancellationToken);
-                await this.StateMachine.FireAsync(Trigger.StartBattle);
-                battleStopwatch.Start();
             }
             else
             {
@@ -660,8 +658,10 @@ namespace FFRK_LabMem.Machines
         {
 
             // Inital delay
+            Watchdog.Kick(false);
             await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
             this.CancellationToken.ThrowIfCancellationRequested();
+            Watchdog.Kick(true);
             ColorConsole.WriteLine("Restarting Lab");
 
             // Dungeon Complete
@@ -679,20 +679,23 @@ namespace FFRK_LabMem.Machines
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for mission complete dialog");
             await Adb.FindButtonAndTap(BUTTON_BROWN, 2000, 39, 61, 82, 5, this.CancellationToken);
-
+            
             // Enter button 1
+            Watchdog.Kick(true);
             await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 1");
             if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 84, 94, 20, this.CancellationToken))
             {
 
                 // Enter button 2
+                Watchdog.Kick(true);
                 await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
                 if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken))
                 {
 
                     // Stamina dialog
+                    Watchdog.Kick(true);
                     await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina dialog");
                     var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
@@ -721,6 +724,7 @@ namespace FFRK_LabMem.Machines
                     }
 
                     // Confirm equipment box or enter
+                    Watchdog.Kick(true);
                     await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 3");
                     if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken))
@@ -801,7 +805,6 @@ namespace FFRK_LabMem.Machines
                     if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 61, 57, 68, 10, this.CancellationToken))
                     {
                         ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
-                        await this.StateMachine.FireAsync(Trigger.StartBattle);
                     }
                     else
                     {
@@ -895,7 +898,6 @@ namespace FFRK_LabMem.Machines
                 await this.Adb.TapPct(50, 72, this.CancellationToken);
                 await LabTimings.Delay("Inter-RestartBattle", this.CancellationToken);
                 await this.Adb.TapPct(25, 55, this.CancellationToken);
-                await this.StateMachine.FireAsync(Trigger.StartBattle);
             }
             else
             {
