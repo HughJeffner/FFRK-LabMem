@@ -108,6 +108,7 @@
     <Compile Include="Machines\Lab.cs" />
     <Compile Include="Machines\LabStateJob.cs" />
     <Compile Include="Machines\LabTimings.cs" />
+    <Compile Include="Machines\LabWatchdog.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -116,6 +117,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\Clipboard.cs" />
+    <Compile Include="Services\ConsoleExit.cs" />
     <Compile Include="Services\Scheduler.cs" />
     <Compile Include="Services\Tray.cs" />
     <Compile Include="Services\Updates.cs" />

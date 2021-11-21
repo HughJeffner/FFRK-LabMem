@@ -64,29 +64,44 @@ namespace FFRK_LabMem.Config.UI
             // Tab fakery
             listView1.Items[0].Selected = true;
             listView1.Items[0].Focused = true;
-            tabControl.Top -= tabControl.ItemSize.Height;
-            tabControl.Height += tabControl.ItemSize.Height;
-            tabControl.Region = new Region(new RectangleF(tabPage1.Left, tabPage1.Top, tabPage1.Width, tabPage1.Height + tabControl.ItemSize.Height-20));
+            tabControl.Appearance = TabAppearance.FlatButtons;
+            tabControl.ItemSize = new Size(0, 1);
+            tabControl.SizeMode = TabSizeMode.Fixed;
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                tab.Text = "";
+            }
+
+            // Debug values
+            foreach (var item in ColorConsole.GetCategories())
+            {
+                comboBoxDebug.Items.Add(item);
+            }
+            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
+            comboBoxDebug.SelectedIndex = 0;
+            comboBoxDebug.Tag = ColorConsole.DebugCategories;
 
             // Values
             checkBoxTimestamps.Checked = configHelper.GetBool("console.timestamps", true);
-            checkBoxDebug.Checked = configHelper.GetBool("console.debug", false);
             checkBoxUpdates.Checked = configHelper.GetBool("updates.checkForUpdates", true);
             checkBoxPrerelease.Checked = configHelper.GetBool("updates.includePrerelease", false);
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
-            numericUpDownWatchdog.Value = configHelper.GetInt("lab.watchdogMinutes", 10);
+            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
+            numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
             checkBoxProxyAutoConfig.Checked = configHelper.GetBool("proxy.autoconfig", false);
+            checkBoxProxyConnectionPool.Checked = configHelper.GetBool("proxy.connectionPooling", false);
             textBoxAdbPath.Text = configHelper.GetString("adb.path", "adb.exe");
             comboBoxAdbHost.DataSource = Lookups.AdbHosts;
             comboBoxAdbHost.DisplayMember = "Display";
             comboBoxAdbHost.ValueMember = "Value";
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
+            checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
 
             // Load lab .json
             LoadConfigs();
@@ -171,7 +186,7 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Merge HE Keys
-            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct();
+            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s);
             foreach (var item in heKeys)
             {
                 var newItem = new ListViewItem();
@@ -187,6 +202,33 @@ namespace FFRK_LabMem.Config.UI
                 if (Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment.ContainsKey(item))
                 {
                     newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                newItem.SubItems.Add("-");
+                listViewCounters.Items.Add(newItem);
+            }
+
+            // Merge Drops
+            var dropKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s);
+            foreach (var item in dropKeys)
+            {
+                var newItem = new ListViewItem();
+                newItem.Group = listViewCounters.Groups["Drops"];
+                newItem.Text = item;
+                if (Data.Counters.Default.CounterSets["Session"].Drops.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].Drops[item].ToString());
+                }
+                else
+                {
+                    newItem.SubItems.Add("-");
+                }
+                if (Data.Counters.Default.CounterSets["CurrentLab"].Drops.ContainsKey(item))
+                {
+                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Drops[item].ToString());
                 }
                 else
                 {
@@ -216,7 +258,8 @@ namespace FFRK_LabMem.Config.UI
 
             // General
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
-            configHelper.SetValue("console.debug", checkBoxDebug.Checked);
+            configHelper.SetValue("console.debugCategories", (short)comboBoxDebug.Tag);
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
             configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
             configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
             configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
@@ -226,13 +269,15 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.secure", checkBoxProxySecure.Checked);
             configHelper.SetValue("proxy.blocklist", textBoxProxyBlocklist.Text);
             configHelper.SetValue("proxy.autoconfig", checkBoxProxyAutoConfig.Checked);
+            configHelper.SetValue("proxy.connectionPooling", checkBoxProxyConnectionPool.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
+            configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            configHelper.SetValue("lab.watchdogMinutes", (int)numericUpDownWatchdog.Value);
+            configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
 
             // Lab
-            labConfig.Debug = checkBoxLabDebug.Checked;
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
             labConfig.AvoidExploreIfTreasure = checkBoxLabAvoidExplore.Checked;
             labConfig.AvoidPortal = checkBoxLabAvoidPortal.Checked;
@@ -302,11 +347,12 @@ namespace FFRK_LabMem.Config.UI
                 scheduler.Schedules.Add(schedule);
             }
             await scheduler.Save();
+            
+            ColorConsole.WriteLine("Done!");
 
             // Update machine
             controller.Machine.Config = labConfig;
-            
-            ColorConsole.WriteLine("Done!");
+            controller.Machine.Watchdog.Update((int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
 
             // Restart warning
             if (lblRestart.Visible)
@@ -331,7 +377,6 @@ namespace FFRK_LabMem.Config.UI
         {
             // Options
             labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            checkBoxLabDebug.Checked = labConfig.Debug;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
@@ -501,15 +546,15 @@ namespace FFRK_LabMem.Config.UI
 
             var changed = (
                 checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-                checkBoxDebug.Checked != configHelper.GetBool("console.debug", false) |
+                (short)comboBoxDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
                 checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
                 numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
                 checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
                 textBoxProxyBlocklist.Text != configHelper.GetString("proxy.blocklist", "") |
                 checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
+                checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-                numericUpDownWatchdog.Value != configHelper.GetInt("lab.watchdogMinutes", 10)
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555")
             );
 
             lblRestart.Visible = changed;
@@ -789,6 +834,22 @@ namespace FFRK_LabMem.Config.UI
                 var target = tag.Equals("All") ? null : tag;
                 await Data.Counters.Reset(target);
             }
+        }
+
+        private void ComboBoxDebug_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxDebug.SelectedIndex == 0) return;
+            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
+            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)comboBoxDebug.SelectedItem;
+            t ^= target;
+            comboBoxDebug.Tag = t;
+            comboBoxDebug.SelectedIndex = 0;
+            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(t));
+        }
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", toolTip1.GetToolTip(linkLabel1));
         }
     }
 }

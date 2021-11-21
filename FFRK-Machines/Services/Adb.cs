@@ -24,6 +24,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
+        private int cachedApiLevel = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -46,7 +47,6 @@ namespace FFRK_LabMem.Services
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
-        public bool Debug { get; set; }
         public bool HasDevice
         {
             get
@@ -61,6 +61,7 @@ namespace FFRK_LabMem.Services
         public Adb(string path, string host, int topOffset, int bottomOffset)
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting server");
             AdbServer server = new AdbServer();
             var result = server.StartServer(path, restartServerIfNewer: true);
             this.host = host;
@@ -98,9 +99,11 @@ namespace FFRK_LabMem.Services
         public async Task<bool> Connect()
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Connecting to device");
             this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device == null)
             {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
                 await RunProcessAsync("cmd.exe", "/c adb connect " + this.host);
             }
 
@@ -141,6 +144,17 @@ namespace FFRK_LabMem.Services
                 2000);
         }
 
+        public async Task<bool> IsPackageRunning(string packageName, CancellationToken cancellationToken)
+        {
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(string.Format("ps | grep {0}", packageName),
+            this.Device,
+            receiver,
+            cancellationToken,
+            2000);
+            return receiver.ToString().Contains(packageName);
+        }
+
         public async Task StartActivity(String packageName, String activityName, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -n {0}/{1}", packageName, activityName),
@@ -153,13 +167,16 @@ namespace FFRK_LabMem.Services
         public async Task<int> GetAPILevel(CancellationToken cancellationToken)
         {
 
+            if (cachedApiLevel != 0) return cachedApiLevel;
+
             var receiver = new ConsoleOutputReceiver();
             await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.build.version.sdk",
                 this.Device,
                 receiver,
                 cancellationToken,
                 2000);
-            return int.Parse(receiver.ToString());
+            cachedApiLevel = int.Parse(receiver.ToString());
+            return cachedApiLevel;
 
         }
 
@@ -501,8 +518,8 @@ namespace FFRK_LabMem.Services
                                 ((match.Y + (match.Height/2)) / (double)height) * 100
                             );
                             ret = item;
-                            System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
-                            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
                             break;
                         }
                     }
@@ -597,11 +614,11 @@ namespace FFRK_LabMem.Services
         public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
         {
 
-            if (this.Debug)
+            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
             {
                 var dTargetStart = await ConvertPctToXY(xPct, yPctStart);
                 var dTargetEnd = await ConvertPctToXY(xPct, yPctEnd);
-                ColorConsole.Write(ConsoleColor.DarkGray, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
             }
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
@@ -612,7 +629,7 @@ namespace FFRK_LabMem.Services
             var results = await GetPixelColorPct(coords, cancellationToken);
 
             // Target color
-            var target = System.Drawing.ColorTranslator.FromHtml(htmlButtonColor);
+            var target = ColorTranslator.FromHtml(htmlButtonColor);
 
             // Hold matches
             Dictionary<int, Tuple<double, double>> matches = new Dictionary<int,Tuple<double,double>>();
@@ -638,17 +655,17 @@ namespace FFRK_LabMem.Services
             if (matches.Count > 0)
             {
                 var min = matches.Keys.Min();
-                System.Diagnostics.Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
-                if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}, closest: {1}", matches.Count, min);
+                Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Count, min);
                 return matches[min];
             }
-            System.Diagnostics.Debug.Print("matches: {0}", matches.Count);
-            if (this.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "matches: {0}", matches.Count);
+            Debug.Print("matches: {0}", matches.Count);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}", matches.Count);
             return null;
 
         }
 
-        public async Task<Boolean> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
+        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
         {
             
             var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken);
@@ -769,7 +786,12 @@ namespace FFRK_LabMem.Services
 
             var process = new Process
             {
-                StartInfo = { FileName = fileName, Arguments = arguments, CreateNoWindow = true},
+                StartInfo = { 
+                    FileName = fileName, 
+                    Arguments = arguments,
+                    CreateNoWindow = true,
+                    WindowStyle= ProcessWindowStyle.Hidden
+                },
                 EnableRaisingEvents = true
             };
 
@@ -786,10 +808,8 @@ namespace FFRK_LabMem.Services
 
         public static void KillAdb()
         {
-            foreach (var process in Process.GetProcessesByName("adb"))
-            {
-                process.Kill();
-            }
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Killing");
+            AdbClient.Instance.KillAdb();
         }
 
         public class RootCertInstalledStatus

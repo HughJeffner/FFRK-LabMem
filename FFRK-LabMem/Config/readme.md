@@ -10,7 +10,9 @@
 | AvoidExploreIfTreasure| Tries to avoid exploration paintings if a treasure vault is visible behind them | true |
 | AvoidPortal           | Avoids the portal if an exploration or treasure vault is visible behind it, or if there are more paintings to reveal | true |
 | ~~MaxKeys~~           | Deprecated in 2.0.0, use TreasureFilterMap instead |  |
-| WatchdogMinutes       | If an action doesn't complete in this number of minutes, crash recovery is performed.  Set to '0' for no crash recovery | 10 |
+| ~~WatchdogMinutes~~   | Depreciated in 5.1.0, use WatchdogHangMinutes instead |  |
+| WatchdogHangMinutes   | If an action doesn't complete in this number of minutes, FFRK restart is performed.  Set to '0' to disable | 10 |
+| WatchdogCrashSeconds  | Number of seconds between checks to see if FFRK is running.  If not running then FFRK restart is performed.  Set to '0' to disable | 30 |
 | RestartFailedBattle   | Attempt to restart a battle when defeated | false |
 | StopOnMasterPainting  | Automatically disables when the master painting is reached. | false |
 | RestartLab            | Restarts the lab once completed | false |

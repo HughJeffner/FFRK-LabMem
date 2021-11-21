@@ -5,7 +5,6 @@ using FFRK_LabMem.Services;
 using Newtonsoft.Json.Linq;
 using Stateless;
 using System.Diagnostics;
-using System.Timers;
 using FFRK_Machines.Machines;
 using FFRK_Machines;
 using FFRK_LabMem.Data;
@@ -16,7 +15,6 @@ namespace FFRK_LabMem.Machines
 {
     public partial class Lab : Machine<Lab.State, Lab.Trigger, LabConfiguration>
     {
-
         public enum Trigger
         {
             Started,
@@ -34,7 +32,6 @@ namespace FFRK_LabMem.Machines
             EnterDungeon,
             BattleSuccess,
             BattleFailed,
-            WatchdogTimer,
             FoundBoss,
             MissedButton,
             FinishedLab,
@@ -57,19 +54,17 @@ namespace FFRK_LabMem.Machines
             Failed,
             WaitForBoss,
             Completed,
-            Crashed,
             Restarting
         }
 
-        private int WatchdogMinutes { get; set; } = 10;
         private int CurrentKeys { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
+        public LabWatchdog Watchdog { get; }
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
-        private readonly Timer watchdogTimer = new Timer(Int32.MaxValue);
         private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
 
         private class BuddyInfo
@@ -80,21 +75,14 @@ namespace FFRK_LabMem.Machines
 
         private List<BuddyInfo> FatigueInfo = new List<BuddyInfo>();
 
-        public Lab(Adb adb, LabConfiguration config, int watchdogMinutes)
+        public Lab(Adb adb, LabConfiguration config)
         {
 
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.WatchdogMinutes = watchdogMinutes;
-           
-            // Timer
-            if (this.WatchdogMinutes > 0)
-            {
-                watchdogTimer.AutoReset = false;
-                watchdogTimer.Interval = TimeSpan.FromMinutes(this.WatchdogMinutes).TotalMilliseconds;
-                watchdogTimer.Elapsed += battleWatchdogTimer_Elapsed;
-            }
+            this.Watchdog = new LabWatchdog(adb, config.WatchdogHangMinutes, config.WatchdogCrashSeconds);
+            this.Watchdog.Timeout += Watchdog_Timeout;
 
         }
 
@@ -108,13 +96,13 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.Unknown)
                 .OnEntry(async (t) => await DetermineState())
-                .Ignore(Trigger.WatchdogTimer)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundPortal, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
+                .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed)
@@ -124,7 +112,6 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
                 .PermitReentry(Trigger.ResetState)
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundPortal, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure)
@@ -139,19 +126,16 @@ namespace FFRK_LabMem.Machines
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundDoor, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.MoveOn, State.Ready)
-                .Permit(Trigger.MissedButton, State.Ready);
+                .Permit(Trigger.MissedButton, State.Unknown);
 
             this.StateMachine.Configure(State.FoundTreasure)
                 .OnEntryAsync(async (t) => await SelectTreasures())
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .PermitReentry(Trigger.FoundTreasure)
                 .Permit(Trigger.MoveOn, State.Ready);
 
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(async (t) => await OpenSealedDoor())
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.FoundDoor, State.FoundThing)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
@@ -159,60 +143,47 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
                 .OnEntryAsync(async (t) => await StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
+                .OnEntry((t) => battleStopwatch.Restart())
                 .PermitReentry(Trigger.StartBattle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
-                .Permit(Trigger.BattleFailed, State.Failed)
-                .Permit(Trigger.WatchdogTimer, State.Crashed);
+                .Permit(Trigger.BattleFailed, State.Failed);
 
             this.StateMachine.Configure(State.BattleFinished)
                 .OnEntryAsync(async (t) => await FinishBattle())
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.FinishedLab, State.Completed)
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.PortalConfirm)
                 .OnEntryAsync(async (t) => await ConfirmPortal())
                 .Permit(Trigger.FinishedLab, State.Completed)
-                .Permit(Trigger.WatchdogTimer, State.Crashed)
                 .Permit(Trigger.ResetState, State.Ready);
 
             this.StateMachine.Configure(State.Completed)
                 .OnEntryAsync(async (t) => await FinishLab(t))
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.Restart, State.Restarting)
-                .Ignore(Trigger.BattleSuccess)
-                .Ignore(Trigger.WatchdogTimer);
+                .Ignore(Trigger.BattleSuccess);
 
             this.StateMachine.Configure(State.Restarting)
                 .OnEntryAsync(async (t) => await RestartLab())
-                .Permit(Trigger.ResetState, State.Unknown)
-                .Permit(Trigger.WatchdogTimer, State.Crashed);
+                .Permit(Trigger.ResetState, State.Unknown);
 
             this.StateMachine.Configure(State.WaitForBoss)
                 .OnEntryAsync(async (t) => await FinishLab(t))
                 .Permit(Trigger.ResetState, State.Ready)
                 .Permit(Trigger.FinishedLab, State.Completed)
                 .Ignore(Trigger.BattleSuccess)
-                .Ignore(Trigger.WatchdogTimer)
                 .Ignore(Trigger.PickedCombatant);
-
-            this.StateMachine.Configure(State.Crashed)
-                .OnEntryAsync(async (t) => await RestartFFRK())
-                .Permit(Trigger.BattleSuccess, State.BattleFinished)
-                .Permit(Trigger.ResetState, State.Ready)
-                .Permit(Trigger.StartBattle, State.Battle);
 
             this.StateMachine.Configure(State.Failed)
                 .OnEntryAsync(async (t) => await RestartBattle())
@@ -226,33 +197,37 @@ namespace FFRK_LabMem.Machines
             // Start machine
             StateMachine.FireAsync(Trigger.Started);
 
-            if (this.WatchdogMinutes > 0) StateMachine.OnTransitioned((state) => {
-                if (state.Trigger != Trigger.WatchdogTimer)
-                {
-                    watchdogTimer.Stop();
-                    if (this.Data != null)
-                    {
-                        watchdogTimer.Start();
-                        if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog kicked");
-                    } else
-                    {
-                        if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
-                    }
-                }
+            // Watchdog
+            if (Watchdog.HangCheckInterval > 0) StateMachine.OnTransitioned((state) => {
+                Watchdog.Kick(this.Data != null);
                 recoverStopwatch.Stop();
-                
             });
 
-
         }
 
-        async void battleWatchdogTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
 
-            await this.StateMachine.FireAsync(Trigger.WatchdogTimer);
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang because in battle");
+                return;
+            }
 
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+            // On a timer thread, need to handle errors
+            try
+            {
+                await RestartFFRK();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+            }
+            
         }
-        
+
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", Handle_GetDisplayPaintings);
@@ -278,7 +253,7 @@ namespace FFRK_LabMem.Machines
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
                 recoverStopwatch.Stop();
-                await Task.CompletedTask;
+                await this.StateMachine.FireAsync(Trigger.StartBattle);
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
             Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
@@ -428,12 +403,16 @@ namespace FFRK_LabMem.Machines
         {
             disableSafeRequested = true;
         }
+        
+        protected override void OnEnabled()
+        {
+            Watchdog.Enable();
+        }
 
-        public override async Task Disable()
+        protected override void OnDisabled()
         {
             // Stop timers
-            if (watchdogTimer.Enabled) watchdogTimer.Stop();
-            if (this.Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Watchdog stopped");
+            Watchdog.Disable();
             if (battleStopwatch.IsRunning)
             {
                 battleStopwatch.Stop();
@@ -449,9 +428,7 @@ namespace FFRK_LabMem.Machines
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
             disableSafeRequested = false;
-            
-            // Base
-            await base.Disable();
+
         }
 
         protected override void OnDataChanged(JObject data)
@@ -541,7 +518,7 @@ namespace FFRK_LabMem.Machines
 
                 }
             }
-            if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
             fatigueAutoResetEvent.Set();
             await Task.CompletedTask;
         }
@@ -563,7 +540,7 @@ namespace FFRK_LabMem.Machines
             try
             {
                 await Task.Delay(2000, this.CancellationToken);
-                if (Config.Debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Checking if final floor");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking if final floor");
                 return (await Adb.FindButton("#75377a", 2000, 48.6, 23, 24, 0, this.CancellationToken) != null);
 
             } catch (OperationCanceledException){};
@@ -583,7 +560,6 @@ namespace FFRK_LabMem.Machines
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
-            watchdogTimer.Stop();
             await RestartFFRK();
         }
 

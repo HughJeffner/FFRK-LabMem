@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FFRK_Machines;
@@ -46,22 +47,20 @@ namespace FFRK_LabMem.Services
         readonly ProxyServer proxyServer = null;
         readonly ExplicitProxyEndPoint explicitEndPoint = null;
         public List<Registration> Registrations { get; set; } = new List<Registration>();
-        private bool debug;
         private bool secure;
         public int Port { get; set; }
         private List<string> Blocklist { get; set; } = new List<string>();
 
-        public Proxy (int port, bool secure, bool debug) : this(port, secure, debug, null) { }
+        public Proxy (int port, bool secure) : this(port, secure, null, false) { }
 
-        public Proxy(int port, bool secure, bool debug, string blocklist)
+        public Proxy(int port, bool secure, string blocklist, bool connectionPooling)
         {
-            this.debug = debug;
             this.secure = secure;
             this.Port = port;
 
             // Proxy Setup
             proxyServer = new ProxyServer(false);
-            proxyServer.EnableConnectionPool = false;
+            proxyServer.EnableConnectionPool = connectionPooling;
 
             // Proxy Root Cert - Long lived
             proxyServer.CertificateManager.CertificateValidDays = 365 * 10;
@@ -78,7 +77,7 @@ namespace FFRK_LabMem.Services
                 // Useful when certificate trust is not required by proxy clients
                 //GenericCertificate = new X509Certificate2(Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "genericcert.pfx"), "password")
             };
-            explicitEndPoint.BeforeTunnelConnectRequest += onBeforeTunnelConnectRequest;
+            explicitEndPoint.BeforeTunnelConnectRequest += OnBeforeTunnelConnectRequest;
 
             // An explicit endpoint is where the client knows about the existence of a proxy
             // So client sends request in a proxy friendly manner
@@ -95,7 +94,13 @@ namespace FFRK_LabMem.Services
 
         public void Start()
         {
-            ColorConsole.WriteLine("Starting proxy server on {0}:{1} https:{2}", proxyServer.ProxyEndPoints[0].IpAddress, proxyServer.ProxyEndPoints[0].Port, secure);
+            var ip = Proxy.GetMainIPv4();
+            var ipString = "0.0.0.0";
+            if (ip != null)
+            {
+                ipString = ip.ToString();
+            }
+            ColorConsole.WriteLine("Starting proxy server on {0}:{1} https:{2}", ipString, proxyServer.ProxyEndPoints[0].Port, secure);
             proxyServer.Start();
             
         }
@@ -115,12 +120,33 @@ namespace FFRK_LabMem.Services
             });
         }
 
+        private static bool IsIPv4(IPAddress ipa) => ipa.AddressFamily == AddressFamily.InterNetwork;
+
+        public static IPAddress GetMainIPv4()
+        {
+
+            try
+            {
+                return NetworkInterface.GetAllNetworkInterfaces()
+                .Select((ni) => ni.GetIPProperties())
+                .Where((ip) => ip.GatewayAddresses.Where((ga) => IsIPv4(ga.Address)).Count() > 0)
+                .FirstOrDefault()?.UnicastAddresses?
+                .Where((ua) => IsIPv4(ua.Address))?.FirstOrDefault()?.Address;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
+
+
         private async Task OnResponse(object sender, SessionEventArgs e)
         {
             // read response headers
             //var responseHeaders = e.HttpClient.Response.Headers;
             System.Diagnostics.Debug.Print(e.HttpClient.Request.Url);
-            if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, e.HttpClient.Request.Url);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, e.HttpClient.Request.Url);
             if (!e.HttpClient.Request.Host.Equals("ffrk.denagames.com")) return;
             if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
             {
@@ -151,13 +177,13 @@ namespace FFRK_LabMem.Services
             {
                 e.TerminateSession();
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
             }
 
             return Task.FromResult(true);
         }
 
-        private Task onBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
+        private Task OnBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
             string hostname = e.HttpClient.Request.RequestUri.Host;
             // e.GetState().PipelineInfo.AppendLine(nameof(onBeforeTunnelConnectRequest) + ":" + hostname);
@@ -172,7 +198,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DenyConnect = true;
                 System.Diagnostics.Debug.Print("Blocked: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Blocked: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Blocked: {0}", hostname);
                 return Task.FromResult(false);
             }
 
@@ -180,7 +206,7 @@ namespace FFRK_LabMem.Services
             {
                 e.DecryptSsl = false;
                 System.Diagnostics.Debug.Print("Tunnel to: " + hostname);
-                if (this.debug) ColorConsole.WriteLine(ConsoleColor.DarkGray, "Tunnel to: " + hostname);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Proxy, "Tunnel to: {0}", hostname);
             }
 
             return Task.FromResult(true);

@@ -16,10 +16,11 @@ namespace FFRK_LabMem.Data
         private static readonly string folder = @"./Data";
         private static readonly string fileSuffix = "_v01.csv";
 
-        public static void Initalize(ConfigHelper config)
+        public static Task Initalize(ConfigHelper config)
         {
             DataLogger.enabled = config.GetBool("datalogger.enabled", false);
             if (DataLogger.enabled) ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Data logging enabled, target folder: {0}", folder);
+            return Task.CompletedTask;
         }
 
         public static async Task LogTreasureRate(Lab lab, JArray treasures)
@@ -98,7 +99,7 @@ namespace FFRK_LabMem.Data
                             row[3].Replace("★", "*"),
                             row[4]);
 
-                        await InspectDrop(item, "item_type_name", "item_name");
+                        await InspectDrop(item, "item_type_name", row[3], row[4]);
                     }
                     await AppendFile("drops", writer);
                 }
@@ -129,7 +130,7 @@ namespace FFRK_LabMem.Data
                             row[3].Replace("★", "*"),
                             row[4]);
 
-                        await InspectDrop(item.First, "type_name", "name");
+                        await InspectDrop(item.First, "type_name", row[3], row[4]);
                     }
                     await AppendFile("drops_battle", writer);
                 }
@@ -138,13 +139,12 @@ namespace FFRK_LabMem.Data
 
         }
 
-        private static async Task InspectDrop(JToken item, string typeField, string nameField)
+        private static async Task InspectDrop(JToken item, string typeField, string name, string qty)
         {
             var typeName = item[typeField];
             if (typeName != null)
             {
-                if (typeName.ToString().Equals("EQUIPMENT")) await Counters.FoundHE(item[nameField].ToString());
-                // SPHERE_MATERIAL, ABILITY_MATERIAL, LABYRINTH_ITEM, EQUIPMENT_SP_MATERIAL
+                await Counters.FoundDrop(typeName.ToString(), name, int.Parse(qty));
             }
             
         }

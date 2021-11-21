@@ -1,4 +1,6 @@
-﻿using FFRK_LabMem.Machines;
+﻿using FFRK_LabMem.Config;
+using FFRK_LabMem.Machines;
+using FFRK_Machines;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,8 +20,26 @@ namespace FFRK_LabMem.Data
 
         public static event EventHandler OnUpdated;
 
+        [Flags]
+        public enum DropCategory
+        {
+            EQUIPMENT = 1 << 0,
+            LABYRINTH_ITEM = 1 << 1,
+            COMMON = 1 << 2,
+            SPHERE_MATERIAL = 1 << 3,
+            ABILITY_MATERIAL = 1 << 4,
+            EQUIPMENT_SP_MATERIAL = 1 << 5,
+            HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL = 1 << 6,
+            GROW_EGG = 1 << 7
+        }
+
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public Dictionary<string, CounterSet> CounterSets { get; set; }
+        public Dictionary<string, CounterSet> CounterSets { get; set; } 
+
+        public DropCategory DropCategories { get; set; } = DropCategory.EQUIPMENT | 
+            DropCategory.LABYRINTH_ITEM | 
+            DropCategory.COMMON | 
+            DropCategory.SPHERE_MATERIAL;
 
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
@@ -48,12 +68,13 @@ namespace FFRK_LabMem.Data
                 return _instance;
             }
         }
-        public static async Task Initalize(LabController controller)
+        public static async Task Initalize(ConfigHelper config, LabController controller)
         {
             if (_instance == null)
             {
                 _instance = new Counters(controller);
                 await _instance.Load();
+                _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
             }
 
         }
@@ -122,10 +143,33 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("FFRKRestarts");
         }
-        public static async Task FoundHE(string name)
+        public static async Task FoundDrop(DropCategory category, string name, int qty)
         {
-            _instance.IncrementHE(name);
-            await _instance.IncrementCounter("HeroEquipmentGot");
+            if (_instance.DropCategories.HasFlag(category)){
+
+                if (category.Equals(DropCategory.EQUIPMENT))
+                {
+                    _instance.IncrementHE(name);
+                    await _instance.IncrementCounter("HeroEquipmentGot");
+                } else
+                {
+                    _instance.IncrementDrop(name, qty);
+                    await _instance.Save();
+                }
+            }
+           
+        }
+        public static async Task FoundDrop(string dropType, string name, int qty)
+        {
+            if (Enum.TryParse(dropType, out DropCategory category))
+            {
+                await FoundDrop(category, name, qty);
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Unknown drop type: {0}", dropType);
+            }
+
         }
         private async Task IncrementCounter(string key, int amt = 1, bool save = true)
         {
@@ -156,6 +200,23 @@ namespace FFRK_LabMem.Data
                     } else
                     {
                         set.Value.HeroEquipment.Add(name, 1);
+                    }
+                }
+            }
+        }
+        private void IncrementDrop(string name, int amt = 1)
+        {
+            foreach (var set in CounterSets)
+            {
+                if (!set.Key.Equals("Total"))
+                {
+                    if (set.Value.Drops.ContainsKey(name))
+                    {
+                        set.Value.Drops[name] += amt;
+                    }
+                    else
+                    {
+                        set.Value.Drops.Add(name, amt);
                     }
                 }
             }
@@ -213,13 +274,15 @@ namespace FFRK_LabMem.Data
         {
             public Dictionary<string, int> Counters { get; set; }
             public Dictionary<string, TimeSpan> Runtime { get; set; }
-            public Dictionary<string, int> HeroEquipment { get; set; }
+            public SortedDictionary<string, int> HeroEquipment { get; set; }
+            public SortedDictionary<string, int> Drops { get; set; }
 
             public CounterSet()
             {
                 this.Counters = GetDefaultCounters();
                 this.Runtime = GetDefaultRuntimes();
-                this.HeroEquipment = new Dictionary<string, int>();
+                this.HeroEquipment = new SortedDictionary<string, int>();
+                this.Drops = new SortedDictionary<string, int>();
             }
 
             private Dictionary<string, int> GetDefaultCounters()
@@ -255,7 +318,8 @@ namespace FFRK_LabMem.Data
             {
                 this.Counters = GetDefaultCounters();
                 this.Runtime = GetDefaultRuntimes();
-                this.HeroEquipment = new Dictionary<string, int>();
+                this.HeroEquipment = new SortedDictionary<string, int>();
+                this.Drops = new SortedDictionary<string, int>();
             }
 
         }

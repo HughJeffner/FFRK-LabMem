@@ -6,7 +6,7 @@ namespace FFRK_LabMem.Config
     public class ConfigHelper
     {
 
-        private System.Configuration.Configuration config = null;
+        private Configuration config = null;
         private KeyValueConfigurationCollection appSettings = null;
 
         public ConfigHelper() : this(null) { }
@@ -86,6 +86,12 @@ namespace FFRK_LabMem.Config
         {
             if (this[key] == null) return defaultValue;
             return Int32.Parse(this[key]);
+        }
+        
+        public short GetShort(String key, short defaultValue)
+        {
+            if (this[key] == null) return defaultValue;
+            return short.Parse(this[key]);
         }
 
         public bool GetBool(String key, bool defaultValue)

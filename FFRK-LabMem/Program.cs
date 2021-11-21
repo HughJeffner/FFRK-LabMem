@@ -1,7 +1,6 @@
 ﻿using System;
 using FFRK_LabMem.Config;
 using FFRK_LabMem.Config.UI;
-using FFRK_LabMem.Data;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
@@ -13,12 +12,16 @@ namespace FFRK_LabMem
         static void Main(string[] args)
         {
 
+            // Listen for console exit
+            ConsoleExit.Listen(OnConsoleExit);
+
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
             var config = new ConfigHelper(configFile);
 
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
             
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
@@ -27,9 +30,6 @@ namespace FFRK_LabMem
             Console.Title = versionTitle;
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
-
-            // Data logging
-            DataLogger.Initalize(config);
 
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
@@ -55,7 +55,14 @@ namespace FFRK_LabMem
             
             // Stop
             controller.Stop();
+            OnConsoleExit();
 
+        }
+
+        private static void OnConsoleExit()
+        {
+            // Kill adb option
+            if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
         }
 
     }
