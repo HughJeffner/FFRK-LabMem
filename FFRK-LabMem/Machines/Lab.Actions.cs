@@ -457,7 +457,7 @@ namespace FFRK_LabMem.Machines
 
             // Drops
             await DataLogger.LogBattleDrops(this);
-            
+
 
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
@@ -473,7 +473,7 @@ namespace FFRK_LabMem.Machines
             await this.Adb.TapPct(50, 85, this.CancellationToken);
 
             // Check if we defeated the boss
-            if (this.Data != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
+            if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
                 await this.StateMachine.FireAsync(Trigger.FinishedLab);
 
 
