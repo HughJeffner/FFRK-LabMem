@@ -310,8 +310,8 @@ namespace FFRK_LabMem.Config.UI
             foreach (ListViewItem item in listViewTreasures.Items)
             {
                 var value = new LabConfiguration.TreasureFilter();
-                value.Priority = int.Parse(item.Text);
-                value.MaxKeys = int.Parse(item.SubItems[1].Text);
+                value.Priority = int.Parse(item.SubItems[1].Text);
+                value.MaxKeys = int.Parse(item.SubItems[2].Text);
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
             }
 
@@ -406,6 +406,7 @@ namespace FFRK_LabMem.Config.UI
                 var newItem = new ListViewItem(item.Value.ToString());
                 newItem.SubItems.Add(Lookups.Paintings[item.Key]);
                 newItem.Tag = item.Key;
+                newItem.ImageIndex = 1;
                 listViewPaintings.Items.Add(newItem);
             }
 
@@ -415,11 +416,13 @@ namespace FFRK_LabMem.Config.UI
             foreach (var item in labConfig.TreasureFilterMap)
             {
                 var newItem = new ListViewItem();
-                newItem.Text = item.Value.Priority.ToString();
+                newItem.Text = "";
+                newItem.SubItems.Add(item.Value.Priority.ToString());
                 newItem.SubItems.Add(item.Value.MaxKeys.ToString());
                 newItem.SubItems.Add(Lookups.Treasures[item.Key]);
                 newItem.Checked = item.Value.Priority > 0;
                 newItem.Tag = item.Key;
+                newItem.ImageIndex = 0;
                 listViewTreasures.Items.Add(newItem);
             }
             treasuresLoaded = true;
@@ -437,7 +440,7 @@ namespace FFRK_LabMem.Config.UI
         private void ListViewTreasures_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[1].Text);
+            comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[2].Text);
             buttonTreasureUp.Enabled = listViewTreasures.SelectedItems[0].Checked;
             buttonTreasureDown.Enabled = listViewTreasures.SelectedItems[0].Checked;
 
@@ -496,10 +499,10 @@ namespace FFRK_LabMem.Config.UI
         private void ButtonTreasureUp_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            var p = int.Parse(listViewTreasures.SelectedItems[0].Text) - 1;
+            var p = int.Parse(listViewTreasures.SelectedItems[0].SubItems[1].Text) - 1;
             if (p < 0) return;
             if (p <= 1) p = 1;
-            listViewTreasures.SelectedItems[0].Text = p.ToString();
+            listViewTreasures.SelectedItems[0].SubItems[1].Text = p.ToString();
             listViewTreasures.Sort();
             listViewTreasures.Focus();
         }
@@ -507,9 +510,9 @@ namespace FFRK_LabMem.Config.UI
         private void ButtonTreasureDown_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            var p = int.Parse(listViewTreasures.SelectedItems[0].Text) + 1;
+            var p = int.Parse(listViewTreasures.SelectedItems[0].SubItems[1].Text) + 1;
             if (p >= 255) p = 255;
-            listViewTreasures.SelectedItems[0].Text = p.ToString();
+            listViewTreasures.SelectedItems[0].SubItems[1].Text = p.ToString();
             listViewTreasures.SelectedItems[0].Checked = p > 0;
             listViewTreasures.Sort();
             listViewTreasures.Focus();
@@ -520,11 +523,11 @@ namespace FFRK_LabMem.Config.UI
             if (!treasuresLoaded || !treasuresTabLoaded) return;
             if (e.Item.Checked)
             {
-                e.Item.Text = "1";
+                e.Item.SubItems[1].Text = "1";
             }
             else
             {
-                e.Item.Text = "0";
+                e.Item.SubItems[1].Text = "0";
             }
             buttonTreasureUp.Enabled = e.Item.Checked;
             buttonTreasureDown.Enabled = e.Item.Checked;
@@ -535,7 +538,7 @@ namespace FFRK_LabMem.Config.UI
         {
 
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            listViewTreasures.SelectedItems[0].SubItems[1].Text = comboBoxKeys.Text;
+            listViewTreasures.SelectedItems[0].SubItems[2].Text = comboBoxKeys.Text;
             listViewTreasures.Sort();
             listViewTreasures.Focus();
 
@@ -608,9 +611,16 @@ namespace FFRK_LabMem.Config.UI
             }
         }
 
+        private void CheckBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
+            checkBoxLabRestart.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
+            CheckBoxLabRestart_CheckedChanged(sender, e);
+        }
+
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
         {
-            checkBoxLabUsePotions.Enabled = checkBoxLabRestart.Checked;
+            checkBoxLabUsePotions.Enabled = (checkBoxLabRestart.Checked && !checkBoxLabStopOnMasterPainting.Checked);
         }
 
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
@@ -676,11 +686,6 @@ namespace FFRK_LabMem.Config.UI
                 await LabTimings.ResetToDefaults();
                 LoadTimings();
             }
-        }
-
-        private void CheckBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
-        {
-            checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
         }
 
         private async void ButtonCheckForUpdates_Click(object sender, EventArgs e)
