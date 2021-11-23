@@ -143,6 +143,8 @@ namespace FFRK_LabMem.Data.UI
         private void LoadDrops(string group, IOrderedEnumerable<string> keySet, bool isHE)
         {
 
+            if (keySet.Count() == 0) RemoveItemsForGroup(group);
+
             foreach (var item in keySet)
             {
                 ListViewItem newItem;
@@ -183,11 +185,25 @@ namespace FFRK_LabMem.Data.UI
             }
         }
 
+        private void RemoveItemsForGroup(string group)
+        {
+            List<ListViewItem> remove = new List<ListViewItem>();
+            foreach (ListViewItem item in listViewCounters.Groups[group].Items)
+            {
+                remove.Add(item);
+            }
+
+            foreach (ListViewItem item in remove)
+            {
+                listViewCounters.Items.Remove(item);
+            }
+        }
+
         private void ButtonCountersReset_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             contextMenuStrip1.Tag = button;
-            contextMenuStrip1.Show(button, new Point(0, -contextMenuStrip1.Size.Height));
+            contextMenuStrip1.Show(button, new Point(0, button.Height));
         }
 
         private async void ResetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -204,7 +220,6 @@ namespace FFRK_LabMem.Data.UI
                 Counters.CounterSet.DataType types = (Counters.CounterSet.DataType)Enum.Parse(typeof(Counters.CounterSet.DataType), menuItemTag);
                 await Counters.Reset(target, types);
             }
-
 
         }
 
