@@ -98,7 +98,7 @@ namespace FFRK_LabMem.Data
         public static async Task LabRunCompleted()
         {
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
-            _instance.CounterSets["CurrentLab"].Reset();
+            _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
             await _instance.Save();
         }
         public static async Task PaintingSelected()
@@ -258,23 +258,37 @@ namespace FFRK_LabMem.Data
             }
             await Task.CompletedTask;
         }
-        public static async Task Reset(string key)
+        public static async Task Reset(string key, CounterSet.DataType types)
         {
+            // Ugh I don't like doing this but it works.  Need to dump the current stopwatch and save it before resetting
+            await _instance.Save();
             if (key == null)
             {
                 foreach (var item in _instance.CounterSets)
                 {
-                    item.Value.Reset();
+                    item.Value.Reset(types);
                 }
             } else
             {
-                _instance.CounterSets[key].Reset();
+                _instance.CounterSets[key].Reset(types);
             }
+            // Now save the reset values
             await _instance.Save();
 
         }
+
         public class CounterSet
         {
+            [Flags]
+            public enum DataType
+            {
+                All = ~0,
+                Counters = 1 << 1,
+                Runtime = 1 << 2,
+                HeroEquipment = 1 << 3,
+                Drops = 1 << 4
+            }
+
             public Dictionary<string, int> Counters { get; set; }
             public Dictionary<string, TimeSpan> Runtime { get; set; }
             public SortedDictionary<string, int> HeroEquipment { get; set; }
@@ -317,12 +331,12 @@ namespace FFRK_LabMem.Data
                 };
             }
 
-            public void Reset()
+            public void Reset(DataType types)
             {
-                this.Counters = GetDefaultCounters();
-                this.Runtime = GetDefaultRuntimes();
-                this.HeroEquipment = new SortedDictionary<string, int>();
-                this.Drops = new SortedDictionary<string, int>();
+                if (types.HasFlag(DataType.Counters)) this.Counters = GetDefaultCounters();
+                if (types.HasFlag(DataType.Runtime)) this.Runtime = GetDefaultRuntimes();
+                if (types.HasFlag(DataType.HeroEquipment)) this.HeroEquipment = new SortedDictionary<string, int>();
+                if (types.HasFlag(DataType.Drops)) this.Drops = new SortedDictionary<string, int>();
             }
 
         }

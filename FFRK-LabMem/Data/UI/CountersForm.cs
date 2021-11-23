@@ -183,20 +183,35 @@ namespace FFRK_LabMem.Data.UI
             }
         }
 
-        private async void ButtonCountersReset_Click(object sender, EventArgs e)
+        private void ButtonCountersReset_Click(object sender, EventArgs e)
         {
-            String tag = (string)((Button)sender).Tag;
-            var result = MessageBox.Show(this, $"Are you sure you want to reset {tag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var button = (Button)sender;
+            contextMenuStrip1.Tag = button;
+            contextMenuStrip1.Show(button, new Point(0, -contextMenuStrip1.Size.Height));
+        }
+
+        private async void ResetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var button = (Button)contextMenuStrip1.Tag;
+            string buttonTag = button.Tag.ToString();
+            var menuItem = (ToolStripMenuItem)sender;
+            string menuItemTag = menuItem.Tag.ToString();
+
+            var result = MessageBox.Show(this, $"Are you sure you want to reset {buttonTag} {menuItemTag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
-                var target = tag.Equals("All") ? null : tag;
-                await Counters.Reset(target);
+                var target = buttonTag.Equals("All") ? null : buttonTag;
+                Counters.CounterSet.DataType types = (Counters.CounterSet.DataType)Enum.Parse(typeof(Counters.CounterSet.DataType), menuItemTag);
+                await Counters.Reset(target, types);
             }
+
+
         }
 
         private void buttonSettings_Click(object sender, EventArgs e)
         {
             ConfigForm.CreateAndShow(new Config.ConfigHelper(), controller, 6);
         }
+       
     }
 }

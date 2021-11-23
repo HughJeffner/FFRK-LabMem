@@ -29,10 +29,11 @@ namespace FFRK_LabMem.Data.UI
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CountersForm));
             this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.buttonCountersResetLab = new System.Windows.Forms.Button();
@@ -43,6 +44,14 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonSettings = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.countersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runtimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.heroEquipmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dropsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonCountersResetSession
@@ -92,19 +101,19 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader11,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup5.Header = "Counters";
-            listViewGroup5.Name = "Counters";
-            listViewGroup6.Header = "Runtime";
-            listViewGroup6.Name = "Runtime";
-            listViewGroup7.Header = "Hero Equipment";
-            listViewGroup7.Name = "HE";
-            listViewGroup8.Header = "Drops";
-            listViewGroup8.Name = "Drops";
+            listViewGroup1.Header = "Counters";
+            listViewGroup1.Name = "Counters";
+            listViewGroup2.Header = "Runtime";
+            listViewGroup2.Name = "Runtime";
+            listViewGroup3.Header = "Hero Equipment";
+            listViewGroup3.Name = "HE";
+            listViewGroup4.Header = "Drops";
+            listViewGroup4.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup5,
-            listViewGroup6,
-            listViewGroup7,
-            listViewGroup8});
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3,
+            listViewGroup4});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(12, 12);
             this.listViewCounters.Name = "listViewCounters";
@@ -145,6 +154,63 @@ namespace FFRK_LabMem.Data.UI
             this.buttonSettings.UseVisualStyleBackColor = true;
             this.buttonSettings.Click += new System.EventHandler(this.buttonSettings_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.countersToolStripMenuItem,
+            this.runtimeToolStripMenuItem,
+            this.heroEquipmentToolStripMenuItem,
+            this.dropsToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.allToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 142);
+            // 
+            // countersToolStripMenuItem
+            // 
+            this.countersToolStripMenuItem.Name = "countersToolStripMenuItem";
+            this.countersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.countersToolStripMenuItem.Tag = "Counters";
+            this.countersToolStripMenuItem.Text = "Counters";
+            this.countersToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
+            // runtimeToolStripMenuItem
+            // 
+            this.runtimeToolStripMenuItem.Name = "runtimeToolStripMenuItem";
+            this.runtimeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runtimeToolStripMenuItem.Tag = "Runtime";
+            this.runtimeToolStripMenuItem.Text = "Runtime";
+            this.runtimeToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
+            // heroEquipmentToolStripMenuItem
+            // 
+            this.heroEquipmentToolStripMenuItem.Name = "heroEquipmentToolStripMenuItem";
+            this.heroEquipmentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.heroEquipmentToolStripMenuItem.Tag = "HeroEquipment";
+            this.heroEquipmentToolStripMenuItem.Text = "Hero Equipment";
+            this.heroEquipmentToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
+            // dropsToolStripMenuItem
+            // 
+            this.dropsToolStripMenuItem.Name = "dropsToolStripMenuItem";
+            this.dropsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dropsToolStripMenuItem.Tag = "Drops";
+            this.dropsToolStripMenuItem.Text = "Drops";
+            this.dropsToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Tag = "All";
+            this.allToolStripMenuItem.Text = "All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -160,6 +226,7 @@ namespace FFRK_LabMem.Data.UI
             this.Text = "Counters";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CountersForm_FormClosed);
             this.Load += new System.EventHandler(this.CountersForm_Load);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -175,5 +242,12 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ColumnHeader columnHeader11;
         private System.Windows.Forms.ColumnHeader columnHeader13;
         private System.Windows.Forms.Button buttonSettings;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem countersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runtimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem heroEquipmentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dropsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
     }
 }
