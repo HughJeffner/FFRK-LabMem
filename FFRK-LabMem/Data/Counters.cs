@@ -30,7 +30,8 @@ namespace FFRK_LabMem.Data
             ABILITY_MATERIAL = 1 << 4,
             EQUIPMENT_SP_MATERIAL = 1 << 5,
             HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL = 1 << 6,
-            GROW_EGG = 1 << 7
+            GROW_EGG = 1 << 7,
+            BEAST_FOOD = 1 << 8
         }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
