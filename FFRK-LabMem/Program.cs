@@ -60,6 +60,7 @@ namespace FFRK_LabMem
                 }
                 // Needed to run winforms
                 System.Windows.Forms.Application.DoEvents();
+                System.Threading.Thread.Sleep(10);
             }
             
             // Stop
