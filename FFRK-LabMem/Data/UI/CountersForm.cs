@@ -38,12 +38,12 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_Load(object sender, EventArgs e)
         {
             Counters.OnUpdated += Counters_OnUpdated;
-            LoadCounters();
+            LoadAll();
         }
 
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Counters.OnUpdated -= LoadCounters;
+            Counters.OnUpdated -= Counters_OnUpdated;
             _isLoaded = false;
         }
 
@@ -51,106 +51,136 @@ namespace FFRK_LabMem.Data.UI
         {
             if (listViewCounters.InvokeRequired)
             {
-                this.Invoke(new MethodInvoker(LoadCounters));
+                this.Invoke(new MethodInvoker(LoadAll));
             }
             else
             {
-                LoadCounters();
+                LoadAll();
             }
+        }
+
+        private void LoadAll()
+        {
+            LoadCounters();
+            LoadRuntimes();
+            LoadDrops("HE", Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s), true);
+            LoadDrops("Drops", Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s), false);
         }
 
         private void LoadCounters()
         {
-            listViewCounters.Items.Clear();
 
             // Counters
             var sessionCounters = Counters.Default.CounterSets["Session"].Counters.ToList();
             foreach (var item in sessionCounters)
             {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Counters"];
-                if (Lookups.Counters.ContainsKey(item.Key))
+
+                ListViewItem newItem;
+                if (listViewCounters.Items.ContainsKey(item.Key))
                 {
-                    newItem.Text = Lookups.Counters[item.Key];
-                }
-                else
+                    newItem = listViewCounters.Items[item.Key];
+                } else
                 {
-                    newItem.Text = item.Key;
+                    // Add
+                    newItem = new ListViewItem();
+                    newItem.Name = item.Key;
+                    newItem.Tag = item.Key;
+                    newItem.Group = listViewCounters.Groups["Counters"];
+                    if (Lookups.Counters.ContainsKey(item.Key))
+                    {
+                        newItem.Text = Lookups.Counters[item.Key];
+                    }
+                    else
+                    {
+                        newItem.Text = item.Key;
+                    }
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    listViewCounters.Items.Add(newItem);
                 }
-                newItem.SubItems.Add(item.Value.ToString());
-                newItem.SubItems.Add(Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString());
-                newItem.SubItems.Add(Counters.Default.CounterSets["Total"].Counters[item.Key].ToString());
-                listViewCounters.Items.Add(newItem);
+                newItem.SubItems[1].Text = item.Value.ToString();
+                newItem.SubItems[2].Text = Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString();
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
+
             }
 
-            // Runtime
+        }
+
+        private void LoadRuntimes()
+        {
+
             string runtimeFormat = @"d\.hh\:mm\:ss";
             var sessionRuntime = Counters.Default.CounterSets["Session"].Runtime.ToList();
             foreach (var item in sessionRuntime)
             {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Runtime"];
-                newItem.Text = item.Key;
-                newItem.SubItems.Add(item.Value.ToString(runtimeFormat));
-                newItem.SubItems.Add(Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat));
-                newItem.SubItems.Add(Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat));
-                listViewCounters.Items.Add(newItem);
+                ListViewItem newItem;
+                if (listViewCounters.Items.ContainsKey(item.Key))
+                {
+                    newItem = listViewCounters.Items[item.Key];
+                }
+                else
+                {
+                    newItem = new ListViewItem();
+                    newItem.Text = item.Key;
+                    newItem.Name = item.Key;
+                    newItem.Tag = item.Key;
+                    newItem.Group = listViewCounters.Groups["Runtime"];
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    listViewCounters.Items.Add(newItem);
+                }
+
+                newItem.SubItems[1].Text = item.Value.ToString(runtimeFormat);
+                newItem.SubItems[2].Text = Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
+
             }
 
-            // Merge HE Keys
-            var heKeys = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s);
-            foreach (var item in heKeys)
+        }
+
+        private void LoadDrops(string group, IOrderedEnumerable<string> keySet, bool isHE)
+        {
+
+            foreach (var item in keySet)
             {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["HE"];
-                newItem.Text = item;
-                if (Counters.Default.CounterSets["Session"].HeroEquipment.ContainsKey(item))
+                ListViewItem newItem;
+                if (listViewCounters.Items.ContainsKey(item))
                 {
-                    newItem.SubItems.Add(Counters.Default.CounterSets["Session"].HeroEquipment[item].ToString());
+                    newItem = listViewCounters.Items[item];
                 }
                 else
                 {
-                    newItem.SubItems.Add("-");
+                    newItem = new ListViewItem();
+                    newItem.Group = listViewCounters.Groups[group];
+                    newItem.Name = item;
+                    newItem.Text = item;
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
+                    listViewCounters.Items.Add(newItem);
                 }
-                if (Counters.Default.CounterSets["CurrentLab"].HeroEquipment.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Counters.Default.CounterSets["CurrentLab"].HeroEquipment[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                newItem.SubItems.Add("-");
-                listViewCounters.Items.Add(newItem);
+
+                SetSubItemText(newItem.SubItems[1], item, isHE, "Session");
+                SetSubItemText(newItem.SubItems[2], item, isHE, "CurrentLab");
+                SetSubItemText(newItem.SubItems[3], item, isHE, "Total");
+                
             }
 
-            // Merge Drops
-            var dropKeys = Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s);
-            foreach (var item in dropKeys)
+        }
+
+        private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, string counterSetKey)
+        {
+            var target = (isHE) ? Counters.Default.CounterSets[counterSetKey].HeroEquipment : Counters.Default.CounterSets[counterSetKey].Drops;
+            if (target.ContainsKey(item))
             {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Drops"];
-                newItem.Text = item;
-                if (Counters.Default.CounterSets["Session"].Drops.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Counters.Default.CounterSets["Session"].Drops[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                if (Counters.Default.CounterSets["CurrentLab"].Drops.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Counters.Default.CounterSets["CurrentLab"].Drops[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                newItem.SubItems.Add("-");
-                listViewCounters.Items.Add(newItem);
+                subItem.Text = target[item].ToString();
             }
-
+            else
+            {
+                subItem.Text = "-";
+            }
         }
 
         private async void ButtonCountersReset_Click(object sender, EventArgs e)
