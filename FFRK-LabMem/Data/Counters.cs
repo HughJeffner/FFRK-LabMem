@@ -42,6 +42,8 @@ namespace FFRK_LabMem.Data
             DropCategory.COMMON | 
             DropCategory.SPHERE_MATERIAL;
 
+        public bool LogDropsToTotalCounters { get; set; } = false;
+
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
 
@@ -193,7 +195,7 @@ namespace FFRK_LabMem.Data
         {
             foreach (var set in CounterSets)
             {
-                if (!set.Key.Equals("Total"))
+                if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
                     if (set.Value.HeroEquipment.ContainsKey(name))
                     {
@@ -209,7 +211,7 @@ namespace FFRK_LabMem.Data
         {
             foreach (var set in CounterSets)
             {
-                if (!set.Key.Equals("Total"))
+                if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
                     if (set.Value.Drops.ContainsKey(name))
                     {

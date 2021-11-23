@@ -139,6 +139,8 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.checkedListBoxDropCategories = new System.Windows.Forms.CheckedListBox();
+            this.checkBoxCountersLogDropsTotal = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
@@ -167,6 +169,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage11.SuspendLayout();
+            this.tabPage12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -1221,7 +1224,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTimingDefaults
             // 
             this.buttonTimingDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 432);
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 430);
             this.buttonTimingDefaults.Name = "buttonTimingDefaults";
             this.buttonTimingDefaults.Size = new System.Drawing.Size(140, 27);
             this.buttonTimingDefaults.TabIndex = 3;
@@ -1244,7 +1247,7 @@ namespace FFRK_LabMem.Config.UI
             this.Jitter});
             this.dataGridView1.Location = new System.Drawing.Point(3, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(494, 425);
+            this.dataGridView1.Size = new System.Drawing.Size(494, 423);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
@@ -1283,7 +1286,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(306, 438);
+            this.linkLabel1.Location = new System.Drawing.Point(306, 436);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(175, 15);
             this.linkLabel1.TabIndex = 5;
@@ -1296,7 +1299,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleAdd
             // 
             this.buttonScheduleAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 432);
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 430);
             this.buttonScheduleAdd.Name = "buttonScheduleAdd";
             this.buttonScheduleAdd.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleAdd.TabIndex = 3;
@@ -1307,7 +1310,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleDelete
             // 
             this.buttonScheduleDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 432);
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 430);
             this.buttonScheduleDelete.Name = "buttonScheduleDelete";
             this.buttonScheduleDelete.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleDelete.TabIndex = 4;
@@ -1329,7 +1332,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewSchedule.HideSelection = false;
             this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
             this.listViewSchedule.Name = "listViewSchedule";
-            this.listViewSchedule.Size = new System.Drawing.Size(494, 424);
+            this.listViewSchedule.Size = new System.Drawing.Size(494, 422);
             this.listViewSchedule.TabIndex = 1;
             this.listViewSchedule.UseCompatibleStateImageBehavior = false;
             this.listViewSchedule.View = System.Windows.Forms.View.Details;
@@ -1353,12 +1356,35 @@ namespace FFRK_LabMem.Config.UI
             // tabPage12
             // 
             this.tabPage12.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage12.Location = new System.Drawing.Point(4, 22);
+            this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
+            this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
+            this.tabPage12.Location = new System.Drawing.Point(4, 24);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(503, 468);
+            this.tabPage12.Size = new System.Drawing.Size(503, 466);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
+            // 
+            // checkedListBoxDropCategories
+            // 
+            this.checkedListBoxDropCategories.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkedListBoxDropCategories.FormattingEnabled = true;
+            this.checkedListBoxDropCategories.Location = new System.Drawing.Point(6, 34);
+            this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
+            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(491, 388);
+            this.checkedListBoxDropCategories.TabIndex = 0;
+            // 
+            // checkBoxCountersLogDropsTotal
+            // 
+            this.checkBoxCountersLogDropsTotal.AutoSize = true;
+            this.checkBoxCountersLogDropsTotal.Location = new System.Drawing.Point(6, 0);
+            this.checkBoxCountersLogDropsTotal.Name = "checkBoxCountersLogDropsTotal";
+            this.checkBoxCountersLogDropsTotal.Size = new System.Drawing.Size(340, 19);
+            this.checkBoxCountersLogDropsTotal.TabIndex = 1;
+            this.checkBoxCountersLogDropsTotal.Text = "Log drops to All-Time counters (may grow large over time)";
+            this.checkBoxCountersLogDropsTotal.UseVisualStyleBackColor = true;
             // 
             // folderBrowserDialog1
             // 
@@ -1501,6 +1527,8 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage11.ResumeLayout(false);
             this.tabPage11.PerformLayout();
+            this.tabPage12.ResumeLayout(false);
+            this.tabPage12.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -1619,5 +1647,7 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.ImageList imageList2;
         private System.Windows.Forms.ColumnHeader columnHeader14;
         private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
+        private System.Windows.Forms.CheckedListBox checkedListBoxDropCategories;
+        private System.Windows.Forms.CheckBox checkBoxCountersLogDropsTotal;
     }
 }

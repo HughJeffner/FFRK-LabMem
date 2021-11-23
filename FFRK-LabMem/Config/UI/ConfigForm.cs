@@ -9,6 +9,7 @@ using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
 using System.Threading;
 using System.Linq;
+using FFRK_LabMem.Data;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -104,6 +105,7 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
+            checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
 
             // Load lab .json
             LoadConfigs();
@@ -117,6 +119,9 @@ namespace FFRK_LabMem.Config.UI
                 AddScheduleListViewItem(schedule);
             }
 
+            // Drop categories
+            LoadDropCategories();
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
@@ -126,6 +131,16 @@ namespace FFRK_LabMem.Config.UI
 
             // Inital tab
             listView1.Items[initalTabIndex].Selected = true;
+
+        }
+
+        private void LoadDropCategories()
+        {
+            checkedListBoxDropCategories.Items.Clear();
+            foreach (var item in Enum.GetValues(typeof(Counters.DropCategory)).Cast<Counters.DropCategory>())
+            {
+                checkedListBoxDropCategories.Items.Add(Lookups.DropCategories[item], Counters.Default.DropCategories.HasFlag((Enum)item));
+            }
 
         }
 
@@ -179,6 +194,16 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
+            configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
+
+            // Drop categories
+            Counters.DropCategory cats = 0;
+            foreach (var item in checkedListBoxDropCategories.CheckedItems)
+            {
+                cats |= Lookups.DropCategoriesInverse[item.ToString()];
+            }
+            configHelper.SetValue("counters.dropCategories", (int)cats);
+            Counters.Default.DropCategories = cats;
 
             // Lab
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
