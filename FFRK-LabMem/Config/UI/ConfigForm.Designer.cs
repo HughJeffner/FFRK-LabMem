@@ -148,6 +148,7 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lblRestart = new System.Windows.Forms.Label();
+            this.buttonShowCounters = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -1276,9 +1277,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.Controls.Add(this.buttonScheduleAdd);
             this.tabPage11.Controls.Add(this.buttonScheduleDelete);
             this.tabPage11.Controls.Add(this.listViewSchedule);
-            this.tabPage11.Location = new System.Drawing.Point(4, 22);
+            this.tabPage11.Location = new System.Drawing.Point(4, 24);
             this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Size = new System.Drawing.Size(503, 468);
+            this.tabPage11.Size = new System.Drawing.Size(503, 466);
             this.tabPage11.TabIndex = 4;
             this.tabPage11.Text = "Schedule";
             // 
@@ -1286,7 +1287,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(306, 436);
+            this.linkLabel1.Location = new System.Drawing.Point(306, 434);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(175, 15);
             this.linkLabel1.TabIndex = 5;
@@ -1299,7 +1300,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleAdd
             // 
             this.buttonScheduleAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 430);
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 428);
             this.buttonScheduleAdd.Name = "buttonScheduleAdd";
             this.buttonScheduleAdd.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleAdd.TabIndex = 3;
@@ -1310,7 +1311,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleDelete
             // 
             this.buttonScheduleDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 430);
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 428);
             this.buttonScheduleDelete.Name = "buttonScheduleDelete";
             this.buttonScheduleDelete.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleDelete.TabIndex = 4;
@@ -1332,7 +1333,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewSchedule.HideSelection = false;
             this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
             this.listViewSchedule.Name = "listViewSchedule";
-            this.listViewSchedule.Size = new System.Drawing.Size(494, 422);
+            this.listViewSchedule.Size = new System.Drawing.Size(494, 420);
             this.listViewSchedule.TabIndex = 1;
             this.listViewSchedule.UseCompatibleStateImageBehavior = false;
             this.listViewSchedule.View = System.Windows.Forms.View.Details;
@@ -1356,6 +1357,7 @@ namespace FFRK_LabMem.Config.UI
             // tabPage12
             // 
             this.tabPage12.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
             this.tabPage12.Location = new System.Drawing.Point(4, 24);
@@ -1370,6 +1372,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxDropCategories.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkedListBoxDropCategories.CheckOnClick = true;
             this.checkedListBoxDropCategories.FormattingEnabled = true;
             this.checkedListBoxDropCategories.Location = new System.Drawing.Point(6, 34);
             this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
@@ -1478,6 +1481,17 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblRestart.Visible = false;
             // 
+            // buttonShowCounters
+            // 
+            this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 428);
+            this.buttonShowCounters.Name = "buttonShowCounters";
+            this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
+            this.buttonShowCounters.TabIndex = 4;
+            this.buttonShowCounters.Text = "Open Counters";
+            this.buttonShowCounters.UseVisualStyleBackColor = true;
+            this.buttonShowCounters.Click += new System.EventHandler(this.buttonShowCounters_Click);
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1494,7 +1508,7 @@ namespace FFRK_LabMem.Config.UI
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfigForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FFRK LabMem Configuration";
             this.Load += new System.EventHandler(this.ConfigForm_Load);
             this.tabControl.ResumeLayout(false);
@@ -1649,5 +1663,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxLabScreenshotRadiant;
         private System.Windows.Forms.CheckedListBox checkedListBoxDropCategories;
         private System.Windows.Forms.CheckBox checkBoxCountersLogDropsTotal;
+        private System.Windows.Forms.Button buttonShowCounters;
     }
 }

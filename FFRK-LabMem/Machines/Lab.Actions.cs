@@ -405,6 +405,7 @@ namespace FFRK_LabMem.Machines
                 var title = d["captures"][0]["tip_battle"]["title"];
                 ColorConsole.Write("The enemy is upon you! ");
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "{0}", title);
+                await Counters.EnemyIsUponYou();
                 if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
             } else
             {

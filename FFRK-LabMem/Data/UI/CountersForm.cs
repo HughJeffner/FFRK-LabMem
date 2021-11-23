@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace FFRK_LabMem.Data.UI
     public partial class CountersForm : Form
     {
 
-        private static bool _isLoaded = false;
+        public static bool IsLoaded { get; set; } = false;
         private LabController controller = null;
 
         public CountersForm()
@@ -26,9 +27,9 @@ namespace FFRK_LabMem.Data.UI
         public static void CreateAndShow(LabController controller)
         {
             // Show form
-            if (_isLoaded == false)
+            if (IsLoaded == false)
             {
-                _isLoaded = true;
+                IsLoaded = true;
                 var form = new CountersForm();
                 form.controller = controller;
                 form.Show();
@@ -44,7 +45,7 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Counters.OnUpdated -= Counters_OnUpdated;
-            _isLoaded = false;
+            IsLoaded = false;
         }
 
         private void Counters_OnUpdated()

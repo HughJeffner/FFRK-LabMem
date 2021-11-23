@@ -72,6 +72,7 @@ namespace FFRK_LabMem.Config.UI
             {"PulledInPortal", "Pulled Into Portals"},
             {"FFRKRestarts", "FFRK Restarted"},
             {"HeroEquipmentGot", "Hero Equipment Found"},
+            {"EnemyIsUponYou", "The Enemy is Upon You!"},
         };
 
         public static Dictionary<Counters.DropCategory, String> DropCategories = new Dictionary<Counters.DropCategory, string>() {

@@ -147,6 +147,10 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("FFRKRestarts");
         }
+        public static async Task EnemyIsUponYou()
+        {
+            await _instance.IncrementCounter("EnemyIsUponYou");
+        }
         public static async Task FoundDrop(DropCategory category, string name, int qty)
         {
             if (_instance.DropCategories.HasFlag(category)){
@@ -320,6 +324,7 @@ namespace FFRK_LabMem.Data
                     {"PulledInPortal",0},
                     {"FFRKRestarts",0},
                     {"HeroEquipmentGot",0},
+                    {"EnemyIsUponYou",0},
                 };
             }
 

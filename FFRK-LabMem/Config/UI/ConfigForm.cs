@@ -10,6 +10,7 @@ using FFRK_LabMem.Services;
 using System.Threading;
 using System.Linq;
 using FFRK_LabMem.Data;
+using FFRK_LabMem.Data.UI;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -141,6 +142,7 @@ namespace FFRK_LabMem.Config.UI
             {
                 checkedListBoxDropCategories.Items.Add(Lookups.DropCategories[item], Counters.Default.DropCategories.HasFlag((Enum)item));
             }
+            buttonShowCounters.Visible = !CountersForm.IsLoaded;
 
         }
 
@@ -772,6 +774,11 @@ namespace FFRK_LabMem.Config.UI
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer", toolTip1.GetToolTip(linkLabel1));
+        }
+
+        private void buttonShowCounters_Click(object sender, EventArgs e)
+        {
+            CountersForm.CreateAndShow(controller);
         }
     }
 }
