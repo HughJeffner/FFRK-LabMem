@@ -1,7 +1,7 @@
 # FFRK-LabMem
 Full automation for labyrinth dungeons on Android FFRK and Windows using a proxy server and [adb](https://developer.android.com/studio/command-line/adb)
 
-![App Screenshot](/docs/img/screenshot_01.png)
+![App Screenshot](/docs/img/screenshot_01.png?v=3)
 
 Built using Visual Studio 2019 Community, Installer using Inno Setup 6, pre-compiled binaries provided on the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases)
 
@@ -88,7 +88,7 @@ From version 0.9.10 and higher, screen offsets can be automatically detected usi
 
 All of these settings can be accessed by pressing `C`
 
-![Config Screenshot](/docs/img/config_lab_01.png)
+![Config Screenshot](/docs/img/config_lab_01.png?v=3)
 
 <details>
   <summary>Show Options</summary>
@@ -102,12 +102,18 @@ All of these settings can be accessed by pressing `C`
 | proxy.port                | TCP port to listen for proxy requests      | 8081     |
 | proxy.secure              | Enable https proxy (FFRK 8.0.0)            | true     |
 | proxy.blocklist           | Path to a file which domains should be blocked.  One domain name per line | |
+| proxy.autoconfig          | Configure android device system proxy via Adb | false |
+| proxy.connectionPooling   | Experimental feature                        | false |
 | lab.configFile            | Lab config file path, see below            | Config/lab.balanced.json |
+| lab.watchdogHangMinutes   | Number of minutes to check for a hang, 0 to disable | 3 |
+| lab.watchdogCrashSeconds  | Number of seconds to check for a crash, 0 to disable | 30 |  
 | screen.topOffset          | Number of pixels of the gray bar at the top of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
 | screen.bottomOffset       | Number of pixels of the gray bar at the bottom of FFRK, 0 for none, -1 to prompt auto-detect | -1 |
 | updates.checkForUpdates   | Checks the releases page for new versions  | true     |
 | updates.includePrerelease | Includes pre-release (testing) versions when checking for new releases | false |
 | datalogger.enabled        | When enabled, logs various data to files in the DataLog directory | false |
+| counters.dropCategories   | Bit flags for filtering drops | 15 |
+| counters.logDropsToTotal  | Set to true to count drops in all-time (may grow large) | false |
 </details>
 
 ### Lab walking behavior
@@ -117,6 +123,11 @@ Configuring the lab walker behavior and all the various options is documented [h
 
 ### Data Logging
 Not enabled by default, set `Enable data logging` in general program options.  This will create the `DataLog` folder with the various csv files.  Data file formats can be found [here](./FFRK-LabMem/Data/readme.md)
+
+### Statistics
+![Counters Screenshot](/docs/img/counters_01.png?v=3)
+
+Press `S` to show the statistic counters
 
 ## Upgrading
 
