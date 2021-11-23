@@ -18,7 +18,7 @@ namespace FFRK_LabMem.Data
         private static Counters _instance = null;
         private const string CONFIG_PATH = "./Data/counters.json";
 
-        public static event EventHandler OnUpdated;
+        public static event Action OnUpdated;
 
         [Flags]
         public enum DropCategory
@@ -241,7 +241,7 @@ namespace FFRK_LabMem.Data
                 IncrementRuntime("Total", runtimeStopwatch.Elapsed);
                 runtimeStopwatch.Restart();
             }
-            if (OnUpdated != null) OnUpdated.Invoke(this, new EventArgs());
+            OnUpdated?.Invoke();
             try
             {
                 

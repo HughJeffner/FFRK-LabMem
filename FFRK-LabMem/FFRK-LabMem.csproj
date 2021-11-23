@@ -102,6 +102,12 @@
     <Compile Include="Config\UI\Sorters.cs" />
     <Compile Include="Data\Counters.cs" />
     <Compile Include="Data\DataLogger.cs" />
+    <Compile Include="Data\UI\CountersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Data\UI\CountersForm.Designer.cs">
+      <DependentUpon>CountersForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Machines\Lab.Actions.cs" />
     <Compile Include="Machines\LabConfiguration.cs" />
     <Compile Include="Machines\LabController.cs" />
@@ -194,6 +200,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Config\UI\ConfigScheduleForm.resx">
       <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\UI\CountersForm.resx">
+      <DependentUpon>CountersForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

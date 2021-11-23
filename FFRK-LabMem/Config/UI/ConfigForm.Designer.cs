@@ -31,10 +31,6 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
@@ -70,12 +66,12 @@ namespace FFRK_LabMem.Config.UI
             this.buttonProxyReset = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.buttonProxyRegenCert = new System.Windows.Forms.Button();
-            this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.textBoxProxyBlocklist = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.checkBoxProxySecure = new System.Windows.Forms.CheckBox();
             this.numericUpDownProxyPort = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBoxAdbClose = new System.Windows.Forms.CheckBox();
             this.comboBoxAdbHost = new System.Windows.Forms.ComboBox();
@@ -143,21 +139,13 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage12 = new System.Windows.Forms.TabPage();
-            this.buttonCountersResetSession = new System.Windows.Forms.Button();
-            this.buttonCountersResetLab = new System.Windows.Forms.Button();
-            this.buttonCountersResetAll = new System.Windows.Forms.Button();
-            this.listViewCounters = new System.Windows.Forms.ListView();
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.lblRestart = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lblRestart = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -179,7 +167,6 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage11.SuspendLayout();
-            this.tabPage12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -452,12 +439,12 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage2.Controls.Add(this.checkBoxProxyConnectionPool);
             this.tabPage2.Controls.Add(this.checkBoxProxyAutoConfig);
             this.tabPage2.Controls.Add(this.groupBox1);
-            this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
             this.tabPage2.Controls.Add(this.textBoxProxyBlocklist);
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.checkBoxProxySecure);
             this.tabPage2.Controls.Add(this.numericUpDownProxyPort);
             this.tabPage2.Controls.Add(this.label3);
+            this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -533,17 +520,6 @@ namespace FFRK_LabMem.Config.UI
             this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
             this.buttonProxyRegenCert.Click += new System.EventHandler(this.ButtonProxyRegenCert_Click);
             // 
-            // buttonProxyBlocklist
-            // 
-            this.buttonProxyBlocklist.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonProxyBlocklist.Image = global::FFRK_LabMem.Properties.Resources.folder;
-            this.buttonProxyBlocklist.Location = new System.Drawing.Point(441, 29);
-            this.buttonProxyBlocklist.Name = "buttonProxyBlocklist";
-            this.buttonProxyBlocklist.Size = new System.Drawing.Size(29, 23);
-            this.buttonProxyBlocklist.TabIndex = 4;
-            this.buttonProxyBlocklist.UseVisualStyleBackColor = true;
-            this.buttonProxyBlocklist.Visible = false;
-            // 
             // textBoxProxyBlocklist
             // 
             this.textBoxProxyBlocklist.Location = new System.Drawing.Point(153, 30);
@@ -606,6 +582,17 @@ namespace FFRK_LabMem.Config.UI
             this.label3.TabIndex = 0;
             this.label3.Text = "Proxy port:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonProxyBlocklist
+            // 
+            this.buttonProxyBlocklist.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonProxyBlocklist.Image = global::FFRK_LabMem.Properties.Resources.folder;
+            this.buttonProxyBlocklist.Location = new System.Drawing.Point(441, 29);
+            this.buttonProxyBlocklist.Name = "buttonProxyBlocklist";
+            this.buttonProxyBlocklist.Size = new System.Drawing.Size(29, 23);
+            this.buttonProxyBlocklist.TabIndex = 4;
+            this.buttonProxyBlocklist.UseVisualStyleBackColor = true;
+            this.buttonProxyBlocklist.Visible = false;
             // 
             // tabPage3
             // 
@@ -975,7 +962,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSwap.AutoSize = true;
             this.checkBoxSwap.Checked = true;
             this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(373, 365);
+            this.checkBoxSwap.Location = new System.Drawing.Point(373, 367);
             this.checkBoxSwap.Name = "checkBoxSwap";
             this.checkBoxSwap.Size = new System.Drawing.Size(109, 19);
             this.checkBoxSwap.TabIndex = 3;
@@ -985,7 +972,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveUp
             // 
             this.buttonPaintingMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 357);
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 359);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveUp.TabIndex = 1;
@@ -996,7 +983,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveDown
             // 
             this.buttonPaintingMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 357);
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 359);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveDown.TabIndex = 2;
@@ -1017,7 +1004,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(7, 7);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(475, 340);
+            this.listViewPaintings.Size = new System.Drawing.Size(475, 342);
             this.listViewPaintings.SmallImageList = this.imageList2;
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
@@ -1057,7 +1044,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(200, 363);
+            this.label9.Location = new System.Drawing.Point(200, 365);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 15);
             this.label9.TabIndex = 3;
@@ -1072,7 +1059,7 @@ namespace FFRK_LabMem.Config.UI
             "0",
             "1",
             "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(341, 359);
+            this.comboBoxKeys.Location = new System.Drawing.Point(341, 361);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(140, 23);
             this.comboBoxKeys.TabIndex = 4;
@@ -1081,7 +1068,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureUp
             // 
             this.buttonTreasureUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 357);
+            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 359);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureUp.TabIndex = 1;
@@ -1092,7 +1079,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureDown
             // 
             this.buttonTreasureDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 357);
+            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 359);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureDown.TabIndex = 2;
@@ -1116,7 +1103,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(7, 7);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(475, 340);
+            this.listViewTreasures.Size = new System.Drawing.Size(475, 342);
             this.listViewTreasures.SmallImageList = this.imageList2;
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
@@ -1161,7 +1148,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.checkBoxLabBlockListOverride.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 365);
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 367);
             this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
             this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(147, 19);
             this.checkBoxLabBlockListOverride.TabIndex = 4;
@@ -1174,7 +1161,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonRemoveBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonRemoveBlocklist.Enabled = false;
-            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 357);
+            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 359);
             this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
             this.buttonRemoveBlocklist.Size = new System.Drawing.Size(87, 27);
             this.buttonRemoveBlocklist.TabIndex = 3;
@@ -1185,7 +1172,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonAddBlocklist
             // 
             this.buttonAddBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 357);
+            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 359);
             this.buttonAddBlocklist.Name = "buttonAddBlocklist";
             this.buttonAddBlocklist.Size = new System.Drawing.Size(87, 27);
             this.buttonAddBlocklist.TabIndex = 2;
@@ -1203,7 +1190,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxBlocklist.IntegralHeight = false;
             this.checkedListBoxBlocklist.Location = new System.Drawing.Point(7, 7);
             this.checkedListBoxBlocklist.Name = "checkedListBoxBlocklist";
-            this.checkedListBoxBlocklist.Size = new System.Drawing.Size(475, 340);
+            this.checkedListBoxBlocklist.Size = new System.Drawing.Size(475, 342);
             this.checkedListBoxBlocklist.TabIndex = 0;
             this.checkedListBoxBlocklist.MouseMove += new System.Windows.Forms.MouseEventHandler(this.checkedListBoxBlocklist_MouseMove);
             // 
@@ -1366,118 +1353,12 @@ namespace FFRK_LabMem.Config.UI
             // tabPage12
             // 
             this.tabPage12.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage12.Controls.Add(this.buttonCountersResetSession);
-            this.tabPage12.Controls.Add(this.buttonCountersResetLab);
-            this.tabPage12.Controls.Add(this.buttonCountersResetAll);
-            this.tabPage12.Controls.Add(this.listViewCounters);
             this.tabPage12.Location = new System.Drawing.Point(4, 22);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage12.Size = new System.Drawing.Size(503, 468);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
-            // 
-            // buttonCountersResetSession
-            // 
-            this.buttonCountersResetSession.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCountersResetSession.Location = new System.Drawing.Point(112, 432);
-            this.buttonCountersResetSession.Name = "buttonCountersResetSession";
-            this.buttonCountersResetSession.Size = new System.Drawing.Size(105, 27);
-            this.buttonCountersResetSession.TabIndex = 7;
-            this.buttonCountersResetSession.Tag = "Session";
-            this.buttonCountersResetSession.Text = "Reset Session";
-            this.buttonCountersResetSession.UseVisualStyleBackColor = true;
-            this.buttonCountersResetSession.Click += new System.EventHandler(this.ButtonCountersReset_Click);
-            // 
-            // buttonCountersResetLab
-            // 
-            this.buttonCountersResetLab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCountersResetLab.Location = new System.Drawing.Point(0, 432);
-            this.buttonCountersResetLab.Name = "buttonCountersResetLab";
-            this.buttonCountersResetLab.Size = new System.Drawing.Size(105, 27);
-            this.buttonCountersResetLab.TabIndex = 5;
-            this.buttonCountersResetLab.Tag = "CurrentLab";
-            this.buttonCountersResetLab.Text = "Reset Lab";
-            this.buttonCountersResetLab.UseVisualStyleBackColor = true;
-            this.buttonCountersResetLab.Click += new System.EventHandler(this.ButtonCountersReset_Click);
-            // 
-            // buttonCountersResetAll
-            // 
-            this.buttonCountersResetAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCountersResetAll.Location = new System.Drawing.Point(224, 432);
-            this.buttonCountersResetAll.Name = "buttonCountersResetAll";
-            this.buttonCountersResetAll.Size = new System.Drawing.Size(105, 27);
-            this.buttonCountersResetAll.TabIndex = 6;
-            this.buttonCountersResetAll.Tag = "All";
-            this.buttonCountersResetAll.Text = "Reset All";
-            this.buttonCountersResetAll.UseVisualStyleBackColor = true;
-            this.buttonCountersResetAll.Click += new System.EventHandler(this.ButtonCountersReset_Click);
-            // 
-            // listViewCounters
-            // 
-            this.listViewCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewCounters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader10,
-            this.columnHeader12,
-            this.columnHeader11,
-            this.columnHeader13});
-            this.listViewCounters.FullRowSelect = true;
-            listViewGroup1.Header = "Counters";
-            listViewGroup1.Name = "Counters";
-            listViewGroup2.Header = "Runtime";
-            listViewGroup2.Name = "Runtime";
-            listViewGroup3.Header = "Hero Equipment";
-            listViewGroup3.Name = "HE";
-            listViewGroup4.Header = "Drops";
-            listViewGroup4.Name = "Drops";
-            this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2,
-            listViewGroup3,
-            listViewGroup4});
-            this.listViewCounters.HideSelection = false;
-            this.listViewCounters.Location = new System.Drawing.Point(3, 0);
-            this.listViewCounters.Name = "listViewCounters";
-            this.listViewCounters.Size = new System.Drawing.Size(494, 424);
-            this.listViewCounters.TabIndex = 0;
-            this.listViewCounters.UseCompatibleStateImageBehavior = false;
-            this.listViewCounters.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader10
-            // 
-            this.columnHeader10.Text = "";
-            this.columnHeader10.Width = 180;
-            // 
-            // columnHeader12
-            // 
-            this.columnHeader12.Text = "Session";
-            this.columnHeader12.Width = 90;
-            // 
-            // columnHeader11
-            // 
-            this.columnHeader11.Text = "Current Lab";
-            this.columnHeader11.Width = 90;
-            // 
-            // columnHeader13
-            // 
-            this.columnHeader13.Text = "All-Time";
-            this.columnHeader13.Width = 90;
-            // 
-            // lblRestart
-            // 
-            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
-            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
-            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblRestart.Location = new System.Drawing.Point(17, 515);
-            this.lblRestart.Name = "lblRestart";
-            this.lblRestart.Size = new System.Drawing.Size(341, 33);
-            this.lblRestart.TabIndex = 18;
-            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
-            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblRestart.Visible = false;
             // 
             // folderBrowserDialog1
             // 
@@ -1557,6 +1438,20 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 20;
             // 
+            // lblRestart
+            // 
+            this.lblRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblRestart.BackColor = System.Drawing.SystemColors.Control;
+            this.lblRestart.Image = global::FFRK_LabMem.Properties.Resources.error;
+            this.lblRestart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblRestart.Location = new System.Drawing.Point(17, 515);
+            this.lblRestart.Name = "lblRestart";
+            this.lblRestart.Size = new System.Drawing.Size(341, 33);
+            this.lblRestart.TabIndex = 18;
+            this.lblRestart.Text = "Restart of the app is required for changes to take effect.";
+            this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblRestart.Visible = false;
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1575,7 +1470,6 @@ namespace FFRK_LabMem.Config.UI
             this.Name = "ConfigForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FFRK LabMem Configuration";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConfigForm_FormClosed);
             this.Load += new System.EventHandler(this.ConfigForm_Load);
             this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -1607,7 +1501,6 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage11.ResumeLayout(false);
             this.tabPage11.PerformLayout();
-            this.tabPage12.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -1705,11 +1598,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxProxyAutoConfig;
         private System.Windows.Forms.Button buttonProxyReset;
         private System.Windows.Forms.TabPage tabPage12;
-        private System.Windows.Forms.ListView listViewCounters;
-        private System.Windows.Forms.ColumnHeader columnHeader10;
-        private System.Windows.Forms.ColumnHeader columnHeader11;
-        private System.Windows.Forms.Button buttonCountersResetLab;
-        private System.Windows.Forms.Button buttonCountersResetAll;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown numericUpDownWatchdogHang;
@@ -1719,9 +1607,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.DataGridViewTextBoxColumn Timing;
         private System.Windows.Forms.DataGridViewTextBoxColumn Delay;
         private System.Windows.Forms.DataGridViewTextBoxColumn Jitter;
-        private System.Windows.Forms.Button buttonCountersResetSession;
-        private System.Windows.Forms.ColumnHeader columnHeader12;
-        private System.Windows.Forms.ColumnHeader columnHeader13;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown numericUpDownWatchdogCrash;
         private System.Windows.Forms.Label label11;
