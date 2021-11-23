@@ -14,7 +14,8 @@ namespace FFRK_LabMem
         {
 
             // Listen for console exit
-            ConsoleExit.Listen(OnConsoleExit);
+            ConsoleTasks.ListenForExit(OnConsoleExit);
+            ConsoleTasks.DisableQuickEditMode();
 
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
