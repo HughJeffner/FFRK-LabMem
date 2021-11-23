@@ -9,6 +9,8 @@ using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
 using System.Threading;
 using System.Linq;
+using FFRK_LabMem.Data;
+using FFRK_LabMem.Data.UI;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -19,9 +21,10 @@ namespace FFRK_LabMem.Config.UI
         private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
 
-        public ConfigHelper configHelper = null;
-        public LabController controller = null;
-        public LabConfiguration labConfig = new LabConfiguration();
+        private ConfigHelper configHelper = null;
+        private LabController controller = null;
+        private LabConfiguration labConfig = new LabConfiguration();
+        private int initalTabIndex = 0;
         protected Scheduler scheduler = null;
 
         public ConfigForm()
@@ -29,7 +32,7 @@ namespace FFRK_LabMem.Config.UI
             InitializeComponent();
         }
 
-        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller)
+        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller, int initalTabIndex = 0)
         {
 
             bool initalState = controller.Enabled;
@@ -44,7 +47,8 @@ namespace FFRK_LabMem.Config.UI
             {
                 configHelper = configHelper,
                 controller = controller,
-                scheduler = defaultScheduler
+                scheduler = defaultScheduler,
+                initalTabIndex = initalTabIndex
             };
             form.ShowDialog();
 
@@ -102,6 +106,7 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
+            checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
 
             // Load lab .json
             LoadConfigs();
@@ -115,9 +120,8 @@ namespace FFRK_LabMem.Config.UI
                 AddScheduleListViewItem(schedule);
             }
 
-            // Counters
-            Data.Counters.OnUpdated += LoadCounters;
-            LoadCounters(sender, e);
+            // Drop categories
+            LoadDropCategories();
 
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
@@ -126,11 +130,20 @@ namespace FFRK_LabMem.Config.UI
             // Hide restart warning
             lblRestart.Visible = false;
 
+            // Inital tab
+            listView1.Items[initalTabIndex].Selected = true;
+
         }
 
-        private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void LoadDropCategories()
         {
-            Data.Counters.OnUpdated -= LoadCounters;
+            checkedListBoxDropCategories.Items.Clear();
+            foreach (var item in Enum.GetValues(typeof(Counters.DropCategory)).Cast<Counters.DropCategory>())
+            {
+                checkedListBoxDropCategories.Items.Add(Lookups.DropCategories[item], Counters.Default.DropCategories.HasFlag((Enum)item));
+            }
+            buttonShowCounters.Visible = !CountersForm.IsLoaded;
+
         }
 
         private void LoadTimings()
@@ -145,99 +158,6 @@ namespace FFRK_LabMem.Config.UI
                 var key = row.Cells[0].Value.ToString();
                 if (Lookups.Timings.ContainsKey(key)) row.Cells[0].ToolTipText = Lookups.Timings[key];
             }
-        }
-
-        private void LoadCounters(object sender, EventArgs e)
-        {
-            listViewCounters.Items.Clear();
-
-            // Counters
-            var sessionCounters = Data.Counters.Default.CounterSets["Session"].Counters.ToList();
-            foreach (var item in sessionCounters)
-            {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Counters"];
-                if (Lookups.Counters.ContainsKey(item.Key))
-                {
-                    newItem.Text = Lookups.Counters[item.Key];
-                }
-                else
-                {
-                    newItem.Text = item.Key;
-                }
-                newItem.SubItems.Add(item.Value.ToString());
-                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString());
-                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Counters[item.Key].ToString());
-                listViewCounters.Items.Add(newItem);  
-            }
-
-            // Runtime
-            string runtimeFormat = @"d\.hh\:mm\:ss";
-            var sessionRuntime = Data.Counters.Default.CounterSets["Session"].Runtime.ToList();
-            foreach (var item in sessionRuntime)
-            {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Runtime"];
-                newItem.Text = item.Key;
-                newItem.SubItems.Add(item.Value.ToString(runtimeFormat));
-                newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat));
-                newItem.SubItems.Add(Data.Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat));
-                listViewCounters.Items.Add(newItem);
-            }
-
-            // Merge HE Keys
-            var heKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s);
-            foreach (var item in heKeys)
-            {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["HE"];
-                newItem.Text = item;
-                if (Data.Counters.Default.CounterSets["Session"].HeroEquipment.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].HeroEquipment[item].ToString());
-                } else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                if (Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].HeroEquipment[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                newItem.SubItems.Add("-");
-                listViewCounters.Items.Add(newItem);
-            }
-
-            // Merge Drops
-            var dropKeys = Data.Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s);
-            foreach (var item in dropKeys)
-            {
-                var newItem = new ListViewItem();
-                newItem.Group = listViewCounters.Groups["Drops"];
-                newItem.Text = item;
-                if (Data.Counters.Default.CounterSets["Session"].Drops.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["Session"].Drops[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                if (Data.Counters.Default.CounterSets["CurrentLab"].Drops.ContainsKey(item))
-                {
-                    newItem.SubItems.Add(Data.Counters.Default.CounterSets["CurrentLab"].Drops[item].ToString());
-                }
-                else
-                {
-                    newItem.SubItems.Add("-");
-                }
-                newItem.SubItems.Add("-");
-                listViewCounters.Items.Add(newItem);
-            }
-
         }
 
         private void LoadConfigs()
@@ -276,6 +196,16 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
+            configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
+
+            // Drop categories
+            Counters.DropCategory cats = 0;
+            foreach (var item in checkedListBoxDropCategories.CheckedItems)
+            {
+                cats |= Lookups.DropCategoriesInverse[item.ToString()];
+            }
+            configHelper.SetValue("counters.dropCategories", (int)cats);
+            Counters.Default.DropCategories = cats;
 
             // Lab
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
@@ -310,8 +240,8 @@ namespace FFRK_LabMem.Config.UI
             foreach (ListViewItem item in listViewTreasures.Items)
             {
                 var value = new LabConfiguration.TreasureFilter();
-                value.Priority = int.Parse(item.Text);
-                value.MaxKeys = int.Parse(item.SubItems[1].Text);
+                value.Priority = int.Parse(item.SubItems[1].Text);
+                value.MaxKeys = int.Parse(item.SubItems[2].Text);
                 labConfig.TreasureFilterMap.Add(item.Tag.ToString(), value);
             }
 
@@ -406,6 +336,7 @@ namespace FFRK_LabMem.Config.UI
                 var newItem = new ListViewItem(item.Value.ToString());
                 newItem.SubItems.Add(Lookups.Paintings[item.Key]);
                 newItem.Tag = item.Key;
+                newItem.ImageIndex = 1;
                 listViewPaintings.Items.Add(newItem);
             }
 
@@ -415,11 +346,13 @@ namespace FFRK_LabMem.Config.UI
             foreach (var item in labConfig.TreasureFilterMap)
             {
                 var newItem = new ListViewItem();
-                newItem.Text = item.Value.Priority.ToString();
+                newItem.Text = "";
+                newItem.SubItems.Add(item.Value.Priority.ToString());
                 newItem.SubItems.Add(item.Value.MaxKeys.ToString());
                 newItem.SubItems.Add(Lookups.Treasures[item.Key]);
                 newItem.Checked = item.Value.Priority > 0;
                 newItem.Tag = item.Key;
+                newItem.ImageIndex = 0;
                 listViewTreasures.Items.Add(newItem);
             }
             treasuresLoaded = true;
@@ -437,7 +370,7 @@ namespace FFRK_LabMem.Config.UI
         private void ListViewTreasures_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[1].Text);
+            comboBoxKeys.SelectedIndex = comboBoxKeys.FindString(listViewTreasures.SelectedItems[0].SubItems[2].Text);
             buttonTreasureUp.Enabled = listViewTreasures.SelectedItems[0].Checked;
             buttonTreasureDown.Enabled = listViewTreasures.SelectedItems[0].Checked;
 
@@ -496,10 +429,10 @@ namespace FFRK_LabMem.Config.UI
         private void ButtonTreasureUp_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            var p = int.Parse(listViewTreasures.SelectedItems[0].Text) - 1;
+            var p = int.Parse(listViewTreasures.SelectedItems[0].SubItems[1].Text) - 1;
             if (p < 0) return;
             if (p <= 1) p = 1;
-            listViewTreasures.SelectedItems[0].Text = p.ToString();
+            listViewTreasures.SelectedItems[0].SubItems[1].Text = p.ToString();
             listViewTreasures.Sort();
             listViewTreasures.Focus();
         }
@@ -507,9 +440,9 @@ namespace FFRK_LabMem.Config.UI
         private void ButtonTreasureDown_Click(object sender, EventArgs e)
         {
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            var p = int.Parse(listViewTreasures.SelectedItems[0].Text) + 1;
+            var p = int.Parse(listViewTreasures.SelectedItems[0].SubItems[1].Text) + 1;
             if (p >= 255) p = 255;
-            listViewTreasures.SelectedItems[0].Text = p.ToString();
+            listViewTreasures.SelectedItems[0].SubItems[1].Text = p.ToString();
             listViewTreasures.SelectedItems[0].Checked = p > 0;
             listViewTreasures.Sort();
             listViewTreasures.Focus();
@@ -520,11 +453,11 @@ namespace FFRK_LabMem.Config.UI
             if (!treasuresLoaded || !treasuresTabLoaded) return;
             if (e.Item.Checked)
             {
-                e.Item.Text = "1";
+                e.Item.SubItems[1].Text = "1";
             }
             else
             {
-                e.Item.Text = "0";
+                e.Item.SubItems[1].Text = "0";
             }
             buttonTreasureUp.Enabled = e.Item.Checked;
             buttonTreasureDown.Enabled = e.Item.Checked;
@@ -535,7 +468,7 @@ namespace FFRK_LabMem.Config.UI
         {
 
             if (listViewTreasures.SelectedItems.Count == 0) return;
-            listViewTreasures.SelectedItems[0].SubItems[1].Text = comboBoxKeys.Text;
+            listViewTreasures.SelectedItems[0].SubItems[2].Text = comboBoxKeys.Text;
             listViewTreasures.Sort();
             listViewTreasures.Focus();
 
@@ -608,9 +541,16 @@ namespace FFRK_LabMem.Config.UI
             }
         }
 
+        private void CheckBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
+            checkBoxLabRestart.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
+            CheckBoxLabRestart_CheckedChanged(sender, e);
+        }
+
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
         {
-            checkBoxLabUsePotions.Enabled = checkBoxLabRestart.Checked;
+            checkBoxLabUsePotions.Enabled = (checkBoxLabRestart.Checked && !checkBoxLabStopOnMasterPainting.Checked);
         }
 
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
@@ -676,11 +616,6 @@ namespace FFRK_LabMem.Config.UI
                 await LabTimings.ResetToDefaults();
                 LoadTimings();
             }
-        }
-
-        private void CheckBoxLabStopOnMasterPainting_CheckedChanged(object sender, EventArgs e)
-        {
-            checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
         }
 
         private async void ButtonCheckForUpdates_Click(object sender, EventArgs e)
@@ -825,17 +760,6 @@ namespace FFRK_LabMem.Config.UI
             listViewSchedule.Items.Add(newItem);
         }
 
-        private async void ButtonCountersReset_Click(object sender, EventArgs e)
-        {
-            String tag = (string)((Button)sender).Tag;
-            var result = MessageBox.Show(this, $"Are you sure you want to reset {tag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                var target = tag.Equals("All") ? null : tag;
-                await Data.Counters.Reset(target);
-            }
-        }
-
         private void ComboBoxDebug_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBoxDebug.SelectedIndex == 0) return;
@@ -850,6 +774,11 @@ namespace FFRK_LabMem.Config.UI
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer", toolTip1.GetToolTip(linkLabel1));
+        }
+
+        private void buttonShowCounters_Click(object sender, EventArgs e)
+        {
+            CountersForm.CreateAndShow(controller);
         }
     }
 }

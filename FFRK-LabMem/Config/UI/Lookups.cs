@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FFRK_LabMem.Data;
+using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace FFRK_LabMem.Config.UI
@@ -70,7 +72,22 @@ namespace FFRK_LabMem.Config.UI
             {"PulledInPortal", "Pulled Into Portals"},
             {"FFRKRestarts", "FFRK Restarted"},
             {"HeroEquipmentGot", "Hero Equipment Found"},
+            {"EnemyIsUponYou", "The Enemy is Upon You!"},
         };
+
+        public static Dictionary<Counters.DropCategory, String> DropCategories = new Dictionary<Counters.DropCategory, string>() {
+            {Data.Counters.DropCategory.EQUIPMENT, "Hero Equipment"},
+            {Data.Counters.DropCategory.LABYRINTH_ITEM, "Labyrinth Items (Bookmarks, Keys...)"},
+            {Data.Counters.DropCategory.COMMON, "Anima Lenses"},
+            {Data.Counters.DropCategory.SPHERE_MATERIAL, "Motes"},
+            {Data.Counters.DropCategory.ABILITY_MATERIAL, "Crystals/Orbs"},
+            {Data.Counters.DropCategory.EQUIPMENT_SP_MATERIAL,"Upgrade Materials" },
+            {Data.Counters.DropCategory.HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL, "Rat Tails" },
+            {Data.Counters.DropCategory.GROW_EGG, "Growth Eggs" },
+            {Data.Counters.DropCategory.BEAST_FOOD, "Arcana" }
+        };
+
+        public static Dictionary<String, Counters.DropCategory> DropCategoriesInverse = DropCategories.ToDictionary((i) => i.Value, (i) => i.Key);
 
     }
 }

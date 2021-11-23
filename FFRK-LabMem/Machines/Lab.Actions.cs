@@ -405,6 +405,7 @@ namespace FFRK_LabMem.Machines
                 var title = d["captures"][0]["tip_battle"]["title"];
                 ColorConsole.Write("The enemy is upon you! ");
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "{0}", title);
+                await Counters.EnemyIsUponYou();
                 if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
             } else
             {
@@ -457,7 +458,7 @@ namespace FFRK_LabMem.Machines
 
             // Drops
             await DataLogger.LogBattleDrops(this);
-            
+
 
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
@@ -473,7 +474,7 @@ namespace FFRK_LabMem.Machines
             await this.Adb.TapPct(50, 85, this.CancellationToken);
 
             // Check if we defeated the boss
-            if (this.Data != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
+            if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
                 await this.StateMachine.FireAsync(Trigger.FinishedLab);
 
 

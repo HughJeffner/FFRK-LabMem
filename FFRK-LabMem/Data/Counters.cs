@@ -18,7 +18,7 @@ namespace FFRK_LabMem.Data
         private static Counters _instance = null;
         private const string CONFIG_PATH = "./Data/counters.json";
 
-        public static event EventHandler OnUpdated;
+        public static event Action OnUpdated;
 
         [Flags]
         public enum DropCategory
@@ -30,7 +30,8 @@ namespace FFRK_LabMem.Data
             ABILITY_MATERIAL = 1 << 4,
             EQUIPMENT_SP_MATERIAL = 1 << 5,
             HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL = 1 << 6,
-            GROW_EGG = 1 << 7
+            GROW_EGG = 1 << 7,
+            BEAST_FOOD = 1 << 8
         }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
@@ -40,6 +41,8 @@ namespace FFRK_LabMem.Data
             DropCategory.LABYRINTH_ITEM | 
             DropCategory.COMMON | 
             DropCategory.SPHERE_MATERIAL;
+
+        public bool LogDropsToTotalCounters { get; set; } = false;
 
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
@@ -75,6 +78,7 @@ namespace FFRK_LabMem.Data
                 _instance = new Counters(controller);
                 await _instance.Load();
                 _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
+                _instance.LogDropsToTotalCounters = config.GetBool("counters.logDropsToTotal", false);
             }
 
         }
@@ -95,7 +99,7 @@ namespace FFRK_LabMem.Data
         public static async Task LabRunCompleted()
         {
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
-            _instance.CounterSets["CurrentLab"].Reset();
+            _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
             await _instance.Save();
         }
         public static async Task PaintingSelected()
@@ -142,6 +146,10 @@ namespace FFRK_LabMem.Data
         public static async Task FFRKRestarted()
         {
             await _instance.IncrementCounter("FFRKRestarts");
+        }
+        public static async Task EnemyIsUponYou()
+        {
+            await _instance.IncrementCounter("EnemyIsUponYou");
         }
         public static async Task FoundDrop(DropCategory category, string name, int qty)
         {
@@ -192,7 +200,7 @@ namespace FFRK_LabMem.Data
         {
             foreach (var set in CounterSets)
             {
-                if (!set.Key.Equals("Total"))
+                if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
                     if (set.Value.HeroEquipment.ContainsKey(name))
                     {
@@ -208,7 +216,7 @@ namespace FFRK_LabMem.Data
         {
             foreach (var set in CounterSets)
             {
-                if (!set.Key.Equals("Total"))
+                if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
                     if (set.Value.Drops.ContainsKey(name))
                     {
@@ -240,7 +248,7 @@ namespace FFRK_LabMem.Data
                 IncrementRuntime("Total", runtimeStopwatch.Elapsed);
                 runtimeStopwatch.Restart();
             }
-            if (OnUpdated != null) OnUpdated.Invoke(this, new EventArgs());
+            OnUpdated?.Invoke();
             try
             {
                 
@@ -255,23 +263,37 @@ namespace FFRK_LabMem.Data
             }
             await Task.CompletedTask;
         }
-        public static async Task Reset(string key)
+        public static async Task Reset(string key, CounterSet.DataType types)
         {
+            // Ugh I don't like doing this but it works.  Need to dump the current stopwatch and save it before resetting
+            await _instance.Save();
             if (key == null)
             {
                 foreach (var item in _instance.CounterSets)
                 {
-                    item.Value.Reset();
+                    item.Value.Reset(types);
                 }
             } else
             {
-                _instance.CounterSets[key].Reset();
+                _instance.CounterSets[key].Reset(types);
             }
+            // Now save the reset values
             await _instance.Save();
 
         }
+
         public class CounterSet
         {
+            [Flags]
+            public enum DataType
+            {
+                All = ~0,
+                Counters = 1 << 1,
+                Runtime = 1 << 2,
+                HeroEquipment = 1 << 3,
+                Drops = 1 << 4
+            }
+
             public Dictionary<string, int> Counters { get; set; }
             public Dictionary<string, TimeSpan> Runtime { get; set; }
             public SortedDictionary<string, int> HeroEquipment { get; set; }
@@ -302,6 +324,7 @@ namespace FFRK_LabMem.Data
                     {"PulledInPortal",0},
                     {"FFRKRestarts",0},
                     {"HeroEquipmentGot",0},
+                    {"EnemyIsUponYou",0},
                 };
             }
 
@@ -314,12 +337,12 @@ namespace FFRK_LabMem.Data
                 };
             }
 
-            public void Reset()
+            public void Reset(DataType types)
             {
-                this.Counters = GetDefaultCounters();
-                this.Runtime = GetDefaultRuntimes();
-                this.HeroEquipment = new SortedDictionary<string, int>();
-                this.Drops = new SortedDictionary<string, int>();
+                if (types.HasFlag(DataType.Counters)) this.Counters = GetDefaultCounters();
+                if (types.HasFlag(DataType.Runtime)) this.Runtime = GetDefaultRuntimes();
+                if (types.HasFlag(DataType.HeroEquipment)) this.HeroEquipment = new SortedDictionary<string, int>();
+                if (types.HasFlag(DataType.Drops)) this.Drops = new SortedDictionary<string, int>();
             }
 
         }

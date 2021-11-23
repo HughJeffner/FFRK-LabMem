@@ -36,10 +36,10 @@ namespace FFRK_LabMem.Config.UI
                 listviewY = (ListViewItem)y;
 
                 // Get values
-                int priorityX = int.Parse(listviewX.Text);
-                int priorityY = int.Parse(listviewY.Text);
-                int keysX = int.Parse(listviewX.SubItems[1].Text);
-                int keysY = int.Parse(listviewY.SubItems[1].Text);
+                int priorityX = int.Parse(listviewX.SubItems[1].Text);
+                int priorityY = int.Parse(listviewY.SubItems[1].Text);
+                int keysX = int.Parse(listviewX.SubItems[2].Text);
+                int keysY = int.Parse(listviewY.SubItems[2].Text);
 
                 if (priorityX == 0) priorityX = 1000;
                 if (priorityY == 0) priorityY = 1000;
