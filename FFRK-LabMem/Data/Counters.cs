@@ -78,6 +78,7 @@ namespace FFRK_LabMem.Data
                 _instance = new Counters(controller);
                 await _instance.Load();
                 _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
+                _instance.LogDropsToTotalCounters = config.GetBool("counters.logDropsToTotal", false);
             }
 
         }

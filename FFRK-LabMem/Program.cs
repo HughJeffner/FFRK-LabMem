@@ -39,7 +39,7 @@ namespace FFRK_LabMem
             System.Windows.Forms.Application.EnableVisualStyles();
 
             // Ad-hoc command loop
-            Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'Ctrl+X' to Exit");
+            Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
             while (true)
             {
                 if (Console.KeyAvailable)
