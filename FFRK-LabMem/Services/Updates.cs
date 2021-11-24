@@ -75,54 +75,59 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
-        public static void DownloadInstallerAndRun(bool includePreRelease, bool confirm = true)
+        public static async Task DownloadInstallerAndRun(bool includePreRelease, bool confirm = true)
         {
 
-            if (confirm)
-            {
-                ColorConsole.Write(ConsoleColor.DarkYellow, "Download and install from an external website? (Y/N):");
-                var key = Console.ReadKey().Key;
-                ColorConsole.WriteLine("");
-                if (key != ConsoleKey.Y) return;
-            }
-
-            var updaterTask = Task.Run(async () =>
+            try
             {
                 var checker = new Updates(includePreRelease);
-                try
-                {
-                    var latestRelease = await checker.GetLatestRelease();
+                var latestRelease = await checker.GetLatestRelease();
 
-                    if (String.IsNullOrEmpty(latestRelease.InstallerUrl))
+                if (String.IsNullOrEmpty(latestRelease.InstallerUrl))
+                {
+                    ColorConsole.Write(ConsoleColor.DarkYellow, "Latest release has no installer!");
+                    return;
+                }
+
+                if (confirm)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Download and install from an external website:");
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, latestRelease.InstallerUrl);
+                    ColorConsole.Write(ConsoleColor.DarkYellow, "Confirm (Y/N):");
+                    var key = Console.ReadKey(true).Key;
+                    ColorConsole.WriteLine("");
+                    if (key != ConsoleKey.Y)
                     {
-                        ColorConsole.Write(ConsoleColor.DarkYellow, "Latest release has no installer!");
+                        ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Download cancelled");
                         return;
                     }
-
-                    // Download with progress
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloading installer: {0}", latestRelease.InstallerName);
-                    WebClient client = new WebClient();
-                    client.DownloadProgressChanged += Client_DownloadProgressChanged;
-                    var targetFile = String.Format("{0}/{1}", new KnownFolder(KnownFolderType.Downloads).Path, latestRelease.InstallerName);
-                    await client.DownloadFileTaskAsync(latestRelease.InstallerUrl, targetFile);
-                    client.DownloadProgressChanged -= Client_DownloadProgressChanged;
-
-                    // Stop adb.exe now since installer kinda hangs on it
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Stopping adb.exe");
-                    Adb.KillAdb();
-
-                    // Run installer in silent mode and close bot
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Starting installer and exiting");
-                    System.Diagnostics.Process.Start(targetFile, "/SILENT");
-                    Environment.Exit(0);
-
                 }
-                catch (Exception e)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to download new version: {0}", e.Message);
-                }
-            });
 
+                // Download with progress
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloading installer: {0}", latestRelease.InstallerName);
+                ColorConsole.Write(ConsoleColor.DarkYellow, "Waiting...");
+                WebClient client = new WebClient();
+                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                var targetFile = String.Format("{0}/{1}", new KnownFolder(KnownFolderType.Downloads).Path, latestRelease.InstallerName);
+                await client.DownloadFileTaskAsync(latestRelease.InstallerUrl, targetFile);
+                client.DownloadProgressChanged -= Client_DownloadProgressChanged;
+                ColorConsole.WriteLine("");
+
+                // Stop adb.exe now since installer kinda hangs on it
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Stopping adb.exe");
+                Adb.KillAdb();
+
+                // Run installer in silent mode and close bot
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Starting installer and exiting");
+                System.Diagnostics.Process.Start(targetFile, "/SILENT");
+                Environment.Exit(0);
+
+            }
+            catch (Exception e)
+            {
+                ColorConsole.WriteLine("");
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to download new version: {0}", e.Message);
+            }
 
         }
 
@@ -135,7 +140,8 @@ namespace FFRK_LabMem.Services
                 progress = e.ProgressPercentage;
                 lock (conLock)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Downloaded {0}%", e.ProgressPercentage);
+                    Console.CursorLeft = ColorConsole.Timestamps ? 9 : 0;
+                    ColorConsole.Write(ConsoleColor.DarkYellow, "Downloaded {0}% ({1} bytes)", e.ProgressPercentage, e.BytesReceived);
                 }
 
             }

@@ -459,7 +459,6 @@ namespace FFRK_LabMem.Machines
             // Drops
             await DataLogger.LogBattleDrops(this);
 
-
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
             fatigueAutoResetEvent.Reset();
@@ -757,7 +756,7 @@ namespace FFRK_LabMem.Machines
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify();
+                        await Notify(false);
                         OnMachineFinished();
                     } else
                     {
@@ -821,7 +820,7 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
                     OnMachineFinished();
-                    await Notify();
+                    await Notify(false);
                 }
 
             }
@@ -875,7 +874,7 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
                     OnMachineFinished();
-                    await Notify();
+                    await Notify(false);
                 }
                 else
                 {
@@ -903,7 +902,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                await Notify();
+                await Notify(false);
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);

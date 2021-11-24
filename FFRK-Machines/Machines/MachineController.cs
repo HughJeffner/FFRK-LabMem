@@ -96,7 +96,7 @@ namespace FFRK_Machines.Machines
 
         private async void Consume()
         {
-
+            Thread.CurrentThread.Name = "Machine Worker";
             foreach (var item in queue.GetConsumingEnumerable())
             {
                 try

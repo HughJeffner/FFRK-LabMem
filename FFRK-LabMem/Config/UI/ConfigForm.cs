@@ -621,13 +621,13 @@ namespace FFRK_LabMem.Config.UI
         private async void ButtonCheckForUpdates_Click(object sender, EventArgs e)
         {
 
-            if (await Services.Updates.Check(checkBoxPrerelease.Checked))
+            if (await Updates.Check(checkBoxPrerelease.Checked))
             {
                 var ret = MessageBox.Show(this, "There is a new version available, download and install it now?", "Check For Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             
                 if (ret == DialogResult.Yes)
                 {
-                    Services.Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false);
+                    await Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false);
                     this.Close();
                 }
             
