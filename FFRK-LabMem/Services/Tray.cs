@@ -1,4 +1,7 @@
-﻿using System;
+﻿using FFRK_LabMem.Config.UI;
+using FFRK_LabMem.Data.UI;
+using FFRK_LabMem.Machines;
+using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -34,12 +37,12 @@ namespace FFRK_LabMem.Services
 
         static NotifyIcon notifyIcon = null;
 
-        public static void MinimizeTo(ConsoleModifiers modifiers)
+        public static void MinimizeTo(ConsoleModifiers modifiers, LabController controller)
         {
-            Tray.MinimizeTo(modifiers.HasFlag(ConsoleModifiers.Alt), modifiers.HasFlag(ConsoleModifiers.Control));
+            Tray.MinimizeTo(controller, modifiers.HasFlag(ConsoleModifiers.Alt), modifiers.HasFlag(ConsoleModifiers.Control));
         }
 
-        public static void MinimizeTo(bool monitorOff = false, bool lockWorkstation = false){
+        public static void MinimizeTo(LabController controller, bool monitorOff = false, bool lockWorkstation = false){
 
             // Windows API to hide window
             ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -49,15 +52,28 @@ namespace FFRK_LabMem.Services
             {
                 Task mytask = Task.Run(() =>
                 {
+                    // Create and set properties
                     notifyIcon = new NotifyIcon();
                     notifyIcon.DoubleClick += notifyIcon_DoubleClick;
                     notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
                     notifyIcon.Text = Console.Title;
                     var contextMenu = new ContextMenuStrip();
-                    contextMenu.Items.Add("Show", null, (s, e) => { notifyIcon_DoubleClick(s, e); });
+                    contextMenu.Items.Add("Unhide", null, (s, e) => { notifyIcon_DoubleClick(s, e); });
+                    contextMenu.Items.Add("Stats", null, (s, e) => {
+                        CountersForm.CreateAndShow(controller);
+                    });
+                    contextMenu.Items.Add("Config", null, (s, e) => {
+                        ConfigForm.CreateAndShow(new Config.ConfigHelper(), controller);
+                    });
+                    contextMenu.Items.Add("-");
+                    contextMenu.Items.Add("Exit", null, (s, e) => {
+                        if (MessageBox.Show("Are you sure you wish to exit?", "Confirm", MessageBoxButtons.OKCancel) == DialogResult.OK) Environment.Exit(0);
+                    });
                     notifyIcon.ContextMenuStrip = contextMenu;
                     notifyIcon.Visible = true;
-                    // Message pump to handle icon events - console will pause
+
+                    // From this point forward a message loop will run on this thread that owns the notifyIcon
+                    System.Threading.Thread.CurrentThread.Name = "Message Pump";
                     Application.Run();
                 });
             }

@@ -47,7 +47,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.X && key.Modifiers == ConsoleModifiers.Control) break;
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
-                if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers);
+                if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
                 if (key.Key == ConsoleKey.C) ConfigForm.CreateAndShow(config, controller);
                 if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Wait();

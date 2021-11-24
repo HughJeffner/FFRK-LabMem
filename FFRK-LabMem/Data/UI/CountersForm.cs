@@ -32,8 +32,10 @@ namespace FFRK_LabMem.Data.UI
                 IsLoaded = true;
                 Task mytask = Task.Run(() =>
                 {
-                    var form = new CountersForm();
-                    form.controller = controller;
+                    var form = new CountersForm
+                    {
+                        controller = controller
+                    };
                     form.ShowDialog();
                 });
             }
