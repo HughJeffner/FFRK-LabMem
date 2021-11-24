@@ -459,7 +459,6 @@ namespace FFRK_LabMem.Machines
             // Drops
             await DataLogger.LogBattleDrops(this);
 
-
             // Update fatigue unknown value
             FatigueInfo.ForEach(f => f.Fatigue = -1);
             fatigueAutoResetEvent.Reset();

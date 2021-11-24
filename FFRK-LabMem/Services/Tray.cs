@@ -47,18 +47,19 @@ namespace FFRK_LabMem.Services
             // Init tray icon from windows forms
             if (notifyIcon == null)
             {
-
-                notifyIcon = new NotifyIcon();
-                notifyIcon.DoubleClick +=notifyIcon_DoubleClick;
-                notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-                notifyIcon.Text = Console.Title;
-
-                var contextMenu = new ContextMenuStrip();
-                contextMenu.Items.Add("Show", null, (s, e) => { notifyIcon_DoubleClick(s, e); });
-                notifyIcon.ContextMenuStrip = contextMenu;
-
-                notifyIcon.Visible = true;
-
+                Task mytask = Task.Run(() =>
+                {
+                    notifyIcon = new NotifyIcon();
+                    notifyIcon.DoubleClick += notifyIcon_DoubleClick;
+                    notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                    notifyIcon.Text = Console.Title;
+                    var contextMenu = new ContextMenuStrip();
+                    contextMenu.Items.Add("Show", null, (s, e) => { notifyIcon_DoubleClick(s, e); });
+                    notifyIcon.ContextMenuStrip = contextMenu;
+                    notifyIcon.Visible = true;
+                    // Message pump to handle icon events - console will pause
+                    Application.Run();
+                });
             }
             else
             {
@@ -76,9 +77,6 @@ namespace FFRK_LabMem.Services
             // Lock
             if (lockWorkstation) Task.Delay(1000).ContinueWith( t => LockWorkStation());
 
-            // Message pump to handle icon events - console will pause
-            Application.Run(); 
-
         }
 
         private static void notifyIcon_DoubleClick(object sender, EventArgs e)
@@ -88,8 +86,6 @@ namespace FFRK_LabMem.Services
             ShowWindow(GetConsoleWindow(), SW_SHOW);
             notifyIcon.Visible = false;
 
-            // Stop message pump, resume console
-            Application.Exit();
         }
 
     }

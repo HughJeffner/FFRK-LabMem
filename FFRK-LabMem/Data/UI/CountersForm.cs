@@ -34,7 +34,7 @@ namespace FFRK_LabMem.Data.UI
                 {
                     var form = new CountersForm();
                     form.controller = controller;
-                    Application.Run(form);
+                    form.ShowDialog();
                 });
             }
         }
