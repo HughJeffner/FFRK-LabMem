@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
+using FFRK_Machines.Services;
 using Newtonsoft.Json.Linq;
 using Stateless;
 
@@ -143,21 +144,19 @@ namespace FFRK_Machines.Machines
         }
 
         /// <summary>
-        /// Notifies the user, by default system beeps
+        /// Notifies the user, by default embedded wav file
         /// </summary>
         /// <returns></returns>
-        protected virtual async Task Notify()
+        protected virtual async Task Notify(bool isSuccess = true)
         {
-            Console.Beep(523, 200);
-            Console.Beep(523, 200);
-            Console.Beep(523, 200);
-            Console.Beep(523, 500);
-            Console.Beep(415, 500);
-            Console.Beep(466, 500);
-            Console.Beep(523, 300);
-            Console.Beep(466, 250);
-            Console.Beep(523, 800);
-            await Task.FromResult(0);
+            if (isSuccess)
+            {
+                Sound.PlayFanfaire();
+            } else
+            {
+                Sound.PlayEvent();
+            }
+            await Task.CompletedTask;
         }
 
     }

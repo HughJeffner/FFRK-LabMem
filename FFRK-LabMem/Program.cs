@@ -5,6 +5,7 @@ using FFRK_LabMem.Data.UI;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
+using FFRK_Machines.Services;
 
 namespace FFRK_LabMem
 {
@@ -33,6 +34,9 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
+            // Sound subsystem
+            Sound.Init();
+
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
 
@@ -54,6 +58,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
                 if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
+                
             }
             
             // Stop

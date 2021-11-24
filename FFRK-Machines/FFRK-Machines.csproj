@@ -102,12 +102,33 @@
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\Adb.cs" />
     <Compile Include="Services\Proxy.cs" />
+    <Compile Include="Services\Sound.cs" />
     <Compile Include="Threading\AsyncAutoWaitEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Silent.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ff1-fanfaire.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FF1-Event.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
