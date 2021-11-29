@@ -34,8 +34,6 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
-            // Sound subsystem
-            Sound.Init();
 
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;

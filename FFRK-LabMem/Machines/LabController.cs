@@ -5,6 +5,7 @@ using FFRK_LabMem.Config;
 using FFRK_LabMem.Data;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
+using FFRK_Machines.Services.Notifications;
 
 namespace FFRK_LabMem.Machines
 {
@@ -24,9 +25,10 @@ namespace FFRK_LabMem.Machines
                 return ret;
             }
 
-            // Data logging
+            // Services
             await DataLogger.Initalize(config);
             await Counters.Initalize(config, ret);
+            await Notifications.Initalize();
 
             // Start it
             await ret.Start(

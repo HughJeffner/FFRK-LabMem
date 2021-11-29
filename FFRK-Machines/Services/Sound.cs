@@ -18,10 +18,11 @@ namespace FFRK_Machines.Services
 
         private static SoundPlayer player;
 
-        public static void Init()
+        public static async Task Initalize()
         {
             player = new SoundPlayer(Properties.Resources.Silent);
             player.Play();
+            await Task.CompletedTask;
         }
 
         public static void Play(string pathToWav)

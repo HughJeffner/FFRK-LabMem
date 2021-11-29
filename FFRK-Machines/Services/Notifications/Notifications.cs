@@ -32,7 +32,7 @@ namespace FFRK_Machines.Services.Notifications
 
         private Notifications()
         {
-            _ = Initalize();
+            
         }
 
         public static Notifications Default
@@ -44,9 +44,10 @@ namespace FFRK_Machines.Services.Notifications
             }
         }
 
-        private async Task Initalize()
+        public static async Task Initalize()
         {
-            await Task.CompletedTask;
+            await Sound.Initalize();
+            await Default.Load();
         }
 
         public async Task ProcessEvent(EventType eventType) {
