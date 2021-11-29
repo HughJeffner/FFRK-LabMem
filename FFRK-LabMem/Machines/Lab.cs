@@ -407,6 +407,7 @@ namespace FFRK_LabMem.Machines
         protected override void OnEnabled()
         {
             Watchdog.Enable();
+            disableSafeRequested = false;
         }
 
         protected override void OnDisabled()

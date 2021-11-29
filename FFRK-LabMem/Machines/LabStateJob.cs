@@ -19,10 +19,16 @@ namespace FFRK_LabMem.Machines
             var enabled = dataMap.GetBoolean("enabled");
             var controller = (LabController)dataMap["controller"];
 
+
             try
             {
                 if (enabled)
                 {
+                    if (controller.Enabled)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "LabMem already running for schedule: {0}", context.Trigger.Description);
+                        return;
+                    }
                     if (dataMap.GetBoolean("hardstart"))
                     {
                         ColorConsole.WriteLine(ConsoleColor.Green, "Restarting FFRK due to schedule: {0}", context.Trigger.Description);
@@ -36,6 +42,11 @@ namespace FFRK_LabMem.Machines
 
                 } else
                 {
+                    if (!controller.Enabled)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "LabMem already stopped for schedule: {0}", context.Trigger.Description);
+                        return;
+                    }
                     if (dataMap.GetBoolean("closeapp"))
                     {
                         ColorConsole.WriteLine(ConsoleColor.Red, "Closing FFRK due to schedule: {0}", context.Trigger.Description);
