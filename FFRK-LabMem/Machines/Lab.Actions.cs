@@ -128,13 +128,10 @@ namespace FFRK_LabMem.Machines
             if ((int)this.CurrentPainting["type"] <= 2)
             {
                 var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
-                var color = this.CurrentPainting["display_type"].ToString();
-                if (Combatant_Color.ContainsKey(color))
+                var color = this.CurrentPainting["display_type"];
+                if (color != null && Combatant_Color.ContainsKey(color.ToString()))
                 {
-                    title += String.Format(" [{0}]", Combatant_Color[color]);
-                } else
-                {
-                    title += " [M]";
+                    title += String.Format(" [{0}]", Combatant_Color[color.ToString()]);
                 }
                 ColorConsole.Write(": ");
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", title);
