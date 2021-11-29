@@ -11,6 +11,7 @@ using System.Threading;
 using System.Linq;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Data.UI;
+using FFRK_Machines.Services.Notifications;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -127,6 +128,9 @@ namespace FFRK_LabMem.Config.UI
             // Drop categories
             LoadDropCategories();
 
+            // Notifications
+            LoadNotifications();
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
@@ -137,6 +141,16 @@ namespace FFRK_LabMem.Config.UI
             // Inital tab
             listView1.Items[initalTabIndex].Selected = true;
 
+        }
+
+        private void LoadNotifications()
+        {
+            comboBoxNotificationEvents.Items.Clear();
+            foreach (var item in Enum.GetValues(typeof(Notifications.EventType)).Cast<Notifications.EventType>())
+            {
+                comboBoxNotificationEvents.Items.Add(Lookups.NotificationEvents[item]);
+            }
+            comboBoxNotificationEvents.SelectedIndex = 0;
         }
 
         private void LoadDropCategories()
@@ -789,6 +803,12 @@ namespace FFRK_LabMem.Config.UI
             var button = (Button)sender;
             contextMenuStrip1.Tag = button;
             contextMenuStrip1.Show(button, new Point(0, button.Height));
+        }
+
+        private void CheckBoxNotificationSound_CheckedChanged(object sender, EventArgs e)
+        {
+            textBoxNotificationSound.Enabled = checkBoxNotificationSound.Checked;
+            buttonNotificationSoundBrowse.Enabled = checkBoxNotificationSound.Checked;
         }
     }
 }

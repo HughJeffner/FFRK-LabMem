@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using FFRK_Machines.Services.Notifications;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -88,6 +89,14 @@ namespace FFRK_LabMem.Config.UI
         };
 
         public static Dictionary<String, Counters.DropCategory> DropCategoriesInverse = DropCategories.ToDictionary((i) => i.Value, (i) => i.Key);
+        
+
+        public static Dictionary<Notifications.EventType, String> NotificationEvents = new Dictionary<Notifications.EventType, string>() {
+            {Notifications.EventType.LAB_COMPLETED, "Lab Completed"},
+            {Notifications.EventType.LAB_FAULT, "Lab Fault"},
+        };
+
+        public static Dictionary<String, Notifications.EventType> NotificationEventsInverse = NotificationEvents.ToDictionary((i) => i.Value, (i) => i.Key);
 
     }
 }
