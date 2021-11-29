@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
 using FFRK_Machines.Services;
+using FFRK_Machines.Services.Notifications;
 using Newtonsoft.Json.Linq;
 using Stateless;
 
@@ -147,16 +148,9 @@ namespace FFRK_Machines.Machines
         /// Notifies the user, by default embedded wav file
         /// </summary>
         /// <returns></returns>
-        protected virtual async Task Notify(bool isSuccess = true)
+        protected virtual async Task Notify(Notifications.EventType eventType)
         {
-            if (isSuccess)
-            {
-                Sound.Play(Sound.FF1_Victory);
-            } else
-            {
-                Sound.Play(Sound.FF1_Inn);
-            }
-            await Task.CompletedTask;
+            await Notifications.Default.ProcessEvent(eventType);
         }
 
     }

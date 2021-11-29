@@ -101,6 +101,7 @@
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
+    <Compile Include="Services\Notifications\Notifications.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -108,6 +109,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\Adb.cs" />
+    <Compile Include="Services\Notifications\ConsoleNotification.cs" />
+    <Compile Include="Services\Notifications\SoundNotification.cs" />
     <Compile Include="Services\Proxy.cs" />
     <Compile Include="Services\Sound.cs" />
     <Compile Include="Threading\AsyncAutoWaitEvent.cs" />

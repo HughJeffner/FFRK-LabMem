@@ -19,7 +19,8 @@ namespace FFRK_Machines
             Adb = 1 << 0,
             Proxy = 1 << 1,
             Lab = 1 << 2,
-            Watchdog = 1 << 3
+            Watchdog = 1 << 3,
+            Notifcation = 1 << 4
         }
 
         public static void Write(ConsoleColor color, string format, params object[] arg)

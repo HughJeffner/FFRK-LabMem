@@ -2,6 +2,7 @@
 using FFRK_LabMem.Services;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
+using FFRK_Machines.Services.Notifications;
 using Newtonsoft.Json.Linq;
 using Stateless;
 using System;
@@ -600,7 +601,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
-                    await Notify();
+                    await Notify(Notifications.EventType.LAB_COMPLETED);
                     base.OnMachineFinished();
                     await Counters.LabRunCompleted();
                 } 
@@ -619,7 +620,7 @@ namespace FFRK_LabMem.Machines
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
-                    await Notify();
+                    await Notify(Notifications.EventType.LAB_COMPLETED);
                     await Counters.LabRunCompleted();
                 }
 
@@ -761,7 +762,7 @@ namespace FFRK_LabMem.Machines
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(false);
+                        await Notify(Notifications.EventType.LAB_FAULT);
                         OnMachineFinished();
                     } else
                     {
@@ -873,7 +874,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                await Notify(false);
+                await Notify(Notifications.EventType.LAB_FAULT);
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);
