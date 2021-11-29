@@ -31,18 +31,18 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Timings", 4);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Schedule", 5);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Counters", 6);
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Adb", 2);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Timings", 4);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Schedule", 5);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Counters", 6);
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.comboBoxDebug = new System.Windows.Forms.ComboBox();
+            this.buttonDebug = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -139,6 +139,7 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.buttonShowCounters = new System.Windows.Forms.Button();
             this.checkedListBoxDropCategories = new System.Windows.Forms.CheckedListBox();
             this.checkBoxCountersLogDropsTotal = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -148,7 +149,8 @@ namespace FFRK_LabMem.Config.UI
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lblRestart = new System.Windows.Forms.Label();
-            this.buttonShowCounters = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -175,6 +177,7 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -218,7 +221,7 @@ namespace FFRK_LabMem.Config.UI
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage1.Controls.Add(this.comboBoxDebug);
+            this.tabPage1.Controls.Add(this.buttonDebug);
             this.tabPage1.Controls.Add(this.label12);
             this.tabPage1.Controls.Add(this.label11);
             this.tabPage1.Controls.Add(this.label10);
@@ -242,18 +245,19 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
-            // comboBoxDebug
+            // buttonDebug
             // 
-            this.comboBoxDebug.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxDebug.FormattingEnabled = true;
-            this.comboBoxDebug.Items.AddRange(new object[] {
-            ""});
-            this.comboBoxDebug.Location = new System.Drawing.Point(149, 106);
-            this.comboBoxDebug.Name = "comboBoxDebug";
-            this.comboBoxDebug.Size = new System.Drawing.Size(234, 23);
-            this.comboBoxDebug.TabIndex = 22;
-            this.toolTip1.SetToolTip(this.comboBoxDebug, "Click a category in the drop-down to toggle it");
-            this.comboBoxDebug.SelectedIndexChanged += new System.EventHandler(this.ComboBoxDebug_SelectedIndexChanged);
+            this.buttonDebug.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonDebug.FlatAppearance.BorderColor = System.Drawing.SystemColors.ButtonShadow;
+            this.buttonDebug.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonDebug.Location = new System.Drawing.Point(149, 105);
+            this.buttonDebug.Name = "buttonDebug";
+            this.buttonDebug.Size = new System.Drawing.Size(233, 26);
+            this.buttonDebug.TabIndex = 22;
+            this.buttonDebug.Text = "Adb,Proxy";
+            this.buttonDebug.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonDebug.UseVisualStyleBackColor = false;
+            this.buttonDebug.Click += new System.EventHandler(this.ButtonDebug_Click);
             // 
             // label12
             // 
@@ -449,10 +453,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage2.Controls.Add(this.numericUpDownProxyPort);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(503, 468);
+            this.tabPage2.Size = new System.Drawing.Size(503, 466);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Proxy";
             // 
@@ -1277,9 +1281,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.Controls.Add(this.buttonScheduleAdd);
             this.tabPage11.Controls.Add(this.buttonScheduleDelete);
             this.tabPage11.Controls.Add(this.listViewSchedule);
-            this.tabPage11.Location = new System.Drawing.Point(4, 24);
+            this.tabPage11.Location = new System.Drawing.Point(4, 22);
             this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Size = new System.Drawing.Size(503, 466);
+            this.tabPage11.Size = new System.Drawing.Size(503, 468);
             this.tabPage11.TabIndex = 4;
             this.tabPage11.Text = "Schedule";
             // 
@@ -1360,12 +1364,23 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
-            this.tabPage12.Location = new System.Drawing.Point(4, 24);
+            this.tabPage12.Location = new System.Drawing.Point(4, 22);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(503, 466);
+            this.tabPage12.Size = new System.Drawing.Size(503, 468);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
+            // 
+            // buttonShowCounters
+            // 
+            this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 428);
+            this.buttonShowCounters.Name = "buttonShowCounters";
+            this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
+            this.buttonShowCounters.TabIndex = 4;
+            this.buttonShowCounters.Text = "Open Counters";
+            this.buttonShowCounters.UseVisualStyleBackColor = true;
+            this.buttonShowCounters.Click += new System.EventHandler(this.buttonShowCounters_Click);
             // 
             // checkedListBoxDropCategories
             // 
@@ -1405,13 +1420,13 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7});
+            listViewItem8,
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 5);
@@ -1481,16 +1496,17 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblRestart.Visible = false;
             // 
-            // buttonShowCounters
+            // contextMenuStrip1
             // 
-            this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonShowCounters.Location = new System.Drawing.Point(6, 428);
-            this.buttonShowCounters.Name = "buttonShowCounters";
-            this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
-            this.buttonShowCounters.TabIndex = 4;
-            this.buttonShowCounters.Text = "Open Counters";
-            this.buttonShowCounters.UseVisualStyleBackColor = true;
-            this.buttonShowCounters.Click += new System.EventHandler(this.buttonShowCounters_Click);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 10);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(57, 6);
             // 
             // ConfigForm
             // 
@@ -1547,6 +1563,7 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1653,7 +1670,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.NumericUpDown numericUpDownWatchdogCrash;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox comboBoxDebug;
         private System.Windows.Forms.CheckBox checkBoxProxyConnectionPool;
         private System.Windows.Forms.CheckBox checkBoxAdbClose;
         private System.Windows.Forms.LinkLabel linkLabel1;
@@ -1664,5 +1680,8 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckedListBox checkedListBoxDropCategories;
         private System.Windows.Forms.CheckBox checkBoxCountersLogDropsTotal;
         private System.Windows.Forms.Button buttonShowCounters;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.Button buttonDebug;
     }
 }

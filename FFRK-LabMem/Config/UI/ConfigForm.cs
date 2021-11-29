@@ -79,11 +79,15 @@ namespace FFRK_LabMem.Config.UI
             // Debug values
             foreach (var item in ColorConsole.GetCategories())
             {
-                comboBoxDebug.Items.Add(item);
+                ToolStripMenuItem toolStripItem = new ToolStripMenuItem(item.ToString());
+                toolStripItem.Tag = item;
+                toolStripItem.Checked = ColorConsole.DebugCategories.HasFlag(item);
+                toolStripItem.CheckOnClick = true;
+                toolStripItem.Click += DebugToolStripMenuItem_SelectedIndexChanged;
+                contextMenuStrip1.Items.Add(toolStripItem);
             }
-            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
-            comboBoxDebug.SelectedIndex = 0;
-            comboBoxDebug.Tag = ColorConsole.DebugCategories;
+            buttonDebug.Text = String.Format("{0}", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
+            buttonDebug.Tag = ColorConsole.DebugCategories;
 
             // Values
             checkBoxTimestamps.Checked = configHelper.GetBool("console.timestamps", true);
@@ -178,8 +182,8 @@ namespace FFRK_LabMem.Config.UI
 
             // General
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
-            configHelper.SetValue("console.debugCategories", (short)comboBoxDebug.Tag);
-            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
+            configHelper.SetValue("console.debugCategories", (short)buttonDebug.Tag);
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)buttonDebug.Tag;
             configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
             configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
             configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
@@ -479,7 +483,7 @@ namespace FFRK_LabMem.Config.UI
 
             var changed = (
                 checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-                (short)comboBoxDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
+                (short)buttonDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
                 checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
                 numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
                 checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
@@ -760,15 +764,14 @@ namespace FFRK_LabMem.Config.UI
             listViewSchedule.Items.Add(newItem);
         }
 
-        private void ComboBoxDebug_SelectedIndexChanged(object sender, EventArgs e)
+        private void DebugToolStripMenuItem_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBoxDebug.SelectedIndex == 0) return;
-            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
-            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)comboBoxDebug.SelectedItem;
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)buttonDebug.Tag;
+            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)item.Tag;
             t ^= target;
-            comboBoxDebug.Tag = t;
-            comboBoxDebug.SelectedIndex = 0;
-            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(t));
+            buttonDebug.Tag = t;
+            buttonDebug.Text = String.Format("{0}", ColorConsole.GetSelectedCategories(t));
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -779,6 +782,13 @@ namespace FFRK_LabMem.Config.UI
         private void buttonShowCounters_Click(object sender, EventArgs e)
         {
             CountersForm.CreateAndShow(controller);
+        }
+
+        private void ButtonDebug_Click(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            contextMenuStrip1.Tag = button;
+            contextMenuStrip1.Show(button, new Point(0, button.Height));
         }
     }
 }
