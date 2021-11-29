@@ -10,6 +10,12 @@ namespace FFRK_Machines.Services
     
     public class Sound
     {
+
+        public static string FF1_Victory = "./Sounds/FF1-Victory.wav";
+        public static string FF1_Event = "./Sounds/FF1-Event.wav";
+        public static string FF1_Inn = "./Sounds/FF1-Inn.wav";
+        public static string FF1_Treasure = "./Sounds/FF1-Treasure.wav";
+
         private static SoundPlayer player;
 
         public static void Init()
@@ -18,15 +24,9 @@ namespace FFRK_Machines.Services
             player.Play();
         }
 
-        public static void PlayFanfaire()
+        public static void Play(string pathToWav)
         {
-            player.Stream = Properties.Resources.FF1_Fanfaire;
-            player.Play();
-        }
-
-        public static void PlayEvent()
-        {
-            player.Stream = Properties.Resources.FF1_Event;
+            player.SoundLocation = pathToWav;
             player.Play();
         }
 

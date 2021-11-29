@@ -151,10 +151,10 @@ namespace FFRK_Machines.Machines
         {
             if (isSuccess)
             {
-                Sound.PlayFanfaire();
+                Sound.Play(Sound.FF1_Victory);
             } else
             {
-                Sound.PlayEvent();
+                Sound.Play(Sound.FF1_Inn);
             }
             await Task.CompletedTask;
         }
