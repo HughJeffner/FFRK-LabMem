@@ -19,6 +19,12 @@ namespace FFRK_LabMem.Machines
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
 
+        private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
+            { "1","G" },
+            {"2", "O" },
+            {"3", "R" }
+        };
+
         private async Task DetermineState()
         {
 
@@ -121,7 +127,15 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, this.CurrentPainting["name"]);
             if ((int)this.CurrentPainting["type"] <= 2)
             {
-                var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"];
+                var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
+                var color = this.CurrentPainting["display_type"].ToString();
+                if (Combatant_Color.ContainsKey(color))
+                {
+                    title += String.Format(" [{0}]", Combatant_Color[color]);
+                } else
+                {
+                    title += " [M]";
+                }
                 ColorConsole.Write(": ");
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", title);
                 if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
@@ -129,27 +143,21 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("");
             await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
 
-            // TODO: clean this painting placement handling up
+            // Tap painting
             // 2 or less paintings remaining change position
-            if (total >= 3)
-            {
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-            }
-            else if (total == 2)
-            {
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-            }
-            else
-            {
-                await this.Adb.TapPct(50, 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(50, 50, this.CancellationToken);
-            }
+            int offset = (total>=2)?33:0;
+            int margin = 17;
+            if (total == 2) margin = 33;
+            if (total == 1) margin = 50;
+
+            await this.Adb.TapPct(margin + (offset * (selectedPaintingIndex)), 50, this.CancellationToken);
+            await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
+            await this.Adb.TapPct(margin + (offset * (selectedPaintingIndex)), 50, this.CancellationToken);
+           
+            // Counter
             await Counters.PaintingSelected();
+
+            // Clean up
             CancellationToken.ThrowIfCancellationRequested();
             if ((int)this.CurrentPainting["type"] == 6)
             {
