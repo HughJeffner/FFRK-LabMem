@@ -781,7 +781,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task RestartFFRK()
+        private async Task<bool> RestartFFRK()
         {
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting FFRK");
@@ -802,96 +802,62 @@ namespace FFRK_LabMem.Machines
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
             await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
-            if (Config.UseOldCrashRecovery)
+            // Reset state
+            ConfigureStateMachine();
+
+            // Images to find
+            List<Adb.ImageDef> items = new List<Adb.ImageDef>();
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_outpost, Simalarity = 0.85f });
+
+            // Stopwatch to limit how long we try to find buttons
+            recoverStopwatch.Restart();
+
+            // Button Finding Loop with timeout and break if stopwatch stopped
+            TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
+            bool labFinished = false;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
+            while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
             {
-                // Press start button
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for start button...");
-                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 40, 70, 83, 20, this.CancellationToken))
+                // Find images in order, breaking on first match
+                var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                if (ret != null)
                 {
-                    // Press continue battle button
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for continue battle button...");
-                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 61, 57, 68, 10, this.CancellationToken))
+                    // Tap it
+                    await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
+
+                    // Check for outpost
+                    if (ret.Equals(items[3]))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
-                    }
-                    else
-                    {
-                        // Go back into lab
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Tapping lab...");
-                        await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
-                        ConfigureStateMachine();
+                        labFinished = true;
+                        break;
                     }
 
                 }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
-                    OnMachineFinished();
-                    await Notify(false);
-                }
+                // Delay between finds
+                await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
+            }
 
+            // Loop finshed, check state
+            CancellationToken.ThrowIfCancellationRequested();
+            recoverStopwatch.Stop();
+
+            // Disable lab if timeout
+            if (recoverStopwatch.Elapsed > loopTimeout)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
+                return false;
             }
             else
             {
-
-                // Reset state
-                ConfigureStateMachine();
-
-                // Images to find
-                List<Adb.ImageDef> items = new List<Adb.ImageDef>();
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_outpost, Simalarity = 0.85f });
-
-                // Stopwatch to limit how long we try to find buttons
-                recoverStopwatch.Restart();
-
-                // Button Finding Loop with timeout and break if stopwatch stopped
-                TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
-                bool labFinished = false;
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
-                while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
-                {
-                    // Find images in order, breaking on first match
-                    var ret = await Adb.FindImages(items, 3, this.CancellationToken);
-                    if (ret != null)
-                    {
-                        // Tap it
-                        await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
-
-                        // Check for outpost
-                        if (ret.Equals(items[3]))
-                        {
-                            labFinished = true;
-                            break;
-                        }
-
-                    }
-                    // Delay between finds
-                    await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
-                }
-
-                // Loop finshed, check state
-                CancellationToken.ThrowIfCancellationRequested();
-                recoverStopwatch.Stop();
-
-                // Disable lab if timeout
-                if (recoverStopwatch.Elapsed > loopTimeout)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
-                    OnMachineFinished();
-                    await Notify(false);
-                }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
-                    await Counters.FFRKRestarted();
-                    if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
-                }
-                await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
+                await Counters.FFRKRestarted();
+                if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
             }
+            await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);
+            return true;
 
         }
 

@@ -215,17 +215,27 @@ namespace FFRK_LabMem.Machines
             }
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+
             // On a timer thread, need to handle errors
+            bool result = false;
             try
             {
-                await RestartFFRK();
+                // Restart ffrk and get result
+                result = await RestartFFRK();
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
-            
+
+            // Restart watchdog if failed
+            if (!result)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart");
+                Watchdog.Kick();
+            }
+
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
