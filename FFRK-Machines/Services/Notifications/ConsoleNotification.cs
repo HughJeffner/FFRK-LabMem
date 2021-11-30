@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace FFRK_Machines.Services.Notifications
 {
-    class ConsoleNotification : Notifications.Notification
+    public class ConsoleNotification : Notifications.Notification
     {
 
         public async override Task Notify()

@@ -13,7 +13,7 @@ namespace FFRK_Machines.Services.Notifications
 
         private const string CONFIG_PATH = "./Config/notifications.json";
         private static Notifications _instance = null;
-        private JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
+        private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Formatting = Formatting.Indented
@@ -26,8 +26,12 @@ namespace FFRK_Machines.Services.Notifications
         }
 
         public EventList Events { get; set; } = new EventList {
-            { EventType.LAB_COMPLETED, new List<Notification>(){new SoundNotification(){ FilePath = Sound.FF1_Victory}}},
-            { EventType.LAB_FAULT, new List<Notification>(){new SoundNotification(){ FilePath = Sound.FF1_Inn}}}
+            { EventType.LAB_COMPLETED, new List<Notification>(){
+                new SoundNotification(){ FilePath = Sound.FF1_Victory}
+            }},
+            { EventType.LAB_FAULT, new List<Notification>(){
+                new SoundNotification(){ FilePath = Sound.FF1_Inn}
+            }}
         };
 
         private Notifications()
@@ -55,10 +59,12 @@ namespace FFRK_Machines.Services.Notifications
             ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation,"Processing event {0}", eventType);
             try
             {
-                foreach (var item in this.Events[eventType])
-                {
-                    await item.Notify();
-                }
+                await Task.WhenAll(this.Events[eventType].Where(n => n.Enabled).Select(t => t.Notify()));
+
+                //foreach (var item in this.Events[eventType].Where(i => i.Enabled))
+                //{
+                //    if (item.Enabled) await item.Notify();
+                //}
             } catch (Exception e)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, e.ToString());
@@ -66,17 +72,23 @@ namespace FFRK_Machines.Services.Notifications
             
         }
 
-        public async Task Load()
+        public static Task<EventList> GetEvents(string path = CONFIG_PATH)
         {
             try
             {
-                this.Events = JsonConvert.DeserializeObject<EventList>(File.ReadAllText(CONFIG_PATH), jsonSerializerSettings);
+                return Task.FromResult(JsonConvert.DeserializeObject<EventList>(File.ReadAllText(path), jsonSerializerSettings));
             }
             catch (FileNotFoundException) { }
             catch (Exception e)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, e.ToString());
             }
+            return Task.FromResult(Default.Events);
+        }
+
+        public async Task Load()
+        {
+            this.Events = await GetEvents();
             await Task.CompletedTask;
         }
 
@@ -93,6 +105,7 @@ namespace FFRK_Machines.Services.Notifications
 
         public abstract class Notification
         {
+            public bool Enabled { get; set; } = true;
             public abstract Task Notify();
         }
 

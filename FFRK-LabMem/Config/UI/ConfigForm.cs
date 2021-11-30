@@ -12,6 +12,7 @@ using System.Linq;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Data.UI;
 using FFRK_Machines.Services.Notifications;
+using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -27,6 +28,7 @@ namespace FFRK_LabMem.Config.UI
         private LabConfiguration labConfig = new LabConfiguration();
         private int initalTabIndex = 0;
         protected Scheduler scheduler = null;
+        private Notifications.EventList notificationEvents = null;
 
         public ConfigForm()
         {
@@ -143,8 +145,11 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private void LoadNotifications()
+        private async void LoadNotifications()
         {
+
+            notificationEvents = await Notifications.GetEvents();
+
             comboBoxNotificationEvents.Items.Clear();
             foreach (var item in Enum.GetValues(typeof(Notifications.EventType)).Cast<Notifications.EventType>())
             {
@@ -295,7 +300,11 @@ namespace FFRK_LabMem.Config.UI
                 scheduler.Schedules.Add(schedule);
             }
             await scheduler.Save();
+
+            // Save Notifications
+            await SaveNotifications();
             
+            // Message
             ColorConsole.WriteLine("Done!");
 
             // Update machine
@@ -320,6 +329,12 @@ namespace FFRK_LabMem.Config.UI
             }
 
             if (sender == buttonOk) this.Close();
+        }
+
+        private async Task SaveNotifications()
+        {
+            Notifications.Default.Events = notificationEvents;
+            await Notifications.Default.Save();
         }
 
         private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -814,12 +829,33 @@ namespace FFRK_LabMem.Config.UI
 
         private void ComboBoxNotificationEvents_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            var selectedEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
+            var notfications = notificationEvents[selectedEvent];
+            var soundNotification = notfications.OfType<SoundNotification>().FirstOrDefault();
+            if (soundNotification == null)
+            {
+                textBoxNotificationSound.Text = "";
+                checkBoxNotificationSound.Checked = false;
+            } else
+            {
+                textBoxNotificationSound.Text = soundNotification.FilePath;
+                checkBoxNotificationSound.Checked = soundNotification.Enabled;
+            }
+            var consoleNotification = notfications.OfType<ConsoleNotification>().FirstOrDefault();
+            if (consoleNotification == null)
+            {
+                checkBoxNotificationConsole.Checked = false;
+            }
+            else
+            {
+                checkBoxNotificationConsole.Checked = consoleNotification.Enabled;
+            }
         }
 
-        private void ButtonNotificationTest_Click(object sender, EventArgs e)
+        private async void ButtonNotificationTest_Click(object sender, EventArgs e)
         {
-
+            var testEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
+            await Notifications.Default.ProcessEvent(testEvent);
         }
     }
 }

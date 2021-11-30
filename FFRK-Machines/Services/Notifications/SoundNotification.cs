@@ -2,7 +2,7 @@
 
 namespace FFRK_Machines.Services.Notifications
 {
-    class SoundNotification : Notifications.Notification
+    public class SoundNotification : Notifications.Notification
     {
 
         public string FilePath { get; set; }
