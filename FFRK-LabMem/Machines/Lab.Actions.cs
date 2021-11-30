@@ -788,7 +788,9 @@ namespace FFRK_LabMem.Machines
             Watchdog.Kick(false);
 
             // Stop any running tasks
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Cancelling any running tasks");
             await InterruptTasks();
+            await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
             // Kill FFRK
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Kill ffrk process...");
@@ -798,7 +800,6 @@ namespace FFRK_LabMem.Machines
             // Launch app
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Launching app");
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
-            await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
             // Reset state
             ConfigureStateMachine();

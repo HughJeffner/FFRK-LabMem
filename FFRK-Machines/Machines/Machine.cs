@@ -60,7 +60,7 @@ namespace FFRK_Machines.Machines
         public async Task InterruptTasks()
         {
             cancelSource.CancelAfter(0);
-            await Task.Delay(0);
+            await Task.Delay(10);
             cancelSource = new CancellationTokenSource();
             CancellationToken = cancelSource.Token;
         }
