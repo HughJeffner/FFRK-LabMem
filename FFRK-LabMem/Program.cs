@@ -11,6 +11,7 @@ namespace FFRK_LabMem
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
 

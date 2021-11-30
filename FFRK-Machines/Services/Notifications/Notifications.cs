@@ -56,20 +56,28 @@ namespace FFRK_Machines.Services.Notifications
 
         public async Task ProcessEvent(EventType eventType) {
 
-            ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation,"Processing event {0}", eventType);
+            await ProcessEvent(eventType, this.Events);
+            
+        }
+
+        public async Task ProcessEvent(EventType eventType, EventList events)
+        {
+
+            ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Processing event {0}", eventType);
             try
             {
-                await Task.WhenAll(this.Events[eventType].Where(n => n.Enabled).Select(t => t.Notify()));
+                await Task.WhenAll(events[eventType].Where(n => n.Enabled).Select(t => t.Notify()));
 
                 //foreach (var item in this.Events[eventType].Where(i => i.Enabled))
                 //{
                 //    if (item.Enabled) await item.Notify();
                 //}
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, e.ToString());
             }
-            
+
         }
 
         public static Task<EventList> GetEvents(string path = CONFIG_PATH)

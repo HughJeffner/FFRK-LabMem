@@ -12,7 +12,6 @@ using System.Linq;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Data.UI;
 using FFRK_Machines.Services.Notifications;
-using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -29,6 +28,7 @@ namespace FFRK_LabMem.Config.UI
         private int initalTabIndex = 0;
         protected Scheduler scheduler = null;
         private Notifications.EventList notificationEvents = null;
+        private Notifications.EventType? selectedNotificationEvent = null;
 
         public ConfigForm()
         {
@@ -156,6 +156,7 @@ namespace FFRK_LabMem.Config.UI
                 comboBoxNotificationEvents.Items.Add(Lookups.NotificationEvents[item]);
             }
             comboBoxNotificationEvents.SelectedIndex = 0;
+            selectedNotificationEvent = Notifications.EventType.LAB_COMPLETED;
         }
 
         private void LoadDropCategories()
@@ -302,8 +303,10 @@ namespace FFRK_LabMem.Config.UI
             await scheduler.Save();
 
             // Save Notifications
-            await SaveNotifications();
-            
+            ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
+            Notifications.Default.Events = notificationEvents;
+            await Notifications.Default.Save();
+
             // Message
             ColorConsole.WriteLine("Done!");
 
@@ -329,12 +332,6 @@ namespace FFRK_LabMem.Config.UI
             }
 
             if (sender == buttonOk) this.Close();
-        }
-
-        private async Task SaveNotifications()
-        {
-            Notifications.Default.Events = notificationEvents;
-            await Notifications.Default.Save();
         }
 
         private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -829,8 +826,37 @@ namespace FFRK_LabMem.Config.UI
 
         private void ComboBoxNotificationEvents_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var selectedEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
-            var notfications = notificationEvents[selectedEvent];
+            // Persist values to local copy
+            if (selectedNotificationEvent.HasValue)
+            {
+                var n = notificationEvents[selectedNotificationEvent.Value];
+                var s = n.OfType<SoundNotification>().FirstOrDefault();
+                if (s == null)
+                {
+                    n.Add(new SoundNotification() { 
+                        FilePath = textBoxNotificationSound.Text, 
+                        Enabled = checkBoxNotificationSound.Checked 
+                    });
+                }
+                else
+                {
+                    s.FilePath = textBoxNotificationSound.Text;
+                    s.Enabled = checkBoxNotificationSound.Checked;
+                }
+                var c = n.OfType<ConsoleNotification>().FirstOrDefault();
+                if (c == null)
+                {
+                    n.Add(new ConsoleNotification() { Enabled = checkBoxNotificationConsole.Checked });
+                }
+                else
+                {
+                    c.Enabled = checkBoxNotificationConsole.Checked;
+                }
+            }
+
+
+            selectedNotificationEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
+            var notfications = notificationEvents[selectedNotificationEvent.Value];
             var soundNotification = notfications.OfType<SoundNotification>().FirstOrDefault();
             if (soundNotification == null)
             {
@@ -854,8 +880,22 @@ namespace FFRK_LabMem.Config.UI
 
         private async void ButtonNotificationTest_Click(object sender, EventArgs e)
         {
+            ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
             var testEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
-            await Notifications.Default.ProcessEvent(testEvent);
+            await Notifications.Default.ProcessEvent(testEvent, notificationEvents);
+        }
+
+        private void buttonNotificationSoundBrowse_Click(object sender, EventArgs e)
+        {
+            var file = new FileInfo(Path.GetFullPath(textBoxNotificationSound.Text));
+
+            openFileDialogSound.InitialDirectory = file.Directory.FullName;
+            openFileDialogSound.FileName = textBoxNotificationSound.Text;
+            var result = openFileDialogSound.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                textBoxNotificationSound.Text = openFileDialogSound.FileName;
+            }
         }
     }
 }
