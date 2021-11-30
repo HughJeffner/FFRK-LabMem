@@ -316,9 +316,10 @@ namespace FFRK_LabMem.Config.UI
                     Application.Restart();
                     Environment.Exit(0);
                 }
+                lblRestart.Visible = false;
             }
 
-            this.Close();
+            if (sender == buttonOk) this.Close();
         }
 
         private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -809,6 +810,16 @@ namespace FFRK_LabMem.Config.UI
         {
             textBoxNotificationSound.Enabled = checkBoxNotificationSound.Checked;
             buttonNotificationSoundBrowse.Enabled = checkBoxNotificationSound.Checked;
+        }
+
+        private void ComboBoxNotificationEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonNotificationTest_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -159,6 +159,7 @@ namespace FFRK_LabMem.Config.UI
             this.lblRestart = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.buttonApply = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -192,7 +193,8 @@ namespace FFRK_LabMem.Config.UI
             // buttonOk
             // 
             this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOk.Location = new System.Drawing.Point(502, 515);
+            this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.buttonOk.Location = new System.Drawing.Point(411, 517);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(87, 33);
             this.buttonOk.TabIndex = 2;
@@ -204,7 +206,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(596, 515);
+            this.buttonCancel.Location = new System.Drawing.Point(505, 517);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(87, 33);
             this.buttonCancel.TabIndex = 3;
@@ -1229,9 +1231,9 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.tabPage13.Controls.Add(this.buttonTimingDefaults);
             this.tabPage13.Controls.Add(this.dataGridView1);
-            this.tabPage13.Location = new System.Drawing.Point(4, 22);
+            this.tabPage13.Location = new System.Drawing.Point(4, 24);
             this.tabPage13.Name = "tabPage13";
-            this.tabPage13.Size = new System.Drawing.Size(504, 468);
+            this.tabPage13.Size = new System.Drawing.Size(504, 466);
             this.tabPage13.TabIndex = 6;
             this.tabPage13.Text = "Timings";
             this.tabPage13.UseVisualStyleBackColor = true;
@@ -1239,7 +1241,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTimingDefaults
             // 
             this.buttonTimingDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 428);
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 426);
             this.buttonTimingDefaults.Name = "buttonTimingDefaults";
             this.buttonTimingDefaults.Size = new System.Drawing.Size(140, 27);
             this.buttonTimingDefaults.TabIndex = 3;
@@ -1262,7 +1264,7 @@ namespace FFRK_LabMem.Config.UI
             this.Jitter});
             this.dataGridView1.Location = new System.Drawing.Point(3, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(495, 421);
+            this.dataGridView1.Size = new System.Drawing.Size(495, 418);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
@@ -1291,9 +1293,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.Controls.Add(this.buttonScheduleAdd);
             this.tabPage11.Controls.Add(this.buttonScheduleDelete);
             this.tabPage11.Controls.Add(this.listViewSchedule);
-            this.tabPage11.Location = new System.Drawing.Point(4, 22);
+            this.tabPage11.Location = new System.Drawing.Point(4, 24);
             this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Size = new System.Drawing.Size(504, 468);
+            this.tabPage11.Size = new System.Drawing.Size(504, 466);
             this.tabPage11.TabIndex = 4;
             this.tabPage11.Text = "Schedule";
             // 
@@ -1301,7 +1303,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(306, 434);
+            this.linkLabel1.Location = new System.Drawing.Point(306, 432);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(175, 15);
             this.linkLabel1.TabIndex = 5;
@@ -1314,7 +1316,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleAdd
             // 
             this.buttonScheduleAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 428);
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 426);
             this.buttonScheduleAdd.Name = "buttonScheduleAdd";
             this.buttonScheduleAdd.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleAdd.TabIndex = 3;
@@ -1325,7 +1327,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleDelete
             // 
             this.buttonScheduleDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 428);
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 426);
             this.buttonScheduleDelete.Name = "buttonScheduleDelete";
             this.buttonScheduleDelete.Size = new System.Drawing.Size(87, 27);
             this.buttonScheduleDelete.TabIndex = 4;
@@ -1347,7 +1349,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewSchedule.HideSelection = false;
             this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
             this.listViewSchedule.Name = "listViewSchedule";
-            this.listViewSchedule.Size = new System.Drawing.Size(494, 420);
+            this.listViewSchedule.Size = new System.Drawing.Size(495, 418);
             this.listViewSchedule.TabIndex = 1;
             this.listViewSchedule.UseCompatibleStateImageBehavior = false;
             this.listViewSchedule.View = System.Windows.Forms.View.Details;
@@ -1374,17 +1376,17 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
-            this.tabPage12.Location = new System.Drawing.Point(4, 22);
+            this.tabPage12.Location = new System.Drawing.Point(4, 24);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(504, 468);
+            this.tabPage12.Size = new System.Drawing.Size(504, 466);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
             // 
             // buttonShowCounters
             // 
             this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonShowCounters.Location = new System.Drawing.Point(6, 428);
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 426);
             this.buttonShowCounters.Name = "buttonShowCounters";
             this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
             this.buttonShowCounters.TabIndex = 4;
@@ -1399,9 +1401,10 @@ namespace FFRK_LabMem.Config.UI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.checkedListBoxDropCategories.CheckOnClick = true;
             this.checkedListBoxDropCategories.FormattingEnabled = true;
-            this.checkedListBoxDropCategories.Location = new System.Drawing.Point(6, 34);
+            this.checkedListBoxDropCategories.IntegralHeight = false;
+            this.checkedListBoxDropCategories.Location = new System.Drawing.Point(3, 34);
             this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
-            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(491, 388);
+            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 384);
             this.checkedListBoxDropCategories.TabIndex = 0;
             // 
             // checkBoxCountersLogDropsTotal
@@ -1422,10 +1425,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage9.Controls.Add(this.checkBoxNotificationSound);
             this.tabPage9.Controls.Add(this.buttonNotificationTest);
             this.tabPage9.Controls.Add(this.comboBoxNotificationEvents);
-            this.tabPage9.Location = new System.Drawing.Point(4, 24);
+            this.tabPage9.Location = new System.Drawing.Point(4, 22);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(504, 466);
+            this.tabPage9.Size = new System.Drawing.Size(504, 468);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Notifications";
             this.tabPage9.UseVisualStyleBackColor = true;
@@ -1484,6 +1487,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonNotificationTest.TabIndex = 4;
             this.buttonNotificationTest.Text = "Test";
             this.buttonNotificationTest.UseVisualStyleBackColor = true;
+            this.buttonNotificationTest.Click += new System.EventHandler(this.ButtonNotificationTest_Click);
             // 
             // comboBoxNotificationEvents
             // 
@@ -1496,6 +1500,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxNotificationEvents.Name = "comboBoxNotificationEvents";
             this.comboBoxNotificationEvents.Size = new System.Drawing.Size(426, 24);
             this.comboBoxNotificationEvents.TabIndex = 3;
+            this.comboBoxNotificationEvents.SelectedIndexChanged += new System.EventHandler(this.ComboBoxNotificationEvents_SelectedIndexChanged);
             // 
             // folderBrowserDialog1
             // 
@@ -1602,6 +1607,17 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(57, 6);
             // 
+            // buttonApply
+            // 
+            this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonApply.Location = new System.Drawing.Point(598, 517);
+            this.buttonApply.Name = "buttonApply";
+            this.buttonApply.Size = new System.Drawing.Size(87, 33);
+            this.buttonApply.TabIndex = 21;
+            this.buttonApply.Text = "Apply";
+            this.buttonApply.UseVisualStyleBackColor = true;
+            this.buttonApply.Click += new System.EventHandler(this.ButtonOk_Click);
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1609,6 +1625,7 @@ namespace FFRK_LabMem.Config.UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(703, 562);
+            this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.lblRestart);
             this.Controls.Add(this.buttonCancel);
@@ -1786,5 +1803,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.TextBox textBoxNotificationSound;
         internal System.Windows.Forms.Button buttonNotificationSoundBrowse;
         private System.Windows.Forms.CheckBox checkBoxNotificationSound;
+        private System.Windows.Forms.Button buttonApply;
     }
 }
