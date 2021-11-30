@@ -193,5 +193,14 @@ namespace FFRK_Machines.Machines
             Proxy.Stop();
         }
 
+        public void Refresh()
+        {
+            if (enabled && Machine != null)
+            {
+                Disable();
+                Enable();
+            }
+        }
+
     }
 }

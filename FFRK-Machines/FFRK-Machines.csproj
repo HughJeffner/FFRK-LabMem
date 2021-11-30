@@ -114,6 +114,7 @@
     <Compile Include="Services\Proxy.cs" />
     <Compile Include="Services\Sound.cs" />
     <Compile Include="Threading\AsyncAutoWaitEvent.cs" />
+    <Compile Include="Threading\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

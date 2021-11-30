@@ -12,11 +12,14 @@ using System.Linq;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Data.UI;
 using FFRK_Machines.Services.Notifications;
+using System.Threading.Tasks;
+using FFRK_Machines.Threading;
 
 namespace FFRK_LabMem.Config.UI
 {
     public partial class ConfigForm : Form
     {
+        public static bool IsLoaded { get; set; } = false;
 
         private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
         private bool treasuresTabLoaded = false;
@@ -35,31 +38,41 @@ namespace FFRK_LabMem.Config.UI
             InitializeComponent();
         }
 
-        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller, int initalTabIndex = 0)
+        public static void CreateAndShow(ConfigHelper configHelper, LabController controller, int initalTabIndex = 0)
         {
-
-            bool initalState = controller.Enabled;
-            var defaultScheduler = Scheduler.Default(controller);
-
-            // Disable Lab
-            if (controller.Enabled) controller.Disable();
-            await defaultScheduler.Stop();
-
             // Show form
-            var form = new ConfigForm
+            if (IsLoaded == false)
             {
-                configHelper = configHelper,
-                controller = controller,
-                scheduler = defaultScheduler,
-                initalTabIndex = initalTabIndex
-            };
-            form.ShowDialog();
+                IsLoaded = true;
+                
+                Task mytask = Utility.StartSTATask(async () =>
+                {
+                    // Disable Lab
+                    //if (controller.Enabled) controller.Disable();
+                    var defaultScheduler = Scheduler.Default(controller);
+                    await defaultScheduler.Stop();
 
-            // Re-enable if needed
-            if (initalState) controller.Enable();
-            await defaultScheduler.Start();
+                    var form = new ConfigForm
+                    {
+                        configHelper = configHelper,
+                        controller = controller,
+                        scheduler = defaultScheduler,
+                        initalTabIndex = initalTabIndex
+                    };
+                    form.ShowDialog();
+
+                    await defaultScheduler.Start();
+
+                });
+            }
 
         }
+
+        private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            IsLoaded = false;
+        }
+
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
@@ -331,6 +344,10 @@ namespace FFRK_LabMem.Config.UI
                 lblRestart.Visible = false;
             }
 
+            // Re-start if needed
+            controller.Refresh();
+
+            // Close
             if (sender == buttonOk) this.Close();
         }
 
@@ -897,5 +914,6 @@ namespace FFRK_LabMem.Config.UI
                 textBoxNotificationSound.Text = openFileDialogSound.FileName;
             }
         }
+        
     }
 }
