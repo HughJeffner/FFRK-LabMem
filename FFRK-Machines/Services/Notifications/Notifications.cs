@@ -72,9 +72,10 @@ namespace FFRK_Machines.Services.Notifications
             {
                 this.Events = JsonConvert.DeserializeObject<EventList>(File.ReadAllText(CONFIG_PATH), jsonSerializerSettings);
             }
-            catch (Exception)
+            catch (FileNotFoundException) { }
+            catch (Exception e)
             {
-                this.Events = new EventList();
+                ColorConsole.WriteLine(ConsoleColor.Red, e.ToString());
             }
             await Task.CompletedTask;
         }
