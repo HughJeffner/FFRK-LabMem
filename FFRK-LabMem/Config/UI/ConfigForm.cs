@@ -870,6 +870,15 @@ namespace FFRK_LabMem.Config.UI
                 {
                     c.Enabled = checkBoxNotificationConsole.Checked;
                 }
+                var f = n.OfType<FlashTaskbarNotification>().FirstOrDefault();
+                if (f == null)
+                {
+                    n.Add(new FlashTaskbarNotification() { Enabled = checkBoxNotificationFlashTaskbar.Checked });
+                }
+                else
+                {
+                    f.Enabled = checkBoxNotificationFlashTaskbar.Checked;
+                }
             }
 
 
@@ -893,6 +902,15 @@ namespace FFRK_LabMem.Config.UI
             else
             {
                 checkBoxNotificationConsole.Checked = consoleNotification.Enabled;
+            }
+            var flashTaskbar = notfications.OfType<FlashTaskbarNotification>().FirstOrDefault();
+            if (flashTaskbar == null)
+            {
+                checkBoxNotificationFlashTaskbar.Checked = false;
+            }
+            else
+            {
+                checkBoxNotificationFlashTaskbar.Checked = flashTaskbar.Enabled;
             }
         }
 

@@ -31,18 +31,19 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Proxy", 1);
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Adb", 2);
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Lab", 3);
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Timings", 4);
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Schedule", 5);
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Counters", 6);
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Notifications", 7);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Timings", 4);
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Schedule", 5);
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Counters", 6);
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Notifications", 7);
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.checkBoxLogging = new System.Windows.Forms.CheckBox();
             this.buttonDebug = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -160,7 +161,7 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
-            this.checkBoxLogging = new System.Windows.Forms.CheckBox();
+            this.checkBoxNotificationFlashTaskbar = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -258,6 +259,17 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage1.Size = new System.Drawing.Size(504, 466);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
+            // 
+            // checkBoxLogging
+            // 
+            this.checkBoxLogging.AutoSize = true;
+            this.checkBoxLogging.Location = new System.Drawing.Point(0, 78);
+            this.checkBoxLogging.Name = "checkBoxLogging";
+            this.checkBoxLogging.Size = new System.Drawing.Size(192, 19);
+            this.checkBoxLogging.TabIndex = 23;
+            this.checkBoxLogging.Text = "Enable console output logging";
+            this.toolTip1.SetToolTip(this.checkBoxLogging, "Logs all program output to timestamped files in the Logs directory");
+            this.checkBoxLogging.UseVisualStyleBackColor = true;
             // 
             // buttonDebug
             // 
@@ -1420,16 +1432,17 @@ namespace FFRK_LabMem.Config.UI
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.checkBoxNotificationFlashTaskbar);
             this.tabPage9.Controls.Add(this.checkBoxNotificationConsole);
             this.tabPage9.Controls.Add(this.textBoxNotificationSound);
             this.tabPage9.Controls.Add(this.buttonNotificationSoundBrowse);
             this.tabPage9.Controls.Add(this.checkBoxNotificationSound);
             this.tabPage9.Controls.Add(this.buttonNotificationTest);
             this.tabPage9.Controls.Add(this.comboBoxNotificationEvents);
-            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Location = new System.Drawing.Point(4, 24);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(504, 468);
+            this.tabPage9.Size = new System.Drawing.Size(504, 466);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Notifications";
             this.tabPage9.UseVisualStyleBackColor = true;
@@ -1437,7 +1450,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxNotificationConsole
             // 
             this.checkBoxNotificationConsole.AutoSize = true;
-            this.checkBoxNotificationConsole.Location = new System.Drawing.Point(0, 116);
+            this.checkBoxNotificationConsole.Location = new System.Drawing.Point(3, 98);
             this.checkBoxNotificationConsole.Name = "checkBoxNotificationConsole";
             this.checkBoxNotificationConsole.Size = new System.Drawing.Size(132, 19);
             this.checkBoxNotificationConsole.TabIndex = 8;
@@ -1514,14 +1527,14 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem9,
-            listViewItem10,
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 5);
@@ -1620,16 +1633,15 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
-            // checkBoxLogging
+            // checkBoxNotificationFlashTaskbar
             // 
-            this.checkBoxLogging.AutoSize = true;
-            this.checkBoxLogging.Location = new System.Drawing.Point(0, 78);
-            this.checkBoxLogging.Name = "checkBoxLogging";
-            this.checkBoxLogging.Size = new System.Drawing.Size(192, 19);
-            this.checkBoxLogging.TabIndex = 23;
-            this.checkBoxLogging.Text = "Enable console output logging";
-            this.toolTip1.SetToolTip(this.checkBoxLogging, "Logs all program output to timestamped files in the Logs directory");
-            this.checkBoxLogging.UseVisualStyleBackColor = true;
+            this.checkBoxNotificationFlashTaskbar.AutoSize = true;
+            this.checkBoxNotificationFlashTaskbar.Location = new System.Drawing.Point(3, 123);
+            this.checkBoxNotificationFlashTaskbar.Name = "checkBoxNotificationFlashTaskbar";
+            this.checkBoxNotificationFlashTaskbar.Size = new System.Drawing.Size(119, 19);
+            this.checkBoxNotificationFlashTaskbar.TabIndex = 9;
+            this.checkBoxNotificationFlashTaskbar.Text = "Flash the taskbar";
+            this.checkBoxNotificationFlashTaskbar.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -1819,5 +1831,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.OpenFileDialog openFileDialogSound;
         private System.Windows.Forms.CheckBox checkBoxLogging;
+        private System.Windows.Forms.CheckBox checkBoxNotificationFlashTaskbar;
     }
 }
