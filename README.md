@@ -24,15 +24,17 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases) and find the lastest release
 2. Under 'Assets' dropdown download `FFRK-LabMem-x.x.x-Beta-Installer.exe` file and download, run, and follow the steps. (Or you can manually install by downloading and extracting the .zip file instead)
 3. Start Emulator / Connect device to USB
-4. Turn on 'Developer Mode' in android settings 
+4. Turn on 'Developer Mode' in android settings [see here](https://developer.android.com/studio/debug/dev-options)
 5. Activate USB debugging in developer settings
-6. [Change android network proxy settings](#proxysetting)
-7. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
-8. Press `C` to open the configuration
-9. [Update ADB host](#adbconnection) if using emulator
-10. Restart the bot when prompted
-11. Follow any on-screen instructions to install the certificate
-12. Load up a Labyrinth
+6. Start application FFRK-LabMem.exe (it has a treasure-chest icon)
+7. Press `C` to open the configuration
+8. [Update ADB host](#adbconnection) if using emulator
+9. Restart the bot when prompted
+10. Go back into the configuration, Under proxy settings, enable Auto-configure
+11. Restart your device/emulator
+12. Restart the bot
+13. Follow any on-screen instructions to install the certificate
+14. Load up a Labyrinth
 
 ## Basic Usage
 Extract all files from the .zip file to a folder
