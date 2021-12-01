@@ -20,7 +20,7 @@ Built using Visual Studio 2019 Community, Installer using Inno Setup 6, pre-comp
 
 _All compatible versions using FFRK 8.0.0+ must install a certificate_
 
-## Quick Start
+## (Somewhat) Quick Start
 1. Go to the [releases page](https://github.com/HughJeffner/FFRK-LabMem/releases) and find the lastest release
 2. Under 'Assets' dropdown download `FFRK-LabMem-x.x.x-Beta-Installer.exe` file and download, run, and follow the steps. (Or you can manually install by downloading and extracting the .zip file instead)
 3. Start Emulator / Connect device to USB
