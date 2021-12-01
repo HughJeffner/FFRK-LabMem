@@ -141,6 +141,8 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.numericUpDownCountersRarity = new System.Windows.Forms.NumericUpDown();
+            this.label19 = new System.Windows.Forms.Label();
             this.buttonShowCounters = new System.Windows.Forms.Button();
             this.checkedListBoxDropCategories = new System.Windows.Forms.CheckedListBox();
             this.checkBoxCountersLogDropsTotal = new System.Windows.Forms.CheckBox();
@@ -177,8 +179,6 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
-            this.label19 = new System.Windows.Forms.Label();
-            this.numericUpDownCountersRarity = new System.Windows.Forms.NumericUpDown();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -201,6 +201,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage11.SuspendLayout();
             this.tabPage12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).BeginInit();
             this.tabPage9.SuspendLayout();
             this.panelSMTP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSMTPPort)).BeginInit();
@@ -209,7 +210,6 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -1411,12 +1411,38 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
-            this.tabPage12.Location = new System.Drawing.Point(4, 24);
+            this.tabPage12.Location = new System.Drawing.Point(4, 22);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(504, 466);
+            this.tabPage12.Size = new System.Drawing.Size(504, 468);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
+            // 
+            // numericUpDownCountersRarity
+            // 
+            this.numericUpDownCountersRarity.Location = new System.Drawing.Point(288, 29);
+            this.numericUpDownCountersRarity.Maximum = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            this.numericUpDownCountersRarity.Name = "numericUpDownCountersRarity";
+            this.numericUpDownCountersRarity.Size = new System.Drawing.Size(52, 21);
+            this.numericUpDownCountersRarity.TabIndex = 6;
+            this.numericUpDownCountersRarity.Value = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 31);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(279, 15);
+            this.label19.TabIndex = 5;
+            this.label19.Text = "Don\'t count drops for materials with rarity under: ★";
             // 
             // buttonShowCounters
             // 
@@ -1534,11 +1560,11 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.checkBoxSMTPSSL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxSMTPSSL.AutoSize = true;
-            this.checkBoxSMTPSSL.Location = new System.Drawing.Point(333, 32);
+            this.checkBoxSMTPSSL.Location = new System.Drawing.Point(396, 32);
             this.checkBoxSMTPSSL.Name = "checkBoxSMTPSSL";
-            this.checkBoxSMTPSSL.Size = new System.Drawing.Size(137, 19);
+            this.checkBoxSMTPSSL.Size = new System.Drawing.Size(74, 19);
             this.checkBoxSMTPSSL.TabIndex = 8;
-            this.checkBoxSMTPSSL.Text = "Use SSL connection";
+            this.checkBoxSMTPSSL.Text = "SSL/TLS";
             this.checkBoxSMTPSSL.UseVisualStyleBackColor = true;
             // 
             // label16
@@ -1833,32 +1859,6 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(3, 31);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(279, 15);
-            this.label19.TabIndex = 5;
-            this.label19.Text = "Don\'t count drops for materials with rarity under: ★";
-            // 
-            // numericUpDownCountersRarity
-            // 
-            this.numericUpDownCountersRarity.Location = new System.Drawing.Point(288, 29);
-            this.numericUpDownCountersRarity.Maximum = new decimal(new int[] {
-            7,
-            0,
-            0,
-            0});
-            this.numericUpDownCountersRarity.Name = "numericUpDownCountersRarity";
-            this.numericUpDownCountersRarity.Size = new System.Drawing.Size(52, 21);
-            this.numericUpDownCountersRarity.TabIndex = 6;
-            this.numericUpDownCountersRarity.Value = new decimal(new int[] {
-            6,
-            0,
-            0,
-            0});
-            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1912,6 +1912,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.PerformLayout();
             this.tabPage12.ResumeLayout(false);
             this.tabPage12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).EndInit();
             this.tabPage9.ResumeLayout(false);
             this.tabPage9.PerformLayout();
             this.panelSMTP.ResumeLayout(false);
@@ -1922,7 +1923,6 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).EndInit();
             this.ResumeLayout(false);
 
         }
