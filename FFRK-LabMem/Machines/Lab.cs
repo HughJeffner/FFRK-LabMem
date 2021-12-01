@@ -198,7 +198,7 @@ namespace FFRK_LabMem.Machines
             StateMachine.FireAsync(Trigger.Started);
 
             // Watchdog
-            if (Watchdog.HangCheckInterval > 0) StateMachine.OnTransitioned((state) => {
+            StateMachine.OnTransitioned((state) => {
                 Watchdog.Kick(this.Data != null);
                 recoverStopwatch.Stop();
             });

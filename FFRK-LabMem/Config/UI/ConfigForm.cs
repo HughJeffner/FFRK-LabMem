@@ -31,7 +31,6 @@ namespace FFRK_LabMem.Config.UI
         protected Scheduler scheduler = null;
         private Notifications.EventList notificationEvents = null;
         private Notifications.EventType? selectedNotificationEvent = null;
-        private bool needsRefresh = false;
 
         public ConfigForm()
         {
@@ -344,10 +343,6 @@ namespace FFRK_LabMem.Config.UI
                 lblRestart.Visible = false;
             }
 
-            // Refresh if needed
-            if (needsRefresh) controller.Refresh();
-            needsRefresh = false;
-
             // Close
             if (sender == buttonOk) this.Close();
         }
@@ -540,14 +535,6 @@ namespace FFRK_LabMem.Config.UI
             );
 
             lblRestart.Visible = changed;
-
-        }
-
-        private void NeedsRefresh_Changed(object sender, EventArgs e)
-        {
-            needsRefresh = (numericUpDownWatchdogHang.Value != configHelper.GetInt("lab.watchdogCrashSeconds", 30) |
-                (ColorConsole.DebugCategory)buttonDebug.Tag != ColorConsole.DebugCategories
-            );
 
         }
 
@@ -825,7 +812,6 @@ namespace FFRK_LabMem.Config.UI
             t ^= target;
             buttonDebug.Tag = t;
             buttonDebug.Text = String.Format("{0}", ColorConsole.GetSelectedCategories(t));
-            NeedsRefresh_Changed(sender, e);
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
