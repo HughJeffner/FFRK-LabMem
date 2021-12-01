@@ -31,14 +31,14 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Adb", 2);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Timings", 4);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Schedule", 5);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Counters", 6);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Notifications", 7);
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Adb", 2);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Timings", 4);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Schedule", 5);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Counters", 6);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Notifications", 7);
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -160,6 +160,7 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
+            this.checkBoxLogging = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -233,6 +234,7 @@ namespace FFRK_LabMem.Config.UI
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.checkBoxLogging);
             this.tabPage1.Controls.Add(this.buttonDebug);
             this.tabPage1.Controls.Add(this.label12);
             this.tabPage1.Controls.Add(this.label11);
@@ -262,7 +264,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonDebug.BackColor = System.Drawing.SystemColors.Control;
             this.buttonDebug.FlatAppearance.BorderColor = System.Drawing.SystemColors.ButtonShadow;
             this.buttonDebug.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonDebug.Location = new System.Drawing.Point(149, 105);
+            this.buttonDebug.Location = new System.Drawing.Point(149, 131);
             this.buttonDebug.Name = "buttonDebug";
             this.buttonDebug.Size = new System.Drawing.Size(233, 26);
             this.buttonDebug.TabIndex = 22;
@@ -273,7 +275,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(-3, 106);
+            this.label12.Location = new System.Drawing.Point(-3, 132);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(143, 23);
             this.label12.TabIndex = 21;
@@ -282,7 +284,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label11
             // 
-            this.label11.Location = new System.Drawing.Point(-3, 224);
+            this.label11.Location = new System.Drawing.Point(-3, 250);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(143, 23);
             this.label11.TabIndex = 20;
@@ -292,7 +294,7 @@ namespace FFRK_LabMem.Config.UI
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(212, 228);
+            this.label10.Location = new System.Drawing.Point(212, 254);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(231, 15);
             this.label10.TabIndex = 19;
@@ -300,7 +302,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownWatchdogCrash
             // 
-            this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(149, 224);
+            this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(149, 250);
             this.numericUpDownWatchdogCrash.Maximum = new decimal(new int[] {
             300,
             0,
@@ -313,7 +315,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(-3, 195);
+            this.label7.Location = new System.Drawing.Point(-3, 221);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(146, 23);
             this.label7.TabIndex = 17;
@@ -323,7 +325,7 @@ namespace FFRK_LabMem.Config.UI
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(212, 197);
+            this.label8.Location = new System.Drawing.Point(212, 223);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(168, 15);
             this.label8.TabIndex = 16;
@@ -331,7 +333,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownWatchdogHang
             // 
-            this.numericUpDownWatchdogHang.Location = new System.Drawing.Point(149, 195);
+            this.numericUpDownWatchdogHang.Location = new System.Drawing.Point(149, 221);
             this.numericUpDownWatchdogHang.Name = "numericUpDownWatchdogHang";
             this.numericUpDownWatchdogHang.Size = new System.Drawing.Size(56, 21);
             this.numericUpDownWatchdogHang.TabIndex = 14;
@@ -350,7 +352,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownScreenBottom
             // 
-            this.numericUpDownScreenBottom.Location = new System.Drawing.Point(149, 166);
+            this.numericUpDownScreenBottom.Location = new System.Drawing.Point(149, 192);
             this.numericUpDownScreenBottom.Maximum = new decimal(new int[] {
             500,
             0,
@@ -370,7 +372,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(-3, 166);
+            this.label2.Location = new System.Drawing.Point(-3, 192);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(146, 23);
             this.label2.TabIndex = 7;
@@ -379,7 +381,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownScreenTop
             // 
-            this.numericUpDownScreenTop.Location = new System.Drawing.Point(149, 137);
+            this.numericUpDownScreenTop.Location = new System.Drawing.Point(149, 163);
             this.numericUpDownScreenTop.Maximum = new decimal(new int[] {
             500,
             0,
@@ -399,7 +401,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(-3, 137);
+            this.label1.Location = new System.Drawing.Point(-3, 163);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(146, 23);
             this.label1.TabIndex = 5;
@@ -409,7 +411,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxDatalog
             // 
             this.checkBoxDatalog.AutoSize = true;
-            this.checkBoxDatalog.Location = new System.Drawing.Point(0, 80);
+            this.checkBoxDatalog.Location = new System.Drawing.Point(0, 103);
             this.checkBoxDatalog.Name = "checkBoxDatalog";
             this.checkBoxDatalog.Size = new System.Drawing.Size(136, 19);
             this.checkBoxDatalog.TabIndex = 4;
@@ -451,7 +453,6 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxTimestamps.TabIndex = 0;
             this.checkBoxTimestamps.Text = "Show timestamps";
             this.checkBoxTimestamps.UseVisualStyleBackColor = true;
-            this.checkBoxTimestamps.CheckedChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
             // tabPage2
             // 
@@ -1513,14 +1514,14 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8});
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 5);
@@ -1618,6 +1619,17 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.DefaultExt = "wav";
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
+            // 
+            // checkBoxLogging
+            // 
+            this.checkBoxLogging.AutoSize = true;
+            this.checkBoxLogging.Location = new System.Drawing.Point(0, 78);
+            this.checkBoxLogging.Name = "checkBoxLogging";
+            this.checkBoxLogging.Size = new System.Drawing.Size(192, 19);
+            this.checkBoxLogging.TabIndex = 23;
+            this.checkBoxLogging.Text = "Enable console output logging";
+            this.toolTip1.SetToolTip(this.checkBoxLogging, "Logs all program output to timestamped files in the Logs directory");
+            this.checkBoxLogging.UseVisualStyleBackColor = true;
             // 
             // ConfigForm
             // 
@@ -1806,5 +1818,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxNotificationSound;
         private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.OpenFileDialog openFileDialogSound;
+        private System.Windows.Forms.CheckBox checkBoxLogging;
     }
 }

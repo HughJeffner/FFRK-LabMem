@@ -106,6 +106,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Values
             checkBoxTimestamps.Checked = configHelper.GetBool("console.timestamps", true);
+            checkBoxLogging.Checked = configHelper.GetBool("console.logging", true);
             checkBoxUpdates.Checked = configHelper.GetBool("updates.checkForUpdates", true);
             checkBoxPrerelease.Checked = configHelper.GetBool("updates.includePrerelease", false);
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
@@ -212,10 +213,15 @@ namespace FFRK_LabMem.Config.UI
         {
             ColorConsole.Write("Saving configuration... ");
 
-            // General
+            // Console
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
+            configHelper.SetValue("console.logging", checkBoxLogging.Checked);
             configHelper.SetValue("console.debugCategories", (short)buttonDebug.Tag);
+            ColorConsole.Timestamps = checkBoxTimestamps.Checked;
+            ColorConsole.LogBuffer.Enabled = checkBoxLogging.Checked;
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)buttonDebug.Tag;
+
+            // Other setting
             configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
             configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
             configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
@@ -522,7 +528,6 @@ namespace FFRK_LabMem.Config.UI
         {
 
             var changed = (
-                checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
                 (short)buttonDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
                 checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
                 numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |

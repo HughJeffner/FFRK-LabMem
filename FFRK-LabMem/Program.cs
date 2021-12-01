@@ -26,6 +26,7 @@ namespace FFRK_LabMem
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
+            ColorConsole.LogBuffer.Enabled = config.GetBool("console.logging", false);
             
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
@@ -71,6 +72,9 @@ namespace FFRK_LabMem
         {
             // Kill adb option
             if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
+
+            // Flush log file buffer
+            ColorConsole.LogBuffer.Flush();
         }
 
     }
