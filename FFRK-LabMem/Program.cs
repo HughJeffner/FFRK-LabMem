@@ -17,6 +17,7 @@ namespace FFRK_LabMem
             // Listen for console exit
             ConsoleTasks.ListenForExit(OnConsoleExit);
             ConsoleTasks.DisableQuickEditMode();
+            Console.TreatControlCAsInput = true;
 
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
@@ -50,7 +51,8 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
-                if (key.Key == ConsoleKey.C) ConfigForm.CreateAndShow(config, controller);
+                if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
+                if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
                 if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Wait();
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
