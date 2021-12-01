@@ -879,6 +879,31 @@ namespace FFRK_LabMem.Config.UI
                 {
                     f.Enabled = checkBoxNotificationFlashTaskbar.Checked;
                 }
+                var m = n.OfType<EmailNotification>().FirstOrDefault();
+                if (m == null)
+                {
+                    n.Add(new EmailNotification() { 
+                        Enabled = checkBoxNotifcationEmail.Checked,
+                        SMTPHost = textBoxSMTPServer.Text,
+                        Port = (int)numericUpDownSMTPPort.Value,
+                        EnableSsl = checkBoxSMTPSSL.Checked,
+                        UserName = textBoxSMTPUser.Text,
+                        Password = textBoxSMTPPassword.Text,
+                        From = textBoxSMTPFrom.Text,
+                        To = textBoxSMTPTo.Text
+                    });;
+                }
+                else
+                {
+                    m.Enabled = checkBoxNotifcationEmail.Checked;
+                    m.SMTPHost = textBoxSMTPServer.Text;
+                    m.Port = (int)numericUpDownSMTPPort.Value;
+                    m.EnableSsl = checkBoxSMTPSSL.Checked;
+                    m.UserName = textBoxSMTPUser.Text;
+                    m.Password = textBoxSMTPPassword.Text;
+                    m.From = textBoxSMTPFrom.Text;
+                    m.To = textBoxSMTPTo.Text;
+                }
             }
 
 
@@ -912,6 +937,22 @@ namespace FFRK_LabMem.Config.UI
             {
                 checkBoxNotificationFlashTaskbar.Checked = flashTaskbar.Enabled;
             }
+            var email = notfications.OfType<EmailNotification>().FirstOrDefault();
+            if (email == null)
+            {
+                checkBoxNotifcationEmail.Checked = false;
+            }
+            else
+            {
+                checkBoxNotifcationEmail.Checked = email.Enabled;
+                textBoxSMTPServer.Text = email.SMTPHost;
+                numericUpDownSMTPPort.Value = email.Port;
+                checkBoxSMTPSSL.Checked = email.EnableSsl;
+                textBoxSMTPUser.Text = email.UserName;
+                textBoxSMTPPassword.Text = email.Password;
+                textBoxSMTPFrom.Text = email.From;
+                textBoxSMTPTo.Text = email.To;
+            }
         }
 
         private async void ButtonNotificationTest_Click(object sender, EventArgs e)
@@ -921,7 +962,7 @@ namespace FFRK_LabMem.Config.UI
             await Notifications.Default.ProcessEvent(testEvent, notificationEvents);
         }
 
-        private void buttonNotificationSoundBrowse_Click(object sender, EventArgs e)
+        private void ButtonNotificationSoundBrowse_Click(object sender, EventArgs e)
         {
             var file = new FileInfo(Path.GetFullPath(textBoxNotificationSound.Text));
 
@@ -932,6 +973,16 @@ namespace FFRK_LabMem.Config.UI
             {
                 textBoxNotificationSound.Text = openFileDialogSound.FileName;
             }
+        }
+
+        private void CheckBoxNotifcationEmail_CheckedChanged(object sender, EventArgs e)
+        {
+            panelSMTP.Enabled = checkBoxNotifcationEmail.Checked;
+        }
+
+        private void TextBoxSMTPUser_TextChanged(object sender, EventArgs e)
+        {
+            textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
     }
 }

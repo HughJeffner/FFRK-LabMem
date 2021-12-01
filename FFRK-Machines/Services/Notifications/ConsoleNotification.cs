@@ -6,7 +6,7 @@ namespace FFRK_Machines.Services.Notifications
     public class ConsoleNotification : Notifications.Notification
     {
 
-        public async override Task Notify()
+        public async override Task Notify(Notifications.NotificationArgs args)
         {
             ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Playing console beeps");
             Task mytask = Task.Run(() =>

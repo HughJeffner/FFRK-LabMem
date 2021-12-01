@@ -145,6 +145,22 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxDropCategories = new System.Windows.Forms.CheckedListBox();
             this.checkBoxCountersLogDropsTotal = new System.Windows.Forms.CheckBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.panelSMTP = new System.Windows.Forms.Panel();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBoxSMTPTo = new System.Windows.Forms.TextBox();
+            this.textBoxSMTPFrom = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.checkBoxSMTPSSL = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBoxSMTPPassword = new System.Windows.Forms.TextBox();
+            this.textBoxSMTPUser = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.numericUpDownSMTPPort = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBoxSMTPServer = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.checkBoxNotifcationEmail = new System.Windows.Forms.CheckBox();
+            this.checkBoxNotificationFlashTaskbar = new System.Windows.Forms.CheckBox();
             this.checkBoxNotificationConsole = new System.Windows.Forms.CheckBox();
             this.textBoxNotificationSound = new System.Windows.Forms.TextBox();
             this.buttonNotificationSoundBrowse = new System.Windows.Forms.Button();
@@ -161,7 +177,6 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
-            this.checkBoxNotificationFlashTaskbar = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -185,6 +200,8 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.SuspendLayout();
             this.tabPage12.SuspendLayout();
             this.tabPage9.SuspendLayout();
+            this.panelSMTP.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSMTPPort)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -1432,6 +1449,8 @@ namespace FFRK_LabMem.Config.UI
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.panelSMTP);
+            this.tabPage9.Controls.Add(this.checkBoxNotifcationEmail);
             this.tabPage9.Controls.Add(this.checkBoxNotificationFlashTaskbar);
             this.tabPage9.Controls.Add(this.checkBoxNotificationConsole);
             this.tabPage9.Controls.Add(this.textBoxNotificationSound);
@@ -1446,6 +1465,182 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Notifications";
             this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // panelSMTP
+            // 
+            this.panelSMTP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelSMTP.Controls.Add(this.label17);
+            this.panelSMTP.Controls.Add(this.textBoxSMTPTo);
+            this.panelSMTP.Controls.Add(this.textBoxSMTPFrom);
+            this.panelSMTP.Controls.Add(this.label18);
+            this.panelSMTP.Controls.Add(this.checkBoxSMTPSSL);
+            this.panelSMTP.Controls.Add(this.label16);
+            this.panelSMTP.Controls.Add(this.textBoxSMTPPassword);
+            this.panelSMTP.Controls.Add(this.textBoxSMTPUser);
+            this.panelSMTP.Controls.Add(this.label15);
+            this.panelSMTP.Controls.Add(this.numericUpDownSMTPPort);
+            this.panelSMTP.Controls.Add(this.label14);
+            this.panelSMTP.Controls.Add(this.textBoxSMTPServer);
+            this.panelSMTP.Controls.Add(this.label13);
+            this.panelSMTP.Enabled = false;
+            this.panelSMTP.Location = new System.Drawing.Point(22, 174);
+            this.panelSMTP.Name = "panelSMTP";
+            this.panelSMTP.Size = new System.Drawing.Size(476, 145);
+            this.panelSMTP.TabIndex = 11;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(4, 114);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(24, 15);
+            this.label17.TabIndex = 12;
+            this.label17.Text = "To:";
+            // 
+            // textBoxSMTPTo
+            // 
+            this.textBoxSMTPTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSMTPTo.Location = new System.Drawing.Point(112, 111);
+            this.textBoxSMTPTo.Name = "textBoxSMTPTo";
+            this.textBoxSMTPTo.Size = new System.Drawing.Size(202, 21);
+            this.textBoxSMTPTo.TabIndex = 11;
+            // 
+            // textBoxSMTPFrom
+            // 
+            this.textBoxSMTPFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSMTPFrom.Location = new System.Drawing.Point(112, 84);
+            this.textBoxSMTPFrom.Name = "textBoxSMTPFrom";
+            this.textBoxSMTPFrom.Size = new System.Drawing.Size(202, 21);
+            this.textBoxSMTPFrom.TabIndex = 10;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(4, 87);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(39, 15);
+            this.label18.TabIndex = 9;
+            this.label18.Text = "From:";
+            // 
+            // checkBoxSMTPSSL
+            // 
+            this.checkBoxSMTPSSL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxSMTPSSL.AutoSize = true;
+            this.checkBoxSMTPSSL.Location = new System.Drawing.Point(333, 32);
+            this.checkBoxSMTPSSL.Name = "checkBoxSMTPSSL";
+            this.checkBoxSMTPSSL.Size = new System.Drawing.Size(137, 19);
+            this.checkBoxSMTPSSL.TabIndex = 8;
+            this.checkBoxSMTPSSL.Text = "Use SSL connection";
+            this.checkBoxSMTPSSL.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(4, 60);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(64, 15);
+            this.label16.TabIndex = 7;
+            this.label16.Text = "Password:";
+            // 
+            // textBoxSMTPPassword
+            // 
+            this.textBoxSMTPPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSMTPPassword.Location = new System.Drawing.Point(112, 57);
+            this.textBoxSMTPPassword.Name = "textBoxSMTPPassword";
+            this.textBoxSMTPPassword.PasswordChar = '*';
+            this.textBoxSMTPPassword.Size = new System.Drawing.Size(202, 21);
+            this.textBoxSMTPPassword.TabIndex = 6;
+            // 
+            // textBoxSMTPUser
+            // 
+            this.textBoxSMTPUser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSMTPUser.Location = new System.Drawing.Point(112, 30);
+            this.textBoxSMTPUser.Name = "textBoxSMTPUser";
+            this.textBoxSMTPUser.Size = new System.Drawing.Size(202, 21);
+            this.textBoxSMTPUser.TabIndex = 5;
+            this.textBoxSMTPUser.TextChanged += new System.EventHandler(this.TextBoxSMTPUser_TextChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(4, 33);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(73, 15);
+            this.label15.TabIndex = 4;
+            this.label15.Text = "User Name:";
+            // 
+            // numericUpDownSMTPPort
+            // 
+            this.numericUpDownSMTPPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDownSMTPPort.Location = new System.Drawing.Point(389, 3);
+            this.numericUpDownSMTPPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.numericUpDownSMTPPort.Name = "numericUpDownSMTPPort";
+            this.numericUpDownSMTPPort.Size = new System.Drawing.Size(81, 21);
+            this.numericUpDownSMTPPort.TabIndex = 3;
+            this.numericUpDownSMTPPort.Value = new decimal(new int[] {
+            587,
+            0,
+            0,
+            0});
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(330, 4);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(32, 15);
+            this.label14.TabIndex = 2;
+            this.label14.Text = "Port:";
+            // 
+            // textBoxSMTPServer
+            // 
+            this.textBoxSMTPServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxSMTPServer.Location = new System.Drawing.Point(112, 3);
+            this.textBoxSMTPServer.Name = "textBoxSMTPServer";
+            this.textBoxSMTPServer.Size = new System.Drawing.Size(202, 21);
+            this.textBoxSMTPServer.TabIndex = 1;
+            this.textBoxSMTPServer.Text = "smtp.gmail.com";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(4, 4);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(82, 15);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "SMTP Server:";
+            // 
+            // checkBoxNotifcationEmail
+            // 
+            this.checkBoxNotifcationEmail.AutoSize = true;
+            this.checkBoxNotifcationEmail.Location = new System.Drawing.Point(3, 148);
+            this.checkBoxNotifcationEmail.Name = "checkBoxNotifcationEmail";
+            this.checkBoxNotifcationEmail.Size = new System.Drawing.Size(106, 19);
+            this.checkBoxNotifcationEmail.TabIndex = 10;
+            this.checkBoxNotifcationEmail.Text = "Send an email";
+            this.checkBoxNotifcationEmail.UseVisualStyleBackColor = true;
+            this.checkBoxNotifcationEmail.CheckedChanged += new System.EventHandler(this.CheckBoxNotifcationEmail_CheckedChanged);
+            // 
+            // checkBoxNotificationFlashTaskbar
+            // 
+            this.checkBoxNotificationFlashTaskbar.AutoSize = true;
+            this.checkBoxNotificationFlashTaskbar.Location = new System.Drawing.Point(3, 123);
+            this.checkBoxNotificationFlashTaskbar.Name = "checkBoxNotificationFlashTaskbar";
+            this.checkBoxNotificationFlashTaskbar.Size = new System.Drawing.Size(119, 19);
+            this.checkBoxNotificationFlashTaskbar.TabIndex = 9;
+            this.checkBoxNotificationFlashTaskbar.Text = "Flash the taskbar";
+            this.checkBoxNotificationFlashTaskbar.UseVisualStyleBackColor = true;
             // 
             // checkBoxNotificationConsole
             // 
@@ -1480,7 +1675,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonNotificationSoundBrowse.Size = new System.Drawing.Size(29, 21);
             this.buttonNotificationSoundBrowse.TabIndex = 7;
             this.buttonNotificationSoundBrowse.UseVisualStyleBackColor = true;
-            this.buttonNotificationSoundBrowse.Click += new System.EventHandler(this.buttonNotificationSoundBrowse_Click);
+            this.buttonNotificationSoundBrowse.Click += new System.EventHandler(this.ButtonNotificationSoundBrowse_Click);
             // 
             // checkBoxNotificationSound
             // 
@@ -1633,16 +1828,6 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
-            // checkBoxNotificationFlashTaskbar
-            // 
-            this.checkBoxNotificationFlashTaskbar.AutoSize = true;
-            this.checkBoxNotificationFlashTaskbar.Location = new System.Drawing.Point(3, 123);
-            this.checkBoxNotificationFlashTaskbar.Name = "checkBoxNotificationFlashTaskbar";
-            this.checkBoxNotificationFlashTaskbar.Size = new System.Drawing.Size(119, 19);
-            this.checkBoxNotificationFlashTaskbar.TabIndex = 9;
-            this.checkBoxNotificationFlashTaskbar.Text = "Flash the taskbar";
-            this.checkBoxNotificationFlashTaskbar.UseVisualStyleBackColor = true;
-            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1698,6 +1883,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             this.tabPage9.PerformLayout();
+            this.panelSMTP.ResumeLayout(false);
+            this.panelSMTP.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSMTPPort)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -1832,5 +2020,20 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.OpenFileDialog openFileDialogSound;
         private System.Windows.Forms.CheckBox checkBoxLogging;
         private System.Windows.Forms.CheckBox checkBoxNotificationFlashTaskbar;
+        private System.Windows.Forms.Panel panelSMTP;
+        private System.Windows.Forms.NumericUpDown numericUpDownSMTPPort;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBoxSMTPServer;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.CheckBox checkBoxNotifcationEmail;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox textBoxSMTPTo;
+        private System.Windows.Forms.TextBox textBoxSMTPFrom;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.CheckBox checkBoxSMTPSSL;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox textBoxSMTPPassword;
+        private System.Windows.Forms.TextBox textBoxSMTPUser;
+        private System.Windows.Forms.Label label15;
     }
 }

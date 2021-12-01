@@ -46,8 +46,9 @@ namespace FFRK_Machines.Services.Notifications
         /// </summary>
         public const uint FLASHW_TIMERNOFG = 12;
 
-        public override Task Notify()
+        public override Task Notify(Notifications.NotificationArgs args)
         {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Flashing the taskbar");
             FLASHWINFO fi = new FLASHWINFO();
             fi.cbSize = Convert.ToUInt32(Marshal.SizeOf(fi));
             fi.hwnd = GetConsoleWindow();

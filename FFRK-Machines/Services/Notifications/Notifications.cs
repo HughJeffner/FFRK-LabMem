@@ -66,7 +66,8 @@ namespace FFRK_Machines.Services.Notifications
             ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Processing event {0}", eventType);
             try
             {
-                await Task.WhenAll(events[eventType].Where(n => n.Enabled).Select(t => t.Notify()));
+                var args = new NotificationArgs() { EventType = eventType };
+                await Task.WhenAll(events[eventType].Where(n => n.Enabled).Select(t => t.Notify(args)));
 
                 //foreach (var item in this.Events[eventType].Where(i => i.Enabled))
                 //{
@@ -111,10 +112,15 @@ namespace FFRK_Machines.Services.Notifications
         {
         }
 
+        public class NotificationArgs
+        {
+            public EventType EventType { get; set; }
+        }
+
         public abstract class Notification
         {
             public bool Enabled { get; set; } = true;
-            public abstract Task Notify();
+            public abstract Task Notify(NotificationArgs args);
         }
 
     }
