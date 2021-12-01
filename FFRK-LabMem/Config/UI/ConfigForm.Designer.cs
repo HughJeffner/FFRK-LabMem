@@ -177,6 +177,8 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
+            this.label19 = new System.Windows.Forms.Label();
+            this.numericUpDownCountersRarity = new System.Windows.Forms.NumericUpDown();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWatchdogCrash)).BeginInit();
@@ -207,6 +209,7 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -1403,20 +1406,22 @@ namespace FFRK_LabMem.Config.UI
             // tabPage12
             // 
             this.tabPage12.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage12.Controls.Add(this.numericUpDownCountersRarity);
+            this.tabPage12.Controls.Add(this.label19);
             this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
-            this.tabPage12.Location = new System.Drawing.Point(4, 22);
+            this.tabPage12.Location = new System.Drawing.Point(4, 24);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(504, 468);
+            this.tabPage12.Size = new System.Drawing.Size(504, 466);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
             // 
             // buttonShowCounters
             // 
             this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonShowCounters.Location = new System.Drawing.Point(6, 426);
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 424);
             this.buttonShowCounters.Name = "buttonShowCounters";
             this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
             this.buttonShowCounters.TabIndex = 4;
@@ -1432,9 +1437,9 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxDropCategories.CheckOnClick = true;
             this.checkedListBoxDropCategories.FormattingEnabled = true;
             this.checkedListBoxDropCategories.IntegralHeight = false;
-            this.checkedListBoxDropCategories.Location = new System.Drawing.Point(3, 34);
+            this.checkedListBoxDropCategories.Location = new System.Drawing.Point(3, 61);
             this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
-            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 384);
+            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 355);
             this.checkedListBoxDropCategories.TabIndex = 0;
             // 
             // checkBoxCountersLogDropsTotal
@@ -1828,6 +1833,32 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 31);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(279, 15);
+            this.label19.TabIndex = 5;
+            this.label19.Text = "Don\'t count drops for materials with rarity under: ★";
+            // 
+            // numericUpDownCountersRarity
+            // 
+            this.numericUpDownCountersRarity.Location = new System.Drawing.Point(288, 29);
+            this.numericUpDownCountersRarity.Maximum = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            this.numericUpDownCountersRarity.Name = "numericUpDownCountersRarity";
+            this.numericUpDownCountersRarity.Size = new System.Drawing.Size(52, 21);
+            this.numericUpDownCountersRarity.TabIndex = 6;
+            this.numericUpDownCountersRarity.Value = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -1891,6 +1922,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCountersRarity)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2035,5 +2067,7 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.TextBox textBoxSMTPPassword;
         private System.Windows.Forms.TextBox textBoxSMTPUser;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.NumericUpDown numericUpDownCountersRarity;
+        private System.Windows.Forms.Label label19;
     }
 }

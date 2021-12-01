@@ -43,6 +43,7 @@ namespace FFRK_LabMem.Data
             DropCategory.SPHERE_MATERIAL;
 
         public bool LogDropsToTotalCounters { get; set; } = false;
+        public int MaterialsRarityFilter { get; set; } = 6;
 
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
@@ -79,6 +80,7 @@ namespace FFRK_LabMem.Data
                 await _instance.Load();
                 _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
                 _instance.LogDropsToTotalCounters = config.GetBool("counters.logDropsToTotal", false);
+                _instance.MaterialsRarityFilter = config.GetInt("counters.materialsRarityFilter", 6);
             }
 
         }
@@ -151,7 +153,7 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("EnemyIsUponYou");
         }
-        public static async Task FoundDrop(DropCategory category, string name, int qty)
+        public static async Task FoundDrop(DropCategory category, string name, int rarity, int qty)
         {
             if (_instance.DropCategories.HasFlag(category)){
 
@@ -161,17 +163,19 @@ namespace FFRK_LabMem.Data
                     await _instance.IncrementCounter("HeroEquipmentGot");
                 } else
                 {
+                    // Filter materials drops
+                    if (!(DropCategory.LABYRINTH_ITEM | DropCategory.COMMON).HasFlag(category) && rarity > 0 && rarity < _instance.MaterialsRarityFilter) return;
                     _instance.IncrementDrop(name, qty);
                     await _instance.Save();
                 }
             }
            
         }
-        public static async Task FoundDrop(string dropType, string name, int qty)
+        public static async Task FoundDrop(string dropType, string name, int rarity, int qty)
         {
             if (Enum.TryParse(dropType, out DropCategory category))
             {
-                await FoundDrop(category, name, qty);
+                await FoundDrop(category, name, rarity, qty);
             }
             else
             {

@@ -127,6 +127,7 @@ namespace FFRK_LabMem.Config.UI
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
+            numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
             // Load lab .json
             LoadConfigs();
@@ -239,6 +240,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
+            configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
 
             // Drop categories
             Counters.DropCategory cats = 0;
@@ -248,6 +250,8 @@ namespace FFRK_LabMem.Config.UI
             }
             configHelper.SetValue("counters.dropCategories", (int)cats);
             Counters.Default.DropCategories = cats;
+            Counters.Default.LogDropsToTotalCounters = checkBoxCountersLogDropsTotal.Checked;
+            Counters.Default.MaterialsRarityFilter = (int)numericUpDownCountersRarity.Value;
 
             // Lab
             labConfig.OpenDoors = checkBoxLabDoors.Checked;

@@ -142,9 +142,12 @@ namespace FFRK_LabMem.Data
         private static async Task InspectDrop(JToken item, string typeField, string name, string qty)
         {
             var typeName = item[typeField];
+            int rarity = 0;
+            var rarityToken = item["rarity"];
+            if (rarityToken != null) rarity = int.Parse(rarityToken.ToString());
             if (typeName != null)
             {
-                await Counters.FoundDrop(typeName.ToString(), name, int.Parse(qty));
+                await Counters.FoundDrop(typeName.ToString(), name, rarity, int.Parse(qty));
             }
             
         }
