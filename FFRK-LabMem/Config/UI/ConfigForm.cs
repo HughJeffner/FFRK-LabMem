@@ -80,6 +80,10 @@ namespace FFRK_LabMem.Config.UI
 
         private void ConfigForm_Load(object sender, EventArgs e)
         {
+
+            // Title
+            this.Text += " " + Updates.GetVersionCode();
+
             // Tab fakery
             listView1.Items[0].Selected = true;
             listView1.Items[0].Focused = true;
