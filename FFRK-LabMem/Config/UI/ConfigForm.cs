@@ -277,6 +277,9 @@ namespace FFRK_LabMem.Config.UI
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
+            labConfig.WatchdogCrashSeconds = (int)numericUpDownWatchdogCrash.Value;
+            labConfig.WatchdogHangMinutes = (int)numericUpDownWatchdogHang.Value;
+            labConfig.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10); // Not exposed in UI
 
             // Paintings
             labConfig.PaintingPriorityMap.Clear();
@@ -338,7 +341,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Update machine
             controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update((int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
+            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogCrashSeconds);
 
             // Restart warning
             if (lblRestart.Visible)

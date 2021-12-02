@@ -236,7 +236,7 @@ namespace FFRK_LabMem.Machines
             if (!result)
             {
                 // Limit number of retries
-                if (restartTries < 30)
+                if (restartTries < Config.WatchdogMaxRetries)
                 {
                     restartTries += 1;
                     ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
