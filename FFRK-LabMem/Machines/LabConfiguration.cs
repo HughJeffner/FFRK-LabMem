@@ -32,6 +32,8 @@ namespace FFRK_LabMem.Machines
         public int WatchdogHangMinutes { get; set; }
         [JsonIgnore]
         public int WatchdogCrashSeconds { get; set; }
+        [JsonIgnore]
+        public int WatchdogMaxRetries { get; set; }
 
         public LabConfiguration() {
 

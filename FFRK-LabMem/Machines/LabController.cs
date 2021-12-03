@@ -5,17 +5,21 @@ using FFRK_LabMem.Config;
 using FFRK_LabMem.Data;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
+using FFRK_Machines.Services.Notifications;
 
 namespace FFRK_LabMem.Machines
 {
     public class LabController : MachineController<Lab, Lab.State, Lab.Trigger, LabConfiguration>
     {
 
+        private ConfigHelper configHelper;
+
         public static async Task<LabController> CreateAndStart(ConfigHelper config)
         {
             
             // Create instance
             var ret = new LabController();
+            ret.configHelper = config;
 
             // Validate config file
             var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
@@ -24,9 +28,10 @@ namespace FFRK_LabMem.Machines
                 return ret;
             }
 
-            // Data logging
+            // Services
             await DataLogger.Initalize(config);
             await Counters.Initalize(config, ret);
+            await Notifications.Initalize();
 
             // Start it
             await ret.Start(
@@ -55,9 +60,9 @@ namespace FFRK_LabMem.Machines
         }
         protected override Lab CreateMachine(LabConfiguration config)
         {
-            var ch = new ConfigHelper();
-            config.WatchdogHangMinutes = ch.GetInt("lab.watchdogHangMinutes", 10);
-            config.WatchdogCrashSeconds = ch.GetInt("lab.watchdogCrashSeconds", 30);
+            config.WatchdogHangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3);
+            config.WatchdogCrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
+            config.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10);
             return new Lab(this.Adb, config);
         }
 

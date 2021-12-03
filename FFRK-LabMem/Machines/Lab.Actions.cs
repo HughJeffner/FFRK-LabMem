@@ -2,6 +2,7 @@
 using FFRK_LabMem.Services;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
+using FFRK_Machines.Services.Notifications;
 using Newtonsoft.Json.Linq;
 using Stateless;
 using System;
@@ -18,6 +19,12 @@ namespace FFRK_LabMem.Machines
 
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
+
+        private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
+            { "1","G" },
+            {"2", "O" },
+            {"3", "R" }
+        };
 
         private async Task DetermineState()
         {
@@ -121,7 +128,12 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write("Picking painting {0}: {1}", selectedPaintingIndex + 1, this.CurrentPainting["name"]);
             if ((int)this.CurrentPainting["type"] <= 2)
             {
-                var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"];
+                var title = this.CurrentPainting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
+                var color = this.CurrentPainting["display_type"];
+                if (color != null && Combatant_Color.ContainsKey(color.ToString()))
+                {
+                    title += String.Format(" [{0}]", Combatant_Color[color.ToString()]);
+                }
                 ColorConsole.Write(": ");
                 ColorConsole.Write(ConsoleColor.Yellow, "{0}", title);
                 if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
@@ -129,27 +141,21 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("");
             await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
 
-            // TODO: clean this painting placement handling up
+            // Tap painting
             // 2 or less paintings remaining change position
-            if (total >= 3)
-            {
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(17 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-            }
-            else if (total == 2)
-            {
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(33 + (33 * (selectedPaintingIndex)), 50, this.CancellationToken);
-            }
-            else
-            {
-                await this.Adb.TapPct(50, 50, this.CancellationToken);
-                await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
-                await this.Adb.TapPct(50, 50, this.CancellationToken);
-            }
+            int offset = (total>=2)?33:0;
+            int margin = 17;
+            if (total == 2) margin = 33;
+            if (total == 1) margin = 50;
+
+            await this.Adb.TapPct(margin + (offset * (selectedPaintingIndex)), 50, this.CancellationToken);
+            await LabTimings.Delay("Inter-SelectPainting", this.CancellationToken);
+            await this.Adb.TapPct(margin + (offset * (selectedPaintingIndex)), 50, this.CancellationToken);
+           
+            // Counter
             await Counters.PaintingSelected();
+
+            // Clean up
             CancellationToken.ThrowIfCancellationRequested();
             if ((int)this.CurrentPainting["type"] == 6)
             {
@@ -595,7 +601,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
-                    await Notify();
+                    await Notify(Notifications.EventType.LAB_COMPLETED);
                     base.OnMachineFinished();
                     await Counters.LabRunCompleted();
                 } 
@@ -614,7 +620,7 @@ namespace FFRK_LabMem.Machines
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
-                    await Notify();
+                    await Notify(Notifications.EventType.LAB_COMPLETED);
                     await Counters.LabRunCompleted();
                 }
 
@@ -756,7 +762,7 @@ namespace FFRK_LabMem.Machines
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(false);
+                        await Notify(Notifications.EventType.LAB_FAULT);
                         OnMachineFinished();
                     } else
                     {
@@ -773,7 +779,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task RestartFFRK()
+        private async Task<bool> RestartFFRK()
         {
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting FFRK");
@@ -782,7 +788,9 @@ namespace FFRK_LabMem.Machines
             Watchdog.Kick(false);
 
             // Stop any running tasks
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Cancelling any running tasks");
             await InterruptTasks();
+            await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
             // Kill FFRK
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Kill ffrk process...");
@@ -792,98 +800,63 @@ namespace FFRK_LabMem.Machines
             // Launch app
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Launching app");
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
-            await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
 
-            if (Config.UseOldCrashRecovery)
+            // Reset state
+            ConfigureStateMachine();
+
+            // Images to find
+            List<Adb.ImageDef> items = new List<Adb.ImageDef>();
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_outpost, Simalarity = 0.85f });
+
+            // Stopwatch to limit how long we try to find buttons
+            recoverStopwatch.Restart();
+
+            // Button Finding Loop with timeout and break if stopwatch stopped
+            TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
+            bool labFinished = false;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
+            while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
             {
-                // Press start button
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for start button...");
-                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 40, 70, 83, 20, this.CancellationToken))
+                // Find images in order, breaking on first match
+                var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                if (ret != null)
                 {
-                    // Press continue battle button
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Wating for continue battle button...");
-                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 4000, 61, 57, 68, 10, this.CancellationToken))
+                    // Tap it
+                    await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
+
+                    // Check for outpost
+                    if (ret.Equals(items[3]))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery restarted battle");
-                    }
-                    else
-                    {
-                        // Go back into lab
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Tapping lab...");
-                        await Adb.FindButtonAndTap("#d7b1fa", 4000, 50, 40, 60, 20, this.CancellationToken);
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Crash recovery entered lab");
-                        ConfigureStateMachine();
+                        labFinished = true;
+                        break;
                     }
 
                 }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to detect FFRK restart");
-                    OnMachineFinished();
-                    await Notify(false);
-                }
+                // Delay between finds
+                await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
+            }
 
+            // Loop finshed, check state
+            CancellationToken.ThrowIfCancellationRequested();
+            recoverStopwatch.Stop();
+
+            // Disable lab if timeout
+            if (recoverStopwatch.Elapsed > loopTimeout)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
+                return false;
             }
             else
             {
-
-                // Reset state
-                ConfigureStateMachine();
-
-                // Images to find
-                List<Adb.ImageDef> items = new List<Adb.ImageDef>();
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
-                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_outpost, Simalarity = 0.85f });
-
-                // Stopwatch to limit how long we try to find buttons
-                recoverStopwatch.Restart();
-
-                // Button Finding Loop with timeout and break if stopwatch stopped
-                TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
-                bool labFinished = false;
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
-                while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
-                {
-                    // Find images in order, breaking on first match
-                    var ret = await Adb.FindImages(items, 3, this.CancellationToken);
-                    if (ret != null)
-                    {
-                        // Tap it
-                        await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
-
-                        // Check for outpost
-                        if (ret.Equals(items[3]))
-                        {
-                            labFinished = true;
-                            break;
-                        }
-
-                    }
-                    // Delay between finds
-                    await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
-                }
-
-                // Loop finshed, check state
-                CancellationToken.ThrowIfCancellationRequested();
-                recoverStopwatch.Stop();
-
-                // Disable lab if timeout
-                if (recoverStopwatch.Elapsed > loopTimeout)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
-                    OnMachineFinished();
-                    await Notify(false);
-                }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
-                    await Counters.FFRKRestarted();
-                    if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
-                }
-                await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
+                await Counters.FFRKRestarted();
+                if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
             }
+            await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);
+            return true;
 
         }
 
@@ -902,7 +875,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                await Notify(false);
+                await Notify(Notifications.EventType.LAB_FAULT);
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);

@@ -63,24 +63,6 @@ namespace FFRK_Machines.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream FF1_Event {
-            get {
-                return ResourceManager.GetStream("FF1_Event", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream FF1_Fanfaire {
-            get {
-                return ResourceManager.GetStream("FF1_Fanfaire", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
         internal static System.IO.UnmanagedMemoryStream Silent {
             get {
                 return ResourceManager.GetStream("Silent", resourceCulture);

@@ -6,6 +6,8 @@ namespace FFRK_LabMem.Services
     class ConsoleTasks
     {
         const uint ENABLE_QUICK_EDIT = 0x0040;
+        const uint ENABLE_MOUSE_INPUT = 0x0010;
+        const uint ENABLE_PROCESSED_INPUT = 0x0001;
 
         // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
         const int STD_INPUT_HANDLE = -10;
@@ -56,6 +58,10 @@ namespace FFRK_LabMem.Services
 
             // Clear the quick edit bit in the mode flags
             consoleMode &= ~ENABLE_QUICK_EDIT;
+
+            // Remove mouse input flag and add processed input flag (scroll wheel fix)
+            consoleMode &= ~ENABLE_MOUSE_INPUT;
+            consoleMode |= ENABLE_PROCESSED_INPUT;
 
             // set the new mode
             if (!SetConsoleMode(consoleHandle, consoleMode))

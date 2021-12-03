@@ -11,52 +11,67 @@ using System.Threading;
 using System.Linq;
 using FFRK_LabMem.Data;
 using FFRK_LabMem.Data.UI;
+using FFRK_Machines.Services.Notifications;
+using System.Threading.Tasks;
+using FFRK_Machines.Threading;
 
 namespace FFRK_LabMem.Config.UI
 {
     public partial class ConfigForm : Form
     {
+        public static bool IsLoaded { get; set; } = false;
 
         private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
         private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
-
         private ConfigHelper configHelper = null;
         private LabController controller = null;
         private LabConfiguration labConfig = new LabConfiguration();
         private int initalTabIndex = 0;
         protected Scheduler scheduler = null;
+        private Notifications.EventList notificationEvents = null;
+        private Notifications.EventType? selectedNotificationEvent = null;
 
         public ConfigForm()
         {
             InitializeComponent();
         }
 
-        public static async void CreateAndShow(ConfigHelper configHelper, LabController controller, int initalTabIndex = 0)
+        public static void CreateAndShow(ConfigHelper configHelper, LabController controller, int initalTabIndex = 0)
         {
-
-            bool initalState = controller.Enabled;
-            var defaultScheduler = Scheduler.Default(controller);
-
-            // Disable Lab
-            if (controller.Enabled) controller.Disable();
-            await defaultScheduler.Stop();
-
             // Show form
-            var form = new ConfigForm
+            if (IsLoaded == false)
             {
-                configHelper = configHelper,
-                controller = controller,
-                scheduler = defaultScheduler,
-                initalTabIndex = initalTabIndex
-            };
-            form.ShowDialog();
+                IsLoaded = true;
+                
+                Task mytask = Utility.StartSTATask(async () =>
+                {
+                    // Disable Lab
+                    //if (controller.Enabled) controller.Disable();
+                    var defaultScheduler = Scheduler.Default(controller);
+                    await defaultScheduler.Stop();
 
-            // Re-enable if needed
-            if (initalState) controller.Enable();
-            await defaultScheduler.Start();
+                    var form = new ConfigForm
+                    {
+                        configHelper = configHelper,
+                        controller = controller,
+                        scheduler = defaultScheduler,
+                        initalTabIndex = initalTabIndex
+                    };
+                    form.ShowDialog();
+
+                    await defaultScheduler.Start();
+
+                });
+            }
 
         }
+
+        private void ConfigForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            IsLoaded = false;
+        }
+
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
@@ -65,6 +80,10 @@ namespace FFRK_LabMem.Config.UI
 
         private void ConfigForm_Load(object sender, EventArgs e)
         {
+
+            // Title
+            this.Text += " " + Updates.GetVersionCode();
+
             // Tab fakery
             listView1.Items[0].Selected = true;
             listView1.Items[0].Focused = true;
@@ -79,14 +98,19 @@ namespace FFRK_LabMem.Config.UI
             // Debug values
             foreach (var item in ColorConsole.GetCategories())
             {
-                comboBoxDebug.Items.Add(item);
+                ToolStripMenuItem toolStripItem = new ToolStripMenuItem(item.ToString());
+                toolStripItem.Tag = item;
+                toolStripItem.Checked = ColorConsole.DebugCategories.HasFlag(item);
+                toolStripItem.CheckOnClick = true;
+                toolStripItem.Click += DebugToolStripMenuItem_SelectedIndexChanged;
+                contextMenuStrip1.Items.Add(toolStripItem);
             }
-            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
-            comboBoxDebug.SelectedIndex = 0;
-            comboBoxDebug.Tag = ColorConsole.DebugCategories;
+            buttonDebug.Text = String.Format("{0}", ColorConsole.GetSelectedCategories(ColorConsole.DebugCategories));
+            buttonDebug.Tag = ColorConsole.DebugCategories;
 
             // Values
             checkBoxTimestamps.Checked = configHelper.GetBool("console.timestamps", true);
+            checkBoxLogging.Checked = configHelper.GetBool("console.logging", true);
             checkBoxUpdates.Checked = configHelper.GetBool("updates.checkForUpdates", true);
             checkBoxPrerelease.Checked = configHelper.GetBool("updates.includePrerelease", false);
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
@@ -107,6 +131,7 @@ namespace FFRK_LabMem.Config.UI
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
+            numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
             // Load lab .json
             LoadConfigs();
@@ -123,6 +148,9 @@ namespace FFRK_LabMem.Config.UI
             // Drop categories
             LoadDropCategories();
 
+            // Notifications
+            LoadNotifications();
+
             // List sorting
             listViewPaintings.ListViewItemSorter = new Sorters.PaintingSorter();
             listViewTreasures.ListViewItemSorter = new Sorters.TreasureSorter();
@@ -133,6 +161,20 @@ namespace FFRK_LabMem.Config.UI
             // Inital tab
             listView1.Items[initalTabIndex].Selected = true;
 
+        }
+
+        private async void LoadNotifications()
+        {
+
+            notificationEvents = await Notifications.GetEvents();
+
+            comboBoxNotificationEvents.Items.Clear();
+            foreach (var item in Enum.GetValues(typeof(Notifications.EventType)).Cast<Notifications.EventType>())
+            {
+                comboBoxNotificationEvents.Items.Add(Lookups.NotificationEvents[item]);
+            }
+            comboBoxNotificationEvents.SelectedIndex = 0;
+            selectedNotificationEvent = Notifications.EventType.LAB_COMPLETED;
         }
 
         private void LoadDropCategories()
@@ -176,10 +218,15 @@ namespace FFRK_LabMem.Config.UI
         {
             ColorConsole.Write("Saving configuration... ");
 
-            // General
+            // Console
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
-            configHelper.SetValue("console.debugCategories", (short)comboBoxDebug.Tag);
-            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
+            configHelper.SetValue("console.logging", checkBoxLogging.Checked);
+            configHelper.SetValue("console.debugCategories", (short)buttonDebug.Tag);
+            ColorConsole.Timestamps = checkBoxTimestamps.Checked;
+            ColorConsole.LogBuffer.Enabled = checkBoxLogging.Checked;
+            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)buttonDebug.Tag;
+
+            // Other setting
             configHelper.SetValue("updates.checkForUpdates", checkBoxUpdates.Checked);
             configHelper.SetValue("updates.includePrerelease", checkBoxPrerelease.Checked);
             configHelper.SetValue("datalogger.enabled", checkBoxDatalog.Checked);
@@ -197,6 +244,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
+            configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
 
             // Drop categories
             Counters.DropCategory cats = 0;
@@ -206,6 +254,8 @@ namespace FFRK_LabMem.Config.UI
             }
             configHelper.SetValue("counters.dropCategories", (int)cats);
             Counters.Default.DropCategories = cats;
+            Counters.Default.LogDropsToTotalCounters = checkBoxCountersLogDropsTotal.Checked;
+            Counters.Default.MaterialsRarityFilter = (int)numericUpDownCountersRarity.Value;
 
             // Lab
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
@@ -227,6 +277,9 @@ namespace FFRK_LabMem.Config.UI
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
+            labConfig.WatchdogCrashSeconds = (int)numericUpDownWatchdogCrash.Value;
+            labConfig.WatchdogHangMinutes = (int)numericUpDownWatchdogHang.Value;
+            labConfig.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10); // Not exposed in UI
 
             // Paintings
             labConfig.PaintingPriorityMap.Clear();
@@ -277,12 +330,18 @@ namespace FFRK_LabMem.Config.UI
                 scheduler.Schedules.Add(schedule);
             }
             await scheduler.Save();
-            
+
+            // Save Notifications
+            ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
+            Notifications.Default.Events = notificationEvents;
+            await Notifications.Default.Save();
+
+            // Message
             ColorConsole.WriteLine("Done!");
 
             // Update machine
             controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update((int)numericUpDownWatchdogHang.Value, (int)numericUpDownWatchdogCrash.Value);
+            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogCrashSeconds);
 
             // Restart warning
             if (lblRestart.Visible)
@@ -295,12 +354,15 @@ namespace FFRK_LabMem.Config.UI
 
                 if (ret == DialogResult.Yes)
                 {
+                    controller.Stop();
                     Application.Restart();
                     Environment.Exit(0);
                 }
+                lblRestart.Visible = false;
             }
 
-            this.Close();
+            // Close
+            if (sender == buttonOk) this.Close();
         }
 
         private async void ComboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -478,8 +540,7 @@ namespace FFRK_LabMem.Config.UI
         {
 
             var changed = (
-                checkBoxTimestamps.Checked != configHelper.GetBool("console.timestamps", true) |
-                (short)comboBoxDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
+                (short)buttonDebug.Tag != configHelper.GetShort("console.debugCategories", 0) |
                 checkBoxDatalog.Checked != configHelper.GetBool("datalogger.enabled", false) |
                 numericUpDownProxyPort.Value != configHelper.GetInt("proxy.port", 8081) |
                 checkBoxProxySecure.Checked != configHelper.GetBool("proxy.secure", true) |
@@ -760,15 +821,14 @@ namespace FFRK_LabMem.Config.UI
             listViewSchedule.Items.Add(newItem);
         }
 
-        private void ComboBoxDebug_SelectedIndexChanged(object sender, EventArgs e)
+        private void DebugToolStripMenuItem_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBoxDebug.SelectedIndex == 0) return;
-            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)comboBoxDebug.Tag;
-            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)comboBoxDebug.SelectedItem;
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            ColorConsole.DebugCategory t = (ColorConsole.DebugCategory)buttonDebug.Tag;
+            ColorConsole.DebugCategory target = (ColorConsole.DebugCategory)item.Tag;
             t ^= target;
-            comboBoxDebug.Tag = t;
-            comboBoxDebug.SelectedIndex = 0;
-            comboBoxDebug.Items[0] = String.Format("<{0}>", ColorConsole.GetSelectedCategories(t));
+            buttonDebug.Tag = t;
+            buttonDebug.Text = String.Format("{0}", ColorConsole.GetSelectedCategories(t));
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -779,6 +839,162 @@ namespace FFRK_LabMem.Config.UI
         private void buttonShowCounters_Click(object sender, EventArgs e)
         {
             CountersForm.CreateAndShow(controller);
+        }
+
+        private void ButtonDebug_Click(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            contextMenuStrip1.Tag = button;
+            contextMenuStrip1.Show(button, new Point(0, button.Height));
+        }
+
+        private void CheckBoxNotificationSound_CheckedChanged(object sender, EventArgs e)
+        {
+            textBoxNotificationSound.Enabled = checkBoxNotificationSound.Checked;
+            buttonNotificationSoundBrowse.Enabled = checkBoxNotificationSound.Checked;
+        }
+
+        private void ComboBoxNotificationEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Persist values to local copy
+            if (selectedNotificationEvent.HasValue)
+            {
+                var n = notificationEvents[selectedNotificationEvent.Value];
+                var s = n.OfType<SoundNotification>().FirstOrDefault();
+                if (s == null)
+                {
+                    n.Add(new SoundNotification() { 
+                        FilePath = textBoxNotificationSound.Text, 
+                        Enabled = checkBoxNotificationSound.Checked 
+                    });
+                }
+                else
+                {
+                    s.FilePath = textBoxNotificationSound.Text;
+                    s.Enabled = checkBoxNotificationSound.Checked;
+                }
+                var c = n.OfType<ConsoleNotification>().FirstOrDefault();
+                if (c == null)
+                {
+                    n.Add(new ConsoleNotification() { Enabled = checkBoxNotificationConsole.Checked });
+                }
+                else
+                {
+                    c.Enabled = checkBoxNotificationConsole.Checked;
+                }
+                var f = n.OfType<FlashTaskbarNotification>().FirstOrDefault();
+                if (f == null)
+                {
+                    n.Add(new FlashTaskbarNotification() { Enabled = checkBoxNotificationFlashTaskbar.Checked });
+                }
+                else
+                {
+                    f.Enabled = checkBoxNotificationFlashTaskbar.Checked;
+                }
+                var m = n.OfType<EmailNotification>().FirstOrDefault();
+                if (m == null)
+                {
+                    n.Add(new EmailNotification() { 
+                        Enabled = checkBoxNotifcationEmail.Checked,
+                        SMTPHost = textBoxSMTPServer.Text,
+                        Port = (int)numericUpDownSMTPPort.Value,
+                        EnableSsl = checkBoxSMTPSSL.Checked,
+                        UserName = textBoxSMTPUser.Text,
+                        Password = textBoxSMTPPassword.Text,
+                        From = textBoxSMTPFrom.Text,
+                        To = textBoxSMTPTo.Text
+                    });;
+                }
+                else
+                {
+                    m.Enabled = checkBoxNotifcationEmail.Checked;
+                    m.SMTPHost = textBoxSMTPServer.Text;
+                    m.Port = (int)numericUpDownSMTPPort.Value;
+                    m.EnableSsl = checkBoxSMTPSSL.Checked;
+                    m.UserName = textBoxSMTPUser.Text;
+                    m.Password = textBoxSMTPPassword.Text;
+                    m.From = textBoxSMTPFrom.Text;
+                    m.To = textBoxSMTPTo.Text;
+                }
+            }
+
+
+            selectedNotificationEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
+            var notfications = notificationEvents[selectedNotificationEvent.Value];
+            var soundNotification = notfications.OfType<SoundNotification>().FirstOrDefault();
+            if (soundNotification == null)
+            {
+                textBoxNotificationSound.Text = "";
+                checkBoxNotificationSound.Checked = false;
+            } else
+            {
+                textBoxNotificationSound.Text = soundNotification.FilePath;
+                checkBoxNotificationSound.Checked = soundNotification.Enabled;
+            }
+            var consoleNotification = notfications.OfType<ConsoleNotification>().FirstOrDefault();
+            if (consoleNotification == null)
+            {
+                checkBoxNotificationConsole.Checked = false;
+            }
+            else
+            {
+                checkBoxNotificationConsole.Checked = consoleNotification.Enabled;
+            }
+            var flashTaskbar = notfications.OfType<FlashTaskbarNotification>().FirstOrDefault();
+            if (flashTaskbar == null)
+            {
+                checkBoxNotificationFlashTaskbar.Checked = false;
+            }
+            else
+            {
+                checkBoxNotificationFlashTaskbar.Checked = flashTaskbar.Enabled;
+            }
+            var email = notfications.OfType<EmailNotification>().FirstOrDefault();
+            if (email == null)
+            {
+                checkBoxNotifcationEmail.Checked = false;
+            }
+            else
+            {
+                checkBoxNotifcationEmail.Checked = email.Enabled;
+                textBoxSMTPServer.Text = email.SMTPHost;
+                numericUpDownSMTPPort.Value = email.Port;
+                checkBoxSMTPSSL.Checked = email.EnableSsl;
+                textBoxSMTPUser.Text = email.UserName;
+                textBoxSMTPPassword.Text = email.Password;
+                textBoxSMTPFrom.Text = email.From;
+                textBoxSMTPTo.Text = email.To;
+            }
+        }
+
+        private async void ButtonNotificationTest_Click(object sender, EventArgs e)
+        {
+            ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
+            var testEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
+            await Notifications.Default.ProcessEvent(testEvent, notificationEvents);
+        }
+
+        private void ButtonNotificationSoundBrowse_Click(object sender, EventArgs e)
+        {
+            var file = new FileInfo(Path.GetFullPath(textBoxNotificationSound.Text));
+
+            openFileDialogSound.InitialDirectory = file.Directory.FullName;
+            openFileDialogSound.FileName = textBoxNotificationSound.Text;
+            var result = openFileDialogSound.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                textBoxNotificationSound.Text = openFileDialogSound.FileName;
+            }
+        }
+
+        private void CheckBoxNotifcationEmail_CheckedChanged(object sender, EventArgs e)
+        {
+            panelSMTP.Enabled = checkBoxNotifcationEmail.Checked;
+        }
+
+        private void TextBoxSMTPUser_TextChanged(object sender, EventArgs e)
+        {
+            textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
     }
 }

@@ -541,10 +541,17 @@ namespace FFRK_LabMem.Services
             {
                 using (Bitmap b = new Bitmap(framebuffer))
                 {
-
                     foreach (var item in coords)
                     {
-                        ret.Add(b.GetPixel(item.Item1, item.Item2));
+                        // Sanity checks
+                        if (item.Item1 < b.Width && item.Item2 < b.Height)
+                        {
+                            ret.Add(b.GetPixel(item.Item1, item.Item2));
+                        } else
+                        {
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Attempt to read OOB pixel: {0},{1} in image sized: {2}x{3}", item.Item1, item.Item2, b.Width, b.Height);
+                        }
+                            
                     }
 
                 }

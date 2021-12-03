@@ -45,19 +45,18 @@ namespace FFRK_LabMem.Machines
 
             this.adb = adb;
 
+            watchdogHangTimer.AutoReset = false;
             if (hangCheckInterval > 0)
             {
-                watchdogHangTimer.AutoReset = false;
                 watchdogHangTimer.Interval = hangCheckInterval;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
             }
 
+            watchdogCrashTimer.AutoReset = true;
             if (crashCheckInterval > 0)
             {
-                watchdogCrashTimer.AutoReset = true;
                 watchdogCrashTimer.Interval = crashCheckInterval;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
-
             }
 
         }

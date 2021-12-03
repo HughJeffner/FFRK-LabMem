@@ -10,6 +10,7 @@ using FFRK_Machines;
 using FFRK_LabMem.Data;
 using System.Collections.Generic;
 using FFRK_Machines.Threading;
+using FFRK_Machines.Services.Notifications;
 
 namespace FFRK_LabMem.Machines
 {
@@ -66,6 +67,7 @@ namespace FFRK_LabMem.Machines
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
+        private int restartTries = 0;
 
         private class BuddyInfo
         {
@@ -198,7 +200,7 @@ namespace FFRK_LabMem.Machines
             StateMachine.FireAsync(Trigger.Started);
 
             // Watchdog
-            if (Watchdog.HangCheckInterval > 0) StateMachine.OnTransitioned((state) => {
+            StateMachine.OnTransitioned((state) => {
                 Watchdog.Kick(this.Data != null);
                 recoverStopwatch.Stop();
             });
@@ -208,6 +210,7 @@ namespace FFRK_LabMem.Machines
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
 
+            // Ignore hang if in battle
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang because in battle");
@@ -215,17 +218,40 @@ namespace FFRK_LabMem.Machines
             }
 
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+
             // On a timer thread, need to handle errors
+            bool result = false;
             try
             {
-                await RestartFFRK();
+                // Restart ffrk and get result
+                result = await RestartFFRK();
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
-            
+
+            // Restart watchdog if failed
+            if (!result)
+            {
+                // Limit number of retries
+                if (restartTries < Config.WatchdogMaxRetries)
+                {
+                    restartTries += 1;
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
+                    Watchdog.Kick();
+                } else
+                {
+                    // Retries exhausted
+                    await Notify(Notifications.EventType.LAB_FAULT);
+                    OnMachineFinished();
+                }
+            } else
+            {
+                restartTries = 0;
+            }
+
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
@@ -407,6 +433,7 @@ namespace FFRK_LabMem.Machines
         protected override void OnEnabled()
         {
             Watchdog.Enable();
+            disableSafeRequested = false;
         }
 
         protected override void OnDisabled()

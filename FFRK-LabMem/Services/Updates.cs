@@ -50,14 +50,18 @@ namespace FFRK_LabMem.Services
 
         public static async Task<bool> Check(bool includePreRelease)
         {
-            
             ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Checking for newer releases...");
             var checker = new Updates(includePreRelease);
             try
             {
-                if (await checker.IsReleaseAvailable(GetVersionCode()))
+                var release = await checker.IsReleaseAvailable(GetVersionCode());
+                if (release != null)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version has been released! Go to " + WEB_URL + " or press [Alt+U] to get it!", GITHUB_USER, GITHUB_REPO);
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "A new version has been released! {0}", release.Version);
+                    var prevValue = ColorConsole.Timestamps;
+                    ColorConsole.Timestamps = false;
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, release.Changelog);
+                    ColorConsole.Timestamps = prevValue;
                     return true;
                 }
             }
@@ -147,7 +151,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        private async Task<bool> IsReleaseAvailable(string version)
+        private async Task<ReleaseInfo> IsReleaseAvailable(string version)
         {
             SemVersion semVersion;
             try
@@ -160,8 +164,14 @@ namespace FFRK_LabMem.Services
             }
 
             var latestRelease = await GetLatestRelease();
-            if (latestRelease.Version == null) return false;
-            return semVersion < latestRelease.Version;
+            if (latestRelease.Version == null) return null;
+            if(semVersion < latestRelease.Version)
+            {
+                return latestRelease;
+            } else
+            {
+                return null;
+            }
         }
 
         private static string CleanVersion(string version)
@@ -189,44 +199,40 @@ namespace FFRK_LabMem.Services
 
         private async Task<List<ReleaseInfo>> GetReleasesAsync()
         {
-            var pageNumber = "1";
+
             var releases = new List<ReleaseInfo>();
-            while (pageNumber != null)
+            var response = await httpClient.GetAsync(new Uri(this.Endpoint + "?per_page=5"));
+            var contentJson = await response.Content.ReadAsStringAsync();
+            VerifyGitHubAPIResponse(response.StatusCode, contentJson);
+            var releasesJson = JArray.Parse(contentJson);
+            foreach (var releaseJson in releasesJson)
             {
-                var response = await httpClient.GetAsync(new Uri(this.Endpoint + "?page=" + pageNumber));
-                var contentJson = await response.Content.ReadAsStringAsync();
-                VerifyGitHubAPIResponse(response.StatusCode, contentJson);
-                var releasesJson = JArray.Parse(contentJson);
-                foreach (var releaseJson in releasesJson)
+                bool preRelease = (bool)releaseJson["prerelease"];
+                if (!this.IncludePreRelease && preRelease) continue;
+                var releaseId = releaseJson["id"].ToString();
+                try
                 {
-                    bool preRelease = (bool)releaseJson["prerelease"];
-                    if (!this.IncludePreRelease && preRelease) continue;
-                    var releaseId = releaseJson["id"].ToString();
-                    try
+                    string tagName = releaseJson["tag_name"].ToString();
+                    var version = CleanVersion(tagName);
+                    var semVersion = SemVersion.Parse(version);
+                    var url = "";
+                    var name = "";
+                    foreach (var asset in releaseJson["assets"])
                     {
-                        string tagName = releaseJson["tag_name"].ToString();
-                        var version = CleanVersion(tagName);
-                        var semVersion = SemVersion.Parse(version);
-                        var url = "";
-                        var name = "";
-                        foreach (var asset in releaseJson["assets"])
+                        if (asset["name"].ToString().EndsWith("-Installer.exe"))
                         {
-                            if (asset["name"].ToString().EndsWith("-Installer.exe"))
-                            {
-                                name = asset["name"].ToString();
-                                url = asset["browser_download_url"].ToString();
-                            }
+                            name = asset["name"].ToString();
+                            url = asset["browser_download_url"].ToString();
                         }
+                    }
+                    var body = releaseJson["body"].ToString();
 
-                        releases.Add(new ReleaseInfo() { Id = releaseId, Version = semVersion, InstallerUrl = url, InstallerName = name});
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                    releases.Add(new ReleaseInfo() { Id = releaseId, Version = semVersion, InstallerUrl = url, InstallerName = name, Changelog = body});
                 }
-
-                pageNumber = GetNextPageNumber(response.Headers);
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
 
             return releases;
@@ -278,6 +284,8 @@ namespace FFRK_LabMem.Services
             public SemVersion Version { get; set; }
             public string InstallerUrl { get; set; }
             public string InstallerName { get; set; }
+
+            public string Changelog { get; set; }
         }
 
     }

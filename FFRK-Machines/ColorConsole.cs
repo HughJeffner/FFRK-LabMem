@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace FFRK_Machines
@@ -8,10 +10,12 @@ namespace FFRK_Machines
     {
 
         public static bool Timestamps { get; set; }
+        public static LogFileBuffer LogBuffer { get; set; } = new LogFileBuffer();
         public static DebugCategory DebugCategories { get; set; }
         private static bool stamped = false;
         private static object stampLock = new object();
         private static object colorLock = new object();
+        
 
         [Flags]
         public enum DebugCategory : short
@@ -19,7 +23,8 @@ namespace FFRK_Machines
             Adb = 1 << 0,
             Proxy = 1 << 1,
             Lab = 1 << 2,
-            Watchdog = 1 << 3
+            Watchdog = 1 << 3,
+            Notifcation = 1 << 4
         }
 
         public static void Write(ConsoleColor color, string format, params object[] arg)
@@ -51,6 +56,7 @@ namespace FFRK_Machines
             {
                 DoTimestamp(false);
                 Console.Write(format, arg);
+                LogBuffer.Add(String.Format(format, arg));
             }
         }
 
@@ -60,6 +66,7 @@ namespace FFRK_Machines
             {
                 DoTimestamp(false);
                 Console.Write(value);
+                LogBuffer.Add(value);
             }
         }
 
@@ -102,6 +109,7 @@ namespace FFRK_Machines
             {
                 DoTimestamp(true);
                 Console.WriteLine(value);
+                LogBuffer.Add($"{value}{Environment.NewLine}");
             }
             
         }
@@ -112,6 +120,7 @@ namespace FFRK_Machines
             {
                 DoTimestamp(true);
                 Console.WriteLine(format, arg);
+                LogBuffer.Add(String.Format(format, arg) + Environment.NewLine);
             }
            
         }
@@ -126,7 +135,9 @@ namespace FFRK_Machines
                     {
                         var current = Console.ForegroundColor;
                         Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("{0:HH:mm:ss} ", DateTime.Now);
+                        var stamp = string.Format("{0:HH:mm:ss} ", DateTime.Now);
+                        Console.Write(stamp);
+                        LogBuffer.Add(stamp);
                         Console.ForegroundColor = current;
                     }
                 }
@@ -159,6 +170,62 @@ namespace FFRK_Machines
             }
             if (selected.Count == 0) return "None";
             return String.Join(",", selected.ToArray());
+        }
+
+        public class LogFileBuffer : ConcurrentQueue<string>
+        {
+
+            public int BufferSize { get; set; } = 10;
+            public bool Enabled { get; set; } = true;
+            public string LogDirectory { get; set; } = @".\Logs";
+
+            public void Add(string value)
+            {
+                // Do nothing if disabled
+                if (!Enabled) return;
+
+                // Queue item
+                this.Enqueue(value);
+
+                // Flush buffer
+                if (this.Count >= BufferSize && value.EndsWith(Environment.NewLine)) Flush();
+
+            }
+
+            public void Flush()
+            {
+                // Do nothing if disabled
+                if (!Enabled) return;
+
+                // Ensure directory exists
+                if (!Directory.Exists(LogDirectory))
+                {
+                    Directory.CreateDirectory(LogDirectory);
+                }
+
+                // Format file name
+                var fileName = String.Format("{0:yyyyMMdd}.log", DateTime.Now);
+                
+                // Write queue to file
+                try
+                {
+                    using (StreamWriter outputFile = new StreamWriter(Path.Combine(this.LogDirectory, fileName), true))
+                    {
+                        string text;
+                        while (this.TryDequeue(out text))
+                        {
+                            outputFile.Write(text);
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    // Write exceptions direct to console to prevent looping
+                    Console.WriteLine("Error writing to log file!");
+                    Console.WriteLine(ex.ToString());
+                }
+                
+            }
+
         }
 
     }

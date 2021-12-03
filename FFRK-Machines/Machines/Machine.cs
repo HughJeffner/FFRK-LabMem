@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FFRK_LabMem.Services;
 using FFRK_Machines.Services;
+using FFRK_Machines.Services.Notifications;
 using Newtonsoft.Json.Linq;
 using Stateless;
 
@@ -59,7 +60,7 @@ namespace FFRK_Machines.Machines
         public async Task InterruptTasks()
         {
             cancelSource.CancelAfter(0);
-            await Task.Delay(0);
+            await Task.Delay(10);
             cancelSource = new CancellationTokenSource();
             CancellationToken = cancelSource.Token;
         }
@@ -114,7 +115,7 @@ namespace FFRK_Machines.Machines
 
             // Console output
             if (Config == null) return;
-            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Lab)) StateMachine.OnTransitioned((state) => { ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Entering state: {0}", state.Destination); });
+            StateMachine.OnTransitioned((state) => { ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Entering state: {0}", state.Destination); });
 
         }
 
@@ -147,16 +148,9 @@ namespace FFRK_Machines.Machines
         /// Notifies the user, by default embedded wav file
         /// </summary>
         /// <returns></returns>
-        protected virtual async Task Notify(bool isSuccess = true)
+        protected virtual async Task Notify(Notifications.EventType eventType)
         {
-            if (isSuccess)
-            {
-                Sound.PlayFanfaire();
-            } else
-            {
-                Sound.PlayEvent();
-            }
-            await Task.CompletedTask;
+            await Notifications.Default.ProcessEvent(eventType);
         }
 
     }

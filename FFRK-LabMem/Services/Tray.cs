@@ -107,7 +107,8 @@ namespace FFRK_LabMem.Services
 
         private static void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
         {
-            if (e.Reason == SessionSwitchReason.SessionUnlock)
+            // Work-around for showing in taskbar when workstation unlocked
+            if (e.Reason == SessionSwitchReason.SessionUnlock && notifyIcon.Visible)
             {
                 var c = GetConsoleWindow();
                 UnhideWindow(c);

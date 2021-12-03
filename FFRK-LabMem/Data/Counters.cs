@@ -43,6 +43,7 @@ namespace FFRK_LabMem.Data
             DropCategory.SPHERE_MATERIAL;
 
         public bool LogDropsToTotalCounters { get; set; } = false;
+        public int MaterialsRarityFilter { get; set; } = 6;
 
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
@@ -79,6 +80,7 @@ namespace FFRK_LabMem.Data
                 await _instance.Load();
                 _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
                 _instance.LogDropsToTotalCounters = config.GetBool("counters.logDropsToTotal", false);
+                _instance.MaterialsRarityFilter = config.GetInt("counters.materialsRarityFilter", 6);
             }
 
         }
@@ -151,7 +153,7 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("EnemyIsUponYou");
         }
-        public static async Task FoundDrop(DropCategory category, string name, int qty)
+        public static async Task FoundDrop(DropCategory category, string name, int rarity, int qty)
         {
             if (_instance.DropCategories.HasFlag(category)){
 
@@ -161,17 +163,21 @@ namespace FFRK_LabMem.Data
                     await _instance.IncrementCounter("HeroEquipmentGot");
                 } else
                 {
+                    // Filter materials drops
+                    if (rarity == 0) rarity = InferRarity(category, name);
+                    if (!(DropCategory.LABYRINTH_ITEM | DropCategory.COMMON).HasFlag(category) && rarity > 0 && rarity < _instance.MaterialsRarityFilter) return;
+                    
                     _instance.IncrementDrop(name, qty);
                     await _instance.Save();
                 }
             }
            
         }
-        public static async Task FoundDrop(string dropType, string name, int qty)
+        public static async Task FoundDrop(string dropType, string name, int rarity, int qty)
         {
             if (Enum.TryParse(dropType, out DropCategory category))
             {
-                await FoundDrop(category, name, qty);
+                await FoundDrop(category, name, rarity, qty);
             }
             else
             {
@@ -228,6 +234,77 @@ namespace FFRK_LabMem.Data
                     }
                 }
             }
+        }
+        private static int InferRarity(DropCategory category, string name)
+        {
+
+            // Motes - First character is a digit (star in name)
+            if (category == DropCategory.SPHERE_MATERIAL && char.IsDigit(name[0]))
+            {
+                return int.Parse(name[0].ToString());
+            }
+
+            // Crystals/Orbs
+            if (category == DropCategory.ABILITY_MATERIAL)
+            {
+                // Crystals are 6*
+                if (name.EndsWith("Crystal")) return 6;
+
+                // Orbs
+                if (name.EndsWith("Orb"))
+                {
+                    if (name.StartsWith("Major")) return 5;
+                    if (name.StartsWith("Greater")) return 4;
+                    if (name.StartsWith("Lesser")) return 2;
+                    if (name.StartsWith("Minor")) return 1;
+                    return 3;
+                }
+            }
+
+            // Upgrade materials
+            if (category == DropCategory.EQUIPMENT_SP_MATERIAL)
+            {
+                if (name.EndsWith("Crystal")) return 6;
+                if (name.StartsWith("Giant")) return 5;
+                if (name.StartsWith("Large")) return 4;
+                if (name.StartsWith("Small")) return 2;
+                if (name.StartsWith("Tiny")) return 1;
+                return 3;
+
+            }
+
+            // Tails
+            if (category == DropCategory.HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL)
+            {
+                if (name.StartsWith("Huge")) return 5;
+                if (name.StartsWith("Large")) return 4;
+                if (name.StartsWith("Medium")) return 3;
+                if (name.StartsWith("Small")) return 2;
+                return 1; // Does not exist?
+            }
+
+            // Eggs
+            if (category == DropCategory.GROW_EGG)
+            {
+                if (name.StartsWith("Major")) return 5;
+                if (name.StartsWith("Greater")) return 4;
+                if (name.StartsWith("Lesser")) return 2;
+                if (name.StartsWith("Minor")) return 1;
+                return 3;
+            }
+
+            // Arcana
+            if (category == DropCategory.BEAST_FOOD)
+            {
+                if (name.StartsWith("Major")) return 5;
+                if (name.StartsWith("Greater")) return 4;
+                if (name.StartsWith("Lesser")) return 2;
+                if (name.StartsWith("Minor")) return 1;  // Does not exist?
+                return 3;
+            }
+
+            return 0;
+
         }
         public async Task Load(string path = CONFIG_PATH)
         {

@@ -17,6 +17,7 @@ namespace FFRK_LabMem
             // Listen for console exit
             ConsoleTasks.ListenForExit(OnConsoleExit);
             ConsoleTasks.DisableQuickEditMode();
+            Console.TreatControlCAsInput = true;
 
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
@@ -25,6 +26,7 @@ namespace FFRK_LabMem
             // Console
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
+            ColorConsole.LogBuffer.Enabled = config.GetBool("console.logging", false);
             
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
@@ -34,8 +36,6 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
-            // Sound subsystem
-            Sound.Init();
 
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
@@ -52,7 +52,8 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.E) controller.Enable();
                 if (key.Key == ConsoleKey.D) controller.Disable();
                 if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
-                if (key.Key == ConsoleKey.C) ConfigForm.CreateAndShow(config, controller);
+                if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
+                if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
                 if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
                 if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Wait();
                 if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
@@ -71,6 +72,9 @@ namespace FFRK_LabMem
         {
             // Kill adb option
             if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
+
+            // Flush log file buffer
+            ColorConsole.LogBuffer.Flush();
         }
 
     }
