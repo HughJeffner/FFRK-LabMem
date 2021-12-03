@@ -354,6 +354,7 @@ namespace FFRK_LabMem.Config.UI
 
                 if (ret == DialogResult.Yes)
                 {
+                    controller.Stop();
                     Application.Restart();
                     Environment.Exit(0);
                 }
