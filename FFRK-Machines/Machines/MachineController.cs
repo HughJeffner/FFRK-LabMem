@@ -19,6 +19,8 @@ namespace FFRK_Machines.Machines
         where C : MachineConfiguration
     {
 
+        private const char BOMChar = (char)65279;
+
         public event EventHandler OnEnabled;
         public event EventHandler OnDisabled;
 
@@ -101,7 +103,8 @@ namespace FFRK_Machines.Machines
             {
                 try
                 {
-                    var data = JObject.Parse(item.Body.Substring(1));
+                    if (item.Body[0].Equals(BOMChar)) item.Body = item.Body.Substring(1); // Strip BOM if present
+                    var data = JObject.Parse(item.Body);
                     await item.Registration.Handler(data, item.Registration.UrlMatch.ToString());
                 }
                 catch (OperationCanceledException) { }
