@@ -31,10 +31,12 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 8. [Update ADB host](#adbconnection) if using emulator
 9. Restart the bot when prompted
 10. Go back into the configuration, Under proxy settings, enable Auto-configure
-11. Restart your device/emulator
-12. Restart the bot
+11. Restart the bot when prompted
+12. Restart your device/emulator when prompted
 13. Follow any on-screen instructions to install the certificate
-14. Load up a Labyrinth
+14. Launch FFRK
+15. On the title screen auto-detect screen offsets `Alt+O` ('o' for offsets)
+16. Start a lab or enter one in-progress
 
 ## Basic Usage
 Extract all files from the .zip file to a folder
