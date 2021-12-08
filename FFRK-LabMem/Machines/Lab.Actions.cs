@@ -702,33 +702,19 @@ namespace FFRK_LabMem.Machines
 
                     // Stamina dialog
                     Watchdog.Kick(true);
-                    await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina dialog");
-                    var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
-                    if (staminaButton != null)
+                    await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
+                    var staminaResult = await CheckRestoreStamina();
+                    if (staminaResult.PotionUsed)
                     {
-                        if (Config.UsePotions)
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Stamina Potion] x1");
-                            await Adb.TapPct(staminaButton.Item1, staminaButton.Item2, this.CancellationToken); // Select potions
-                            await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 57, 70, 5, this.CancellationToken);  // Use potion
-                            await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 47, 57, 70, 5, this.CancellationToken);  // Potion used dialog
-                            await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken); // Enter button 2 again
-                            await LabTimings.Delay("Inter-RestartLab-Stamina", this.CancellationToken);
-                            await Counters.UsedStaminaPot();
-                        }
-                        else
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
-                            OnMachineFinished();
-                            return;
-                        }
-
+                        // Enter button 2 again
+                        await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 50, 80, 90, 20, this.CancellationToken); 
+                        await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
                     }
-
+                    else
+                    {
+                        if (staminaResult.StaminaDialogPresent) return;
+                    }
+   
                     // Confirm equipment box or enter
                     Watchdog.Kick(true);
                     await LabTimings.Delay("Inter-RestartLab", this.CancellationToken);
@@ -777,6 +763,80 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 1");
             }
 
+        }
+
+        private class CheckRestoreStaminaResult
+        {
+            public bool StaminaDialogPresent { get; set; } = false;
+            public bool PotionUsed { get; set; } = false;
+        }
+
+        private async Task<CheckRestoreStaminaResult> CheckRestoreStamina()
+        {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for restore stamina dialog");
+            var ret = new CheckRestoreStaminaResult();
+
+            var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
+            if (staminaButton != null)
+            {
+                ret.StaminaDialogPresent = true;
+                if (Config.UsePotions)
+                {
+                    // Select potions
+                    await Adb.TapPct(staminaButton.Item1, staminaButton.Item2, this.CancellationToken);
+
+                    // Use potion
+                    ret.PotionUsed = await UseStaminaPotion();
+                    return ret;
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
+                    OnMachineFinished();
+                }
+
+            }
+            return ret;
+        }
+
+        private async Task<bool> UseStaminaPotion()
+        {
+
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Stamina Potion] x1");
+            await LabTimings.Delay("Pre-StaminaPotion", this.CancellationToken);
+
+            // Use potion
+            if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 60, 80, 5, this.CancellationToken))
+            {
+                await LabTimings.Delay("Inter-StaminaPotion", this.CancellationToken);
+                
+                // Confirm qty
+                if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 61, 55, 75, 5, this.CancellationToken)){
+
+                    await Counters.UsedStaminaPot();
+                    await LabTimings.Delay("Inter-StaminaPotion", this.CancellationToken);
+
+                    // Potion used dialog
+                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 47, 55, 70, 5, this.CancellationToken))
+                    {
+                        await LabTimings.Delay("Post-StaminaPotion", this.CancellationToken);
+                        return true;
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find potion used dialog");
+                    }
+
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find potion confirm qty dialog");
+                }
+
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find use potion dialog");
+            }
+
+            return false;
         }
 
         private async Task<bool> RestartFFRK()
