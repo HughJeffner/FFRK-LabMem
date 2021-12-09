@@ -261,7 +261,9 @@ namespace FFRK_LabMem.Data.UI
         {
             if (comboBoxLab.SelectedIndex >= 0)
             {
-                listViewCounters.Columns[2].Text = GetSelectedLab().Name;
+                var selectedLab = GetSelectedLab();
+                listViewCounters.Columns[2].Text = selectedLab.Name;
+                buttonCountersResetLab.Tag = Counters.Default.CounterSets.FirstOrDefault(x => x.Value == selectedLab).Key;
                 LoadAll();
             }
         }
