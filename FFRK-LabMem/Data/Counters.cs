@@ -107,9 +107,17 @@ namespace FFRK_LabMem.Data
         }
         public static async Task LabRunCompleted()
         {
+            // Increment counters
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
+            
+            // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
+            
+            // Reset the current lab id and buffer since it is now unkown
             _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
+            _instance.CurrentLabId = null;
+
+            // Save to file
             await _instance.Save();
         }
         public static async Task PaintingSelected()
