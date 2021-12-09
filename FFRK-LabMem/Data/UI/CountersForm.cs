@@ -44,7 +44,7 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_Load(object sender, EventArgs e)
         {
             Counters.OnUpdated += Counters_OnUpdated;
-            LoadAll();
+            LoadLabs();
         }
 
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -71,6 +71,24 @@ namespace FFRK_LabMem.Data.UI
             LoadRuntimes();
             LoadDrops("HE", Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s), true);
             LoadDrops("Drops", Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s), false);
+        }
+
+        private void LoadLabs()
+        {
+            comboBoxLab.Items.Clear();
+
+            // Current lab
+            var currentLab = Counters.Default.CounterSets["CurrentLab"];
+            if (currentLab.Name == null) currentLab.Name = "Current Lab";
+            comboBoxLab.Items.Add(currentLab);
+
+            // Others
+            var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).ToList();
+            foreach (var item in sets)
+            {
+                comboBoxLab.Items.Add(item.Value);
+            }
+            comboBoxLab.SelectedIndex = 0;
         }
 
         private void LoadCounters()
@@ -106,7 +124,7 @@ namespace FFRK_LabMem.Data.UI
                     listViewCounters.Items.Add(newItem);
                 }
                 newItem.SubItems[1].Text = item.Value.ToString();
-                newItem.SubItems[2].Text = Counters.Default.CounterSets["CurrentLab"].Counters[item.Key].ToString();
+                newItem.SubItems[2].Text = GetSelectedLab().Counters[item.Key].ToString();
                 newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
 
             }
@@ -139,7 +157,7 @@ namespace FFRK_LabMem.Data.UI
                 }
 
                 newItem.SubItems[1].Text = item.Value.ToString(runtimeFormat);
-                newItem.SubItems[2].Text = Counters.Default.CounterSets["CurrentLab"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[2].Text = GetSelectedLab().Runtime[item.Key].ToString(runtimeFormat);
                 newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
 
             }
@@ -170,17 +188,22 @@ namespace FFRK_LabMem.Data.UI
                     listViewCounters.Items.Add(newItem);
                 }
 
-                SetSubItemText(newItem.SubItems[1], item, isHE, "Session");
-                SetSubItemText(newItem.SubItems[2], item, isHE, "CurrentLab");
-                SetSubItemText(newItem.SubItems[3], item, isHE, "Total");
+                SetSubItemText(newItem.SubItems[1], item, isHE, Counters.Default.CounterSets["Session"]);
+                SetSubItemText(newItem.SubItems[2], item, isHE, GetSelectedLab());
+                SetSubItemText(newItem.SubItems[3], item, isHE, Counters.Default.CounterSets["Total"]);
                 
             }
 
         }
 
-        private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, string counterSetKey)
+        private CounterSet GetSelectedLab()
         {
-            var target = (isHE) ? Counters.Default.CounterSets[counterSetKey].HeroEquipment : Counters.Default.CounterSets[counterSetKey].Drops;
+            return (CounterSet)comboBoxLab.SelectedItem;
+        }
+
+        private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, CounterSet counterSet)
+        {
+            var target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
             if (target.ContainsKey(item))
             {
                 subItem.Text = target[item].ToString();
@@ -233,6 +256,14 @@ namespace FFRK_LabMem.Data.UI
         {
             ConfigForm.CreateAndShow(new Config.ConfigHelper(), controller, 6);
         }
-       
+
+        private void comboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxLab.SelectedIndex >= 0)
+            {
+                listViewCounters.Columns[2].Text = GetSelectedLab().Name;
+                LoadAll();
+            }
+        }
     }
 }

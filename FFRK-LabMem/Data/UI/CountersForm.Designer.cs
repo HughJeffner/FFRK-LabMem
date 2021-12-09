@@ -51,6 +51,7 @@ namespace FFRK_LabMem.Data.UI
             this.dropsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -115,9 +116,9 @@ namespace FFRK_LabMem.Data.UI
             listViewGroup3,
             listViewGroup4});
             this.listViewCounters.HideSelection = false;
-            this.listViewCounters.Location = new System.Drawing.Point(12, 12);
+            this.listViewCounters.Location = new System.Drawing.Point(12, 42);
             this.listViewCounters.Name = "listViewCounters";
-            this.listViewCounters.Size = new System.Drawing.Size(554, 452);
+            this.listViewCounters.Size = new System.Drawing.Size(554, 422);
             this.listViewCounters.TabIndex = 8;
             this.listViewCounters.UseCompatibleStateImageBehavior = false;
             this.listViewCounters.View = System.Windows.Forms.View.Details;
@@ -211,11 +212,24 @@ namespace FFRK_LabMem.Data.UI
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
             // 
+            // comboBoxLab
+            // 
+            this.comboBoxLab.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxLab.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLab.FormattingEnabled = true;
+            this.comboBoxLab.Location = new System.Drawing.Point(13, 13);
+            this.comboBoxLab.Name = "comboBoxLab";
+            this.comboBoxLab.Size = new System.Drawing.Size(553, 21);
+            this.comboBoxLab.TabIndex = 13;
+            this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
+            // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(578, 509);
+            this.Controls.Add(this.comboBoxLab);
             this.Controls.Add(this.buttonSettings);
             this.Controls.Add(this.buttonCountersResetSession);
             this.Controls.Add(this.buttonCountersResetLab);
@@ -250,5 +264,6 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ToolStripMenuItem dropsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ComboBox comboBoxLab;
     }
 }

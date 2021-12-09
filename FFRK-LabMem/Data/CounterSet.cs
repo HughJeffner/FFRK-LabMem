@@ -126,5 +126,10 @@ namespace FFRK_LabMem.Data
             }
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
     }
 }
