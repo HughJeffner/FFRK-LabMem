@@ -79,21 +79,50 @@ namespace FFRK_LabMem.Data
         /// <param name="from">The counter set to add values from</param>
         public void AddCounters(CounterSet from)
         {
-            foreach (var item in this.Counters.Keys)
+            foreach (var item in from.Counters.Keys)
             {
-                this.Counters[item] += from.Counters[item];
+                if (this.Counters.ContainsKey(item))
+                {
+                    this.Counters[item] += from.Counters[item];
+                }
+                else
+                {
+                    this.Counters.Add(item, from.Counters[item]);
+                }
             }
-            foreach (var item in this.Runtime.Keys)
+            foreach (var item in from.Runtime.Keys)
             {
-                this.Runtime[item] = this.Runtime[item].Add(from.Runtime[item]);
+                if (this.Runtime.ContainsKey(item))
+                {
+                    this.Runtime[item] = this.Runtime[item].Add(from.Runtime[item]);
+                }
+                else
+                {
+                    this.Runtime.Add(item, from.Runtime[item]);
+                }
             }
-            foreach (var item in this.HeroEquipment.Keys)
+            foreach (var item in from.HeroEquipment.Keys)
             {
-                this.HeroEquipment[item] += from.HeroEquipment[item];
+                if (this.HeroEquipment.ContainsKey(item))
+                {
+                    this.HeroEquipment[item] += from.HeroEquipment[item];
+                }
+                else
+                {
+                    this.HeroEquipment.Add(item, from.HeroEquipment[item]);
+                }
             }
-            foreach (var item in this.Drops.Keys)
+            foreach (var item in from.Drops.Keys)
             {
-                this.Drops[item] += from.Drops[item];
+                if (this.Drops.ContainsKey(item))
+                {
+                    this.Drops[item] += from.Drops[item];
+                } 
+                else
+                {
+                    this.Drops.Add(item, from.Drops[item]);
+                }
+                
             }
         }
 

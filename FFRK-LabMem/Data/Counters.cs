@@ -22,9 +22,9 @@ namespace FFRK_LabMem.Data
         public static readonly ReadOnlyDictionary<string, CounterSet> DefaultCounterSets = new ReadOnlyDictionary<string, CounterSet>(
             new Dictionary<string, CounterSet>
             {
-                {"Session", new CounterSet() { Name = "Session"} },
-                {"CurrentLab", new CounterSet() { Name = "Current Lab"} },
-                {"Total", new CounterSet() { Name = "All-Time" } },
+                {"Session", new CounterSet() { Name = "Current Session" } },
+                {"CurrentLab", new CounterSet() { Name = "Current Lab" } },
+                {"Total", new CounterSet() { Name = "All Time" } },
             }
         );
 
@@ -54,34 +54,9 @@ namespace FFRK_LabMem.Data
             DropCategory.SPHERE_MATERIAL;
         public bool LogDropsToTotalCounters { get; set; } = false;
         public int MaterialsRarityFilter { get; set; } = 6;
-        public string CurrentLabId
-        {
-            get
-            {
-                return currentLabId;
-            }
-            set 
-            {
-                if (currentLabId != value)
-                {
-                    // Update or create entry here
-                    if (CounterSets.ContainsKey(value))
-                    {
-                        CounterSets[value].AddCounters(currentLabBufferSet);
-                    } else
-                    {
-                        CounterSets.Add(value, currentLabBufferSet);
-                    }
-
-                    // Reset counters in buffer
-                    currentLabBufferSet.Reset(CounterSet.DataType.All);
-                }
-                currentLabId = value;
-            }
-        }
+        public string CurrentLabId = null;
 
         // Private fields
-        private string currentLabId;
         private CounterSet currentLabBufferSet { get; set; } = new CounterSet();
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
@@ -123,6 +98,8 @@ namespace FFRK_LabMem.Data
         {
             await Save();
             runtimeStopwatch.Stop();
+            CurrentLabId = null;
+            currentLabBufferSet.Reset(CounterSet.DataType.All);
         }
         private void Controller_OnEnabled(object sender, EventArgs e)
         {
@@ -219,7 +196,7 @@ namespace FFRK_LabMem.Data
         private async Task IncrementCounter(string key, int amt = 1, bool save = true)
         {
             if (amt == 0) return;
-            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
+            foreach (var set in GetTargetCounterSets())
             {
                 set.Value.Counters[key] += amt;
             }
@@ -228,14 +205,14 @@ namespace FFRK_LabMem.Data
         private void IncrementRuntime(string key, TimeSpan amt)
         {
             if (amt.TotalMilliseconds <= 0) return;
-            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
+            foreach (var set in GetTargetCounterSets())
             {
                 set.Value.Runtime[key] += amt;
             }
         }
         private void IncrementHE(string name)
         {
-            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
+            foreach (var set in GetTargetCounterSets())
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
@@ -251,7 +228,7 @@ namespace FFRK_LabMem.Data
         }
         private void IncrementDrop(string name, int amt = 1)
         {
-            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
+            foreach (var set in GetTargetCounterSets())
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
@@ -265,6 +242,11 @@ namespace FFRK_LabMem.Data
                     }
                 }
             }
+        }
+        private List<KeyValuePair<string,CounterSet>> GetTargetCounterSets(){
+            var ret = CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)).ToList();
+            if (CurrentLabId == null) ret.Add(new KeyValuePair<string, CounterSet>("_Buffer", currentLabBufferSet));
+            return ret;
         }
         private static int InferRarity(DropCategory category, string name)
         {
@@ -336,6 +318,33 @@ namespace FFRK_LabMem.Data
 
             return 0;
 
+        }
+        private async void SetLab(string id, string name)
+        {
+            if (CurrentLabId == null || !CurrentLabId.Equals(id))
+            {
+                // Update or create entry here
+                if (CounterSets.ContainsKey(id))
+                {
+                    CounterSets[id].AddCounters(currentLabBufferSet);
+                }
+                else
+                {
+                    // Create a new entry and add counters in the buffer to it
+                    CounterSet newEntry = new CounterSet();
+                    newEntry.Name = name;
+                    newEntry.AddCounters(currentLabBufferSet);
+                    CounterSets.Add(id, newEntry);
+                }
+                await Save();
+            }
+            // Reset counters in buffer
+            currentLabBufferSet.Reset(CounterSet.DataType.All);
+            CurrentLabId = id;
+        }
+        public static void SetCurrentLab(string id, string name)
+        {
+            _instance.SetLab(id, name);
         }
         public async Task Load(string path = CONFIG_PATH)
         {

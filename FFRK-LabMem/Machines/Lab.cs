@@ -283,6 +283,7 @@ namespace FFRK_LabMem.Machines
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
             Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
+            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", ParseAllData);
         }
 
         private async Task Handle_GetDisplayPaintings(JObject data, String url)
@@ -560,6 +561,17 @@ namespace FFRK_LabMem.Machines
                 if (value != null) item.Fatigue = (int)value["value"];
             }
             return true;
+        }
+
+        private async Task ParseAllData(JObject data, string url)
+        {
+            var info = data["labyrinth_dungeon"];
+            if (info != null)
+            {
+                Counters.SetCurrentLab(info["node_id"].ToString(), info["name"].ToString());
+                // Max floors! = (int)info["floor_num"]
+            }
+            await Task.CompletedTask;
         }
 
         private async Task<bool> IsFinalFloor()
