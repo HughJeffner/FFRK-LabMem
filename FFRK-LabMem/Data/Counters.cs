@@ -385,7 +385,7 @@ namespace FFRK_LabMem.Data
             await _instance.Save();
             if (key == null)
             {
-                foreach (var item in _instance.CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key)))
+                foreach (var item in _instance.CounterSets)
                 {
                     item.Value.Reset(types);
                 }

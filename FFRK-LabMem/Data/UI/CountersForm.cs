@@ -249,6 +249,8 @@ namespace FFRK_LabMem.Data.UI
                 CounterSet.DataType types = (CounterSet.DataType)Enum.Parse(typeof(CounterSet.DataType), menuItemTag);
                 await Counters.Reset(target, types);
             }
+            listViewCounters.Items.Clear();
+            LoadAll();
 
         }
 
