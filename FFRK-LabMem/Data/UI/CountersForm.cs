@@ -223,7 +223,7 @@ namespace FFRK_LabMem.Data.UI
             if (result == DialogResult.Yes)
             {
                 var target = buttonTag.Equals("All") ? null : buttonTag;
-                Counters.CounterSet.DataType types = (Counters.CounterSet.DataType)Enum.Parse(typeof(Counters.CounterSet.DataType), menuItemTag);
+                CounterSet.DataType types = (CounterSet.DataType)Enum.Parse(typeof(CounterSet.DataType), menuItemTag);
                 await Counters.Reset(target, types);
             }
 

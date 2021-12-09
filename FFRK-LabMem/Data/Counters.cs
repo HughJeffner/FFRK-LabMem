@@ -2,9 +2,9 @@
 using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,9 +15,20 @@ namespace FFRK_LabMem.Data
     public class Counters
     {
 
+        // Singleton instance
         private static Counters _instance = null;
+        // Constants
         private const string CONFIG_PATH = "./Data/counters.json";
+        public static readonly ReadOnlyDictionary<string, CounterSet> DefaultCounterSets = new ReadOnlyDictionary<string, CounterSet>(
+            new Dictionary<string, CounterSet>
+            {
+                {"Session", new CounterSet() { Name = "Session"} },
+                {"CurrentLab", new CounterSet() { Name = "Current Lab"} },
+                {"Total", new CounterSet() { Name = "All-Time" } },
+            }
+        );
 
+        // Events
         public static event Action OnUpdated;
 
         [Flags]
@@ -34,36 +45,55 @@ namespace FFRK_LabMem.Data
             BEAST_FOOD = 1 << 8
         }
 
+        // Public properties
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public Dictionary<string, CounterSet> CounterSets { get; set; } 
-
         public DropCategory DropCategories { get; set; } = DropCategory.EQUIPMENT | 
             DropCategory.LABYRINTH_ITEM | 
             DropCategory.COMMON | 
             DropCategory.SPHERE_MATERIAL;
-
         public bool LogDropsToTotalCounters { get; set; } = false;
         public int MaterialsRarityFilter { get; set; } = 6;
+        public string CurrentLabId
+        {
+            get
+            {
+                return currentLabId;
+            }
+            set 
+            {
+                if (currentLabId != value)
+                {
+                    // Update or create entry here
+                    if (CounterSets.ContainsKey(value))
+                    {
+                        CounterSets[value].AddCounters(currentLabBufferSet);
+                    } else
+                    {
+                        CounterSets.Add(value, currentLabBufferSet);
+                    }
 
+                    // Reset counters in buffer
+                    currentLabBufferSet.Reset(CounterSet.DataType.All);
+                }
+                currentLabId = value;
+            }
+        }
+
+        // Private fields
+        private string currentLabId;
+        private CounterSet currentLabBufferSet { get; set; } = new CounterSet();
         private readonly LabController controller;
         private readonly Stopwatch runtimeStopwatch = new Stopwatch();
 
         private Counters(LabController controller)
         {
-            this.CounterSets = GetDefaultCounterSets();
+            this.CounterSets = DefaultCounterSets.Select(dict => dict).ToDictionary(pair => pair.Key, pair => pair.Value);
             this.controller = controller;
             controller.OnEnabled += Controller_OnEnabled;
             controller.OnDisabled += Controller_OnDisabled;
         }
-        private Dictionary<string, CounterSet> GetDefaultCounterSets()
-        {
-            return new Dictionary<string, CounterSet>
-            {
-                {"Session", new CounterSet() },
-                {"CurrentLab", new CounterSet() },
-                {"Total", new CounterSet() },
-            };
-        }
+       
         public static Counters Default
         {
             get
@@ -102,6 +132,7 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
+            _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
             await _instance.Save();
         }
         public static async Task PaintingSelected()
@@ -188,7 +219,7 @@ namespace FFRK_LabMem.Data
         private async Task IncrementCounter(string key, int amt = 1, bool save = true)
         {
             if (amt == 0) return;
-            foreach (var set in CounterSets)
+            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
             {
                 set.Value.Counters[key] += amt;
             }
@@ -197,14 +228,14 @@ namespace FFRK_LabMem.Data
         private void IncrementRuntime(string key, TimeSpan amt)
         {
             if (amt.TotalMilliseconds <= 0) return;
-            foreach (var set in CounterSets)
+            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
             {
                 set.Value.Runtime[key] += amt;
             }
         }
         private void IncrementHE(string name)
         {
-            foreach (var set in CounterSets)
+            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
@@ -220,7 +251,7 @@ namespace FFRK_LabMem.Data
         }
         private void IncrementDrop(string name, int amt = 1)
         {
-            foreach (var set in CounterSets)
+            foreach (var set in CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)))
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
@@ -312,9 +343,9 @@ namespace FFRK_LabMem.Data
             {
                 JsonConvert.PopulateObject(File.ReadAllText(path), CounterSets);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                CounterSets = GetDefaultCounterSets();
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading counters file: {0}", ex);
             }
             await Task.CompletedTask;
         }
@@ -328,7 +359,6 @@ namespace FFRK_LabMem.Data
             OnUpdated?.Invoke();
             try
             {
-                
                 new FileInfo(path).Directory.Create();
                 File.WriteAllText(path, 
                     JsonConvert.SerializeObject(this.CounterSets, 
@@ -346,7 +376,7 @@ namespace FFRK_LabMem.Data
             await _instance.Save();
             if (key == null)
             {
-                foreach (var item in _instance.CounterSets)
+                foreach (var item in _instance.CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key)))
                 {
                     item.Value.Reset(types);
                 }
@@ -358,101 +388,6 @@ namespace FFRK_LabMem.Data
             await _instance.Save();
 
         }
-
-        public class CounterSet
-        {
-            [Flags]
-            public enum DataType
-            {
-                All = ~0,
-                Counters = 1 << 1,
-                Runtime = 1 << 2,
-                HeroEquipment = 1 << 3,
-                Drops = 1 << 4
-            }
-
-            public Dictionary<string, int> Counters { get; set; }
-            public Dictionary<string, TimeSpan> Runtime { get; set; }
-            public SortedDictionary<string, int> HeroEquipment { get; set; }
-            public SortedDictionary<string, int> Drops { get; set; }
-
-            public CounterSet()
-            {
-                this.Counters = GetDefaultCounters();
-                this.Runtime = GetDefaultRuntimes();
-                this.HeroEquipment = new SortedDictionary<string, int>();
-                this.Drops = new SortedDictionary<string, int>();
-            }
-
-            private Dictionary<string, int> GetDefaultCounters()
-            {
-                return new Dictionary<string, int>()
-                {
-                    {"LabRunsCompleted",0},
-                    {"PaintingsSelected",0},
-                    {"BattlesWon",0},
-                    {"TreasuresOpened",0},
-                    {"RadiantPaintings",0},
-                    {"MagicPots",0},
-                    {"UsedTears",0},
-                    {"UsedKeys",0},
-                    {"UsedTeleportStones",0},
-                    {"UsedStaminaPots",0},
-                    {"PulledInPortal",0},
-                    {"FFRKRestarts",0},
-                    {"HeroEquipmentGot",0},
-                    {"EnemyIsUponYou",0},
-                };
-            }
-
-            private Dictionary<string, TimeSpan> GetDefaultRuntimes()
-            {
-                return new Dictionary<string, TimeSpan>()
-                {
-                    {"Battle", new TimeSpan()},
-                    {"Total", new TimeSpan()},
-                };
-            }
-
-            public void Reset(DataType types)
-            {
-                if (types.HasFlag(DataType.Counters)) this.Counters = GetDefaultCounters();
-                if (types.HasFlag(DataType.Runtime)) this.Runtime = GetDefaultRuntimes();
-                if (types.HasFlag(DataType.HeroEquipment)) this.HeroEquipment = new SortedDictionary<string, int>();
-                if (types.HasFlag(DataType.Drops)) this.Drops = new SortedDictionary<string, int>();
-            }
-
-        }
-
-        public class ExcludeSessionDictionaryItemConverter<TDictionary, TValue> : JsonConverter where TDictionary : IDictionary<string, TValue>
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return typeof(TDictionary).IsAssignableFrom(objectType);
-            }
-
-            public override bool CanRead => false;
-            public override bool CanWrite => true;
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                JToken t = JToken.FromObject(value);
-                if (t.Type != JTokenType.Object)
-                {
-                    t.WriteTo(writer);
-                }
-                else
-                {
-                    JObject o = (JObject)t;
-                    o.Remove("Session");
-                    o.WriteTo(writer);
-                }
-            }
-        }
+        
     }
 }
