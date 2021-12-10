@@ -14,7 +14,7 @@ namespace FFRK_LabMem.Data
 
         private static bool enabled = false;
         private static readonly string folder = @"./Data";
-        private static readonly string fileSuffix = "_v01.csv";
+        private static readonly string fileSuffix = "_v02.csv";
 
         public static Task Initalize(ConfigHelper config)
         {
@@ -96,8 +96,8 @@ namespace FFRK_LabMem.Data
                         WriteLine(writer, row.ToArray(), row.Count, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
-                            row[3].Replace("★", "*"),
-                            row[4]);
+                            row[4].Replace("★", "*"),
+                            row[5]);
 
                         await InspectDrop(item, "item_type_name", row[3], row[4]);
                     }
@@ -127,12 +127,51 @@ namespace FFRK_LabMem.Data
                         WriteLine(writer, row.ToArray(), row.Count, ',');
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}",
-                            row[3].Replace("★", "*"),
-                            row[4]);
+                            row[4].Replace("★", "*"),
+                            row[5]);
 
                         await InspectDrop(item.First, "type_name", row[3], row[4]);
                     }
                     await AppendFile("drops_battle", writer);
+                }
+
+            }
+
+        }
+
+        public static async Task LogQEDrops(Lab lab)
+        {
+
+            if (lab.Data == null) return;
+            if (!lab.Data.ContainsKey("labyrinth_dungeon_result")) return;
+
+            var drops = lab.Data["labyrinth_dungeon_result"]["prize_master"];
+            var qtyMap = lab.Data["labyrinth_dungeon_result"]["drop_prize_item_id_to_num"];
+            var qtyMap2 = lab.Data["labyrinth_dungeon_result"]["clear_prize_item_id_to_num"];
+            qtyMap.AddAfterSelf(qtyMap2);
+            if (drops != null && qtyMap != null)
+            {
+                using (var writer = new StringWriter())
+                {
+                    foreach (var item in drops)
+                    {
+                        var row = CreateDataRow(lab);
+                        row.Add(item.First["name"].ToString());
+                        // Get Qty
+                        var itemid = ((JProperty)item).Name.ToString();
+                        string qty = "0";
+                        if (qtyMap[itemid] != null) qty = qtyMap[itemid].ToString();
+                        if (qtyMap2[itemid] != null) qty = qtyMap2[itemid].ToString();
+                        row.Add(qty);
+                        WriteLine(writer, row.ToArray(), row.Count, ',');
+
+                        ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Drop: {0} x{1}",
+                            row[4].Replace("★", "*"),
+                            row[5]);
+
+                        await InspectDrop(item.First, "type_name", row[3], row[4]);
+                    }
+                    await AppendFile("drops_qe", writer);
                 }
 
             }
@@ -156,6 +195,7 @@ namespace FFRK_LabMem.Data
         {
             var row = new List<String>();
             row.Add(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
+            row.Add(GetCurrentStage());
             row.Add(GetCurrentFloor(lab.CurrentFloor));
             row.Add(GetCurrentPaintingID(lab.CurrentPainting));
             return row;
@@ -171,6 +211,12 @@ namespace FFRK_LabMem.Data
         {
             if (floor == 0) return "?";
             return floor.ToString();
+        }
+
+        private static String GetCurrentStage()
+        {
+            var ret = Counters.Default.CurrentLabId;
+            return ret ?? "?";
         }
 
         private static async Task AppendFile(String fileName, TextWriter data)

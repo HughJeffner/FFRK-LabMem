@@ -112,10 +112,9 @@ namespace FFRK_LabMem.Data
             
             // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
-            
+
             // Reset the current lab id and buffer since it is now unkown
-            _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
-            _instance.CurrentLabId = null;
+            ClearCurrentLab();
 
             // Save to file
             await _instance.Save();
@@ -354,6 +353,11 @@ namespace FFRK_LabMem.Data
         public static void SetCurrentLab(string id, string name)
         {
             _instance.SetLab(id, name);
+        }
+        public static void ClearCurrentLab()
+        {
+            _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
+            _instance.CurrentLabId = null;
         }
         public async Task Load(string path = CONFIG_PATH)
         {
