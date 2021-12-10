@@ -35,13 +35,14 @@ namespace FFRK_LabMem.Services
         public class Registration
         {
             public Regex UrlMatch { get; set; }
-            public Func<JObject,String,Task> Handler { get; set; }
+            public Func<JObject,string,Task> Handler { get; set; }
         }
 
         public class ProxyEventArgs{
-            public String Url { get; set; }
-            public String Body { get; set; }
+            public string Url { get; set; }
+            public string Body { get; set; }
             public Registration Registration { get; set; }
+            public string ContentType { get; set; }
         }
 
         readonly ProxyServer proxyServer = null;
@@ -84,11 +85,14 @@ namespace FFRK_LabMem.Services
             proxyServer.AddEndPoint(explicitEndPoint);
 
             // Blocklist
-            if (!String.IsNullOrEmpty(blocklist) && File.Exists(blocklist))
+            if (!string.IsNullOrEmpty(blocklist) && File.Exists(blocklist))
             {
                 Blocklist = new List<string>(File.ReadAllLines(blocklist));
                 proxyServer.BeforeRequest += BeforeRequest;
             }
+
+            // Upstream proxy for debug purposes
+            //proxyServer.UpStreamHttpsProxy = new ExternalProxy() { HostName = "localhost", Port = 8888 };
 
         }
 
@@ -112,7 +116,7 @@ namespace FFRK_LabMem.Services
             proxyServer.Stop();
         }
 
-        public void AddRegistration(String UrlMatch, Func<JObject,String,Task> handler)
+        public void AddRegistration(string UrlMatch, Func<JObject,string,Task> handler)
         {
             this.Registrations.Add(new Registration(){ 
                 UrlMatch = new Regex(UrlMatch),
@@ -140,7 +144,6 @@ namespace FFRK_LabMem.Services
 
         }
 
-
         private async Task OnResponse(object sender, SessionEventArgs e)
         {
             // read response headers
@@ -152,18 +155,19 @@ namespace FFRK_LabMem.Services
             {
                 if (e.HttpClient.Response.StatusCode == 200)
                 {
-                    if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("application/json"))
+                    var matches = Registrations.Where(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success);
+                    if (matches.Count() > 0)
                     {
-                        var matches = Registrations.Where(r => r.UrlMatch.Match(e.HttpClient.Request.Url).Success);
-                        if (matches.Count() > 0)
+                        string body = await e.GetResponseBodyAsString();
+                        foreach (var match in matches)
                         {
-                            string body = await e.GetResponseBodyAsString();
-                            foreach (var match in matches)
-                            {
-                                ProxyEvent(sender, new ProxyEventArgs() { Body = body, Url = e.HttpClient.Request.Url, Registration = match });
-                            }
+                            ProxyEvent(sender, new ProxyEventArgs() { 
+                                Body = body, 
+                                Url = e.HttpClient.Request.Url, 
+                                Registration = match, 
+                                ContentType = e.HttpClient.Response.ContentType.Trim().ToLower() 
+                            });
                         }
-                        
                     }
                 }
             }

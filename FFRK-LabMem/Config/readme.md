@@ -83,9 +83,11 @@
 | Pre-TeleportStone    | Delay before using a teleport stone			      | 2000    |
 | Inter-TeleportStone  | Delay between actions when using a teleport stone    | 2000    |
 | Post-TeleportStone   | Delay after using a teleport stone				      | 0       |
+| Pre-StaminaPotion    | Delay before using a stamina potion			      | 2000    |
+| Inter-StaminaPotion  | Delay between actions when using a stamina potion    | 2000    |
+| Post-StaminaPotion   | Delay after using a stamina potion				      | 0       |
 | Pre-RestartLab       | Delay before restaring a new lab run			      | 60000   |
 | Inter-RestartLab     | Delay between actions when starting a lab run	      | 5000    |
-| Inter-RestartLab-Stamina | Delay betwen action when using a stamina potion  | 2000    |
 | Post-RestartLab      | Delay after restarting a lab run				      | 4000    |
 | Pre-RestartFFRK      | Delay before restarting FFRK					      | 5000    |
 | Inter-RestartFFRK    | Delay between screen captures when restarting FFRK   | 4000    |

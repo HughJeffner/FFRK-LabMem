@@ -101,7 +101,9 @@
     <Compile Include="Config\UI\Lookups.cs" />
     <Compile Include="Config\UI\Sorters.cs" />
     <Compile Include="Data\Counters.cs" />
+    <Compile Include="Data\CounterSet.cs" />
     <Compile Include="Data\DataLogger.cs" />
+    <Compile Include="Data\ExcludeSessionDictionaryItemConverter.cs" />
     <Compile Include="Data\UI\CountersForm.cs">
       <SubType>Form</SubType>
     </Compile>

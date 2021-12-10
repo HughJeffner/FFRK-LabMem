@@ -654,11 +654,11 @@ namespace FFRK_LabMem.Config.UI
             int i;
             if (e.ColumnIndex == 1 && int.TryParse(row.Cells[1].Value.ToString(), out i))
             {
-                if (DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+                if (DefaultTimings.ContainsKey(key) && DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
             }
             if (e.ColumnIndex == 2 && int.TryParse(row.Cells[2].Value.ToString(), out i))
             {
-                if (DefaultTimings[key].Jitter != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
+                if (DefaultTimings.ContainsKey(key) && DefaultTimings[key].Jitter != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
             }
 
         }

@@ -103,9 +103,28 @@ namespace FFRK_Machines.Machines
             {
                 try
                 {
-                    if (item.Body[0].Equals(BOMChar)) item.Body = item.Body.Substring(1); // Strip BOM if present
-                    var data = JObject.Parse(item.Body);
+                    JObject data = null;
+                    if (item.ContentType.Contains("application/json"))
+                    {
+                        if (item.Body[0].Equals(BOMChar)) item.Body = item.Body.Substring(1); // Strip BOM if present
+                        data = JObject.Parse(item.Body);
+                    } else
+                    {
+                        // Extract json from html
+                        string marker = "<script data-app-init-data type=\"application/json\">";
+                        int start = item.Body.IndexOf(marker);
+                        if (start > 0)
+                        {
+                            start += marker.Length;
+                            int end = item.Body.IndexOf("</script>", start);
+                            if (end > 0)
+                            {
+                                data = JObject.Parse(item.Body.Substring(start, end - start));
+                            }
+                        }
+                    }
                     await item.Registration.Handler(data, item.Registration.UrlMatch.ToString());
+
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception ex)
