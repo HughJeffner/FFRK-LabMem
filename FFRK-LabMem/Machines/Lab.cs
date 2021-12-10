@@ -501,17 +501,17 @@ namespace FFRK_LabMem.Machines
                         }
 
                         // Check if final floor
-                        if (IsFinalFloor().Result)
+                        if (this.FinalFloor == 0)
                         {
-                            this.FinalFloor = newFloor;
-                        } else
-                        {
-                            this.FinalFloor = 0;
+                            if (IsFinalFloor().Result)
+                            {
+                                this.FinalFloor = newFloor;
+                                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", this.FinalFloor);
+                            }
                         }
 
                     }
                     this.CurrentFloor = newFloor;
-
                 }
             }
 
@@ -569,7 +569,11 @@ namespace FFRK_LabMem.Machines
             if (info != null)
             {
                 Counters.SetCurrentLab(info["node_id"].ToString(), info["name"].ToString());
-                // Max floors! = (int)info["floor_num"]
+                if (this.FinalFloor == 0)
+                {
+                    this.FinalFloor = (int)info["floor_num"];
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", this.FinalFloor);
+                }
             }
             await Task.CompletedTask;
         }
