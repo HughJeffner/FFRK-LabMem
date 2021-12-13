@@ -81,7 +81,7 @@ namespace FFRK_LabMem.Data
 
         }
 
-        public static DropCategory? InferCategory(string imagePath)
+        public static DropCategory InferCategory(string imagePath)
         {
             if (imagePath.Contains("labyrinth_item")) return DropCategory.LABYRINTH_ITEM;
             if (imagePath.Contains("common_item")) return DropCategory.COMMON;
@@ -92,7 +92,7 @@ namespace FFRK_LabMem.Data
             if (imagePath.Contains("grow_egg")) return DropCategory.GROW_EGG;
             if (imagePath.Contains("beast_food")) return DropCategory.BEAST_FOOD;
             if (imagePath.Contains("equipment")) return DropCategory.EQUIPMENT;
-            return null;
+            return DropCategory.UNKNOWN;
         }
     }
 }

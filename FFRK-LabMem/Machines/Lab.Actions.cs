@@ -298,7 +298,7 @@ namespace FFRK_LabMem.Machines
                 // Confirm
                 await this.Adb.TapPct(70, 64, this.CancellationToken);
                 await Counters.UsedKeys(picked);
-                await Counters.TreausreOpened();
+                await Counters.TreasureOpened();
 
             }
             else

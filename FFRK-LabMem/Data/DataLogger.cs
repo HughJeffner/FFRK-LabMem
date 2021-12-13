@@ -175,7 +175,7 @@ namespace FFRK_LabMem.Data
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Drop: {0} x{1}",
                             row[4].Replace("★", "*"),
                             row[5]);
-                        await Counters.QEDrop(row[4], int.Parse(row[5]), item.First["image_path"].ToString());
+                        await Counters.FoundQEDrop(row[4], int.Parse(row[5]), item.First["image_path"].ToString());
                     }
                     await AppendFile("drops_qe", writer);
                 }

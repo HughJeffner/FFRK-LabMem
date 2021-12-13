@@ -299,7 +299,6 @@ namespace FFRK_LabMem.Data.UI
             }
             listViewCounters.Items.Clear();
             LoadAll();
-
         }
 
         private void buttonSettings_Click(object sender, EventArgs e)

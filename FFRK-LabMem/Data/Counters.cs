@@ -34,6 +34,7 @@ namespace FFRK_LabMem.Data
         [Flags]
         public enum DropCategory
         {
+            UNKNOWN = 0,
             EQUIPMENT = 1 << 0,
             LABYRINTH_ITEM = 1 << 1,
             COMMON = 1 << 2,
@@ -138,7 +139,7 @@ namespace FFRK_LabMem.Data
             _instance.IncrementRuntime("Battle", runtime);
             await _instance.IncrementCounter("BattlesWon");
         }
-        public static async Task TreausreOpened()
+        public static async Task TreasureOpened()
         {
             await _instance.IncrementCounter("TreasuresOpened");
         }
@@ -178,7 +179,7 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("EnemyIsUponYou");
         }
-        public static async Task FoundDrop(DropCategory category, string name, int rarity, int qty, bool isQE = false)
+        static async Task FoundDrop(DropCategory category, string name, int rarity, int qty, bool isQE = false)
         {
             if (_instance.DropCategories.HasFlag(category)){
 
@@ -210,13 +211,16 @@ namespace FFRK_LabMem.Data
             }
 
         }
-        public static async Task QEDrop(string name, int qty, string imagePath)
+        public static async Task FoundQEDrop(string name, int qty, string imagePath)
         {
             var category = CounterInference.InferCategory(imagePath);
-            if (category.HasValue)
+            if (category != DropCategory.UNKNOWN)
             {
-                var rarity = CounterInference.InferRarity(category.Value, name);
-                await FoundDrop(category.Value, name, rarity, qty, true);
+                // Passing 0 for rarity will use inference
+                await FoundDrop(category, name, 0, qty, true);
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not infer drop category for url: {0}", imagePath);
             }
 
         }

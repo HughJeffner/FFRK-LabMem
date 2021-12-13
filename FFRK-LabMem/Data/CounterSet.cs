@@ -16,7 +16,8 @@ namespace FFRK_LabMem.Data
             Counters = 1 << 1,
             Runtime = 1 << 2,
             HeroEquipment = 1 << 3,
-            Drops = 1 << 4
+            Drops = 1 << 4,
+            QEDrops = 1 << 5
         }
         public Dictionary<string, int> Counters { get; set; }
         public Dictionary<string, TimeSpan> Runtime { get; set; }
@@ -115,6 +116,11 @@ namespace FFRK_LabMem.Data
             if (types.HasFlag(DataType.Runtime)) this.Runtime = GetDefaultRuntimes();
             if (types.HasFlag(DataType.HeroEquipment)) this.HeroEquipment = new SortedDictionary<string, int>();
             if (types.HasFlag(DataType.Drops)) this.Drops = new SortedDictionary<string, int>();
+            if (types.HasFlag(DataType.QEDrops))
+            {
+                this.DropsQE = new SortedDictionary<string, int>();
+                this.HeroEquipmentQE = new SortedDictionary<string, int>();
+            }
         }
 
         /// <summary>
