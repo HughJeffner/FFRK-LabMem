@@ -52,6 +52,7 @@ namespace FFRK_LabMem.Data.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
+            this.comboBoxQE = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -220,15 +221,31 @@ namespace FFRK_LabMem.Data.UI
             this.comboBoxLab.FormattingEnabled = true;
             this.comboBoxLab.Location = new System.Drawing.Point(13, 13);
             this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(553, 21);
+            this.comboBoxLab.Size = new System.Drawing.Size(385, 21);
             this.comboBoxLab.TabIndex = 13;
             this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
+            // 
+            // comboBoxQE
+            // 
+            this.comboBoxQE.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxQE.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxQE.FormattingEnabled = true;
+            this.comboBoxQE.Items.AddRange(new object[] {
+            "Exclude QE Drops",
+            "Include QE Drops",
+            "Only QE Drops"});
+            this.comboBoxQE.Location = new System.Drawing.Point(405, 13);
+            this.comboBoxQE.Name = "comboBoxQE";
+            this.comboBoxQE.Size = new System.Drawing.Size(161, 21);
+            this.comboBoxQE.TabIndex = 14;
+            this.comboBoxQE.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
             // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(578, 509);
+            this.Controls.Add(this.comboBoxQE);
             this.Controls.Add(this.comboBoxLab);
             this.Controls.Add(this.buttonSettings);
             this.Controls.Add(this.buttonCountersResetSession);
@@ -265,5 +282,6 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
         private System.Windows.Forms.ComboBox comboBoxLab;
+        private System.Windows.Forms.ComboBox comboBoxQE;
     }
 }

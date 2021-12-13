@@ -99,7 +99,7 @@ namespace FFRK_LabMem.Data
                             row[4].Replace("★", "*"),
                             row[5]);
 
-                        await InspectDrop(item, "item_type_name", row[3], row[4]);
+                        await InspectDrop(item, "item_type_name", row[4], row[5]);
                     }
                     await AppendFile("drops", writer);
                 }
@@ -130,7 +130,7 @@ namespace FFRK_LabMem.Data
                             row[4].Replace("★", "*"),
                             row[5]);
 
-                        await InspectDrop(item.First, "type_name", row[3], row[4]);
+                        await InspectDrop(item.First, "type_name", row[4], row[5]);
                     }
                     await AppendFile("drops_battle", writer);
                 }
@@ -142,13 +142,18 @@ namespace FFRK_LabMem.Data
         public static async Task LogQEDrops(Lab lab)
         {
 
+            // Abort if missing data
             if (lab.Data == null) return;
             if (!lab.Data.ContainsKey("labyrinth_dungeon_result")) return;
 
+            // Get drops list
             var drops = lab.Data["labyrinth_dungeon_result"]["prize_master"];
+            
+            // Get qty mapping, there are 2
             var qtyMap = lab.Data["labyrinth_dungeon_result"]["drop_prize_item_id_to_num"];
             var qtyMap2 = lab.Data["labyrinth_dungeon_result"]["clear_prize_item_id_to_num"];
-            qtyMap.AddAfterSelf(qtyMap2);
+
+            // Only if valid data
             if (drops != null && qtyMap != null)
             {
                 using (var writer = new StringWriter())
@@ -156,6 +161,8 @@ namespace FFRK_LabMem.Data
                     foreach (var item in drops)
                     {
                         var row = CreateDataRow(lab);
+                        // Timestamp
+                        row[2] = lab.Data["SERVER_TIME"].ToString();
                         row.Add(item.First["name"].ToString());
                         // Get Qty
                         var itemid = ((JProperty)item).Name.ToString();
@@ -168,8 +175,7 @@ namespace FFRK_LabMem.Data
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Drop: {0} x{1}",
                             row[4].Replace("★", "*"),
                             row[5]);
-
-                        await InspectDrop(item.First, "type_name", row[3], row[4]);
+                        await Counters.QEDrop(row[4], int.Parse(row[5]), item.First["image_path"].ToString());
                     }
                     await AppendFile("drops_qe", writer);
                 }

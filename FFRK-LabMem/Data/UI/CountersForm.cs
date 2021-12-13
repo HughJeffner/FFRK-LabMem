@@ -44,7 +44,9 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_Load(object sender, EventArgs e)
         {
             Counters.OnUpdated += Counters_OnUpdated;
+            comboBoxQE.SelectedIndex = 0;
             LoadLabs();
+            
         }
 
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -69,8 +71,8 @@ namespace FFRK_LabMem.Data.UI
         {
             LoadCounters();
             LoadRuntimes();
-            LoadDrops("HE", Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s), true);
-            LoadDrops("Drops", Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s), false);
+            LoadDrops("HE");
+            LoadDrops("Drops");
         }
 
         private void LoadLabs()
@@ -164,12 +166,46 @@ namespace FFRK_LabMem.Data.UI
 
         }
 
-        private void LoadDrops(string group, IOrderedEnumerable<string> keySet, bool isHE)
+        private void LoadDrops(string group)
         {
 
-            if (keySet.Count() == 0) RemoveItemsForGroup(group);
+            bool isHE = group.Equals("HE");
+            IEnumerable<string> keySet;
+            if (isHE)
+            {
+                switch (comboBoxQE.SelectedIndex)
+                {
+                    case 1:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentCombined.Keys);
+                        break;
+                    case 2:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentQE.Keys);
+                        break;
+                    default:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys);
+                        break;
+                }
+            } 
+            else
+            {
+                switch (comboBoxQE.SelectedIndex)
+                {
+                    case 1:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsCombined.Keys);
+                        break;
+                    case 2:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsQE.Keys);
+                        break;
+                    default:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys);
+                        break;
+                }
+            }
+            keySet = keySet.Distinct();
 
-            foreach (var item in keySet)
+            CleanGroup(group, keySet);
+
+            foreach (var item in keySet.Distinct().OrderBy(s => s))
             {
                 ListViewItem newItem;
                 if (listViewCounters.Items.ContainsKey(item))
@@ -203,7 +239,19 @@ namespace FFRK_LabMem.Data.UI
 
         private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, CounterSet counterSet)
         {
-            var target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
+            SortedDictionary<string, int> target;
+            switch (comboBoxQE.SelectedIndex)
+            {
+                case 1:
+                    target = (isHE) ? counterSet.HeroEquipmentCombined : counterSet.DropsCombined;
+                    break;
+                case 2:
+                    target = (isHE) ? counterSet.HeroEquipmentQE : counterSet.DropsQE;
+                    break;
+                default:
+                    target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
+                    break;
+            }
             if (target.ContainsKey(item))
             {
                 subItem.Text = target[item].ToString();
@@ -214,12 +262,12 @@ namespace FFRK_LabMem.Data.UI
             }
         }
 
-        private void RemoveItemsForGroup(string group)
+        private void CleanGroup(string group, IEnumerable<string> keys)
         {
             List<ListViewItem> remove = new List<ListViewItem>();
             foreach (ListViewItem item in listViewCounters.Groups[group].Items)
             {
-                remove.Add(item);
+                if (!keys.Contains(item.Text)) remove.Add(item);
             }
 
             foreach (ListViewItem item in remove)

@@ -585,14 +585,11 @@ namespace FFRK_LabMem.Machines
             var node = data["current_node"];
             if (node != null)
             {
-                Counters.ClearCurrentLab();
-                Counters.SetCurrentLab(node["id"].ToString(), node["name"].ToString());
                 this.Data = data;
+                await Counters.QuickExplore(node["id"].ToString(), node["name"].ToString());
                 await DataLogger.LogQEDrops(this);
                 Counters.ClearCurrentLab();
             }
-            await Task.CompletedTask;
-
 
         }
 
