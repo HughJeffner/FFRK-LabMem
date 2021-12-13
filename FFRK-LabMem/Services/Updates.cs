@@ -79,7 +79,7 @@ namespace FFRK_LabMem.Services
             System.Diagnostics.Process.Start("explorer", url);
         }
 
-        public static async Task DownloadInstallerAndRun(bool includePreRelease, bool confirm = true)
+        public static async Task<bool> DownloadInstallerAndRun(bool includePreRelease, bool confirm = true)
         {
 
             try
@@ -90,7 +90,7 @@ namespace FFRK_LabMem.Services
                 if (String.IsNullOrEmpty(latestRelease.InstallerUrl))
                 {
                     ColorConsole.Write(ConsoleColor.DarkYellow, "Latest release has no installer!");
-                    return;
+                    return false;
                 }
 
                 if (confirm)
@@ -103,7 +103,7 @@ namespace FFRK_LabMem.Services
                     if (key != ConsoleKey.Y)
                     {
                         ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Download cancelled");
-                        return;
+                        return false;
                     }
                 }
 
@@ -124,7 +124,7 @@ namespace FFRK_LabMem.Services
                 // Run installer in silent mode and close bot
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Starting installer and exiting");
                 System.Diagnostics.Process.Start(targetFile, "/SILENT");
-                Environment.Exit(0);
+                return true;
 
             }
             catch (Exception e)
@@ -132,6 +132,8 @@ namespace FFRK_LabMem.Services
                 ColorConsole.WriteLine("");
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Failed to download new version: {0}", e.Message);
             }
+
+            return false;
 
         }
 

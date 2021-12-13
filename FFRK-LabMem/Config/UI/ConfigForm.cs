@@ -689,8 +689,12 @@ namespace FFRK_LabMem.Config.UI
             
                 if (ret == DialogResult.Yes)
                 {
-                    await Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false);
-                    this.Close();
+                    this.WindowState = FormWindowState.Minimized;
+                    if (await Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false))
+                    {
+                        controller.Stop();
+                        Environment.Exit(0);
+                    }
                 }
             
             } else
