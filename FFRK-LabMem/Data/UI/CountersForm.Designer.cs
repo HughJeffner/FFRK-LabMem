@@ -50,11 +50,13 @@ namespace FFRK_LabMem.Data.UI
             this.heroEquipmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dropsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.qEDropsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.comboBoxQE = new System.Windows.Forms.ComboBox();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.qEDropsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.buttonCountersResetGroup = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,7 +87,7 @@ namespace FFRK_LabMem.Data.UI
             // buttonCountersResetAll
             // 
             this.buttonCountersResetAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCountersResetAll.Location = new System.Drawing.Point(234, 470);
+            this.buttonCountersResetAll.Location = new System.Drawing.Point(345, 470);
             this.buttonCountersResetAll.Name = "buttonCountersResetAll";
             this.buttonCountersResetAll.Size = new System.Drawing.Size(105, 27);
             this.buttonCountersResetAll.TabIndex = 10;
@@ -103,6 +105,7 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader10,
             this.columnHeader12,
             this.columnHeader11,
+            this.columnHeader1,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
             listViewGroup1.Header = "Counters";
@@ -121,7 +124,7 @@ namespace FFRK_LabMem.Data.UI
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(12, 42);
             this.listViewCounters.Name = "listViewCounters";
-            this.listViewCounters.Size = new System.Drawing.Size(554, 422);
+            this.listViewCounters.Size = new System.Drawing.Size(580, 422);
             this.listViewCounters.TabIndex = 8;
             this.listViewCounters.UseCompatibleStateImageBehavior = false;
             this.listViewCounters.View = System.Windows.Forms.View.Details;
@@ -145,12 +148,12 @@ namespace FFRK_LabMem.Data.UI
             // columnHeader13
             // 
             this.columnHeader13.Text = "All-Time";
-            this.columnHeader13.Width = 140;
+            this.columnHeader13.Width = 90;
             // 
             // buttonSettings
             // 
             this.buttonSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSettings.Location = new System.Drawing.Point(461, 470);
+            this.buttonSettings.Location = new System.Drawing.Point(487, 470);
             this.buttonSettings.Name = "buttonSettings";
             this.buttonSettings.Size = new System.Drawing.Size(105, 27);
             this.buttonSettings.TabIndex = 12;
@@ -210,6 +213,19 @@ namespace FFRK_LabMem.Data.UI
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(158, 6);
             // 
+            // qEDropsToolStripMenuItem
+            // 
+            this.qEDropsToolStripMenuItem.Name = "qEDropsToolStripMenuItem";
+            this.qEDropsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.qEDropsToolStripMenuItem.Tag = "QEDrops";
+            this.qEDropsToolStripMenuItem.Text = "QE Drops";
+            this.qEDropsToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(158, 6);
+            // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
@@ -226,7 +242,7 @@ namespace FFRK_LabMem.Data.UI
             this.comboBoxLab.FormattingEnabled = true;
             this.comboBoxLab.Location = new System.Drawing.Point(13, 13);
             this.comboBoxLab.Name = "comboBoxLab";
-            this.comboBoxLab.Size = new System.Drawing.Size(385, 21);
+            this.comboBoxLab.Size = new System.Drawing.Size(411, 21);
             this.comboBoxLab.TabIndex = 13;
             this.comboBoxLab.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
             // 
@@ -239,30 +255,35 @@ namespace FFRK_LabMem.Data.UI
             "Exclude QE Drops",
             "Include QE Drops",
             "Only QE Drops"});
-            this.comboBoxQE.Location = new System.Drawing.Point(405, 13);
+            this.comboBoxQE.Location = new System.Drawing.Point(431, 13);
             this.comboBoxQE.Name = "comboBoxQE";
             this.comboBoxQE.Size = new System.Drawing.Size(161, 21);
             this.comboBoxQE.TabIndex = 14;
             this.comboBoxQE.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
             // 
-            // toolStripMenuItem2
+            // columnHeader1
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(158, 6);
+            this.columnHeader1.Text = "Group";
+            this.columnHeader1.Width = 90;
             // 
-            // qEDropsToolStripMenuItem
+            // buttonCountersResetGroup
             // 
-            this.qEDropsToolStripMenuItem.Name = "qEDropsToolStripMenuItem";
-            this.qEDropsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.qEDropsToolStripMenuItem.Tag = "QEDrops";
-            this.qEDropsToolStripMenuItem.Text = "QE Drops";
-            this.qEDropsToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
+            this.buttonCountersResetGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonCountersResetGroup.Location = new System.Drawing.Point(234, 470);
+            this.buttonCountersResetGroup.Name = "buttonCountersResetGroup";
+            this.buttonCountersResetGroup.Size = new System.Drawing.Size(105, 27);
+            this.buttonCountersResetGroup.TabIndex = 15;
+            this.buttonCountersResetGroup.Tag = "Group";
+            this.buttonCountersResetGroup.Text = "Reset Group";
+            this.buttonCountersResetGroup.UseVisualStyleBackColor = true;
+            this.buttonCountersResetGroup.Click += new System.EventHandler(this.ButtonCountersReset_Click);
             // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(578, 509);
+            this.ClientSize = new System.Drawing.Size(604, 509);
+            this.Controls.Add(this.buttonCountersResetGroup);
             this.Controls.Add(this.comboBoxQE);
             this.Controls.Add(this.comboBoxLab);
             this.Controls.Add(this.buttonSettings);
@@ -271,6 +292,7 @@ namespace FFRK_LabMem.Data.UI
             this.Controls.Add(this.buttonCountersResetAll);
             this.Controls.Add(this.listViewCounters);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(620, 0);
             this.Name = "CountersForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Counters";
@@ -303,5 +325,7 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ComboBox comboBoxQE;
         private System.Windows.Forms.ToolStripMenuItem qEDropsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.Button buttonCountersResetGroup;
     }
 }

@@ -123,11 +123,13 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
                 newItem.SubItems[1].Text = item.Value.ToString();
                 newItem.SubItems[2].Text = GetSelectedLab().Counters[item.Key].ToString();
-                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Group"].Counters[item.Key].ToString();
+                newItem.SubItems[4].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
 
             }
 
@@ -155,12 +157,14 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
 
                 newItem.SubItems[1].Text = item.Value.ToString(runtimeFormat);
                 newItem.SubItems[2].Text = GetSelectedLab().Runtime[item.Key].ToString(runtimeFormat);
-                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Group"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[4].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
 
             }
 
@@ -221,12 +225,14 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
 
                 SetSubItemText(newItem.SubItems[1], item, isHE, Counters.Default.CounterSets["Session"]);
                 SetSubItemText(newItem.SubItems[2], item, isHE, GetSelectedLab());
-                SetSubItemText(newItem.SubItems[3], item, isHE, Counters.Default.CounterSets["Total"]);
+                SetSubItemText(newItem.SubItems[3], item, isHE, Counters.Default.CounterSets["Group"]);
+                SetSubItemText(newItem.SubItems[4], item, isHE, Counters.Default.CounterSets["Total"]);
                 
             }
 

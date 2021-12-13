@@ -24,6 +24,7 @@ namespace FFRK_LabMem.Data
             {
                 {"Session", new CounterSet() { Name = "Current Session" } },
                 {"CurrentLab", new CounterSet() { Name = "Current Lab" } },
+                {"Group", new CounterSet() { Name = "Current Group" } },
                 {"Total", new CounterSet() { Name = "All Time" } },
             }
         );
