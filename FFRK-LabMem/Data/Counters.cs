@@ -365,6 +365,22 @@ namespace FFRK_LabMem.Data
             await _instance.Save();
 
         }
+
+        public static async Task ResetItem(string key)
+        {
+            if (key == null) return;
+            await _instance.Save();
+            foreach (var item in _instance.CounterSets)
+            {
+                if (item.Value.Counters.ContainsKey(key)) item.Value.Counters[key] = 0;
+                if (item.Value.Runtime.ContainsKey(key)) item.Value.Runtime[key] = new TimeSpan();
+                if (item.Value.HeroEquipment.ContainsKey(key)) item.Value.HeroEquipment.Remove(key);
+                if (item.Value.HeroEquipmentQE.ContainsKey(key)) item.Value.HeroEquipmentQE.Remove(key);
+                if (item.Value.Drops.ContainsKey(key)) item.Value.Drops.Remove(key);
+                if (item.Value.DropsQE.ContainsKey(key)) item.Value.DropsQE.Remove(key);
+            }
+            await _instance.Save();
+        }
         
     }
 }

@@ -316,5 +316,13 @@ namespace FFRK_LabMem.Data.UI
                 LoadAll();
             }
         }
+
+        private async void listViewCounters_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || e.KeyCode != Keys.Delete) return;
+            var target = listViewCounters.SelectedItems[0];
+            var response = MessageBox.Show($"Are you sure you wish to delete {target.Text} in all counters?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (response == DialogResult.Yes) await Counters.ResetItem(target.Name);
+        }
     }
 }

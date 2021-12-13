@@ -125,6 +125,7 @@ namespace FFRK_LabMem.Data.UI
             this.listViewCounters.TabIndex = 8;
             this.listViewCounters.UseCompatibleStateImageBehavior = false;
             this.listViewCounters.View = System.Windows.Forms.View.Details;
+            this.listViewCounters.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listViewCounters_KeyUp);
             // 
             // columnHeader10
             // 
@@ -170,12 +171,12 @@ namespace FFRK_LabMem.Data.UI
             this.toolStripMenuItem2,
             this.allToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 170);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(162, 148);
             // 
             // countersToolStripMenuItem
             // 
             this.countersToolStripMenuItem.Name = "countersToolStripMenuItem";
-            this.countersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.countersToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.countersToolStripMenuItem.Tag = "Counters";
             this.countersToolStripMenuItem.Text = "Counters";
             this.countersToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
@@ -183,7 +184,7 @@ namespace FFRK_LabMem.Data.UI
             // runtimeToolStripMenuItem
             // 
             this.runtimeToolStripMenuItem.Name = "runtimeToolStripMenuItem";
-            this.runtimeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runtimeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.runtimeToolStripMenuItem.Tag = "Runtime";
             this.runtimeToolStripMenuItem.Text = "Runtime";
             this.runtimeToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
@@ -191,7 +192,7 @@ namespace FFRK_LabMem.Data.UI
             // heroEquipmentToolStripMenuItem
             // 
             this.heroEquipmentToolStripMenuItem.Name = "heroEquipmentToolStripMenuItem";
-            this.heroEquipmentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.heroEquipmentToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.heroEquipmentToolStripMenuItem.Tag = "HeroEquipment";
             this.heroEquipmentToolStripMenuItem.Text = "Hero Equipment";
             this.heroEquipmentToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
@@ -199,7 +200,7 @@ namespace FFRK_LabMem.Data.UI
             // dropsToolStripMenuItem
             // 
             this.dropsToolStripMenuItem.Name = "dropsToolStripMenuItem";
-            this.dropsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dropsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.dropsToolStripMenuItem.Tag = "Drops";
             this.dropsToolStripMenuItem.Text = "Drops";
             this.dropsToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
@@ -207,12 +208,12 @@ namespace FFRK_LabMem.Data.UI
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(158, 6);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.allToolStripMenuItem.Tag = "All";
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
@@ -247,12 +248,12 @@ namespace FFRK_LabMem.Data.UI
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(158, 6);
             // 
             // qEDropsToolStripMenuItem
             // 
             this.qEDropsToolStripMenuItem.Name = "qEDropsToolStripMenuItem";
-            this.qEDropsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.qEDropsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.qEDropsToolStripMenuItem.Tag = "QEDrops";
             this.qEDropsToolStripMenuItem.Text = "QE Drops";
             this.qEDropsToolStripMenuItem.Click += new System.EventHandler(this.ResetToolStripMenuItem_Click);
