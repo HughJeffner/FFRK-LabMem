@@ -17,6 +17,7 @@ namespace FFRK_LabMem.Machines
         public bool UsePotions { get; set; } = false;
         public bool UseOldCrashRecovery { get; set; } = false;
         public bool UseLetheTears { get; set; } = false;
+        public bool LetheTearsMasterOnly { get; set; } = false;
         public byte LetheTearsSlot { get; set; } = 0b11111;
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;

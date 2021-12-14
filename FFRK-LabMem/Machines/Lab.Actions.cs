@@ -421,18 +421,23 @@ namespace FFRK_LabMem.Machines
             // Lethe Tears
             if (Config.UseLetheTears)
             {
-                var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
-                if (gotFatigueValues)
-                {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", fatigueAutoResetEvent);
-                    if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
+                // Either a master painting or master only option disabled
+                if (!Config.LetheTearsMasterOnly || (int)this.CurrentPainting?["type"] == 2) { 
+                    // Wait for fatigue values downloaded on another thread
+                    var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                    if (gotFatigueValues)
                     {
-                        await UseLetheTears();
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", fatigueAutoResetEvent);
+                        // Fatigue level check
+                        if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
+                        {
+                            await UseLetheTears();
+                        }
                     }
-                }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                    else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                    }
                 }
             }
 

@@ -274,6 +274,7 @@ namespace FFRK_LabMem.Config.UI
             if (checkBoxSlot3.Checked) labConfig.LetheTearsSlot |= (1 << 2);
             if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 1);
             if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 0);
+            labConfig.LetheTearsMasterOnly = checkBoxLetheTearsMasterOnly.Checked;
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
@@ -387,6 +388,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot3.Checked = ((labConfig.LetheTearsSlot >> 2) & 1) != 0;
             checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
             checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
+            checkBoxLetheTearsMasterOnly.Checked = labConfig.LetheTearsMasterOnly;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
@@ -623,6 +625,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot3.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot4.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot5.Enabled = checkBoxLabUseLetheTears.Checked;
+            checkBoxLetheTearsMasterOnly.Enabled = checkBoxLabUseLetheTears.Checked;
 
         }
 
