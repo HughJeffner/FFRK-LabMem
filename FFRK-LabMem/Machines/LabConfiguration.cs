@@ -41,6 +41,7 @@ namespace FFRK_LabMem.Machines
             // Defaults
             this.PaintingPriorityMap = new Dictionary<string, int>
             {
+                { "R", 0 },
                 { "3", 1 },
                 { "1.3", 2 },
                 { "1.2", 3 },

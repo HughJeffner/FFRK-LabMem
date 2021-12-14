@@ -184,7 +184,9 @@ namespace FFRK_LabMem.Machines
                     await Adb.SaveScrenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
                 }
                 await Counters.FoundRadiantPainting();
-                return 0;
+                var rPriority = 0;
+                if (Config.PaintingPriorityMap.ContainsKey("R")) rPriority = Config.PaintingPriorityMap["R"];
+                return rPriority;
             }
 
             // Combatant (1)

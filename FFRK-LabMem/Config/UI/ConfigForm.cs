@@ -393,8 +393,10 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
-            
+
             // Painting priorities
+            // Backwards-compatble check
+            if (!labConfig.PaintingPriorityMap.ContainsKey("R")) labConfig.PaintingPriorityMap.Add("R",0);
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {

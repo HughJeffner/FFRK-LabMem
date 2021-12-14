@@ -18,7 +18,8 @@ namespace FFRK_LabMem.Config.UI
             {"4", "Exploration Painting"},
             {"5", "Onslaught Painting"},
             {"6", "Portal Painting"},
-            {"7", "Restoration Painting"}
+            {"7", "Restoration Painting"},
+            {"R", "Radiant Painting"}
         };
 
         public static Dictionary<String, String> Treasures = new Dictionary<string, string>() {
