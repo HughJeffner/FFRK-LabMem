@@ -172,8 +172,20 @@ namespace FFRK_LabMem.Data.UI
 
         private void LoadDrops(string group)
         {
-
             bool isHE = group.Equals("HE");
+
+            // Create sorting object
+            IComparer<string> sorter;
+            if (isHE)
+            {
+                sorter = new CounterComparers.HEComparer();
+            }
+            else 
+            { 
+                sorter = new CounterComparers.DropComparer();
+            }
+
+            // Set of all items common to all counter sets
             IEnumerable<string> keySet;
             if (isHE)
             {
@@ -205,11 +217,14 @@ namespace FFRK_LabMem.Data.UI
                         break;
                 }
             }
+            // Only distinct values
             keySet = keySet.Distinct();
 
+            // Remove any items present in the list that do not match
             CleanGroup(group, keySet);
 
-            foreach (var item in keySet.Distinct().OrderBy(s => s))
+            // Iterate
+            foreach (var item in keySet.OrderBy(s => s, sorter))
             {
                 ListViewItem newItem;
                 if (listViewCounters.Items.ContainsKey(item))
