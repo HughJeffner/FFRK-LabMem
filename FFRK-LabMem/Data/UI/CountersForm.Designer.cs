@@ -30,10 +30,10 @@ namespace FFRK_LabMem.Data.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CountersForm));
             this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.buttonCountersResetLab = new System.Windows.Forms.Button();
@@ -42,8 +42,9 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.buttonSettings = new System.Windows.Forms.Button();
+            this.buttonExport = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.countersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runtimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,8 +56,8 @@ namespace FFRK_LabMem.Data.UI
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.comboBoxQE = new System.Windows.Forms.ComboBox();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonCountersResetGroup = new System.Windows.Forms.Button();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -108,19 +109,19 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader1,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup1.Header = "Counters";
-            listViewGroup1.Name = "Counters";
-            listViewGroup2.Header = "Runtime";
-            listViewGroup2.Name = "Runtime";
-            listViewGroup3.Header = "Hero Equipment";
-            listViewGroup3.Name = "HE";
-            listViewGroup4.Header = "Drops";
-            listViewGroup4.Name = "Drops";
+            listViewGroup5.Header = "Counters";
+            listViewGroup5.Name = "Counters";
+            listViewGroup6.Header = "Runtime";
+            listViewGroup6.Name = "Runtime";
+            listViewGroup7.Header = "Hero Equipment";
+            listViewGroup7.Name = "HE";
+            listViewGroup8.Header = "Drops";
+            listViewGroup8.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2,
-            listViewGroup3,
-            listViewGroup4});
+            listViewGroup5,
+            listViewGroup6,
+            listViewGroup7,
+            listViewGroup8});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(12, 42);
             this.listViewCounters.Name = "listViewCounters";
@@ -145,22 +146,27 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader11.Text = "Current Lab";
             this.columnHeader11.Width = 90;
             // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Group";
+            this.columnHeader1.Width = 90;
+            // 
             // columnHeader13
             // 
             this.columnHeader13.Text = "All-Time";
             this.columnHeader13.Width = 90;
             // 
-            // buttonSettings
+            // buttonExport
             // 
-            this.buttonSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSettings.Location = new System.Drawing.Point(487, 470);
-            this.buttonSettings.Name = "buttonSettings";
-            this.buttonSettings.Size = new System.Drawing.Size(105, 27);
-            this.buttonSettings.TabIndex = 12;
-            this.buttonSettings.Tag = "All";
-            this.buttonSettings.Text = "Settings";
-            this.buttonSettings.UseVisualStyleBackColor = true;
-            this.buttonSettings.Click += new System.EventHandler(this.buttonSettings_Click);
+            this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonExport.Location = new System.Drawing.Point(487, 470);
+            this.buttonExport.Name = "buttonExport";
+            this.buttonExport.Size = new System.Drawing.Size(105, 27);
+            this.buttonExport.TabIndex = 12;
+            this.buttonExport.Tag = "All";
+            this.buttonExport.Text = "Export";
+            this.buttonExport.UseVisualStyleBackColor = true;
+            this.buttonExport.Click += new System.EventHandler(this.ButtonExport_Click);
             // 
             // contextMenuStrip1
             // 
@@ -261,11 +267,6 @@ namespace FFRK_LabMem.Data.UI
             this.comboBoxQE.TabIndex = 14;
             this.comboBoxQE.SelectedIndexChanged += new System.EventHandler(this.comboBoxLab_SelectedIndexChanged);
             // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Group";
-            this.columnHeader1.Width = 90;
-            // 
             // buttonCountersResetGroup
             // 
             this.buttonCountersResetGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -278,6 +279,11 @@ namespace FFRK_LabMem.Data.UI
             this.buttonCountersResetGroup.UseVisualStyleBackColor = true;
             this.buttonCountersResetGroup.Click += new System.EventHandler(this.ButtonCountersReset_Click);
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "Comma Separated Values (*.csv) |*.csv";
+            this.saveFileDialog1.Title = "Choose export file";
+            // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -286,13 +292,13 @@ namespace FFRK_LabMem.Data.UI
             this.Controls.Add(this.buttonCountersResetGroup);
             this.Controls.Add(this.comboBoxQE);
             this.Controls.Add(this.comboBoxLab);
-            this.Controls.Add(this.buttonSettings);
+            this.Controls.Add(this.buttonExport);
             this.Controls.Add(this.buttonCountersResetSession);
             this.Controls.Add(this.buttonCountersResetLab);
             this.Controls.Add(this.buttonCountersResetAll);
             this.Controls.Add(this.listViewCounters);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(620, 0);
+            this.MinimumSize = new System.Drawing.Size(620, 39);
             this.Name = "CountersForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Counters";
@@ -313,7 +319,7 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ColumnHeader columnHeader12;
         private System.Windows.Forms.ColumnHeader columnHeader11;
         private System.Windows.Forms.ColumnHeader columnHeader13;
-        private System.Windows.Forms.Button buttonSettings;
+        private System.Windows.Forms.Button buttonExport;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem countersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runtimeToolStripMenuItem;
@@ -327,5 +333,6 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button buttonCountersResetGroup;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

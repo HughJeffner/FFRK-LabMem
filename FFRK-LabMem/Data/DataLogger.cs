@@ -36,7 +36,7 @@ namespace FFRK_LabMem.Data
                         var row = CreateDataRow(lab);
                         row.Add(i.ToString());
                         row.Add(item.ToString());
-                        WriteLine(writer, row.ToArray(), row.Count, ',');
+                        WriteCSVLine(writer, row.ToArray(), row.Count);
                         i++;
                     }
                     await AppendFile("treasures", writer);
@@ -73,7 +73,7 @@ namespace FFRK_LabMem.Data
                         row.Add(eventData["type"].ToString());
                     }
                     row.Add(insideDoor?"1":"0");
-                    WriteLine(writer, row.ToArray(), row.Count, ',');
+                    WriteCSVLine(writer, row.ToArray(), row.Count);
                     await AppendFile("explores", writer);
                 }
             }
@@ -93,7 +93,7 @@ namespace FFRK_LabMem.Data
                         var row = CreateDataRow(lab);
                         row.Add(item["item_name"].ToString());
                         row.Add(item["num"].ToString());
-                        WriteLine(writer, row.ToArray(), row.Count, ',');
+                        WriteCSVLine(writer, row.ToArray(), row.Count);
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Item: {0} x{1}",
                             row[4].Replace("★", "*"),
@@ -124,7 +124,7 @@ namespace FFRK_LabMem.Data
                         var row = CreateDataRow(lab);
                         row.Add(item.First["name"].ToString());
                         row.Add(qtyMap[item.First["item_id"].ToString()].ToString());
-                        WriteLine(writer, row.ToArray(), row.Count, ',');
+                        WriteCSVLine(writer, row.ToArray(), row.Count);
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}",
                             row[4].Replace("★", "*"),
@@ -170,7 +170,7 @@ namespace FFRK_LabMem.Data
                         if (qtyMap[itemid] != null) qty = qtyMap[itemid].ToString();
                         if (qtyMap2[itemid] != null) qty = qtyMap2[itemid].ToString();
                         row.Add(qty);
-                        WriteLine(writer, row.ToArray(), row.Count, ',');
+                        WriteCSVLine(writer, row.ToArray(), row.Count);
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Got Drop: {0} x{1}",
                             row[4].Replace("★", "*"),
@@ -199,11 +199,13 @@ namespace FFRK_LabMem.Data
 
         private static List<String> CreateDataRow(Lab lab)
         {
-            var row = new List<String>();
-            row.Add(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
-            row.Add(GetCurrentStage());
-            row.Add(GetCurrentFloor(lab.CurrentFloor));
-            row.Add(GetCurrentPaintingID(lab.CurrentPainting));
+            var row = new List<String>
+            {
+                DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"),
+                GetCurrentStage(),
+                GetCurrentFloor(lab.CurrentFloor),
+                GetCurrentPaintingID(lab.CurrentPainting)
+            };
             return row;
         }
 
@@ -247,13 +249,14 @@ namespace FFRK_LabMem.Data
 
         }
 
-        private static void WriteLine(TextWriter writer, string[] data, int columnCount, char separator)
+        static char[] escapeChars = new[] { ',', '\'', '\n' };
+        internal static void WriteCSVLine(TextWriter writer, string[] data, int columnCount)
         {
-            var escapeChars = new[] { separator, '\'', '\n' };
+            
             for (var i = 0; i < columnCount; i++)
             {
                 if (i > 0)
-                    writer.Write(separator);
+                    writer.Write(',');
 
                 if (i < data.Length)
                 {

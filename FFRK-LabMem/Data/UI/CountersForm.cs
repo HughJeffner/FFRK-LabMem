@@ -1,11 +1,14 @@
 ﻿using FFRK_LabMem.Config.UI;
 using FFRK_LabMem.Machines;
+using FFRK_Machines;
+using FFRK_Machines.Threading;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +33,7 @@ namespace FFRK_LabMem.Data.UI
             if (IsLoaded == false)
             {
                 IsLoaded = true;
-                Task mytask = Task.Run(() =>
+                Task mytask = Utility.StartSTATask(() =>
                 {
                     var form = new CountersForm
                     {
@@ -322,9 +325,15 @@ namespace FFRK_LabMem.Data.UI
             LoadAll();
         }
 
-        private void buttonSettings_Click(object sender, EventArgs e)
+        private async void ButtonExport_Click(object sender, EventArgs e)
         {
-            ConfigForm.CreateAndShow(new Config.ConfigHelper(), controller, 6);
+            saveFileDialog1.InitialDirectory = "./data/";
+            saveFileDialog1.FileName = String.Format("counters_{0:yyyyMMdd}.csv", DateTime.Now);
+            var result = saveFileDialog1.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                await SaveListViewToCSV(listViewCounters, saveFileDialog1.FileName);
+            }
         }
 
         private void comboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -344,6 +353,45 @@ namespace FFRK_LabMem.Data.UI
             var target = listViewCounters.SelectedItems[0];
             var response = MessageBox.Show($"Are you sure you wish to delete {target.Text} in all counters?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (response == DialogResult.Yes) await Counters.ResetItem(target.Name);
+        }
+
+        private async Task SaveListViewToCSV(ListView listView, string fileName)
+        {
+
+            List<string> row = new List<string>();
+            using (var writer = new StringWriter())
+            {
+                // Header row
+                foreach (ColumnHeader item in listView.Columns)
+                {
+                    row.Add(item.Text);
+                }
+                row[0] = "Item";
+                DataLogger.WriteCSVLine(writer, row.ToArray(), row.Count);
+
+                // Items
+                foreach (ListViewItem item in listView.Items)
+                {
+                    for (int i = 0; i < item.SubItems.Count; i++)
+                    {
+                        row[i] = item.SubItems[i].Text;
+                        if (row[i].Equals("-")) row[i] = "0";
+                    }
+                    DataLogger.WriteCSVLine(writer, row.ToArray(), row.Count);
+                }
+                try
+                {
+                    using (var stream = new StreamWriter(fileName, false))
+                    {
+                        await stream.WriteAsync(writer.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Error writing to file: {0}", ex.Message);
+                }
+            }
+
         }
     }
 }

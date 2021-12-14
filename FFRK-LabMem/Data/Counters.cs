@@ -314,6 +314,7 @@ namespace FFRK_LabMem.Data
         {
             _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
             _instance.CurrentLabId = null;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab cleared");
         }
         public async Task Load(string path = CONFIG_PATH)
         {
