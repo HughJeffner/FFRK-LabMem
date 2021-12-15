@@ -88,7 +88,7 @@ namespace FFRK_LabMem.Data.UI
             comboBoxLab.Items.Add(currentLab);
 
             // Others
-            var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).ToList();
+            var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).OrderBy(s => s.Key).ToList();
             foreach (var item in sets)
             {
                 comboBoxLab.Items.Add(item.Value);
@@ -311,10 +311,13 @@ namespace FFRK_LabMem.Data.UI
         {
             var button = (Button)contextMenuStrip1.Tag;
             string buttonTag = button.Tag.ToString();
+            string buttonText = Char.ToLower(button.Text[0]) + button.Text.Substring(1);
             var menuItem = (ToolStripMenuItem)sender;
             string menuItemTag = menuItem.Tag.ToString();
+            string menuItemText = menuItem.Text;
+            if (button == buttonCountersResetLab) buttonText = comboBoxLab.Text;
 
-            var result = MessageBox.Show(this, $"Are you sure you want to reset {buttonTag} {menuItemTag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var result = MessageBox.Show(this, $"Are you sure you want to {buttonText} {menuItemText}?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
                 var target = buttonTag.Equals("All") ? null : buttonTag;
