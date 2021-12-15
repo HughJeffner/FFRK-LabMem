@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,56 @@ namespace FFRK_LabMem.Data
             Counters = 1 << 1,
             Runtime = 1 << 2,
             HeroEquipment = 1 << 3,
-            Drops = 1 << 4
+            Drops = 1 << 4,
+            QEDrops = 1 << 5
         }
         public Dictionary<string, int> Counters { get; set; }
         public Dictionary<string, TimeSpan> Runtime { get; set; }
         public SortedDictionary<string, int> HeroEquipment { get; set; }
+        public SortedDictionary<string, int> HeroEquipmentQE { get; set; } = new SortedDictionary<string, int>();
         public SortedDictionary<string, int> Drops { get; set; }
+        public SortedDictionary<string, int> DropsQE { get; set; } = new SortedDictionary<string, int>();
         public string Name { get; set; }
+        [JsonIgnore]
+        public SortedDictionary<string, int> HeroEquipmentCombined
+        {
+            get
+            {
+                var ret = new SortedDictionary<string, int>(HeroEquipment);
+                foreach (var item in HeroEquipmentQE.Keys)
+                {
+                    if (ret.ContainsKey(item))
+                    {
+                        ret[item] += HeroEquipmentQE[item];
+                    }
+                    else
+                    {
+                        ret.Add(item, HeroEquipmentQE[item]);
+                    }
+                }
+                return ret;
+            }
+        }
+        [JsonIgnore]
+        public SortedDictionary<string, int> DropsCombined
+        {
+            get
+            {
+                var ret = new SortedDictionary<string, int>(Drops);
+                foreach (var item in DropsQE.Keys)
+                {
+                    if (ret.ContainsKey(item))
+                    {
+                        ret[item] += DropsQE[item];
+                    }
+                    else
+                    {
+                        ret.Add(item, DropsQE[item]);
+                    }
+                }
+                return ret;
+            }
+        }
 
         public CounterSet()
         {
@@ -49,6 +93,7 @@ namespace FFRK_LabMem.Data
                     {"FFRKRestarts",0},
                     {"HeroEquipmentGot",0},
                     {"EnemyIsUponYou",0},
+                    {"QuickExplores",0},
                 };
         }
 
@@ -71,6 +116,11 @@ namespace FFRK_LabMem.Data
             if (types.HasFlag(DataType.Runtime)) this.Runtime = GetDefaultRuntimes();
             if (types.HasFlag(DataType.HeroEquipment)) this.HeroEquipment = new SortedDictionary<string, int>();
             if (types.HasFlag(DataType.Drops)) this.Drops = new SortedDictionary<string, int>();
+            if (types.HasFlag(DataType.QEDrops))
+            {
+                this.DropsQE = new SortedDictionary<string, int>();
+                this.HeroEquipmentQE = new SortedDictionary<string, int>();
+            }
         }
 
         /// <summary>

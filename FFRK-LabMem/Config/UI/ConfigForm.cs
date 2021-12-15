@@ -182,7 +182,8 @@ namespace FFRK_LabMem.Config.UI
             checkedListBoxDropCategories.Items.Clear();
             foreach (var item in Enum.GetValues(typeof(Counters.DropCategory)).Cast<Counters.DropCategory>())
             {
-                checkedListBoxDropCategories.Items.Add(Lookups.DropCategories[item], Counters.Default.DropCategories.HasFlag((Enum)item));
+                if (item != Counters.DropCategory.UNKNOWN)
+                    checkedListBoxDropCategories.Items.Add(Lookups.DropCategories[item], Counters.Default.DropCategories.HasFlag((Enum)item));
             }
             buttonShowCounters.Visible = !CountersForm.IsLoaded;
 
@@ -273,6 +274,7 @@ namespace FFRK_LabMem.Config.UI
             if (checkBoxSlot3.Checked) labConfig.LetheTearsSlot |= (1 << 2);
             if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 1);
             if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 0);
+            labConfig.LetheTearsMasterOnly = checkBoxLetheTearsMasterOnly.Checked;
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
@@ -386,12 +388,15 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot3.Checked = ((labConfig.LetheTearsSlot >> 2) & 1) != 0;
             checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
             checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
+            checkBoxLetheTearsMasterOnly.Checked = labConfig.LetheTearsMasterOnly;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
-            
+
             // Painting priorities
+            // Backwards-compatble check
+            if (!labConfig.PaintingPriorityMap.ContainsKey("R")) labConfig.PaintingPriorityMap.Add("R",0);
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {
@@ -622,6 +627,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot3.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot4.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxSlot5.Enabled = checkBoxLabUseLetheTears.Checked;
+            checkBoxLetheTearsMasterOnly.Enabled = checkBoxLabUseLetheTears.Checked;
 
         }
 
@@ -688,8 +694,12 @@ namespace FFRK_LabMem.Config.UI
             
                 if (ret == DialogResult.Yes)
                 {
-                    await Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false);
-                    this.Close();
+                    this.WindowState = FormWindowState.Minimized;
+                    if (await Updates.DownloadInstallerAndRun(checkBoxPrerelease.Checked, false))
+                    {
+                        controller.Stop();
+                        Environment.Exit(0);
+                    }
                 }
             
             } else

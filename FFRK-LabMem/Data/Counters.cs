@@ -24,6 +24,7 @@ namespace FFRK_LabMem.Data
             {
                 {"Session", new CounterSet() { Name = "Current Session" } },
                 {"CurrentLab", new CounterSet() { Name = "Current Lab" } },
+                {"Group", new CounterSet() { Name = "Current Group" } },
                 {"Total", new CounterSet() { Name = "All Time" } },
             }
         );
@@ -34,6 +35,7 @@ namespace FFRK_LabMem.Data
         [Flags]
         public enum DropCategory
         {
+            UNKNOWN = 0,
             EQUIPMENT = 1 << 0,
             LABYRINTH_ITEM = 1 << 1,
             COMMON = 1 << 2,
@@ -105,6 +107,16 @@ namespace FFRK_LabMem.Data
         {
             runtimeStopwatch.Restart();
         }
+        public static async Task QuickExplore(string id, string name)
+        {
+            // Reset the current lab
+            ClearCurrentLab();
+            Counters.SetCurrentLab(id, name);
+
+            // Increment counter
+            await _instance.IncrementCounter("QuickExplores");
+
+        }
         public static async Task LabRunCompleted()
         {
             // Increment counters
@@ -112,10 +124,9 @@ namespace FFRK_LabMem.Data
             
             // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
-            
+
             // Reset the current lab id and buffer since it is now unkown
-            _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
-            _instance.CurrentLabId = null;
+            ClearCurrentLab();
 
             // Save to file
             await _instance.Save();
@@ -129,7 +140,7 @@ namespace FFRK_LabMem.Data
             _instance.IncrementRuntime("Battle", runtime);
             await _instance.IncrementCounter("BattlesWon");
         }
-        public static async Task TreausreOpened()
+        public static async Task TreasureOpened()
         {
             await _instance.IncrementCounter("TreasuresOpened");
         }
@@ -169,21 +180,21 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("EnemyIsUponYou");
         }
-        public static async Task FoundDrop(DropCategory category, string name, int rarity, int qty)
+        static async Task FoundDrop(DropCategory category, string name, int rarity, int qty, bool isQE = false)
         {
             if (_instance.DropCategories.HasFlag(category)){
 
                 if (category.Equals(DropCategory.EQUIPMENT))
                 {
-                    _instance.IncrementHE(name);
+                    _instance.IncrementHE(name, isQE);
                     await _instance.IncrementCounter("HeroEquipmentGot");
                 } else
                 {
                     // Filter materials drops
-                    if (rarity == 0) rarity = InferRarity(category, name);
+                    if (rarity == 0) rarity = CounterInference.InferRarity(category, name);
                     if (!(DropCategory.LABYRINTH_ITEM | DropCategory.COMMON).HasFlag(category) && rarity > 0 && rarity < _instance.MaterialsRarityFilter) return;
                     
-                    _instance.IncrementDrop(name, qty);
+                    _instance.IncrementDrop(name, qty, isQE);
                     await _instance.Save();
                 }
             }
@@ -198,6 +209,19 @@ namespace FFRK_LabMem.Data
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Unknown drop type: {0}", dropType);
+            }
+
+        }
+        public static async Task FoundQEDrop(string name, int qty, string imagePath)
+        {
+            var category = CounterInference.InferCategory(imagePath);
+            if (category != DropCategory.UNKNOWN)
+            {
+                // Passing 0 for rarity will use inference
+                await FoundDrop(category, name, 0, qty, true);
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not infer drop category for url: {0}", imagePath);
             }
 
         }
@@ -218,35 +242,37 @@ namespace FFRK_LabMem.Data
                 set.Value.Runtime[key] += amt;
             }
         }
-        private void IncrementHE(string name)
+        private void IncrementHE(string name, bool isQE = false)
         {
             foreach (var set in GetTargetCounterSets())
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
-                    if (set.Value.HeroEquipment.ContainsKey(name))
+                    var target = (isQE) ? set.Value.HeroEquipmentQE : set.Value.HeroEquipment;
+                    if (target.ContainsKey(name))
                     {
-                        set.Value.HeroEquipment[name] += 1;
+                        target[name] += 1;
                     } else
                     {
-                        set.Value.HeroEquipment.Add(name, 1);
+                        target.Add(name, 1);
                     }
                 }
             }
         }
-        private void IncrementDrop(string name, int amt = 1)
+        private void IncrementDrop(string name, int amt = 1, bool isQE = false)
         {
             foreach (var set in GetTargetCounterSets())
             {
                 if (!set.Key.Equals("Total") || LogDropsToTotalCounters)
                 {
-                    if (set.Value.Drops.ContainsKey(name))
+                    var target = (isQE) ? set.Value.DropsQE : set.Value.Drops;
+                    if (target.ContainsKey(name))
                     {
-                        set.Value.Drops[name] += amt;
+                        target[name] += amt;
                     }
                     else
                     {
-                        set.Value.Drops.Add(name, amt);
+                        target.Add(name, amt);
                     }
                 }
             }
@@ -255,77 +281,6 @@ namespace FFRK_LabMem.Data
             var ret = CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)).ToList();
             if (CurrentLabId == null) ret.Add(new KeyValuePair<string, CounterSet>("_Buffer", currentLabBufferSet));
             return ret;
-        }
-        private static int InferRarity(DropCategory category, string name)
-        {
-
-            // Motes - First character is a digit (star in name)
-            if (category == DropCategory.SPHERE_MATERIAL && char.IsDigit(name[0]))
-            {
-                return int.Parse(name[0].ToString());
-            }
-
-            // Crystals/Orbs
-            if (category == DropCategory.ABILITY_MATERIAL)
-            {
-                // Crystals are 6*
-                if (name.EndsWith("Crystal")) return 6;
-
-                // Orbs
-                if (name.EndsWith("Orb"))
-                {
-                    if (name.StartsWith("Major")) return 5;
-                    if (name.StartsWith("Greater")) return 4;
-                    if (name.StartsWith("Lesser")) return 2;
-                    if (name.StartsWith("Minor")) return 1;
-                    return 3;
-                }
-            }
-
-            // Upgrade materials
-            if (category == DropCategory.EQUIPMENT_SP_MATERIAL)
-            {
-                if (name.EndsWith("Crystal")) return 6;
-                if (name.StartsWith("Giant")) return 5;
-                if (name.StartsWith("Large")) return 4;
-                if (name.StartsWith("Small")) return 2;
-                if (name.StartsWith("Tiny")) return 1;
-                return 3;
-
-            }
-
-            // Tails
-            if (category == DropCategory.HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL)
-            {
-                if (name.StartsWith("Huge")) return 5;
-                if (name.StartsWith("Large")) return 4;
-                if (name.StartsWith("Medium")) return 3;
-                if (name.StartsWith("Small")) return 2;
-                return 1; // Does not exist?
-            }
-
-            // Eggs
-            if (category == DropCategory.GROW_EGG)
-            {
-                if (name.StartsWith("Major")) return 5;
-                if (name.StartsWith("Greater")) return 4;
-                if (name.StartsWith("Lesser")) return 2;
-                if (name.StartsWith("Minor")) return 1;
-                return 3;
-            }
-
-            // Arcana
-            if (category == DropCategory.BEAST_FOOD)
-            {
-                if (name.StartsWith("Major")) return 5;
-                if (name.StartsWith("Greater")) return 4;
-                if (name.StartsWith("Lesser")) return 2;
-                if (name.StartsWith("Minor")) return 1;  // Does not exist?
-                return 3;
-            }
-
-            return 0;
-
         }
         private async void SetLab(string id, string name)
         {
@@ -354,6 +309,12 @@ namespace FFRK_LabMem.Data
         public static void SetCurrentLab(string id, string name)
         {
             _instance.SetLab(id, name);
+        }
+        public static void ClearCurrentLab()
+        {
+            _instance.currentLabBufferSet.Reset(CounterSet.DataType.All);
+            _instance.CurrentLabId = null;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab cleared");
         }
         public async Task Load(string path = CONFIG_PATH)
         {
@@ -405,6 +366,22 @@ namespace FFRK_LabMem.Data
             // Now save the reset values
             await _instance.Save();
 
+        }
+
+        public static async Task ResetItem(string key)
+        {
+            if (key == null) return;
+            await _instance.Save();
+            foreach (var item in _instance.CounterSets)
+            {
+                if (item.Value.Counters.ContainsKey(key)) item.Value.Counters[key] = 0;
+                if (item.Value.Runtime.ContainsKey(key)) item.Value.Runtime[key] = new TimeSpan();
+                if (item.Value.HeroEquipment.ContainsKey(key)) item.Value.HeroEquipment.Remove(key);
+                if (item.Value.HeroEquipmentQE.ContainsKey(key)) item.Value.HeroEquipmentQE.Remove(key);
+                if (item.Value.Drops.ContainsKey(key)) item.Value.Drops.Remove(key);
+                if (item.Value.DropsQE.ContainsKey(key)) item.Value.DropsQE.Remove(key);
+            }
+            await _instance.Save();
         }
         
     }

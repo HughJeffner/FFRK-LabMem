@@ -17,6 +17,7 @@ namespace FFRK_LabMem.Machines
         public bool UsePotions { get; set; } = false;
         public bool UseOldCrashRecovery { get; set; } = false;
         public bool UseLetheTears { get; set; } = false;
+        public bool LetheTearsMasterOnly { get; set; } = false;
         public byte LetheTearsSlot { get; set; } = 0b11111;
         public int LetheTearsFatigue { get; set; } = 7;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
@@ -40,6 +41,7 @@ namespace FFRK_LabMem.Machines
             // Defaults
             this.PaintingPriorityMap = new Dictionary<string, int>
             {
+                { "R", 0 },
                 { "3", 1 },
                 { "1.3", 2 },
                 { "1.2", 3 },

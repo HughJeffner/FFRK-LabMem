@@ -284,6 +284,7 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
             Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", ParseAllData);
+            Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", ParseQEData);
         }
 
         private async Task Handle_GetDisplayPaintings(JObject data, String url)
@@ -576,6 +577,21 @@ namespace FFRK_LabMem.Machines
                 }
             }
             await Task.CompletedTask;
+        }
+
+        private async Task ParseQEData(JObject data, string url)
+        {
+
+            var node = data["current_node"];
+            if (node != null)
+            {
+                this.Data = data;
+                await Counters.QuickExplore(node["id"].ToString(), node["name"].ToString());
+                ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
+                await DataLogger.LogQEDrops(this);
+                Counters.ClearCurrentLab();
+            }
+
         }
 
         private async Task<bool> IsFinalFloor()

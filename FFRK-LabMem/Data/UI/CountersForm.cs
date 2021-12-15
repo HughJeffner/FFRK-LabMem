@@ -1,11 +1,14 @@
 ﻿using FFRK_LabMem.Config.UI;
 using FFRK_LabMem.Machines;
+using FFRK_Machines;
+using FFRK_Machines.Threading;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +33,7 @@ namespace FFRK_LabMem.Data.UI
             if (IsLoaded == false)
             {
                 IsLoaded = true;
-                Task mytask = Task.Run(() =>
+                Task mytask = Utility.StartSTATask(() =>
                 {
                     var form = new CountersForm
                     {
@@ -44,7 +47,9 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_Load(object sender, EventArgs e)
         {
             Counters.OnUpdated += Counters_OnUpdated;
+            comboBoxQE.SelectedIndex = 0;
             LoadLabs();
+            
         }
 
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -69,8 +74,8 @@ namespace FFRK_LabMem.Data.UI
         {
             LoadCounters();
             LoadRuntimes();
-            LoadDrops("HE", Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys).Distinct().OrderBy(s => s), true);
-            LoadDrops("Drops", Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys).Distinct().OrderBy(s => s), false);
+            LoadDrops("HE");
+            LoadDrops("Drops");
         }
 
         private void LoadLabs()
@@ -121,11 +126,13 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
                 newItem.SubItems[1].Text = item.Value.ToString();
                 newItem.SubItems[2].Text = GetSelectedLab().Counters[item.Key].ToString();
-                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Group"].Counters[item.Key].ToString();
+                newItem.SubItems[4].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
 
             }
 
@@ -153,23 +160,74 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
 
                 newItem.SubItems[1].Text = item.Value.ToString(runtimeFormat);
                 newItem.SubItems[2].Text = GetSelectedLab().Runtime[item.Key].ToString(runtimeFormat);
-                newItem.SubItems[3].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[3].Text = Counters.Default.CounterSets["Group"].Runtime[item.Key].ToString(runtimeFormat);
+                newItem.SubItems[4].Text = Counters.Default.CounterSets["Total"].Runtime[item.Key].ToString(runtimeFormat);
 
             }
 
         }
 
-        private void LoadDrops(string group, IOrderedEnumerable<string> keySet, bool isHE)
+        private void LoadDrops(string group)
         {
+            bool isHE = group.Equals("HE");
 
-            if (keySet.Count() == 0) RemoveItemsForGroup(group);
+            // Create sorting object
+            IComparer<string> sorter;
+            if (isHE)
+            {
+                sorter = new CounterComparers.HEComparer();
+            }
+            else 
+            { 
+                sorter = new CounterComparers.DropComparer();
+            }
 
-            foreach (var item in keySet)
+            // Set of all items common to all counter sets
+            IEnumerable<string> keySet;
+            if (isHE)
+            {
+                switch (comboBoxQE.SelectedIndex)
+                {
+                    case 1:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentCombined.Keys);
+                        break;
+                    case 2:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentQE.Keys);
+                        break;
+                    default:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys);
+                        break;
+                }
+            } 
+            else
+            {
+                switch (comboBoxQE.SelectedIndex)
+                {
+                    case 1:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsCombined.Keys);
+                        break;
+                    case 2:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsQE.Keys);
+                        break;
+                    default:
+                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys);
+                        break;
+                }
+            }
+            // Only distinct values
+            keySet = keySet.Distinct();
+
+            // Remove any items present in the list that do not match
+            CleanGroup(group, keySet);
+
+            // Iterate
+            foreach (var item in keySet.OrderBy(s => s, sorter))
             {
                 ListViewItem newItem;
                 if (listViewCounters.Items.ContainsKey(item))
@@ -185,12 +243,14 @@ namespace FFRK_LabMem.Data.UI
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
+                    newItem.SubItems.Add("");
                     listViewCounters.Items.Add(newItem);
                 }
 
                 SetSubItemText(newItem.SubItems[1], item, isHE, Counters.Default.CounterSets["Session"]);
                 SetSubItemText(newItem.SubItems[2], item, isHE, GetSelectedLab());
-                SetSubItemText(newItem.SubItems[3], item, isHE, Counters.Default.CounterSets["Total"]);
+                SetSubItemText(newItem.SubItems[3], item, isHE, Counters.Default.CounterSets["Group"]);
+                SetSubItemText(newItem.SubItems[4], item, isHE, Counters.Default.CounterSets["Total"]);
                 
             }
 
@@ -203,7 +263,19 @@ namespace FFRK_LabMem.Data.UI
 
         private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, CounterSet counterSet)
         {
-            var target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
+            SortedDictionary<string, int> target;
+            switch (comboBoxQE.SelectedIndex)
+            {
+                case 1:
+                    target = (isHE) ? counterSet.HeroEquipmentCombined : counterSet.DropsCombined;
+                    break;
+                case 2:
+                    target = (isHE) ? counterSet.HeroEquipmentQE : counterSet.DropsQE;
+                    break;
+                default:
+                    target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
+                    break;
+            }
             if (target.ContainsKey(item))
             {
                 subItem.Text = target[item].ToString();
@@ -214,12 +286,12 @@ namespace FFRK_LabMem.Data.UI
             }
         }
 
-        private void RemoveItemsForGroup(string group)
+        private void CleanGroup(string group, IEnumerable<string> keys)
         {
             List<ListViewItem> remove = new List<ListViewItem>();
             foreach (ListViewItem item in listViewCounters.Groups[group].Items)
             {
-                remove.Add(item);
+                if (!keys.Contains(item.Text)) remove.Add(item);
             }
 
             foreach (ListViewItem item in remove)
@@ -251,12 +323,17 @@ namespace FFRK_LabMem.Data.UI
             }
             listViewCounters.Items.Clear();
             LoadAll();
-
         }
 
-        private void buttonSettings_Click(object sender, EventArgs e)
+        private async void ButtonExport_Click(object sender, EventArgs e)
         {
-            ConfigForm.CreateAndShow(new Config.ConfigHelper(), controller, 6);
+            saveFileDialog1.InitialDirectory = "./data/";
+            saveFileDialog1.FileName = String.Format("counters_{0:yyyyMMdd}.csv", DateTime.Now);
+            var result = saveFileDialog1.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                await SaveListViewToCSV(listViewCounters, saveFileDialog1.FileName);
+            }
         }
 
         private void comboBoxLab_SelectedIndexChanged(object sender, EventArgs e)
@@ -268,6 +345,53 @@ namespace FFRK_LabMem.Data.UI
                 buttonCountersResetLab.Tag = Counters.Default.CounterSets.FirstOrDefault(x => x.Value == selectedLab).Key;
                 LoadAll();
             }
+        }
+
+        private async void listViewCounters_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || e.KeyCode != Keys.Delete) return;
+            var target = listViewCounters.SelectedItems[0];
+            var response = MessageBox.Show($"Are you sure you wish to delete {target.Text} in all counters?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (response == DialogResult.Yes) await Counters.ResetItem(target.Name);
+        }
+
+        private async Task SaveListViewToCSV(ListView listView, string fileName)
+        {
+
+            List<string> row = new List<string>();
+            using (var writer = new StringWriter())
+            {
+                // Header row
+                foreach (ColumnHeader item in listView.Columns)
+                {
+                    row.Add(item.Text);
+                }
+                row[0] = "Item";
+                DataLogger.WriteCSVLine(writer, row.ToArray(), row.Count);
+
+                // Items
+                foreach (ListViewItem item in listView.Items)
+                {
+                    for (int i = 0; i < item.SubItems.Count; i++)
+                    {
+                        row[i] = item.SubItems[i].Text;
+                        if (row[i].Equals("-")) row[i] = "0";
+                    }
+                    DataLogger.WriteCSVLine(writer, row.ToArray(), row.Count);
+                }
+                try
+                {
+                    using (var stream = new StreamWriter(fileName, false))
+                    {
+                        await stream.WriteAsync(writer.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Error writing to file: {0}", ex.Message);
+                }
+            }
+
         }
     }
 }

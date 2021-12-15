@@ -18,7 +18,8 @@ namespace FFRK_LabMem.Config.UI
             {"4", "Exploration Painting"},
             {"5", "Onslaught Painting"},
             {"6", "Portal Painting"},
-            {"7", "Restoration Painting"}
+            {"7", "Restoration Painting"},
+            {"R", "Radiant Painting"}
         };
 
         public static Dictionary<String, String> Treasures = new Dictionary<string, string>() {
@@ -75,6 +76,7 @@ namespace FFRK_LabMem.Config.UI
             {"FFRKRestarts", "FFRK Restarted"},
             {"HeroEquipmentGot", "Hero Equipment Found"},
             {"EnemyIsUponYou", "The Enemy is Upon You!"},
+            {"QuickExplores", "Quick Explores"},
         };
 
         public static Dictionary<Counters.DropCategory, String> DropCategories = new Dictionary<Counters.DropCategory, string>() {
