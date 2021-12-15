@@ -89,7 +89,7 @@ namespace FFRK_LabMem.Data
             if (imagePath.Contains("ability_material")) return DropCategory.ABILITY_MATERIAL;
             if (imagePath.Contains("equipment_sp_material")) return DropCategory.EQUIPMENT_SP_MATERIAL;
             if (imagePath.Contains("historia_crystal_enhancement_material")) return DropCategory.HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL;
-            if (imagePath.Contains("grow_egg")) return DropCategory.GROW_EGG;
+            if (imagePath.Contains("growegg")) return DropCategory.GROW_EGG;
             if (imagePath.Contains("beast_food")) return DropCategory.BEAST_FOOD;
             if (imagePath.Contains("equipment")) return DropCategory.EQUIPMENT;
             return DropCategory.UNKNOWN;
