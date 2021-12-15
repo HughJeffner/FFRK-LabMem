@@ -587,6 +587,7 @@ namespace FFRK_LabMem.Machines
             {
                 this.Data = data;
                 await Counters.QuickExplore(node["id"].ToString(), node["name"].ToString());
+                ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
                 await DataLogger.LogQEDrops(this);
                 Counters.ClearCurrentLab();
             }
