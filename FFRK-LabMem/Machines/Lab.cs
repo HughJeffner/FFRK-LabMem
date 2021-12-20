@@ -67,6 +67,7 @@ namespace FFRK_LabMem.Machines
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent quickExploreAutoResetEvent = new AsyncAutoResetEvent(false);
         private int restartTries = 0;
 
         private class BuddyInfo
@@ -456,6 +457,8 @@ namespace FFRK_LabMem.Machines
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
+            quickExploreAutoResetEvent.Reset();
+            restartTries = 0;
             disableSafeRequested = false;
 
         }
@@ -590,6 +593,7 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
                 await DataLogger.LogQEDrops(this);
                 Counters.ClearCurrentLab();
+                quickExploreAutoResetEvent.Set();
             }
 
         }

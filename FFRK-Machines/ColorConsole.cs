@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FFRK_Machines
 {
@@ -170,6 +171,36 @@ namespace FFRK_Machines
             }
             if (selected.Count == 0) return "None";
             return String.Join(",", selected.ToArray());
+        }
+
+        public static string ReadLine(TimeSpan timeout)
+        {
+            Task<string> task = Task.Factory.StartNew(Console.ReadLine);
+
+            string result = Task.WaitAny(new Task[] { task }, timeout) == 0
+                ? task.Result
+                : string.Empty;
+            return result;
+        }
+
+        public static ConsoleKeyInfo ReadKey(int timeout)
+        {
+
+            ConsoleKeyInfo k = new ConsoleKeyInfo();
+            for (int cnt = timeout; cnt > 0; cnt--)
+            {
+                if (Console.KeyAvailable)
+                {
+                    k = Console.ReadKey();
+                    break;
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+            return k;
+
         }
 
         public class LogFileBuffer : ConcurrentQueue<string>

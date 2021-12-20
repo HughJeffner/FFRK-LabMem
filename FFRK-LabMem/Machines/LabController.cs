@@ -107,5 +107,71 @@ namespace FFRK_LabMem.Machines
             }
 
         }
+
+        public void QuickExplore()
+        {
+
+            if (Enabled)
+            {
+
+                int times = 0;
+                int max = 0;
+
+                // Prompt for times
+                if (this.Machine.Config.RestartLab)
+                {
+                    ColorConsole.Write("Number of times to QE? [0-9] (0 for unlimited): 0");
+                    Console.CursorLeft -= 1;
+                    var key = ColorConsole.ReadKey(10);
+                    ColorConsole.WriteLine("");
+                    max = key.KeyChar - '0';
+                    if (key.Key == ConsoleKey.Enter) max = 0;
+
+                } else
+                {
+                    max = 1;
+                }
+
+                // Check for cancel
+                if (max < 0 || max > 9)
+                {
+                    ColorConsole.WriteLine("Quick Explore cancelled");
+                    return;
+                }
+
+                // Run as new task
+                Task.Run(async () =>
+                {
+
+                    ColorConsole.WriteLine("Starting Quick Explore ('D' to Disable)");
+                    while (this.Enabled && (max==0 || times < max))
+                    {
+                        try
+                        {
+                            ColorConsole.WriteLine("Quick explore {0} of {1}", times + 1, max == 0 ? "Unlimited" : max.ToString());
+                            if (!await this.Machine.QuickExplore()) break;
+                            times += 1;
+                        }
+                        catch (OperationCanceledException) { }
+                        catch (Exception ex)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                        }
+                        if (!this.Machine.Config.RestartLab)
+                        {
+                            ColorConsole.WriteLine("Stopping because Restart Lab control not enabled");
+                            break;
+                        }
+                    }
+                    ColorConsole.WriteLine($"Quick explore(s) complete, {times} total");
+
+                });
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, "Bot disabled, enable with 'E' first");
+            }
+
+        }
+
     }
 }
