@@ -2,6 +2,7 @@
 using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using FFRK_Machines.Threading;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,9 @@ namespace FFRK_LabMem.Data.UI
 
         public static bool IsLoaded { get; set; } = false;
         private LabController controller = null;
+        private HashSet<string> PerfectPassives { get; set; } = new HashSet<string>();
+        private const string CONFIG_PATH = "./Data/counters_passives.json";
+
 
         public CountersForm()
         {
@@ -48,6 +52,7 @@ namespace FFRK_LabMem.Data.UI
         {
             Counters.OnUpdated += Counters_OnUpdated;
             comboBoxQE.SelectedIndex = 0;
+            LoadPassives();
             LoadLabs();
             
         }
@@ -55,6 +60,7 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Counters.OnUpdated -= Counters_OnUpdated;
+            SavePassives();
             IsLoaded = false;
         }
 
@@ -94,6 +100,30 @@ namespace FFRK_LabMem.Data.UI
                 comboBoxLab.Items.Add(item.Value);
             }
             comboBoxLab.SelectedIndex = 0;
+        }
+
+        private void LoadPassives()
+        {
+            try
+            {
+                JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), PerfectPassives);
+            }
+            catch (FileNotFoundException) { }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading passives file: {0}", ex);
+            }
+        }
+
+        private void SavePassives()
+        {
+            try
+            {
+                File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(this.PerfectPassives, Formatting.Indented));
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void LoadCounters()
@@ -240,6 +270,7 @@ namespace FFRK_LabMem.Data.UI
                     newItem.Group = listViewCounters.Groups[group];
                     newItem.Name = item;
                     newItem.Text = item;
+                    if (isHE && PerfectPassives.Contains(item)) newItem.BackColor = Color.LightGreen;
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
@@ -395,6 +426,27 @@ namespace FFRK_LabMem.Data.UI
                 }
             }
 
+        }
+
+        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || listViewCounters.SelectedItems[0].Group.Name != "HE") return;
+            var item = listViewCounters.SelectedItems[0].Name;
+            if (PerfectPassives.Contains(item))
+            {
+                PerfectPassives.Remove(item);
+            } else
+            {
+                PerfectPassives.Add(item);
+            }
+            listViewCounters.SelectedItems[0].BackColor = toolStripMenuItem8.Checked ? Color.LightGreen : listViewCounters.BackColor;
+        }
+
+        private void listViewCounters_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || listViewCounters.SelectedItems[0].Group.Name != "HE") return;
+            toolStripMenuItem8.Checked = listViewCounters.SelectedItems[0].BackColor.Equals(Color.LightGreen);
+            if (e.Button == MouseButtons.Right) contextMenuStrip2.Show(listViewCounters, e.X, e.Y);
         }
     }
 }
