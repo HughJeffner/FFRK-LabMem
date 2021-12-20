@@ -236,6 +236,10 @@ namespace FFRK_LabMem.Machines
             // Restart watchdog if failed
             if (!result)
             {
+
+                // Interrupt tasks if restart failed just in case 
+                await InterruptTasks();
+
                 // Limit number of retries
                 if (restartTries < Config.WatchdogMaxRetries)
                 {
