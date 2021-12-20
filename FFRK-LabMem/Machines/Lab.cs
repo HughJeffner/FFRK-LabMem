@@ -84,7 +84,7 @@ namespace FFRK_LabMem.Machines
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.Watchdog = new LabWatchdog(adb, config.WatchdogHangMinutes, config.WatchdogCrashSeconds);
+            this.Watchdog = new LabWatchdog(this);
             this.Watchdog.Timeout += Watchdog_Timeout;
 
         }
@@ -210,33 +210,12 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-
-            // Ignore hang if in battle
-            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle)
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang because in battle");
-                return;
-            }
-
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
-            // On a timer thread, need to handle errors
-            bool result = false;
-            try
+            //Restart ffrk and get result, restart watchdog if failed
+            if (!await RestartFFRK())
             {
-                // Restart ffrk and get result
-                result = await RestartFFRK();
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-            }
-
-            // Restart watchdog if failed
-            if (!result)
-            {
-
+                
                 // Interrupt tasks if restart failed just in case 
                 await InterruptTasks();
 
@@ -254,6 +233,7 @@ namespace FFRK_LabMem.Machines
                 }
             } else
             {
+                // Restart success, reset tries
                 restartTries = 0;
             }
 

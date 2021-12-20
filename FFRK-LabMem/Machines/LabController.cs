@@ -61,6 +61,7 @@ namespace FFRK_LabMem.Machines
         protected override Lab CreateMachine(LabConfiguration config)
         {
             config.WatchdogHangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3);
+            config.WatchdogBattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             config.WatchdogCrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             config.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10);
             return new Lab(this.Adb, config);

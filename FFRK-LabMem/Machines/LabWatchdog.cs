@@ -12,9 +12,11 @@ namespace FFRK_LabMem.Machines
     public class LabWatchdog
     {
         private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
+        private readonly Timer watchdogBattleTimer = new Timer(Int32.MaxValue);
         private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
-        private readonly Adb adb;
+        private readonly Lab lab;
         public double HangCheckInterval => watchdogHangTimer.Interval;
+        public double BattleCheckInterval => watchdogBattleTimer.Interval;
         public double CrashCheckInterval => watchdogCrashTimer.Interval;
         public bool Enabled { get; set; } = false;
 
@@ -23,8 +25,9 @@ namespace FFRK_LabMem.Machines
         public class WatchdogEventArgs
         {
             public enum TYPE {
-                Hang = 0,
-                Crash = 1,
+                Hang,
+                Crash,
+                LongBattle
             }
             public ElapsedEventArgs ElapsedEventArgs { get; set; }
             public TYPE Type { get; set; }
@@ -34,22 +37,30 @@ namespace FFRK_LabMem.Machines
             }
         }
 
-        public LabWatchdog(Adb adb, int hangCheckMinutes, int crashCheckSeconds) : this(
-            adb,
-            TimeSpan.FromMinutes(hangCheckMinutes).TotalMilliseconds, 
-            TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds
+        public LabWatchdog(Lab lab) : this(
+            lab,
+            TimeSpan.FromMinutes(lab.Config.WatchdogHangMinutes).TotalMilliseconds, 
+            TimeSpan.FromMinutes(lab.Config.WatchdogBattleMinutes).TotalMilliseconds,
+            TimeSpan.FromSeconds(lab.Config.WatchdogCrashSeconds).TotalMilliseconds
         ) { }
 
-        public LabWatchdog(Adb adb, double hangCheckInterval, double crashCheckInterval)
+        public LabWatchdog(Lab lab, double hangCheckInterval, double battleCheckInterval, double crashCheckInterval)
         {
 
-            this.adb = adb;
+            this.lab = lab;
 
             watchdogHangTimer.AutoReset = false;
             if (hangCheckInterval > 0)
             {
                 watchdogHangTimer.Interval = hangCheckInterval;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
+            }
+
+            watchdogBattleTimer.AutoReset = false;
+            if (battleCheckInterval > 0)
+            {
+                watchdogBattleTimer.Interval = battleCheckInterval;
+                watchdogBattleTimer.Elapsed += WatchdogBattleTimer_Elapsed;
             }
 
             watchdogCrashTimer.AutoReset = true;
@@ -70,10 +81,12 @@ namespace FFRK_LabMem.Machines
             if (!this.Enabled) return;
 
             watchdogHangTimer.Stop();
+            watchdogBattleTimer.Stop();
             watchdogCrashTimer.Stop();
             if (restart)
             {
                 watchdogHangTimer.Start();
+                watchdogBattleTimer.Start();
                 watchdogCrashTimer.Start();
                 ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Kicked");
             }
@@ -101,10 +114,11 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Disabled");
             this.Enabled = false;
             watchdogHangTimer.Stop();
+            watchdogBattleTimer.Stop();
             watchdogCrashTimer.Stop();
         }
 
-        public void Update(int hangCheckMinutes, int crashCheckSeconds)
+        public void Update(int hangCheckMinutes, int battleCheckMinutes, int crashCheckSeconds)
         {
             watchdogHangTimer.Elapsed -= WatchdogHangTimer_Elapsed;
             if (hangCheckMinutes > 0)
@@ -112,18 +126,24 @@ namespace FFRK_LabMem.Machines
                 watchdogHangTimer.Interval = TimeSpan.FromMinutes(hangCheckMinutes).TotalMilliseconds;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
             }
+            watchdogBattleTimer.Elapsed -= WatchdogBattleTimer_Elapsed;
+            if (battleCheckMinutes > 0)
+            {
+                watchdogBattleTimer.Interval = TimeSpan.FromMinutes(battleCheckMinutes).TotalMilliseconds;
+                watchdogBattleTimer.Elapsed += WatchdogBattleTimer_Elapsed;
+            }
             watchdogCrashTimer.Elapsed -= WatchdogCrashTimer_Elapsed;
             if (crashCheckSeconds > 0)
             {
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(crashCheckSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}m, crash:{1}s", hangCheckMinutes, crashCheckSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}m, battle:{1}m, crash:{2}s", hangCheckMinutes, battleCheckMinutes, crashCheckSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var state = await adb.IsPackageRunning(Adb.FFRK_PACKAGE_NAME, System.Threading.CancellationToken.None);
+            var state = await lab.Adb.IsPackageRunning(Adb.FFRK_PACKAGE_NAME, System.Threading.CancellationToken.None);
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "FFRK state: {0}", state ? "Running" : "Not Running");
             if (!state)
             {
@@ -133,14 +153,46 @@ namespace FFRK_LabMem.Machines
 
         private void WatchdogHangTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+
+            // Ignore if in battle
+            if (lab.StateMachine.State == Lab.State.Battle)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang timer because in battle");
+                return;
+            }
+
             InvokeTimeout(sender, WatchdogEventArgs.TYPE.Hang, e);
+        }
+
+        private void WatchdogBattleTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+
+            // Ignore if not in battle
+            if (lab.StateMachine.State != Lab.State.Battle)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring battle timer because not in battle");
+                return;
+            }
+
+            InvokeTimeout(sender, WatchdogEventArgs.TYPE.LongBattle, e);
         }
 
         private void InvokeTimeout(object sender, WatchdogEventArgs.TYPE type, ElapsedEventArgs e)
         {
             var e2 = new WatchdogEventArgs() { ElapsedEventArgs = e, Type = type };
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Fault: {0}", e2);
-            Timeout?.Invoke(sender, e2);
+
+            // On a timer thread, need to handle errors
+            try
+            {
+                Timeout?.Invoke(sender, e2);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+            }
+            
         }
     }
 }
