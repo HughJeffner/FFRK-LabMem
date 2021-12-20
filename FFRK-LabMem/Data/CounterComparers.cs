@@ -54,12 +54,14 @@ namespace FFRK_LabMem.Data
             {
                 var start = name.IndexOf('(') + 1;
                 var realm = name.Substring(start, name.Length - start - 1);
-                if (realm.Equals("FFT")) return 16;
-                if (realm.Equals("Type-0")) return 17;
-                if (realm.Equals("Beyond")) return 19;
-                return ConvertRomanToInt(realm);
+                if (realm.EndsWith("-DoC")) return 71;
+                if (realm.EndsWith("-CC")) return 72;
+                if (realm.Equals("FFT")) return 160;
+                if (realm.Equals("Type-0")) return 170;
+                if (realm.Equals("Beyond")) return 190;
+                return ConvertRomanToInt(realm) * 10;
             }
-            return 18;
+            return 180;
         }
 
         private static int ConvertRomanToInt(String romanNumeral) {
