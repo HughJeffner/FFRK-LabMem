@@ -346,7 +346,7 @@ namespace FFRK_LabMem.Data.UI
             var menuItem = (ToolStripMenuItem)sender;
             string menuItemTag = menuItem.Tag.ToString();
             string menuItemText = menuItem.Text;
-            if (button == buttonCountersResetLab) buttonText = comboBoxLab.Text;
+            if (button == buttonCountersResetLab) buttonText = "reset " + comboBoxLab.Text;
 
             var result = MessageBox.Show(this, $"Are you sure you want to {buttonText} {menuItemText}?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
