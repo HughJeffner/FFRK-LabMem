@@ -377,7 +377,9 @@ namespace FFRK_LabMem.Data.UI
                 var selectedLab = GetSelectedLab();
                 listViewCounters.Columns[2].Text = selectedLab.Name;
                 buttonCountersResetLab.Tag = Counters.Default.CounterSets.FirstOrDefault(x => x.Value == selectedLab).Key;
+                if (sender == comboBoxQE) CleanGroup("HE", new List<string>());
                 LoadAll();
+                
             }
         }
 
