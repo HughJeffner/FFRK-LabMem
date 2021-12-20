@@ -424,7 +424,7 @@ namespace FFRK_LabMem.Machines
             if (Config.UseLetheTears)
             {
                 // Either a master painting or master only option disabled
-                if (!Config.LetheTearsMasterOnly || (int)this.CurrentPainting?["type"] == 2) { 
+                if (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) { 
                     // Wait for fatigue values downloaded on another thread
                     var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
                     if (gotFatigueValues)
