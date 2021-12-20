@@ -30,10 +30,10 @@ namespace FFRK_LabMem.Data.UI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup5 = new System.Windows.Forms.ListViewGroup("Counters", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup6 = new System.Windows.Forms.ListViewGroup("Runtime", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup7 = new System.Windows.Forms.ListViewGroup("Hero Equipment", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup8 = new System.Windows.Forms.ListViewGroup("Drops", System.Windows.Forms.HorizontalAlignment.Left);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CountersForm));
             this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.buttonCountersResetLab = new System.Windows.Forms.Button();
@@ -112,19 +112,19 @@ namespace FFRK_LabMem.Data.UI
             this.columnHeader1,
             this.columnHeader13});
             this.listViewCounters.FullRowSelect = true;
-            listViewGroup1.Header = "Counters";
-            listViewGroup1.Name = "Counters";
-            listViewGroup2.Header = "Runtime";
-            listViewGroup2.Name = "Runtime";
-            listViewGroup3.Header = "Hero Equipment";
-            listViewGroup3.Name = "HE";
-            listViewGroup4.Header = "Drops";
-            listViewGroup4.Name = "Drops";
+            listViewGroup5.Header = "Counters";
+            listViewGroup5.Name = "Counters";
+            listViewGroup6.Header = "Runtime";
+            listViewGroup6.Name = "Runtime";
+            listViewGroup7.Header = "Hero Equipment";
+            listViewGroup7.Name = "HE";
+            listViewGroup8.Header = "Drops";
+            listViewGroup8.Name = "Drops";
             this.listViewCounters.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2,
-            listViewGroup3,
-            listViewGroup4});
+            listViewGroup5,
+            listViewGroup6,
+            listViewGroup7,
+            listViewGroup8});
             this.listViewCounters.HideSelection = false;
             this.listViewCounters.Location = new System.Drawing.Point(12, 42);
             this.listViewCounters.Name = "listViewCounters";
@@ -293,15 +293,15 @@ namespace FFRK_LabMem.Data.UI
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem8});
             this.contextMenuStrip2.Name = "contextMenuStrip1";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(198, 26);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(207, 48);
             // 
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.CheckOnClick = true;
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(197, 22);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(206, 22);
             this.toolStripMenuItem8.Tag = "";
-            this.toolStripMenuItem8.Text = "Perfect Passive Aquired";
+            this.toolStripMenuItem8.Text = "Perfect Passive Acquired ";
             this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripMenuItem8_Click);
             // 
             // CountersForm
