@@ -914,6 +914,8 @@ namespace FFRK_LabMem.Machines
             if (recoverStopwatch.Elapsed > loopTimeout)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
+                // Interrupt tasks if restart failed just in case 
+                await InterruptTasks();
                 return false;
             }
             else

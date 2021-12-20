@@ -181,18 +181,7 @@ namespace FFRK_LabMem.Machines
         {
             var e2 = new WatchdogEventArgs() { ElapsedEventArgs = e, Type = type };
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Fault: {0}", e2);
-
-            // On a timer thread, need to handle errors
-            try
-            {
-                Timeout?.Invoke(sender, e2);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-            }
-            
+            Timeout?.Invoke(sender, e2);
         }
     }
 }

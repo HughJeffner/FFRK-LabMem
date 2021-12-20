@@ -212,29 +212,37 @@ namespace FFRK_LabMem.Machines
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
-            //Restart ffrk and get result, restart watchdog if failed
-            if (!await RestartFFRK())
+            // On a timer thread, need to handle errors
+            try
             {
-                
-                // Interrupt tasks if restart failed just in case 
-                await InterruptTasks();
+                //Restart ffrk and get result, restart watchdog if failed
+                if (!await RestartFFRK())
+                {
 
-                // Limit number of retries
-                if (restartTries < Config.WatchdogMaxRetries)
-                {
-                    restartTries += 1;
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
-                    Watchdog.Kick();
-                } else
-                {
-                    // Retries exhausted
-                    await Notify(Notifications.EventType.LAB_FAULT);
-                    OnMachineFinished();
+                    // Limit number of retries
+                    if (restartTries < Config.WatchdogMaxRetries)
+                    {
+                        restartTries += 1;
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
+                        Watchdog.Kick();
+                    }
+                    else
+                    {
+                        // Retries exhausted
+                        await Notify(Notifications.EventType.LAB_FAULT);
+                        OnMachineFinished();
+                    }
                 }
-            } else
+                else
+                {
+                    // Restart success, reset tries
+                    restartTries = 0;
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
             {
-                // Restart success, reset tries
-                restartTries = 0;
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
 
         }
