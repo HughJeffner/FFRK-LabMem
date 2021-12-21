@@ -13,6 +13,7 @@ namespace FFRK_LabMem.Machines
     {
 
         private ConfigHelper configHelper;
+        private bool isQuickExploring = false;
 
         public static async Task<LabController> CreateAndStart(ConfigHelper config)
         {
@@ -115,18 +116,22 @@ namespace FFRK_LabMem.Machines
             if (Enabled)
             {
 
+                if (isQuickExploring)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Quick Explore already in progress");
+                    return;
+                }
+                isQuickExploring = true;
+
                 int times = 0;
                 int max = 0;
 
                 // Prompt for times
                 if (this.Machine.Config.RestartLab)
                 {
-                    ColorConsole.Write("Number of times to QE? [0-9] (0 for unlimited): 0");
+                    ColorConsole.Write("Number of times to QE? [0-999] (0 for unlimited): 0");
                     Console.CursorLeft -= 1;
-                    var key = ColorConsole.ReadKey(10);
-                    ColorConsole.WriteLine("");
-                    max = key.KeyChar - '0';
-                    if (key.Key == ConsoleKey.Enter) max = 0;
+                    max = ColorConsole.ReadNumber(10);
 
                 } else
                 {
@@ -134,9 +139,10 @@ namespace FFRK_LabMem.Machines
                 }
 
                 // Check for cancel
-                if (max < 0 || max > 9)
+                if (max < 0)
                 {
                     ColorConsole.WriteLine("Quick Explore cancelled");
+                    isQuickExploring = false;
                     return;
                 }
 
@@ -165,7 +171,7 @@ namespace FFRK_LabMem.Machines
                         }
                     }
                     ColorConsole.WriteLine($"Quick explore(s) complete, {times} total");
-
+                    isQuickExploring = false;
                 });
             } else
             {

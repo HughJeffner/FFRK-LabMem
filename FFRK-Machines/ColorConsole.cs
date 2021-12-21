@@ -183,23 +183,68 @@ namespace FFRK_Machines
             return result;
         }
 
-        public static ConsoleKeyInfo ReadKey(int timeout)
+        public static ConsoleKeyInfo? ReadKey(int timeout, bool intercept = false)
         {
 
-            ConsoleKeyInfo k = new ConsoleKeyInfo();
-            for (int cnt = timeout; cnt > 0; cnt--)
+            ConsoleKeyInfo? k = null;
+            for (int cnt = timeout*4; cnt > 0; cnt--)
             {
                 if (Console.KeyAvailable)
                 {
-                    k = Console.ReadKey();
+                    k = Console.ReadKey(intercept);
                     break;
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(250);
                 }
             }
             return k;
+
+        }
+
+        public static int ReadNumber(int timeout, int lengh = 3)
+        {
+
+            ConsoleKeyInfo? key;
+            string _val = "";
+
+            do
+            {
+                key = ReadKey(timeout, true);
+                if (!key.HasValue) {
+                    _val = "-1";
+                    break;
+                }
+
+                if (key.Value.Key != ConsoleKey.Backspace && key.Value.Key != ConsoleKey.Escape)
+                {
+                    bool _x = double.TryParse(key.Value.KeyChar.ToString(), out _);
+                    if (_x)
+                    {
+                        _val += key.Value.KeyChar;
+                        Console.Write(key.Value.KeyChar);
+                    }
+                }
+                else
+                {
+                    if (key.Value.Key == ConsoleKey.Backspace && _val.Length > 0)
+                    {
+                        _val = _val.Substring(0, (_val.Length - 1));
+                        Console.Write("\b \b");
+                    }
+                    if (key.Value.Key == ConsoleKey.Escape)
+                    {
+                        _val = "-1";
+                        break;
+                    }
+                }
+            }
+            while (key.Value.Key != ConsoleKey.Enter && _val.Length < lengh);
+            ColorConsole.WriteLine("");
+
+            if (_val.Length == 0) return 0;
+            return int.Parse(_val);
 
         }
 
