@@ -100,8 +100,7 @@ namespace FFRK_LabMem.Data
         {
             await Save();
             runtimeStopwatch.Stop();
-            CurrentLabId = null;
-            currentLabBufferSet.Reset(CounterSet.DataType.All);
+            ClearCurrentLab();
         }
         private void Controller_OnEnabled(object sender, EventArgs e)
         {
