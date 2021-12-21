@@ -19,6 +19,13 @@ namespace FFRK_LabMem.Data
             Drops = 1 << 4,
             QEDrops = 1 << 5
         }
+
+        public enum FilterType
+        {
+            ExcludeQE = 0,
+            IncludeQE = 1,
+            OnlyQE = 2
+        }
         public Dictionary<string, int> Counters { get; set; }
         public Dictionary<string, TimeSpan> Runtime { get; set; }
         public SortedDictionary<string, int> HeroEquipment { get; set; }
@@ -64,6 +71,32 @@ namespace FFRK_LabMem.Data
                     }
                 }
                 return ret;
+            }
+        }
+
+        public SortedDictionary<string, int> GetHEFiltered(FilterType filter)
+        {
+            switch (filter)
+            {
+                case FilterType.IncludeQE:
+                    return HeroEquipmentCombined;
+                case FilterType.OnlyQE:
+                    return HeroEquipmentQE;
+                default:
+                    return HeroEquipment;
+            }
+        }
+
+        public SortedDictionary<string, int> GetDropsFiltered(FilterType filter)
+        {
+            switch (filter)
+            {
+                case FilterType.IncludeQE:
+                    return DropsCombined;
+                case FilterType.OnlyQE:
+                    return DropsQE;
+                default:
+                    return Drops;
             }
         }
 

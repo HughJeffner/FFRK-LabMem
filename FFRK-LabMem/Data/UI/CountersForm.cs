@@ -222,36 +222,21 @@ namespace FFRK_LabMem.Data.UI
             IEnumerable<string> keySet;
             if (isHE)
             {
-                switch (comboBoxQE.SelectedIndex)
-                {
-                    case 1:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentCombined.Keys);
-                        break;
-                    case 2:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentQE.Keys);
-                        break;
-                    default:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys);
-                        break;
-                }
+                keySet = keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).Keys);
             } 
             else
             {
-                switch (comboBoxQE.SelectedIndex)
-                {
-                    case 1:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsCombined.Keys);
-                        break;
-                    case 2:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsQE.Keys);
-                        break;
-                    default:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys);
-                        break;
-                }
+                keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.GetDropsFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).Keys);
             }
+
             // Only distinct values
             keySet = keySet.Distinct();
+
+            // If stage selected then only show its HE
+            if (isHE && comboBoxLab.SelectedIndex > 0)
+            {
+                keySet = keySet.Where(i => GetSelectedLab().GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).ContainsKey(i));
+            }
 
             // Remove any items present in the list that do not match
             CleanGroup(group, keySet);
@@ -295,18 +280,8 @@ namespace FFRK_LabMem.Data.UI
         private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, CounterSet counterSet)
         {
             SortedDictionary<string, int> target;
-            switch (comboBoxQE.SelectedIndex)
-            {
-                case 1:
-                    target = (isHE) ? counterSet.HeroEquipmentCombined : counterSet.DropsCombined;
-                    break;
-                case 2:
-                    target = (isHE) ? counterSet.HeroEquipmentQE : counterSet.DropsQE;
-                    break;
-                default:
-                    target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
-                    break;
-            }
+            target = (isHE) ? counterSet.GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex) : 
+                counterSet.GetDropsFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex);
             if (target.ContainsKey(item))
             {
                 subItem.Text = target[item].ToString();
