@@ -27,7 +27,14 @@ namespace FFRK_LabMem.Data
             {
                 var first = ExtractRealmValue(x);
                 var second = ExtractRealmValue(y);
-                return first.CompareTo(second);
+                var cmp1 = first.CompareTo(second);
+                if (cmp1 == 0)
+                {
+                    return x.CompareTo(y);
+                } else
+                {
+                    return cmp1;
+                }
             }
         }
 

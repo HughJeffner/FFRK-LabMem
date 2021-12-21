@@ -109,6 +109,7 @@ namespace FFRK_LabMem.Data.UI
                 JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), PerfectPassives);
             }
             catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading passives file: {0}", ex);

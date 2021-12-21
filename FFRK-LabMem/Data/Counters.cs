@@ -322,6 +322,8 @@ namespace FFRK_LabMem.Data
             {
                 JsonConvert.PopulateObject(File.ReadAllText(path), CounterSets);
             }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading counters file: {0}", ex);
