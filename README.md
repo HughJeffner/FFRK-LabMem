@@ -149,10 +149,5 @@ For a major release copy all files.  You can optionally keep your configuration 
 Please keep your `rootCert.pfx` file, or you will have to re-install the certificate on the android device
 
 
-## Notes
-When downloading and running the released binaries it's possible you may get a warning from windows defender or other antivirus.  I think this may be from two issues: 
-
-1. Neither the installer or binary exe is code-signed 
-2. All of the .dll dependencies have been merged into the .exe file
-
-Maybe I'll get code signing working in the future but for now all I can do is assure you that the provided binaries were compiled directly from the tagged source
+## Common Issues / FAQ
+Check https://github.com/HughJeffner/FFRK-LabMem/wiki/Common-Issues-%5C-FAQ
