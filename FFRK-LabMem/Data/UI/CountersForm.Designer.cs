@@ -58,7 +58,10 @@ namespace FFRK_LabMem.Data.UI
             this.comboBoxQE = new System.Windows.Forms.ComboBox();
             this.buttonCountersResetGroup = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonCountersResetSession
@@ -130,6 +133,7 @@ namespace FFRK_LabMem.Data.UI
             this.listViewCounters.UseCompatibleStateImageBehavior = false;
             this.listViewCounters.View = System.Windows.Forms.View.Details;
             this.listViewCounters.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listViewCounters_KeyUp);
+            this.listViewCounters.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewCounters_MouseUp);
             // 
             // columnHeader10
             // 
@@ -284,6 +288,22 @@ namespace FFRK_LabMem.Data.UI
             this.saveFileDialog1.Filter = "Comma Separated Values (*.csv) |*.csv";
             this.saveFileDialog1.Title = "Choose export file";
             // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem8});
+            this.contextMenuStrip2.Name = "contextMenuStrip1";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(207, 48);
+            // 
+            // toolStripMenuItem8
+            // 
+            this.toolStripMenuItem8.CheckOnClick = true;
+            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(206, 22);
+            this.toolStripMenuItem8.Tag = "";
+            this.toolStripMenuItem8.Text = "Perfect Passive Acquired ";
+            this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripMenuItem8_Click);
+            // 
             // CountersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,6 +325,7 @@ namespace FFRK_LabMem.Data.UI
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CountersForm_FormClosed);
             this.Load += new System.EventHandler(this.CountersForm_Load);
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -334,5 +355,7 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button buttonCountersResetGroup;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
     }
 }

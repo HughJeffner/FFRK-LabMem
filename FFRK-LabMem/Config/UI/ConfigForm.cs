@@ -117,6 +117,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
             numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
+            numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
@@ -243,6 +244,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
@@ -281,6 +283,7 @@ namespace FFRK_LabMem.Config.UI
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
             labConfig.WatchdogCrashSeconds = (int)numericUpDownWatchdogCrash.Value;
             labConfig.WatchdogHangMinutes = (int)numericUpDownWatchdogHang.Value;
+            labConfig.WatchdogBattleMinutes = (int)numericUpDownWatchdogBattle.Value;
             labConfig.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10); // Not exposed in UI
 
             // Paintings
@@ -343,7 +346,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Update machine
             controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogCrashSeconds);
+            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogBattleMinutes, labConfig.WatchdogCrashSeconds);
 
             // Restart warning
             if (lblRestart.Visible)

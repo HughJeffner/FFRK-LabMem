@@ -2,6 +2,7 @@
 using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using FFRK_Machines.Threading;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,9 @@ namespace FFRK_LabMem.Data.UI
 
         public static bool IsLoaded { get; set; } = false;
         private LabController controller = null;
+        private HashSet<string> PerfectPassives { get; set; } = new HashSet<string>();
+        private const string CONFIG_PATH = "./Data/counters_passives.json";
+
 
         public CountersForm()
         {
@@ -48,6 +52,7 @@ namespace FFRK_LabMem.Data.UI
         {
             Counters.OnUpdated += Counters_OnUpdated;
             comboBoxQE.SelectedIndex = 0;
+            LoadPassives();
             LoadLabs();
             
         }
@@ -55,6 +60,7 @@ namespace FFRK_LabMem.Data.UI
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Counters.OnUpdated -= Counters_OnUpdated;
+            SavePassives();
             IsLoaded = false;
         }
 
@@ -82,18 +88,46 @@ namespace FFRK_LabMem.Data.UI
         {
             comboBoxLab.Items.Clear();
 
-            // Current lab
+            // Current lab item
             var currentLab = Counters.Default.CounterSets["CurrentLab"];
             if (currentLab.Name == null) currentLab.Name = "Current Lab";
             comboBoxLab.Items.Add(currentLab);
 
             // Others
-            var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).ToList();
+            int selectedIndex = 0;
+            var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).OrderBy(s => s.Key).ToList();
             foreach (var item in sets)
             {
                 comboBoxLab.Items.Add(item.Value);
+                if (item.Key.Equals(Counters.Default.CurrentLabId)) selectedIndex = comboBoxLab.Items.Count - 1;
             }
-            comboBoxLab.SelectedIndex = 0;
+            comboBoxLab.SelectedIndex = selectedIndex;
+                        
+        }
+
+        private void LoadPassives()
+        {
+            try
+            {
+                JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), PerfectPassives);
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading passives file: {0}", ex);
+            }
+        }
+
+        private void SavePassives()
+        {
+            try
+            {
+                File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(this.PerfectPassives, Formatting.Indented));
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void LoadCounters()
@@ -192,36 +226,21 @@ namespace FFRK_LabMem.Data.UI
             IEnumerable<string> keySet;
             if (isHE)
             {
-                switch (comboBoxQE.SelectedIndex)
-                {
-                    case 1:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentCombined.Keys);
-                        break;
-                    case 2:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipmentQE.Keys);
-                        break;
-                    default:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.HeroEquipment.Keys);
-                        break;
-                }
+                keySet = keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).Keys);
             } 
             else
             {
-                switch (comboBoxQE.SelectedIndex)
-                {
-                    case 1:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsCombined.Keys);
-                        break;
-                    case 2:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.DropsQE.Keys);
-                        break;
-                    default:
-                        keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.Drops.Keys);
-                        break;
-                }
+                keySet = Counters.Default.CounterSets.Values.SelectMany(s => s.GetDropsFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).Keys);
             }
+
             // Only distinct values
             keySet = keySet.Distinct();
+
+            // If stage selected then only show its HE
+            if (isHE && comboBoxLab.SelectedIndex > 0)
+            {
+                keySet = keySet.Where(i => GetSelectedLab().GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).ContainsKey(i));
+            }
 
             // Remove any items present in the list that do not match
             CleanGroup(group, keySet);
@@ -240,6 +259,7 @@ namespace FFRK_LabMem.Data.UI
                     newItem.Group = listViewCounters.Groups[group];
                     newItem.Name = item;
                     newItem.Text = item;
+                    if (isHE && PerfectPassives.Contains(item)) newItem.BackColor = Color.LightGreen;
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
                     newItem.SubItems.Add("");
@@ -264,18 +284,8 @@ namespace FFRK_LabMem.Data.UI
         private void SetSubItemText(ListViewItem.ListViewSubItem subItem, string item, bool isHE, CounterSet counterSet)
         {
             SortedDictionary<string, int> target;
-            switch (comboBoxQE.SelectedIndex)
-            {
-                case 1:
-                    target = (isHE) ? counterSet.HeroEquipmentCombined : counterSet.DropsCombined;
-                    break;
-                case 2:
-                    target = (isHE) ? counterSet.HeroEquipmentQE : counterSet.DropsQE;
-                    break;
-                default:
-                    target = (isHE) ? counterSet.HeroEquipment : counterSet.Drops;
-                    break;
-            }
+            target = (isHE) ? counterSet.GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex) : 
+                counterSet.GetDropsFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex);
             if (target.ContainsKey(item))
             {
                 subItem.Text = target[item].ToString();
@@ -311,10 +321,13 @@ namespace FFRK_LabMem.Data.UI
         {
             var button = (Button)contextMenuStrip1.Tag;
             string buttonTag = button.Tag.ToString();
+            string buttonText = Char.ToLower(button.Text[0]) + button.Text.Substring(1);
             var menuItem = (ToolStripMenuItem)sender;
             string menuItemTag = menuItem.Tag.ToString();
+            string menuItemText = menuItem.Text;
+            if (button == buttonCountersResetLab) buttonText = "reset " + comboBoxLab.Text;
 
-            var result = MessageBox.Show(this, $"Are you sure you want to reset {buttonTag} {menuItemTag} counters?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var result = MessageBox.Show(this, $"Are you sure you want to {buttonText} {menuItemText}?", "Reset Counters", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
                 var target = buttonTag.Equals("All") ? null : buttonTag;
@@ -343,7 +356,9 @@ namespace FFRK_LabMem.Data.UI
                 var selectedLab = GetSelectedLab();
                 listViewCounters.Columns[2].Text = selectedLab.Name;
                 buttonCountersResetLab.Tag = Counters.Default.CounterSets.FirstOrDefault(x => x.Value == selectedLab).Key;
+                if (sender == comboBoxQE) CleanGroup("HE", new List<string>());
                 LoadAll();
+                
             }
         }
 
@@ -392,6 +407,27 @@ namespace FFRK_LabMem.Data.UI
                 }
             }
 
+        }
+
+        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || listViewCounters.SelectedItems[0].Group.Name != "HE") return;
+            var item = listViewCounters.SelectedItems[0].Name;
+            if (PerfectPassives.Contains(item))
+            {
+                PerfectPassives.Remove(item);
+            } else
+            {
+                PerfectPassives.Add(item);
+            }
+            listViewCounters.SelectedItems[0].BackColor = toolStripMenuItem8.Checked ? Color.LightGreen : listViewCounters.BackColor;
+        }
+
+        private void listViewCounters_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (listViewCounters.SelectedItems.Count == 0 || listViewCounters.SelectedItems[0].Group.Name != "HE") return;
+            toolStripMenuItem8.Checked = listViewCounters.SelectedItems[0].BackColor.Equals(Color.LightGreen);
+            if (e.Button == MouseButtons.Right) contextMenuStrip2.Show(listViewCounters, e.X, e.Y);
         }
     }
 }

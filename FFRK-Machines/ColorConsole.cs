@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FFRK_Machines
 {
@@ -170,6 +171,81 @@ namespace FFRK_Machines
             }
             if (selected.Count == 0) return "None";
             return String.Join(",", selected.ToArray());
+        }
+
+        public static string ReadLine(TimeSpan timeout)
+        {
+            Task<string> task = Task.Factory.StartNew(Console.ReadLine);
+
+            string result = Task.WaitAny(new Task[] { task }, timeout) == 0
+                ? task.Result
+                : string.Empty;
+            return result;
+        }
+
+        public static ConsoleKeyInfo? ReadKey(int timeout, bool intercept = false)
+        {
+
+            ConsoleKeyInfo? k = null;
+            for (int cnt = timeout*4; cnt > 0; cnt--)
+            {
+                if (Console.KeyAvailable)
+                {
+                    k = Console.ReadKey(intercept);
+                    break;
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(250);
+                }
+            }
+            return k;
+
+        }
+
+        public static int ReadNumber(int timeout, int lengh = 3)
+        {
+
+            ConsoleKeyInfo? key;
+            string _val = "";
+
+            do
+            {
+                key = ReadKey(timeout, true);
+                if (!key.HasValue) {
+                    _val = "-1";
+                    break;
+                }
+
+                if (key.Value.Key != ConsoleKey.Backspace && key.Value.Key != ConsoleKey.Escape)
+                {
+                    bool _x = double.TryParse(key.Value.KeyChar.ToString(), out _);
+                    if (_x)
+                    {
+                        _val += key.Value.KeyChar;
+                        Console.Write(key.Value.KeyChar);
+                    }
+                }
+                else
+                {
+                    if (key.Value.Key == ConsoleKey.Backspace && _val.Length > 0)
+                    {
+                        _val = _val.Substring(0, (_val.Length - 1));
+                        Console.Write("\b \b");
+                    }
+                    if (key.Value.Key == ConsoleKey.Escape)
+                    {
+                        _val = "-1";
+                        break;
+                    }
+                }
+            }
+            while (key.Value.Key != ConsoleKey.Enter && _val.Length < lengh);
+            ColorConsole.WriteLine("");
+
+            if (_val.Length == 0) return 0;
+            return int.Parse(_val);
+
         }
 
         public class LogFileBuffer : ConcurrentQueue<string>

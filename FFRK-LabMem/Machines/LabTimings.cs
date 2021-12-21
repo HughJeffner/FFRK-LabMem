@@ -144,6 +144,10 @@ namespace FFRK_LabMem.Machines
                 { "Pre-RestartBattle", new Timing(){ Delay=5000 } },
                 { "Inter-RestartBattle", new Timing(){ Delay=2000 } },
                 { "Post-RestartBattle", new Timing(){ Delay=0 } },
+                { "Pre-QuickExplore", new Timing(){ Delay=5000 } },
+                { "Inter-QuickExplore", new Timing(){ Delay=2000 } },
+                { "Inter-QuickExplore-Timeout", new Timing(){ Delay=20000 } },
+                { "Post-QuickExplore", new Timing(){ Delay=0 } },
             };
         }
 

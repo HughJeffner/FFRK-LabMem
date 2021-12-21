@@ -67,6 +67,7 @@ namespace FFRK_LabMem.Machines
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
         private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent quickExploreAutoResetEvent = new AsyncAutoResetEvent(false);
         private int restartTries = 0;
 
         private class BuddyInfo
@@ -83,7 +84,7 @@ namespace FFRK_LabMem.Machines
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.Watchdog = new LabWatchdog(adb, config.WatchdogHangMinutes, config.WatchdogCrashSeconds);
+            this.Watchdog = new LabWatchdog(this);
             this.Watchdog.Timeout += Watchdog_Timeout;
 
         }
@@ -209,47 +210,39 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-
-            // Ignore hang if in battle
-            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang && StateMachine.State == State.Battle)
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang because in battle");
-                return;
-            }
-
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
             // On a timer thread, need to handle errors
-            bool result = false;
             try
             {
-                // Restart ffrk and get result
-                result = await RestartFFRK();
+                //Restart ffrk and get result, restart watchdog if failed
+                if (!await RestartFFRK())
+                {
+
+                    // Limit number of retries
+                    if (restartTries < Config.WatchdogMaxRetries)
+                    {
+                        restartTries += 1;
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
+                        Watchdog.Kick();
+                    }
+                    else
+                    {
+                        // Retries exhausted
+                        await Notify(Notifications.EventType.LAB_FAULT);
+                        OnMachineFinished();
+                    }
+                }
+                else
+                {
+                    // Restart success, reset tries
+                    restartTries = 0;
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-            }
-
-            // Restart watchdog if failed
-            if (!result)
-            {
-                // Limit number of retries
-                if (restartTries < Config.WatchdogMaxRetries)
-                {
-                    restartTries += 1;
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
-                    Watchdog.Kick();
-                } else
-                {
-                    // Retries exhausted
-                    await Notify(Notifications.EventType.LAB_FAULT);
-                    OnMachineFinished();
-                }
-            } else
-            {
-                restartTries = 0;
             }
 
         }
@@ -456,6 +449,8 @@ namespace FFRK_LabMem.Machines
             this.CurrentKeys = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
+            quickExploreAutoResetEvent.Reset();
+            restartTries = 0;
             disableSafeRequested = false;
 
         }
@@ -590,6 +585,7 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
                 await DataLogger.LogQEDrops(this);
                 Counters.ClearCurrentLab();
+                quickExploreAutoResetEvent.Set();
             }
 
         }

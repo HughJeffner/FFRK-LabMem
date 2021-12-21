@@ -424,7 +424,7 @@ namespace FFRK_LabMem.Machines
             if (Config.UseLetheTears)
             {
                 // Either a master painting or master only option disabled
-                if (!Config.LetheTearsMasterOnly || (int)this.CurrentPainting?["type"] == 2) { 
+                if (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) { 
                     // Wait for fatigue values downloaded on another thread
                     var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
                     if (gotFatigueValues)
@@ -914,6 +914,8 @@ namespace FFRK_LabMem.Machines
             if (recoverStopwatch.Elapsed > loopTimeout)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restart timed out");
+                // Interrupt tasks if restart failed just in case 
+                await InterruptTasks();
                 return false;
             }
             else
@@ -946,6 +948,121 @@ namespace FFRK_LabMem.Machines
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);
+
+        }
+
+        public async Task<bool> QuickExplore()
+        {
+
+            // Inital delay
+            Watchdog.Kick(false); // Pause the watchdog
+            await LabTimings.Delay("Pre-QuickExplore", this.CancellationToken);
+           
+            // Dungeon Complete
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing complete dialog");
+            var closeButton = await Adb.FindButton(BUTTON_BROWN, 2000, 39, 81, 91, 3, this.CancellationToken);
+            if (closeButton != null)
+            {
+                await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
+            }
+            else
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Complete dialog not present");
+            }
+
+            // Quick Explore Button
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Choosing quick explore");
+            await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+            var quickExploreButton = await Adb.FindButton(BUTTON_BROWN, 2000, 82.6, 83.2, 93.7, 10, this.CancellationToken);
+            if (quickExploreButton != null)
+            {
+                // Tap It
+                await Adb.TapPct(quickExploreButton.Item1, quickExploreButton.Item2, CancellationToken);
+
+                // Use a record marker button
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Choosing use a record marker");
+                await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                var useRecordMarkerButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 25.7, 36.3, 2, this.CancellationToken);
+                
+                // If record marker button not present then stamina too low
+                if (useRecordMarkerButton == null)
+                {
+
+                    // Stamina Check
+                    await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                    var staminaResult = await CheckRestoreStamina();
+                    if (staminaResult.PotionUsed)
+                    {
+                        // Quick Explore Button Again
+                        await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                        await Adb.TapPct(quickExploreButton.Item1, quickExploreButton.Item2, CancellationToken);
+
+                        // Look for the record marker button again
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Choosing use a record marker");
+                        await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                        useRecordMarkerButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 25.7, 39, 2, this.CancellationToken);
+                    }
+                    else
+                    {
+                        // Not enough stamina or just couldn't find the use record marker brown button
+                        if (!staminaResult.StaminaDialogPresent) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Use a record marker button not present");
+                        return false;
+                    }
+
+                }
+                               
+                // Check for use record marker button again, needed if stamina restored
+                if (useRecordMarkerButton != null)
+                {
+
+                    // Tap It
+                    await Adb.TapPct(useRecordMarkerButton.Item1, useRecordMarkerButton.Item2, CancellationToken);
+
+                    // Record marker will be used - OK
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Choosing use record marker OK button");
+                    await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                    if (await Adb.FindButtonAndTap(BUTTON_BLUE, 2000, 64, 54.6, 70.3, 5, this.CancellationToken))
+                    {
+
+                        // Stamina Cost
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Choosing stamina cost OK button");
+                        await LabTimings.Delay("Inter-QuickExplore", this.CancellationToken);
+                        if (await Adb.FindButtonAndTap(BUTTON_BLUE, 2000, 64, 54, 70.3, 5, this.CancellationToken))
+                        {
+
+                            // Wait for results
+                            if (await quickExploreAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Inter-QuickExplore-Timeout"), this.CancellationToken)){
+                                await LabTimings.Delay("Post-QuickExplore", this.CancellationToken);
+                                return true;
+                            } else
+                            {
+                                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for QE results");
+                            }
+
+                        }
+                        else
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Stamina cost dialog not present");
+                        }
+
+                    }
+                    else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "OK button not present");
+                    }
+
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Use a record marker button not present");
+                }
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Quick explore button not present");
+            }
+
+            return false;
 
         }
 

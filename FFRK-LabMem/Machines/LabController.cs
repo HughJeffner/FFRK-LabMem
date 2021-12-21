@@ -13,6 +13,7 @@ namespace FFRK_LabMem.Machines
     {
 
         private ConfigHelper configHelper;
+        private bool isQuickExploring = false;
 
         public static async Task<LabController> CreateAndStart(ConfigHelper config)
         {
@@ -61,6 +62,7 @@ namespace FFRK_LabMem.Machines
         protected override Lab CreateMachine(LabConfiguration config)
         {
             config.WatchdogHangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3);
+            config.WatchdogBattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             config.WatchdogCrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             config.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10);
             return new Lab(this.Adb, config);
@@ -107,5 +109,76 @@ namespace FFRK_LabMem.Machines
             }
 
         }
+
+        public void QuickExplore()
+        {
+
+            if (Enabled)
+            {
+
+                if (isQuickExploring)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Quick Explore already in progress");
+                    return;
+                }
+                isQuickExploring = true;
+
+                int times = 0;
+                int max = 0;
+
+                // Prompt for times
+                if (this.Machine.Config.RestartLab)
+                {
+                    ColorConsole.Write("Number of times to QE? [0-999] (0 for unlimited): 0");
+                    Console.CursorLeft -= 1;
+                    max = ColorConsole.ReadNumber(10);
+
+                } else
+                {
+                    max = 1;
+                }
+
+                // Check for cancel
+                if (max < 0)
+                {
+                    ColorConsole.WriteLine("Quick Explore cancelled");
+                    isQuickExploring = false;
+                    return;
+                }
+
+                // Run as new task
+                Task.Run(async () =>
+                {
+
+                    ColorConsole.WriteLine("Starting Quick Explore ('D' to Disable)");
+                    while (this.Enabled && (max==0 || times < max))
+                    {
+                        try
+                        {
+                            ColorConsole.WriteLine("Quick explore {0} of {1}", times + 1, max == 0 ? "Unlimited" : max.ToString());
+                            if (!await this.Machine.QuickExplore()) break;
+                            times += 1;
+                        }
+                        catch (OperationCanceledException) { }
+                        catch (Exception ex)
+                        {
+                            ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                        }
+                        if (!this.Machine.Config.RestartLab)
+                        {
+                            ColorConsole.WriteLine("Stopping because Restart Lab control not enabled");
+                            break;
+                        }
+                    }
+                    ColorConsole.WriteLine($"Quick explore(s) complete, {times} total");
+                    isQuickExploring = false;
+                });
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, "Bot disabled, enable with 'E' first");
+            }
+
+        }
+
     }
 }
