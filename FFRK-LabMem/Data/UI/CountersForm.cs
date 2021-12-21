@@ -88,18 +88,21 @@ namespace FFRK_LabMem.Data.UI
         {
             comboBoxLab.Items.Clear();
 
-            // Current lab
+            // Current lab item
             var currentLab = Counters.Default.CounterSets["CurrentLab"];
             if (currentLab.Name == null) currentLab.Name = "Current Lab";
             comboBoxLab.Items.Add(currentLab);
 
             // Others
+            int selectedIndex = 0;
             var sets = Counters.Default.CounterSets.Where(s => !Counters.DefaultCounterSets.ContainsKey(s.Key)).OrderBy(s => s.Key).ToList();
             foreach (var item in sets)
             {
                 comboBoxLab.Items.Add(item.Value);
+                if (item.Key.Equals(Counters.Default.CurrentLabId)) selectedIndex = comboBoxLab.Items.Count - 1;
             }
-            comboBoxLab.SelectedIndex = 0;
+            comboBoxLab.SelectedIndex = selectedIndex;
+                        
         }
 
         private void LoadPassives()
