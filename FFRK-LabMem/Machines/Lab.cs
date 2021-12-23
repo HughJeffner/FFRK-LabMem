@@ -63,6 +63,7 @@ namespace FFRK_LabMem.Machines
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
+        public int SelectedTeamIndex { get; set; } = 0;
         public LabWatchdog Watchdog { get; }
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
@@ -77,7 +78,7 @@ namespace FFRK_LabMem.Machines
             public int Fatigue { get; set; } = 3;
         }
 
-        private List<BuddyInfo> FatigueInfo = new List<BuddyInfo>();
+        private List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
 
         public Lab(Adb adb, LabConfiguration config)
         {
@@ -449,6 +450,7 @@ namespace FFRK_LabMem.Machines
             this.FinalFloor = 0;
             this.CurrentKeys = 0;
             this.CurrentTears = 0;
+            this.SelectedTeamIndex = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
             quickExploreAutoResetEvent.Reset();
@@ -519,16 +521,29 @@ namespace FFRK_LabMem.Machines
         private async Task ParsePartyInfo(JObject data, string url)
         {
 
-            var party = data["parties"].Where(p => (string)p["party_no"] == "1").FirstOrDefault();
-            if (party != null)
+            // If we have party data
+            var parties = data["parties"];
+            if (parties != null)
             {
-                
                 FatigueInfo.Clear();
-                foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
+
+                // Loop through 3 parties
+                for (int partySlot = 0; partySlot < 3; partySlot++)
                 {
-                    FatigueInfo.Add(new BuddyInfo() { BuddyId = (int)item.Value });
+                    var party = parties.Where(p => (string)p["party_no"] == (partySlot + 1).ToString()).FirstOrDefault();
+                    if (party != null)
+                    {
+                        FatigueInfo.Add(new List<BuddyInfo>());
+                    
+                        foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
+                        {
+                            FatigueInfo[partySlot].Add(new BuddyInfo() { BuddyId = (int)item.Value });
+                        }
+                    }
                 }
+
             }
+            
             await Task.CompletedTask;
 
         }
@@ -538,7 +553,7 @@ namespace FFRK_LabMem.Machines
             var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
             if (values != null)
             {
-                foreach (var item in FatigueInfo)
+                foreach (var item in FatigueInfo.SelectMany(s => s))
                 {
                     var value = (JObject)values.Where(i => (int)i["user_buddy_id"] == item.BuddyId).FirstOrDefault();
                     if (value != null) item.Fatigue = (int)value["memory_abrasion"];
@@ -554,7 +569,7 @@ namespace FFRK_LabMem.Machines
         {
             var map = data["user_buddy_memory_abrasion_map"];
             if (map == null) return false;
-            foreach (var item in FatigueInfo)
+            foreach (var item in FatigueInfo.SelectMany(s => s))
             {
                 var value = map[item.BuddyId.ToString()];
                 if (value != null) item.Fatigue = (int)value["value"];

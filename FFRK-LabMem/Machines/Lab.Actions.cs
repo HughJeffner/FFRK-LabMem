@@ -431,11 +431,15 @@ namespace FFRK_LabMem.Machines
                     if (gotFatigueValues)
                     {
                         ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", fatigueAutoResetEvent);
+
                         // Fatigue level check
-                        if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
-                        {
-                            await UseLetheTears();
-                        }
+                        if (SelectedTeamIndex < FatigueInfo.Count && 
+                            FatigueInfo[SelectedTeamIndex].Any(f => 
+                                (Config.LetheTearsSlot & (1 << 4 - FatigueInfo[SelectedTeamIndex].IndexOf(f))) != 0 && 
+                                f.Fatigue >= Config.LetheTearsFatigue
+                            )
+                        ) await UseLetheTears();
+   
                     }
                     else
                     {
@@ -474,7 +478,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogBattleDrops(this);
 
             // Update fatigue unknown value
-            FatigueInfo.ForEach(f => f.Fatigue = -1);
+            if (SelectedTeamIndex < FatigueInfo.Count) FatigueInfo[SelectedTeamIndex].ForEach(f => f.Fatigue = -1);
             fatigueAutoResetEvent.Reset();
 
             // Check if safe disable requested
