@@ -468,14 +468,17 @@ namespace FFRK_LabMem.Machines
                 this.CurrentKeys = (int)(keys?["num"] ?? this.CurrentKeys);
                 var tears = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000003")).FirstOrDefault();
                 this.CurrentTears = (int)(tears?["num"] ?? this.CurrentTears);
+                Debug.WriteLine("Keys:{0}, Tears:{1}", CurrentKeys, CurrentTears);
             }
+            
             var unsettledItems = (JArray)data["unsettled_items"];
-            if (unsettledItems != null)
+            if (unsettledItems != null && (labItems?.Count ?? 0) > 0)
             {
                 var keys = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000001")).FirstOrDefault();
                 this.CurrentKeys += (int)(keys?["num"] ?? 0);
                 var tears = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000003")).FirstOrDefault();
                 this.CurrentTears += (int)(tears?["num"] ?? 0);
+                Debug.WriteLine("Keys2:{0}, Tears2:{1}", CurrentKeys, CurrentTears);
             }
 
             // Parse Floor

@@ -299,6 +299,7 @@ namespace FFRK_LabMem.Machines
 
                 // Confirm
                 await this.Adb.TapPct(70, 64, this.CancellationToken);
+                this.CurrentKeys -= picked;
                 await Counters.UsedKeys(picked);
                 await Counters.TreasureOpened();
 
@@ -546,6 +547,7 @@ namespace FFRK_LabMem.Machines
                         if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 38.8, 55, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
+                            this.CurrentTears -= numberUsed;
                             await Counters.UsedTears(numberUsed);
                             return true;
                         } else
