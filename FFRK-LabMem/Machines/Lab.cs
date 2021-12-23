@@ -59,6 +59,7 @@ namespace FFRK_LabMem.Machines
         }
 
         private int CurrentKeys { get; set; }
+        private int CurrentTears { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
@@ -447,6 +448,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentFloor = 0;
             this.FinalFloor = 0;
             this.CurrentKeys = 0;
+            this.CurrentTears = 0;
             this.FatigueInfo.Clear();
             fatigueAutoResetEvent.Reset();
             quickExploreAutoResetEvent.Reset();
@@ -458,24 +460,22 @@ namespace FFRK_LabMem.Machines
         protected override void OnDataChanged(JObject data)
         {
 
-            // Parse number of keys
+            // Parse number of keys & tears
             var labItems = (JArray)data["labyrinth_items"];
             if (labItems != null)
             {
                 var keys = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000001")).FirstOrDefault();
-                if (keys != null)
-                {
-                    this.CurrentKeys = (int)keys["num"];
-                }
+                this.CurrentKeys = (int)(keys?["num"] ?? this.CurrentKeys);
+                var tears = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000003")).FirstOrDefault();
+                this.CurrentTears = (int)(tears?["num"] ?? this.CurrentTears);
             }
             var unsettledItems = (JArray)data["unsettled_items"];
             if (unsettledItems != null)
             {
                 var keys = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000001")).FirstOrDefault();
-                if (keys != null)
-                {
-                    this.CurrentKeys+= (int)keys["num"];
-                }
+                this.CurrentKeys += (int)(keys?["num"] ?? 0);
+                var tears = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000003")).FirstOrDefault();
+                this.CurrentTears += (int)(tears?["num"] ?? 0);
             }
 
             // Parse Floor

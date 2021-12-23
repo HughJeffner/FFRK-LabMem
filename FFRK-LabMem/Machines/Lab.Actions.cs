@@ -292,7 +292,7 @@ namespace FFRK_LabMem.Machines
                 // Check if key needed
                 if (picked > 0)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0}", picked);
+                    ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0} of {1}", picked, CurrentKeys);
                     await this.Adb.TapPct(58, 44, this.CancellationToken);
                     await LabTimings.Delay("Inter-SelectTreasure", this.CancellationToken);
                 }
@@ -505,8 +505,14 @@ namespace FFRK_LabMem.Machines
         {
 
             int numberUsed = Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1');
-            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0}", numberUsed);
 
+            // Check remaining qty
+            if (numberUsed > CurrentTears){
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough lethe tears!");
+                return true;
+            }
+
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0} of {1}", numberUsed, CurrentTears);
             await LabTimings.Delay("Pre-LetheTears", this.CancellationToken);
 
             // Lethe tears button
