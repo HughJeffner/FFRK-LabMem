@@ -293,13 +293,13 @@ namespace FFRK_LabMem.Machines
                 if (picked > 0)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0} of {1}", picked, CurrentKeys);
+                    this.CurrentKeys -= picked;
                     await this.Adb.TapPct(58, 44, this.CancellationToken);
                     await LabTimings.Delay("Inter-SelectTreasure", this.CancellationToken);
                 }
 
                 // Confirm
                 await this.Adb.TapPct(70, 64, this.CancellationToken);
-                this.CurrentKeys -= picked;
                 await Counters.UsedKeys(picked);
                 await Counters.TreasureOpened();
 
