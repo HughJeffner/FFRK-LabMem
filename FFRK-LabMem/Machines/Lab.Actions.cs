@@ -693,7 +693,7 @@ namespace FFRK_LabMem.Machines
                 await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
             } else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Dungeon complete dialog not present");
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Dungeon complete dialog not present");
             }
 
             // Mission Complete
@@ -759,7 +759,7 @@ namespace FFRK_LabMem.Machines
                 else
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
-                    var b = Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
+                    var b = await Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
