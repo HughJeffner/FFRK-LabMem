@@ -299,7 +299,7 @@ namespace FFRK_LabMem.Data
                     CounterSets.Add(id, newEntry);
                 }
                 await Save();
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab set to {0}", name);
+                ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Current lab set to: {0}", name);
             }
             // Reset counters in buffer
             currentLabBufferSet.Reset(CounterSet.DataType.All);
