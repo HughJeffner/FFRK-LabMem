@@ -7,6 +7,16 @@ namespace FFRK_LabMem.Machines
 {
     public class LabConfiguration : MachineConfiguration
     {
+
+        public enum PartyIndexOption
+        {
+            Team1,
+            Team2,
+            Team3,
+            Random,
+            LowestFatigue
+        }
+
         public bool AutoStart { get; set; } = false;
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
@@ -19,7 +29,10 @@ namespace FFRK_LabMem.Machines
         public bool UseLetheTears { get; set; } = false;
         public bool LetheTearsMasterOnly { get; set; } = false;
         public byte LetheTearsSlot { get; set; } = 0b11111;
+        public byte LetheTearsSlot2 { get; set; } = 0b00000;
+        public byte LetheTearsSlot3 { get; set; } = 0b00000;
         public int LetheTearsFatigue { get; set; } = 7;
+        public PartyIndexOption PartyIndex { get; set; } = PartyIndexOption.Team1;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
         public bool ScreenshotRadiantPainting { get; set; } = false;
         public bool EnemyBlocklistAvoidOptionOverride { get; set; } = false;

@@ -63,7 +63,7 @@ namespace FFRK_LabMem.Machines
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
-        public int SelectedTeamIndex { get; set; } = 0;
+        public int SelectedPartyIndex { get; set; } = 0;
         public LabWatchdog Watchdog { get; }
         public readonly AsyncAutoResetEvent AutoResetEventFatigue = new AsyncAutoResetEvent(false);
         public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
@@ -314,7 +314,7 @@ namespace FFRK_LabMem.Machines
             this.FinalFloor = 0;
             this.CurrentKeys = 0;
             this.CurrentTears = 0;
-            this.SelectedTeamIndex = 0;
+            this.SelectedPartyIndex = 0;
             this.FatigueInfo.Clear();
             AutoResetEventFatigue.Reset();
             AutoResetEventQuickExplore.Reset();

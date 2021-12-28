@@ -261,6 +261,7 @@ namespace FFRK_LabMem.Config.UI
             Counters.Default.MaterialsRarityFilter = (int)numericUpDownCountersRarity.Value;
 
             // Lab
+            labConfig.PartyIndex = (LabConfiguration.PartyIndexOption)comboBoxLabParty.SelectedIndex;
             labConfig.OpenDoors = checkBoxLabDoors.Checked;
             labConfig.AvoidExploreIfTreasure = checkBoxLabAvoidExplore.Checked;
             labConfig.AvoidPortal = checkBoxLabAvoidPortal.Checked;
@@ -275,7 +276,18 @@ namespace FFRK_LabMem.Config.UI
             if (checkBoxSlot2.Checked) labConfig.LetheTearsSlot |= (1 << 3);
             if (checkBoxSlot3.Checked) labConfig.LetheTearsSlot |= (1 << 2);
             if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 1);
-            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot |= (1 << 0);
+            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot2 |= (1 << 0);
+            if (checkBoxSlot6.Checked) labConfig.LetheTearsSlot2 |= (1 << 4);
+            if (checkBoxSlot7.Checked) labConfig.LetheTearsSlot2 |= (1 << 3);
+            if (checkBoxSlot8.Checked) labConfig.LetheTearsSlot2 |= (1 << 2);
+            if (checkBoxSlot9.Checked) labConfig.LetheTearsSlot2 |= (1 << 1);
+            if (checkBoxSlot10.Checked) labConfig.LetheTearsSlot2 |= (1 << 0);
+            if (checkBoxSlot11.Checked) labConfig.LetheTearsSlot3 |= (1 << 4);
+            if (checkBoxSlot12.Checked) labConfig.LetheTearsSlot3 |= (1 << 3);
+            if (checkBoxSlot13.Checked) labConfig.LetheTearsSlot3 |= (1 << 2);
+            if (checkBoxSlot14.Checked) labConfig.LetheTearsSlot3 |= (1 << 1);
+            if (checkBoxSlot15.Checked) labConfig.LetheTearsSlot3 |= (1 << 0);
+
             labConfig.LetheTearsMasterOnly = checkBoxLetheTearsMasterOnly.Checked;
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
@@ -374,6 +386,7 @@ namespace FFRK_LabMem.Config.UI
         {
             // Options
             labConfig = await LabConfiguration.Load<LabConfiguration>(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
+            comboBoxLabParty.SelectedIndex = (int)labConfig.PartyIndex;
             checkBoxLabDoors.Checked = labConfig.OpenDoors;
             checkBoxLabAvoidExplore.Checked = labConfig.AvoidExploreIfTreasure;
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
@@ -391,6 +404,16 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot3.Checked = ((labConfig.LetheTearsSlot >> 2) & 1) != 0;
             checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
             checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
+            checkBoxSlot6.Checked = ((labConfig.LetheTearsSlot2 >> 4) & 1) != 0;
+            checkBoxSlot7.Checked = ((labConfig.LetheTearsSlot2 >> 3) & 1) != 0;
+            checkBoxSlot8.Checked = ((labConfig.LetheTearsSlot2 >> 2) & 1) != 0;
+            checkBoxSlot9.Checked = ((labConfig.LetheTearsSlot2 >> 1) & 1) != 0;
+            checkBoxSlot10.Checked = ((labConfig.LetheTearsSlot2 >> 0) & 1) != 0;
+            checkBoxSlot11.Checked = ((labConfig.LetheTearsSlot3 >> 4) & 1) != 0;
+            checkBoxSlot12.Checked = ((labConfig.LetheTearsSlot3 >> 3) & 1) != 0;
+            checkBoxSlot13.Checked = ((labConfig.LetheTearsSlot3 >> 2) & 1) != 0;
+            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot3 >> 1) & 1) != 0;
+            checkBoxSlot15.Checked = ((labConfig.LetheTearsSlot3 >> 0) & 1) != 0;
             checkBoxLetheTearsMasterOnly.Checked = labConfig.LetheTearsMasterOnly;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
@@ -625,11 +648,9 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownFatigue.Enabled = checkBoxLabUseLetheTears.Checked;
-            checkBoxSlot1.Enabled = checkBoxLabUseLetheTears.Checked;
-            checkBoxSlot2.Enabled = checkBoxLabUseLetheTears.Checked;
-            checkBoxSlot3.Enabled = checkBoxLabUseLetheTears.Checked;
-            checkBoxSlot4.Enabled = checkBoxLabUseLetheTears.Checked;
-            checkBoxSlot5.Enabled = checkBoxLabUseLetheTears.Checked;
+            flowLayoutPanelTeam1.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 1 && comboBoxLabParty.SelectedIndex != 2;
+            flowLayoutPanelTeam2.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 2;
+            flowLayoutPanelTeam3.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 1;
             checkBoxLetheTearsMasterOnly.Enabled = checkBoxLabUseLetheTears.Checked;
 
         }

@@ -340,31 +340,41 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine("Starting Battle");
             }
 
-            // Lethe Tears
-            if (Config.UseLetheTears)
+            // Do we need fatiuge values to proceed?
+            if (
+                (Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) // Using tears AND Not MasterOnly option or a master painting
+                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue)                                  // OR Lowest party fatigue option 
+            )
             {
-                // Either a master painting or master only option disabled
-                if (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) { 
-                    // Wait for fatigue values downloaded on another thread
-                    var gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
-                    if (gotFatigueValues)
-                    {
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
+                // Wait for fatigue values downloaded on another thread
+                var gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                if (gotFatigueValues)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
 
-                        // Fatigue level check
-                        if (SelectedTeamIndex < FatigueInfo.Count && 
-                            FatigueInfo[SelectedTeamIndex].Any(f => 
-                                (Config.LetheTearsSlot & (1 << 4 - FatigueInfo[SelectedTeamIndex].IndexOf(f))) != 0 && 
-                                f.Fatigue >= Config.LetheTearsFatigue
-                            )
-                        ) await UseLetheTears();
+                    // Select the party index using fatigue values
+                    await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
+                    await SelectParty(selector.GetPartyIndex());
+
+                    // Fatigue level check for tears
+                    if (SelectedPartyIndex < FatigueInfo.Count && 
+                        FatigueInfo[SelectedPartyIndex].Any(f => 
+                            (Config.LetheTearsSlot & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 && 
+                            f.Fatigue >= Config.LetheTearsFatigue
+                        )
+                    ) await UseLetheTears();
    
-                    }
-                    else
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
-                    }
                 }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                }
+                
+            } else
+            {
+                // Just select the party Index
+                await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
+                await SelectParty(selector.GetPartyIndex());
             }
 
             // Enter
@@ -383,6 +393,23 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        private async Task SelectParty(int index)
+        {
+            SelectedPartyIndex = index;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Selecting party {index + 1}");
+            
+            // 0 already selected by default
+            if (index == 0) return;
+            if (index == 1)
+            {
+                await Adb.TapPct(50, 50, this.CancellationToken);
+            } else
+            {
+                await Adb.TapPct(50, 66.7, this.CancellationToken);
+            }
+
+        }
+
         private async Task FinishBattle()
         {
 
@@ -397,7 +424,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogBattleDrops(this);
 
             // Update fatigue unknown value
-            if (SelectedTeamIndex < FatigueInfo.Count) FatigueInfo[SelectedTeamIndex].ForEach(f => f.Fatigue = -1);
+            if (SelectedPartyIndex < FatigueInfo.Count) FatigueInfo[SelectedPartyIndex].ForEach(f => f.Fatigue = -1);
             AutoResetEventFatigue.Reset();
 
             // Check if safe disable requested

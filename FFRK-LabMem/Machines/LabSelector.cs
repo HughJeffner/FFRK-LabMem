@@ -16,6 +16,7 @@ namespace FFRK_LabMem.Machines
         public Lab Lab;
         private LabConfiguration Config => Lab.Config;
         private Adb Adb => Lab.Adb;
+        protected Random rng = new Random();
 
         public LabSelector(Lab lab)
         {
@@ -99,6 +100,31 @@ namespace FFRK_LabMem.Machines
             {
                 if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown treasure filter id: {0}", type);
                 return new LabConfiguration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
+            }
+
+        }
+
+        public int GetPartyIndex()
+        {
+
+            switch (Lab.Config.PartyIndex)
+            {
+                case LabConfiguration.PartyIndexOption.Team1:
+                case LabConfiguration.PartyIndexOption.Team2:
+                case LabConfiguration.PartyIndexOption.Team3:
+                    return (int)Lab.Config.PartyIndex;
+                case LabConfiguration.PartyIndexOption.Random:
+                    return rng.Next(0, 2);
+                case LabConfiguration.PartyIndexOption.LowestFatigue:
+                    var item = Lab.FatigueInfo
+                        .Select(p => p)
+                        .OrderBy(p => p.Sum(f=>f.Fatigue))   
+                        .ThenBy(p => rng.Next())            
+                        .FirstOrDefault();
+                    if (item!= default) return Lab.FatigueInfo.IndexOf(item);
+                    return 0;
+                default:
+                    return 0;
             }
 
         }
