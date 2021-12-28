@@ -353,7 +353,6 @@ namespace FFRK_LabMem.Machines
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
 
                     // Select the party index using fatigue values
-                    await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                     await SelectParty(selector.GetPartyIndex());
 
                     // Fatigue level check for tears
@@ -373,7 +372,6 @@ namespace FFRK_LabMem.Machines
             } else
             {
                 // Just select the party Index
-                await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 await SelectParty(selector.GetPartyIndex());
             }
 
@@ -400,6 +398,9 @@ namespace FFRK_LabMem.Machines
             
             // 0 already selected by default
             if (index == 0) return;
+
+            // Delay then select
+            await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
             if (index == 1)
             {
                 await Adb.TapPct(50, 50, this.CancellationToken);
