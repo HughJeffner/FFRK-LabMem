@@ -60,24 +60,43 @@ namespace FFRK_LabMem.Machines
                 }
             }
 
-            // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
-            if (type.Equals("6") && this.Config.AvoidPortal && (isTreasure || isExplore || (total > 9)))
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
-                return 256;
+            // Portal avoidance options
+            if (type.Equals("6")){
+
+                // There's a treasure visible but picked a portal
+                if (Config.AvoidPortal && isTreasure)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
+                    return 256;
+                }
+
+                // There's a explore visible but picked a portal
+                if (Config.AvoidPortalIfExplore && isExplore)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
+                    return 256;
+                }
+
+                // There's more paintings to reveal but picked a portal
+                if (Config.AvoidPortalIfExplore && total > 9)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
+                    return 256;
+                }
+
             }
 
             // There's a treasure visible but explore (unless last floor)
-            if (type.Equals("4") && this.Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
+            if (type.Equals("4") && Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding explore due to option");
                 return 128;
             }
 
             // Lookup or default
-            if (this.Config.PaintingPriorityMap.ContainsKey(type))
+            if (Config.PaintingPriorityMap.ContainsKey(type))
             {
-                return this.Config.PaintingPriorityMap[type];
+                return Config.PaintingPriorityMap[type];
             }
             else
             {

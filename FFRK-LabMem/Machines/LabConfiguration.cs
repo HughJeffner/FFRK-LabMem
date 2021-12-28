@@ -21,6 +21,8 @@ namespace FFRK_LabMem.Machines
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
         public bool AvoidPortal { get; set; } = true;
+        public bool AvoidPortalIfExplore { get; set; } = true;
+        public bool AvoidPortalIfMore { get; set; } = true;
         public bool RestartFailedBattle { get; set; } = false;
         public bool StopOnMasterPainting { get; set; } = false;
         public bool RestartLab { get; set; } = false;
