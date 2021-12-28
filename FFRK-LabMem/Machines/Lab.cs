@@ -58,27 +58,29 @@ namespace FFRK_LabMem.Machines
             Restarting
         }
 
-        private int CurrentKeys { get; set; }
-        private int CurrentTears { get; set; }
+        public int CurrentKeys { get; set; }
+        public int CurrentTears { get; set; }
         public JToken CurrentPainting { get; set; }
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
         public int SelectedTeamIndex { get; set; } = 0;
         public LabWatchdog Watchdog { get; }
+        public readonly AsyncAutoResetEvent AutoResetEventFatigue = new AsyncAutoResetEvent(false);
+        public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
         private readonly Stopwatch recoverStopwatch = new Stopwatch();
-        private readonly AsyncAutoResetEvent fatigueAutoResetEvent = new AsyncAutoResetEvent(false);
-        private readonly AsyncAutoResetEvent quickExploreAutoResetEvent = new AsyncAutoResetEvent(false);
         private int restartTries = 0;
+        private LabParser parser;
+        private LabSelector selector;
 
-        private class BuddyInfo
+        public class BuddyInfo
         {
             public int BuddyId { get; set; }
             public int Fatigue { get; set; } = 3;
         }
 
-        private List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
+        public List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
 
         public Lab(Adb adb, LabConfiguration config)
         {
@@ -88,6 +90,8 @@ namespace FFRK_LabMem.Machines
             this.Adb = adb;
             this.Watchdog = new LabWatchdog(this);
             this.Watchdog.Timeout += Watchdog_Timeout;
+            this.parser = new LabParser(this);
+            this.selector = new LabSelector(this);
 
         }
 
@@ -251,9 +255,9 @@ namespace FFRK_LabMem.Machines
 
         public override void RegisterWithProxy(Proxy Proxy)
         {
-            Proxy.AddRegistration("get_display_paintings", Handle_GetDisplayPaintings);
-            Proxy.AddRegistration("select_painting", Handle_Painting);
-            Proxy.AddRegistration("choose_explore_painting", Handle_Painting);
+            Proxy.AddRegistration("get_display_paintings", parser.ParseDisplayPaintings);
+            Proxy.AddRegistration("select_painting", parser.ParsePainting);
+            Proxy.AddRegistration("choose_explore_painting", parser.ParsePainting);
             Proxy.AddRegistration("open_treasure_chest", async (data, url) =>
             {
                 this.Data = data;
@@ -276,150 +280,10 @@ namespace FFRK_LabMem.Machines
                 recoverStopwatch.Stop();
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
             }) ;
-            Proxy.AddRegistration("labyrinth/party/list", ParsePartyInfo);
-            Proxy.AddRegistration("labyrinth/buddy/info", ParseFatigueInfo);
-            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", ParseAllData);
-            Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", ParseQEData);
-        }
-
-        private async Task Handle_GetDisplayPaintings(JObject data, String url)
-        {
-
-            this.Data = data;
-
-            // Status
-            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
-            if (status != null && (int)status == 0)
-            {
-                await this.StateMachine.FireAsync(Trigger.ResetState);
-            }
-            if (status != null && (int)status == 1)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundDoor);
-            }
-            if (status != null && (int)status == 2)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-            }
-            if (status != null && (int)status == 3)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundBattle);
-            }
-            if (status != null && (int)status == 4)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-            }
-
-        }
-
-        private async Task Handle_Painting(JObject data, string url)
-        {
-
-            // Final portal completes dungeon
-            if (data["labyrinth_dungeon_result"] != null)
-            {
-                await this.StateMachine.FireAsync(Trigger.FinishedLab);
-                return;
-            }
-
-            // Data
-            this.Data = data;
-
-            // Event results
-            var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
-            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
-
-            // Data logging
-            await DataLogger.LogExploreRate(this, eventdata, status, url.Contains("choose_explore_painting"));
-
-            // Check status first
-            if (status != null && (int)status == 0)
-            {
-                if (this.StateMachine.State == State.PortalConfirm)
-                {
-                    await this.StateMachine.FireAsync(Trigger.ResetState);
-                    return;
-                }
-
-            }
-            if (status != null && (int)status == 1)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundDoor);
-                return;
-            }
-            if (status != null && (int)status == 2)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                return;
-            }
-            if (status != null && (int)status == 3)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundBattle);
-                return;
-            }
-            if (status != null && (int)status == 4)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundTreasure);
-                return;
-            }
-
-            // Check explore event next
-            if (eventdata != null)
-            {
-                switch ((int)eventdata["type"])
-                {
-                    case 1:  // Nothing
-                        ColorConsole.WriteLine("Did not find anything");
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    case 2:  // Item
-                    case 3:  // Lab Item?
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    case 6:  // Buffs
-                        ColorConsole.WriteLine("Came across the statue of a gallant hero");
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    case 8:  // Portal
-                        ColorConsole.WriteLine("Pulled into a portal painting!");
-                        await Counters.PulledInPortal();
-                        await this.StateMachine.FireAsync(Trigger.FoundPortal);
-                        break;
-                    case 5:  // Spring
-                        ColorConsole.WriteLine("Discovered a mysterious spring");
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    case 10: // Fatigue
-                        ParseAbrasionMap(data);
-                        ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
-                        await this.StateMachine.FireAsync(Trigger.FoundThing);
-                        break;
-                    case 7:  // Door
-                        await this.StateMachine.FireAsync(Trigger.FoundDoor);
-                        break;
-                    case 4:  // Battle
-                        await this.StateMachine.FireAsync(Trigger.FoundBattle);
-                        break;
-
-                }
-                return;
-            }
-
-            // Abrasion map presence
-            if (ParseAbrasionMap(data))
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                return;
-            }
-
-            // Last buffs presence
-            var lastAddonRM = data["labyrinth_dungeon_session"]["last_addon_record_materia"];
-            if (lastAddonRM != null)
-            {
-                await this.StateMachine.FireAsync(Trigger.FoundThing);
-                return;
-            }
-
+            Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);
+            Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
+            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
+            Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
         }
 
         public void DisableSafe()
@@ -452,172 +316,18 @@ namespace FFRK_LabMem.Machines
             this.CurrentTears = 0;
             this.SelectedTeamIndex = 0;
             this.FatigueInfo.Clear();
-            fatigueAutoResetEvent.Reset();
-            quickExploreAutoResetEvent.Reset();
+            AutoResetEventFatigue.Reset();
+            AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;
 
         }
 
-        protected override void OnDataChanged(JObject data)
+        protected override async void OnDataChanged(JObject data)
         {
 
-            // Parse number of keys & tears
-            var labItems = (JArray)data["labyrinth_items"];
-            if (labItems != null)
-            {
-                var keys = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000001")).FirstOrDefault();
-                this.CurrentKeys = (int)(keys?["num"] ?? this.CurrentKeys);
-                var tears = labItems.Where(i => i["labyrinth_item"]["id"].ToString().Equals("181000003")).FirstOrDefault();
-                this.CurrentTears = (int)(tears?["num"] ?? this.CurrentTears);
-                Debug.WriteLine("Keys:{0}, Tears:{1}", CurrentKeys, CurrentTears);
-            }
-            
-            var unsettledItems = (JArray)data["unsettled_items"];
-            if (unsettledItems != null && (labItems?.Count ?? 0) > 0)
-            {
-                var keys = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000001")).FirstOrDefault();
-                this.CurrentKeys += (int)(keys?["num"] ?? 0);
-                var tears = unsettledItems.Where(i => i["item_id"].ToString().Equals("181000003")).FirstOrDefault();
-                this.CurrentTears += (int)(tears?["num"] ?? 0);
-                Debug.WriteLine("Keys2:{0}, Tears2:{1}", CurrentKeys, CurrentTears);
-            }
+            await parser.ParseDataChanged(data);
 
-            // Parse Floor
-            var session = this.Data["labyrinth_dungeon_session"];
-            if (session != null)
-            {
-                var floor = session["current_floor"];
-                if (floor != null)
-                {
-                    int newFloor = (int)floor;
-                    if (newFloor != CurrentFloor)
-                    {
-                        if (CurrentFloor != 0)
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
-                        } else
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Starting on Floor {0}!", floor);
-                        }
-
-                        // Check if final floor
-                        if (this.FinalFloor == 0)
-                        {
-                            if (IsFinalFloor().Result)
-                            {
-                                this.FinalFloor = newFloor;
-                                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", this.FinalFloor);
-                            }
-                        }
-
-                    }
-                    this.CurrentFloor = newFloor;
-                }
-            }
-
-        }
-
-        private async Task ParsePartyInfo(JObject data, string url)
-        {
-
-            // If we have party data
-            var parties = data["parties"];
-            if (parties != null)
-            {
-                FatigueInfo.Clear();
-
-                // Loop through 3 parties
-                for (int partySlot = 0; partySlot < 3; partySlot++)
-                {
-                    var party = parties.Where(p => (string)p["party_no"] == (partySlot + 1).ToString()).FirstOrDefault();
-                    if (party != null)
-                    {
-                        FatigueInfo.Add(new List<BuddyInfo>());
-                    
-                        foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
-                        {
-                            FatigueInfo[partySlot].Add(new BuddyInfo() { BuddyId = (int)item.Value });
-                        }
-                    }
-                }
-
-            }
-            
-            await Task.CompletedTask;
-
-        }
-
-        private async Task ParseFatigueInfo(JObject data, string url)
-        {
-            var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
-            if (values != null)
-            {
-                foreach (var item in FatigueInfo.SelectMany(s => s))
-                {
-                    var value = (JObject)values.Where(i => (int)i["user_buddy_id"] == item.BuddyId).FirstOrDefault();
-                    if (value != null) item.Fatigue = (int)value["memory_abrasion"];
-
-                }
-            }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values WRITE: {0}", fatigueAutoResetEvent);
-            fatigueAutoResetEvent.Set();
-            await Task.CompletedTask;
-        }
-
-        private bool ParseAbrasionMap(JObject data)
-        {
-            var map = data["user_buddy_memory_abrasion_map"];
-            if (map == null) return false;
-            foreach (var item in FatigueInfo.SelectMany(s => s))
-            {
-                var value = map[item.BuddyId.ToString()];
-                if (value != null) item.Fatigue = (int)value["value"];
-            }
-            return true;
-        }
-
-        private async Task ParseAllData(JObject data, string url)
-        {
-            var info = data["labyrinth_dungeon"];
-            if (info != null)
-            {
-                Counters.SetCurrentLab(info["node_id"].ToString(), info["name"].ToString());
-                if (this.FinalFloor == 0)
-                {
-                    this.FinalFloor = (int)info["floor_num"];
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", this.FinalFloor);
-                }
-            }
-            await Task.CompletedTask;
-        }
-
-        private async Task ParseQEData(JObject data, string url)
-        {
-
-            var node = data["current_node"];
-            if (node != null)
-            {
-                this.Data = data;
-                await Counters.QuickExplore(node["id"].ToString(), node["name"].ToString());
-                ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
-                await DataLogger.LogQEDrops(this);
-                Counters.ClearCurrentLab();
-                quickExploreAutoResetEvent.Set();
-            }
-
-        }
-
-        private async Task<bool> IsFinalFloor()
-        {
-            try
-            {
-                await Task.Delay(2000, this.CancellationToken);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking if final floor");
-                return (await Adb.FindButton("#75377a", 2000, 48.6, 23, 24, 0, this.CancellationToken) != null);
-
-            } catch (OperationCanceledException){};
-            return false;
         }
 
         private Task<bool> CheckDisableSafeRequested()
