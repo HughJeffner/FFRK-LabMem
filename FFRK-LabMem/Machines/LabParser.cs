@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static FFRK_LabMem.Machines.Lab;
 
@@ -14,6 +15,7 @@ namespace FFRK_LabMem.Machines
     {
 
         private Lab Lab;
+        private readonly ManualResetEvent eventPartyList = new ManualResetEvent(true);
 
         public LabParser(Lab lab)
         {
@@ -227,6 +229,7 @@ namespace FFRK_LabMem.Machines
             var parties = data["parties"];
             if (parties != null)
             {
+                eventPartyList.Reset();
                 Lab.FatigueInfo.Clear();
 
                 // Loop through 3 parties
@@ -243,9 +246,8 @@ namespace FFRK_LabMem.Machines
                         }
                     }
                 }
-
+                eventPartyList.Set();
             }
-
             await Task.CompletedTask;
 
         }
@@ -254,7 +256,8 @@ namespace FFRK_LabMem.Machines
         {
             var map = data["user_buddy_memory_abrasion_map"];
             if (map == null) return false;
-            foreach (var item in Lab.FatigueInfo.SelectMany(s => s))
+            eventPartyList.WaitOne(TimeSpan.FromSeconds(10));
+            foreach (var item in Lab.FatigueInfo.SelectMany(s => s).ToList())
             {
                 var value = map[item.BuddyId.ToString()];
                 if (value != null) item.Fatigue = (int)value["value"];
@@ -267,11 +270,11 @@ namespace FFRK_LabMem.Machines
             var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
             if (values != null)
             {
-                foreach (var item in Lab.FatigueInfo.SelectMany(s => s))
+                eventPartyList.WaitOne(TimeSpan.FromSeconds(10));
+                foreach (var item in Lab.FatigueInfo.SelectMany(s => s).ToList())
                 {
                     var value = (JObject)values.Where(i => (int)i["user_buddy_id"] == item.BuddyId).FirstOrDefault();
                     if (value != null) item.Fatigue = (int)value["memory_abrasion"];
-
                 }
             }
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values WRITE: {0}", Lab.AutoResetEventFatigue);
