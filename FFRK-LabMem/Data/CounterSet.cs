@@ -33,6 +33,7 @@ namespace FFRK_LabMem.Data
         public SortedDictionary<string, int> Drops { get; set; }
         public SortedDictionary<string, int> DropsQE { get; set; } = new SortedDictionary<string, int>();
         public string Name { get; set; }
+        public DateTime LastCompleted { get; set; } = DateTime.MinValue;
         [JsonIgnore]
         public SortedDictionary<string, int> HeroEquipmentCombined
         {

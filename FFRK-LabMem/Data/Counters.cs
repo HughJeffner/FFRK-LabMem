@@ -106,21 +106,31 @@ namespace FFRK_LabMem.Data
         {
             runtimeStopwatch.Restart();
         }
+        public static bool IsMissionCompleted()
+        {
+            return _instance.CounterSets["Total"].LastCompleted.ToUniversalTime().Date >= DateTime.UtcNow.Date;
+        }
         public static async Task QuickExplore(string id, string name)
         {
             // Reset the current lab
             ClearCurrentLab();
-            Counters.SetCurrentLab(id, name);
+            Counters.SetCurrentLab(id, name, false);
+
+            // Timestamp
+            _instance.IncrementLastCompleted();
 
             // Increment counter
             await _instance.IncrementCounter("QuickExplores");
 
         }
-        public static async Task LabRunCompleted()
+        public static async Task LabRunCompleted(bool incrementLastCompleted)
         {
             // Increment counters
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
-            
+
+            // Timestamp
+            if (incrementLastCompleted) _instance.IncrementLastCompleted();
+
             // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
 
@@ -276,12 +286,16 @@ namespace FFRK_LabMem.Data
                 }
             }
         }
+        private void IncrementLastCompleted()
+        {
+            GetTargetCounterSets().ForEach(s => s.Value.LastCompleted = DateTime.Now);
+        }
         private List<KeyValuePair<string,CounterSet>> GetTargetCounterSets(){
             var ret = CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)).ToList();
             if (CurrentLabId == null) ret.Add(new KeyValuePair<string, CounterSet>("_Buffer", currentLabBufferSet));
             return ret;
         }
-        private async void SetLab(string id, string name)
+        private async void SetLab(string id, string name, bool showMessage = true)
         {
             if (CurrentLabId == null || !CurrentLabId.Equals(id))
             {
@@ -289,6 +303,7 @@ namespace FFRK_LabMem.Data
                 if (CounterSets.ContainsKey(id))
                 {
                     CounterSets[id].AddCounters(currentLabBufferSet);
+                    CounterSets[id].LastCompleted = currentLabBufferSet.LastCompleted;
                 }
                 else
                 {
@@ -296,18 +311,26 @@ namespace FFRK_LabMem.Data
                     CounterSet newEntry = new CounterSet();
                     newEntry.Name = name;
                     newEntry.AddCounters(currentLabBufferSet);
+                    newEntry.LastCompleted = currentLabBufferSet.LastCompleted;
                     CounterSets.Add(id, newEntry);
                 }
                 await Save();
-                ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Current lab set to: {0}", name);
+                if (showMessage)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Current lab set to: {0}", name);
+                } else
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab set to: {0}", name);
+                }
+                    
             }
             // Reset counters in buffer
             currentLabBufferSet.Reset(CounterSet.DataType.All);
             CurrentLabId = id;
         }
-        public static void SetCurrentLab(string id, string name)
+        public static void SetCurrentLab(string id, string name, bool showMessage = true)
         {
-            _instance.SetLab(id, name);
+            _instance.SetLab(id, name, showMessage);
         }
         public static void ClearCurrentLab()
         {

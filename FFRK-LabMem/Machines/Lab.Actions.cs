@@ -570,7 +570,7 @@ namespace FFRK_LabMem.Machines
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     await Notify(Notifications.EventType.LAB_COMPLETED);
                     base.OnMachineFinished();
-                    await Counters.LabRunCompleted();
+                    await Counters.LabRunCompleted(false);
                 } 
                 if (Config.UseTeleportStoneOnMasterPainting)
                 {
@@ -588,7 +588,7 @@ namespace FFRK_LabMem.Machines
                 if (t.Source != State.Unknown)
                 {
                     await Notify(Notifications.EventType.LAB_COMPLETED);
-                    await Counters.LabRunCompleted();
+                    await Counters.LabRunCompleted(t.Source == State.BattleFinished);
                 }
 
                 // Restart or not
