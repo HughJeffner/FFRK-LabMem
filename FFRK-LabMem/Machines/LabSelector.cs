@@ -132,9 +132,20 @@ namespace FFRK_LabMem.Machines
                 case LabConfiguration.PartyIndexOption.Team2:
                 case LabConfiguration.PartyIndexOption.Team3:
                     return (int)Lab.Config.PartyIndex;
-                case LabConfiguration.PartyIndexOption.Random:
+                case LabConfiguration.PartyIndexOption.Random12:
+                    return rng.Next(0, 1);
+                case LabConfiguration.PartyIndexOption.RandomAny:
                     return rng.Next(0, 2);
-                case LabConfiguration.PartyIndexOption.LowestFatigue:
+                case LabConfiguration.PartyIndexOption.LowestFatigue12:
+                    var item12 = Lab.FatigueInfo
+                        .Take(2)
+                        .Select(p => p)
+                        .OrderBy(p => p.Sum(f => f.Fatigue))
+                        .ThenBy(p => rng.Next())
+                        .FirstOrDefault();
+                    if (item12 != default) return Lab.FatigueInfo.IndexOf(item12);
+                    return 0;
+                case LabConfiguration.PartyIndexOption.LowestFatigueAny:
                     var item = Lab.FatigueInfo
                         .Select(p => p)
                         .OrderBy(p => p.Sum(f=>f.Fatigue))   

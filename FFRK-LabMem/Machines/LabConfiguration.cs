@@ -13,8 +13,10 @@ namespace FFRK_LabMem.Machines
             Team1,
             Team2,
             Team3,
-            Random,
-            LowestFatigue
+            LowestFatigueAny,
+            LowestFatigue12,
+            RandomAny,
+            Random12,
         }
 
         public bool AutoStart { get; set; } = false;

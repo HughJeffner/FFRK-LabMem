@@ -343,7 +343,8 @@ namespace FFRK_LabMem.Machines
             // Do we need fatiuge values to proceed?
             if (
                 (Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) // Using tears AND Not MasterOnly option or a master painting
-                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue)                                  // OR Lowest party fatigue option 
+                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigueAny
+                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue12)                                  // OR Lowest party fatigue option 
             )
             {
                 // Wait for fatigue values downloaded on another thread
