@@ -343,7 +343,14 @@ namespace FFRK_LabMem.Data.UI
         private string PrettyTimestamp(DateTime timeStamp)
         {
             if (timeStamp.Equals(DateTime.MinValue)) return "-";
-            return timeStamp.ToString();
+            if (timeStamp.Date.Equals(DateTime.Now.Date))
+            {
+                return timeStamp.ToString("T");
+            } else
+            {
+                return timeStamp.Date.ToString("d");
+            }
+            
         }
 
         private void ButtonCountersReset_Click(object sender, EventArgs e)

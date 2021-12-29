@@ -303,7 +303,6 @@ namespace FFRK_LabMem.Data
                 if (CounterSets.ContainsKey(id))
                 {
                     CounterSets[id].AddCounters(currentLabBufferSet);
-                    CounterSets[id].LastCompleted = currentLabBufferSet.LastCompleted;
                 }
                 else
                 {
@@ -311,7 +310,6 @@ namespace FFRK_LabMem.Data
                     CounterSet newEntry = new CounterSet();
                     newEntry.Name = name;
                     newEntry.AddCounters(currentLabBufferSet);
-                    newEntry.LastCompleted = currentLabBufferSet.LastCompleted;
                     CounterSets.Add(id, newEntry);
                 }
                 await Save();

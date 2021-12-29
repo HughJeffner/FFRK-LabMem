@@ -208,6 +208,7 @@ namespace FFRK_LabMem.Data
                 }
                 
             }
+            if (this.LastCompleted == DateTime.MinValue) this.LastCompleted = from.LastCompleted;
         }
 
         public override string ToString()
