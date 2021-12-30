@@ -568,20 +568,20 @@ namespace FFRK_LabMem.Machines
         private async Task FinishLab(StateMachine<State, Trigger>.Transition t)
         {
 
-            // Disable machine
+            // Ending on master painting not defeated
             if (t.Destination == State.WaitForBoss)
             {
-                ColorConsole.Write(ConsoleColor.Green, "We reached the master painting.  ");
+                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  ");
+
+                // Stop on master painting takes priority
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     await Notify(Notifications.EventType.LAB_COMPLETED);
-                    base.OnMachineFinished();
                     await Counters.LabRunCompleted(false);
-                } 
-                if (Config.UseTeleportStoneOnMasterPainting)
+                    base.OnMachineFinished();
+                } else if (Config.UseTeleportStoneOnMasterPainting)
                 {
-                    ColorConsole.WriteLine("");
                     await UseTeleportStone();
                     await StateMachine.FireAsync(Trigger.FinishedLab);
                 }
