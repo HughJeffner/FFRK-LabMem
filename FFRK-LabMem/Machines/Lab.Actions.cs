@@ -118,10 +118,17 @@ namespace FFRK_LabMem.Machines
             if (this.CurrentPainting != null) selectedPaintingIndex = paintings.IndexOf(this.CurrentPainting);
 
             // Master painting check
-            if ((int)this.CurrentPainting["type"] == 2 && (this.Config.StopOnMasterPainting || this.Config.UseTeleportStoneOnMasterPainting))
+            if ((int)this.CurrentPainting["type"] == 2 && (Config.StopOnMasterPainting || Config.UseTeleportStoneOnMasterPainting))
             {
-                await this.StateMachine.FireAsync(Trigger.FoundBoss);
-                return;
+                var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.DefeatMasterPainting && !Counters.IsMissionCompleted();
+                if (Config.UseTeleportStoneOnMasterPainting && needsMission && !Config.StopOnMasterPainting)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Defeating master painting for daily mission");
+                } else
+                {
+                    await this.StateMachine.FireAsync(Trigger.FoundBoss);
+                    return;
+                }
             }
 
             // Do Pick

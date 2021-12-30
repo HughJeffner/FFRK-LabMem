@@ -291,9 +291,9 @@ namespace FFRK_LabMem.Config.UI
             if (checkBoxSlot13.Checked) labConfig.LetheTearsSlots[2] |= (1 << 2);
             if (checkBoxSlot14.Checked) labConfig.LetheTearsSlots[2] |= (1 << 1);
             if (checkBoxSlot15.Checked) labConfig.LetheTearsSlots[2] |= (1 << 0);
-
             labConfig.LetheTearsMasterOnly = checkBoxLetheTearsMasterOnly.Checked;
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
+            labConfig.CompleteDailyMission = (LabConfiguration.CompleteMissionOption)comboBoxLabMission.SelectedIndex;
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
@@ -422,6 +422,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxSlot15.Checked = ((labConfig.LetheTearsSlots[2] >> 0) & 1) != 0;
             checkBoxLetheTearsMasterOnly.Checked = labConfig.LetheTearsMasterOnly;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
+            comboBoxLabMission.SelectedIndex = (int)labConfig.CompleteDailyMission;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
@@ -642,6 +643,13 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabUseTeleport.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
             checkBoxLabRestart.Enabled = !checkBoxLabStopOnMasterPainting.Checked;
             CheckBoxLabRestart_CheckedChanged(sender, e);
+            CheckBoxLabUseTeleport_CheckedChanged(sender, e);
+        }
+
+        private void CheckBoxLabUseTeleport_CheckedChanged(object sender, EventArgs e)
+        {
+            labelLabMission.Enabled = checkBoxLabUseTeleport.Checked && !checkBoxLabStopOnMasterPainting.Checked;
+            comboBoxLabMission.Enabled = checkBoxLabUseTeleport.Checked && !checkBoxLabStopOnMasterPainting.Checked;
         }
 
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
@@ -1034,5 +1042,6 @@ namespace FFRK_LabMem.Config.UI
         {
             textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
+        
     }
 }

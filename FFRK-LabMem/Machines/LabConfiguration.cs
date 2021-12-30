@@ -24,7 +24,11 @@ namespace FFRK_LabMem.Machines
             RandomAny,
             Random12,
         }
-
+        public enum CompleteMissionOption
+        {
+            None,
+            DefeatMasterPainting
+        }
         public bool AutoStart { get; set; } = false;
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
@@ -66,7 +70,7 @@ namespace FFRK_LabMem.Machines
         public int WatchdogCrashSeconds { get; set; }
         [JsonIgnore]
         public int WatchdogMaxRetries { get; set; }
-        
+        public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
 
         public LabConfiguration() {
 

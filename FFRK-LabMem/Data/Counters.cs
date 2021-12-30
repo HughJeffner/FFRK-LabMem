@@ -108,7 +108,17 @@ namespace FFRK_LabMem.Data
         }
         public static bool IsMissionCompleted()
         {
-            return _instance.CounterSets["Total"].LastCompleted.ToUniversalTime().Date >= DateTime.UtcNow.Date;
+            // Last completion time taken from Total couterset in UTC
+            var last = _instance.CounterSets["Total"].LastCompleted.ToUniversalTime();
+            
+            // UTC now
+            var now = DateTime.UtcNow;
+            
+            // Missions reset at 08:00 UTC
+            // If the hour is 8 or greater then use today, else use yesterday
+            var compare = (now.Hour >= 8) ? now.Date.AddHours(8) : now.Date.AddDays(-1).AddHours(8);
+
+            return  last >= compare;
         }
         public static async Task QuickExplore(string id, string name)
         {
