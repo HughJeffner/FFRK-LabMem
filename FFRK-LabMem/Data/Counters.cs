@@ -134,11 +134,13 @@ namespace FFRK_LabMem.Data
             // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
 
+            // Save to file
+            await _instance.Save();
+
             // Reset the current lab id and buffer since it is now unkown
             ClearCurrentLab();
 
-            // Save to file
-            await _instance.Save();
+            
         }
         public static async Task PaintingSelected()
         {
