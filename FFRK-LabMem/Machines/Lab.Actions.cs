@@ -358,7 +358,7 @@ namespace FFRK_LabMem.Machines
                     if (needsLetheTears &&
                         SelectedPartyIndex < FatigueInfo.Count && 
                         FatigueInfo[SelectedPartyIndex].Any(f => 
-                            (Config.LetheTearsSlot & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 && 
+                            (Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 && 
                             f.Fatigue >= Config.LetheTearsFatigue
                         )
                     ) await UseLetheTears();
@@ -456,7 +456,7 @@ namespace FFRK_LabMem.Machines
         private async Task<bool> UseLetheTears()
         {
 
-            int numberUsed = Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1');
+            int numberUsed = Convert.ToString(Config.LetheTearsSlots[SelectedPartyIndex], 2).ToCharArray().Count(c => c == '1');
 
             // Check remaining qty
             if (numberUsed > CurrentTears){
@@ -472,11 +472,12 @@ namespace FFRK_LabMem.Machines
             await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
 
             // Each unit if selected
+            var partyY = 32.33333 + (16.66666 * SelectedPartyIndex);
             for (int i = 0; i < 5; i++)
             {
-                if ((Config.LetheTearsSlot & (1 << 4-i)) != 0)
+                if ((Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4-i)) != 0)
                 {
-                    await this.Adb.TapPct(11.11 + (i * 15.55), 31.64, this.CancellationToken);
+                    await this.Adb.TapPct(11.11 + (i * 15.55), partyY, this.CancellationToken);
                     await LabTimings.Delay("Inter-LetheTears-Unit", this.CancellationToken);
                 }
             }

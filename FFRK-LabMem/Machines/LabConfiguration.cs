@@ -8,6 +8,12 @@ namespace FFRK_LabMem.Machines
     public class LabConfiguration : MachineConfiguration
     {
 
+        protected override void Migrate()
+        {
+            if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
+            if (LetheTearsSlot > 0) LetheTearsSlots[0] = LetheTearsSlot;
+        }
+
         public enum PartyIndexOption
         {
             Team1,
@@ -32,9 +38,15 @@ namespace FFRK_LabMem.Machines
         public bool UseOldCrashRecovery { get; set; } = false;
         public bool UseLetheTears { get; set; } = false;
         public bool LetheTearsMasterOnly { get; set; } = false;
-        public byte LetheTearsSlot { get; set; } = 0b11111;
-        public byte LetheTearsSlot2 { get; set; } = 0b00000;
-        public byte LetheTearsSlot3 { get; set; } = 0b00000;
+        [Obsolete]
+        public byte LetheTearsSlot { internal get; set; } = 0;
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public List<byte> LetheTearsSlots { get; set; } = new List<byte>()
+        {
+            {0b11111},
+            {0b00000},
+            {0b00000}
+        };
         public int LetheTearsFatigue { get; set; } = 7;
         public PartyIndexOption PartyIndex { get; set; } = PartyIndexOption.Team1;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;

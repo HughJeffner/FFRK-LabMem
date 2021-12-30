@@ -273,22 +273,24 @@ namespace FFRK_LabMem.Config.UI
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
-            labConfig.LetheTearsSlot = 0;
-            if (checkBoxSlot1.Checked) labConfig.LetheTearsSlot |= (1 << 4);
-            if (checkBoxSlot2.Checked) labConfig.LetheTearsSlot |= (1 << 3);
-            if (checkBoxSlot3.Checked) labConfig.LetheTearsSlot |= (1 << 2);
-            if (checkBoxSlot4.Checked) labConfig.LetheTearsSlot |= (1 << 1);
-            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlot2 |= (1 << 0);
-            if (checkBoxSlot6.Checked) labConfig.LetheTearsSlot2 |= (1 << 4);
-            if (checkBoxSlot7.Checked) labConfig.LetheTearsSlot2 |= (1 << 3);
-            if (checkBoxSlot8.Checked) labConfig.LetheTearsSlot2 |= (1 << 2);
-            if (checkBoxSlot9.Checked) labConfig.LetheTearsSlot2 |= (1 << 1);
-            if (checkBoxSlot10.Checked) labConfig.LetheTearsSlot2 |= (1 << 0);
-            if (checkBoxSlot11.Checked) labConfig.LetheTearsSlot3 |= (1 << 4);
-            if (checkBoxSlot12.Checked) labConfig.LetheTearsSlot3 |= (1 << 3);
-            if (checkBoxSlot13.Checked) labConfig.LetheTearsSlot3 |= (1 << 2);
-            if (checkBoxSlot14.Checked) labConfig.LetheTearsSlot3 |= (1 << 1);
-            if (checkBoxSlot15.Checked) labConfig.LetheTearsSlot3 |= (1 << 0);
+            labConfig.LetheTearsSlots[0] = 0;
+            labConfig.LetheTearsSlots[1] = 0;
+            labConfig.LetheTearsSlots[2] = 0;
+            if (checkBoxSlot1.Checked) labConfig.LetheTearsSlots[0] |= (1 << 4);
+            if (checkBoxSlot2.Checked) labConfig.LetheTearsSlots[0] |= (1 << 3);
+            if (checkBoxSlot3.Checked) labConfig.LetheTearsSlots[0] |= (1 << 2);
+            if (checkBoxSlot4.Checked) labConfig.LetheTearsSlots[0] |= (1 << 1);
+            if (checkBoxSlot5.Checked) labConfig.LetheTearsSlots[0] |= (1 << 0);
+            if (checkBoxSlot6.Checked) labConfig.LetheTearsSlots[1] |= (1 << 4);
+            if (checkBoxSlot7.Checked) labConfig.LetheTearsSlots[1] |= (1 << 3);
+            if (checkBoxSlot8.Checked) labConfig.LetheTearsSlots[1] |= (1 << 2);
+            if (checkBoxSlot9.Checked) labConfig.LetheTearsSlots[1] |= (1 << 1);
+            if (checkBoxSlot10.Checked) labConfig.LetheTearsSlots[1] |= (1 << 0);
+            if (checkBoxSlot11.Checked) labConfig.LetheTearsSlots[2] |= (1 << 4);
+            if (checkBoxSlot12.Checked) labConfig.LetheTearsSlots[2] |= (1 << 3);
+            if (checkBoxSlot13.Checked) labConfig.LetheTearsSlots[2] |= (1 << 2);
+            if (checkBoxSlot14.Checked) labConfig.LetheTearsSlots[2] |= (1 << 1);
+            if (checkBoxSlot15.Checked) labConfig.LetheTearsSlots[2] |= (1 << 0);
 
             labConfig.LetheTearsMasterOnly = checkBoxLetheTearsMasterOnly.Checked;
             labConfig.UseTeleportStoneOnMasterPainting = checkBoxLabUseTeleport.Checked;
@@ -403,21 +405,21 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
-            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot >> 4) & 1) != 0;
-            checkBoxSlot2.Checked = ((labConfig.LetheTearsSlot >> 3) & 1) != 0;
-            checkBoxSlot3.Checked = ((labConfig.LetheTearsSlot >> 2) & 1) != 0;
-            checkBoxSlot4.Checked = ((labConfig.LetheTearsSlot >> 1) & 1) != 0;
-            checkBoxSlot5.Checked = ((labConfig.LetheTearsSlot >> 0) & 1) != 0;
-            checkBoxSlot6.Checked = ((labConfig.LetheTearsSlot2 >> 4) & 1) != 0;
-            checkBoxSlot7.Checked = ((labConfig.LetheTearsSlot2 >> 3) & 1) != 0;
-            checkBoxSlot8.Checked = ((labConfig.LetheTearsSlot2 >> 2) & 1) != 0;
-            checkBoxSlot9.Checked = ((labConfig.LetheTearsSlot2 >> 1) & 1) != 0;
-            checkBoxSlot10.Checked = ((labConfig.LetheTearsSlot2 >> 0) & 1) != 0;
-            checkBoxSlot11.Checked = ((labConfig.LetheTearsSlot3 >> 4) & 1) != 0;
-            checkBoxSlot12.Checked = ((labConfig.LetheTearsSlot3 >> 3) & 1) != 0;
-            checkBoxSlot13.Checked = ((labConfig.LetheTearsSlot3 >> 2) & 1) != 0;
-            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlot3 >> 1) & 1) != 0;
-            checkBoxSlot15.Checked = ((labConfig.LetheTearsSlot3 >> 0) & 1) != 0;
+            checkBoxSlot1.Checked = ((labConfig.LetheTearsSlots[0] >> 4) & 1) != 0;
+            checkBoxSlot2.Checked = ((labConfig.LetheTearsSlots[0] >> 3) & 1) != 0;
+            checkBoxSlot3.Checked = ((labConfig.LetheTearsSlots[0] >> 2) & 1) != 0;
+            checkBoxSlot4.Checked = ((labConfig.LetheTearsSlots[0] >> 1) & 1) != 0;
+            checkBoxSlot5.Checked = ((labConfig.LetheTearsSlots[0] >> 0) & 1) != 0;
+            checkBoxSlot6.Checked = ((labConfig.LetheTearsSlots[1] >> 4) & 1) != 0;
+            checkBoxSlot7.Checked = ((labConfig.LetheTearsSlots[1] >> 3) & 1) != 0;
+            checkBoxSlot8.Checked = ((labConfig.LetheTearsSlots[1] >> 2) & 1) != 0;
+            checkBoxSlot9.Checked = ((labConfig.LetheTearsSlots[1] >> 1) & 1) != 0;
+            checkBoxSlot10.Checked = ((labConfig.LetheTearsSlots[1] >> 0) & 1) != 0;
+            checkBoxSlot11.Checked = ((labConfig.LetheTearsSlots[2] >> 4) & 1) != 0;
+            checkBoxSlot12.Checked = ((labConfig.LetheTearsSlots[2] >> 3) & 1) != 0;
+            checkBoxSlot13.Checked = ((labConfig.LetheTearsSlots[2] >> 2) & 1) != 0;
+            checkBoxSlot14.Checked = ((labConfig.LetheTearsSlots[2] >> 1) & 1) != 0;
+            checkBoxSlot15.Checked = ((labConfig.LetheTearsSlots[2] >> 0) & 1) != 0;
             checkBoxLetheTearsMasterOnly.Checked = labConfig.LetheTearsMasterOnly;
             checkBoxLabUseTeleport.Checked = labConfig.UseTeleportStoneOnMasterPainting;
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
@@ -425,8 +427,6 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
 
             // Painting priorities
-            // Backwards-compatble check
-            if (!labConfig.PaintingPriorityMap.ContainsKey("R")) labConfig.PaintingPriorityMap.Add("R",0);
             listViewPaintings.Items.Clear();
             foreach (var item in labConfig.PaintingPriorityMap)
             {
