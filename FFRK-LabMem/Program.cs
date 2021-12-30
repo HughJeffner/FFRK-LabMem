@@ -45,6 +45,7 @@ namespace FFRK_LabMem
 
             // Ad-hoc command loop
             Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
+            Console.WriteLine("Type ? for help");
             while (true)
             {
                 var key = Console.ReadKey(true);
@@ -60,6 +61,7 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
                 if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
                 if (key.Key == ConsoleKey.Q) controller.QuickExplore();
+                if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
 
             }
             
