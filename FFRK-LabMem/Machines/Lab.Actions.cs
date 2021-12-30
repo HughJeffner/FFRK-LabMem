@@ -341,11 +341,9 @@ namespace FFRK_LabMem.Machines
             }
 
             // Do we need fatiuge values to proceed?
-            if (
-                (Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) // Using tears AND Not MasterOnly option or a master painting
-                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigueAny
-                || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue12)                                  // OR Lowest party fatigue option 
-            )
+            var needsLetheTears = Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2); // Using tears AND Not MasterOnly option or a master painting
+            var needsPartyIndex = Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigueAny || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue12;
+            if (needsLetheTears || needsPartyIndex)
             {
                 // Wait for fatigue values downloaded on another thread
                 var gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
@@ -353,11 +351,12 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
 
-                    // Select the party index using fatigue values
+                    // Select the party index with fatigue levels available
                     await SelectParty(selector.GetPartyIndex());
 
                     // Fatigue level check for tears
-                    if (SelectedPartyIndex < FatigueInfo.Count && 
+                    if (needsLetheTears &&
+                        SelectedPartyIndex < FatigueInfo.Count && 
                         FatigueInfo[SelectedPartyIndex].Any(f => 
                             (Config.LetheTearsSlot & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 && 
                             f.Fatigue >= Config.LetheTearsFatigue
