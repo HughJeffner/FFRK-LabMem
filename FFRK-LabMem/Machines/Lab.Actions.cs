@@ -401,7 +401,7 @@ namespace FFRK_LabMem.Machines
             if (index == 0) return;
 
             // Delay then select
-            await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
+            await LabTimings.Delay("Pre-SelectParty", this.CancellationToken);
             if (index == 1)
             {
                 await Adb.TapPct(50, 50, this.CancellationToken);
@@ -409,7 +409,7 @@ namespace FFRK_LabMem.Machines
             {
                 await Adb.TapPct(50, 66.7, this.CancellationToken);
             }
-
+            await LabTimings.Delay("Post-SelectParty", this.CancellationToken);
         }
 
         private async Task FinishBattle()
@@ -588,7 +588,7 @@ namespace FFRK_LabMem.Machines
                 if (t.Source != State.Unknown)
                 {
                     await Notify(Notifications.EventType.LAB_COMPLETED);
-                    await Counters.LabRunCompleted(t.Source == State.BattleFinished);
+                    await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
                 // Restart or not
