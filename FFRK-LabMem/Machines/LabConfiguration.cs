@@ -7,10 +7,34 @@ namespace FFRK_LabMem.Machines
 {
     public class LabConfiguration : MachineConfiguration
     {
+
+        protected override void Migrate()
+        {
+            if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
+            if (LetheTearsSlot > 0) LetheTearsSlots[0] = LetheTearsSlot;
+        }
+
+        public enum PartyIndexOption
+        {
+            Team1,
+            Team2,
+            Team3,
+            LowestFatigueAny,
+            LowestFatigue12,
+            RandomAny,
+            Random12,
+        }
+        public enum CompleteMissionOption
+        {
+            None,
+            DefeatMasterPainting
+        }
         public bool AutoStart { get; set; } = false;
         public bool OpenDoors { get; set; } = true;
         public bool AvoidExploreIfTreasure { get; set; } = false;
         public bool AvoidPortal { get; set; } = true;
+        public bool AvoidPortalIfExplore { get; set; } = true;
+        public bool AvoidPortalIfMore { get; set; } = true;
         public bool RestartFailedBattle { get; set; } = false;
         public bool StopOnMasterPainting { get; set; } = false;
         public bool RestartLab { get; set; } = false;
@@ -18,8 +42,17 @@ namespace FFRK_LabMem.Machines
         public bool UseOldCrashRecovery { get; set; } = false;
         public bool UseLetheTears { get; set; } = false;
         public bool LetheTearsMasterOnly { get; set; } = false;
-        public byte LetheTearsSlot { get; set; } = 0b11111;
+        [Obsolete]
+        public byte LetheTearsSlot { internal get; set; } = 0;
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public List<byte> LetheTearsSlots { get; set; } = new List<byte>()
+        {
+            {0b11111},
+            {0b00000},
+            {0b00000}
+        };
         public int LetheTearsFatigue { get; set; } = 7;
+        public PartyIndexOption PartyIndex { get; set; } = PartyIndexOption.Team1;
         public bool UseTeleportStoneOnMasterPainting { get; set; } = false;
         public bool ScreenshotRadiantPainting { get; set; } = false;
         public bool EnemyBlocklistAvoidOptionOverride { get; set; } = false;
@@ -37,7 +70,7 @@ namespace FFRK_LabMem.Machines
         public int WatchdogCrashSeconds { get; set; }
         [JsonIgnore]
         public int WatchdogMaxRetries { get; set; }
-        
+        public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
 
         public LabConfiguration() {
 

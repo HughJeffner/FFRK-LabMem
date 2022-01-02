@@ -100,36 +100,57 @@ namespace FFRK_LabMem.Data
         {
             await Save();
             runtimeStopwatch.Stop();
-            CurrentLabId = null;
-            currentLabBufferSet.Reset(CounterSet.DataType.All);
+            ClearCurrentLab();
         }
         private void Controller_OnEnabled(object sender, EventArgs e)
         {
             runtimeStopwatch.Restart();
         }
+        public static bool IsMissionCompleted()
+        {
+            // Last completion time taken from Total couterset in UTC
+            var last = _instance.CounterSets["Total"].LastCompleted.ToUniversalTime();
+            
+            // UTC now
+            var now = DateTime.UtcNow;
+            
+            // Missions reset at 08:00 UTC
+            // If the hour is 8 or greater then use today, else use yesterday
+            var compare = (now.Hour >= 8) ? now.Date.AddHours(8) : now.Date.AddDays(-1).AddHours(8);
+
+            return  last >= compare;
+        }
         public static async Task QuickExplore(string id, string name)
         {
             // Reset the current lab
             ClearCurrentLab();
-            Counters.SetCurrentLab(id, name);
+            Counters.SetCurrentLab(id, name, false);
+
+            // Timestamp
+            _instance.IncrementLastCompleted();
 
             // Increment counter
             await _instance.IncrementCounter("QuickExplores");
 
         }
-        public static async Task LabRunCompleted()
+        public static async Task LabRunCompleted(bool incrementLastCompleted)
         {
             // Increment counters
             await _instance.IncrementCounter("LabRunsCompleted", 1, false);
-            
+
+            // Timestamp
+            if (incrementLastCompleted) _instance.IncrementLastCompleted();
+
             // Reset the current lab counter set
             _instance.CounterSets["CurrentLab"].Reset(CounterSet.DataType.All);
+
+            // Save to file
+            await _instance.Save();
 
             // Reset the current lab id and buffer since it is now unkown
             ClearCurrentLab();
 
-            // Save to file
-            await _instance.Save();
+            
         }
         public static async Task PaintingSelected()
         {
@@ -277,12 +298,16 @@ namespace FFRK_LabMem.Data
                 }
             }
         }
+        private void IncrementLastCompleted()
+        {
+            GetTargetCounterSets().ForEach(s => s.Value.LastCompleted = DateTime.Now);
+        }
         private List<KeyValuePair<string,CounterSet>> GetTargetCounterSets(){
             var ret = CounterSets.Where(s => DefaultCounterSets.ContainsKey(s.Key) || s.Key.Equals(CurrentLabId)).ToList();
             if (CurrentLabId == null) ret.Add(new KeyValuePair<string, CounterSet>("_Buffer", currentLabBufferSet));
             return ret;
         }
-        private async void SetLab(string id, string name)
+        private async void SetLab(string id, string name, bool showMessage = true)
         {
             if (CurrentLabId == null || !CurrentLabId.Equals(id))
             {
@@ -300,15 +325,22 @@ namespace FFRK_LabMem.Data
                     CounterSets.Add(id, newEntry);
                 }
                 await Save();
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab set to {0}", name);
+                if (showMessage)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Current lab set to: {0}", name);
+                } else
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab set to: {0}", name);
+                }
+                    
             }
             // Reset counters in buffer
             currentLabBufferSet.Reset(CounterSet.DataType.All);
             CurrentLabId = id;
         }
-        public static void SetCurrentLab(string id, string name)
+        public static void SetCurrentLab(string id, string name, bool showMessage = true)
         {
-            _instance.SetLab(id, name);
+            _instance.SetLab(id, name, showMessage);
         }
         public static void ClearCurrentLab()
         {

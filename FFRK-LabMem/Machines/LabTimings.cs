@@ -148,6 +148,8 @@ namespace FFRK_LabMem.Machines
                 { "Inter-QuickExplore", new Timing(){ Delay=2000 } },
                 { "Inter-QuickExplore-Timeout", new Timing(){ Delay=20000 } },
                 { "Post-QuickExplore", new Timing(){ Delay=0 } },
+                { "Pre-SelectParty", new Timing(){ Delay=4000 } },
+                { "Post-SelectParty", new Timing(){ Delay=0 } },
             };
         }
 

@@ -94,7 +94,7 @@ namespace FFRK_LabMem.Machines
             // Insert Priority Field in the first 3 items
             foreach (var item in paintings.Take(3))
             {
-                item["priority"] = await GetPaintingPriority(item, isTreasure, isExplore, total, this.CurrentFloor.Equals(this.FinalFloor));
+                item["priority"] = await selector.GetPaintingPriority(item, isTreasure, isExplore, total, this.CurrentFloor.Equals(this.FinalFloor));
             }
 
             // Select top 1 priority from the first 3
@@ -118,10 +118,17 @@ namespace FFRK_LabMem.Machines
             if (this.CurrentPainting != null) selectedPaintingIndex = paintings.IndexOf(this.CurrentPainting);
 
             // Master painting check
-            if ((int)this.CurrentPainting["type"] == 2 && (this.Config.StopOnMasterPainting || this.Config.UseTeleportStoneOnMasterPainting))
+            if ((int)this.CurrentPainting["type"] == 2 && (Config.StopOnMasterPainting || Config.UseTeleportStoneOnMasterPainting))
             {
-                await this.StateMachine.FireAsync(Trigger.FoundBoss);
-                return;
+                var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.DefeatMasterPainting && !Counters.IsMissionCompleted();
+                if (Config.UseTeleportStoneOnMasterPainting && needsMission && !Config.StopOnMasterPainting)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Defeating master painting for daily mission");
+                } else
+                {
+                    await this.StateMachine.FireAsync(Trigger.FoundBoss);
+                    return;
+                }
             }
 
             // Do Pick
@@ -166,70 +173,6 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task<int> GetPaintingPriority(JToken painting, bool isTreasure, bool isExplore, int total, bool isLastFloor)
-        {
-
-            // Type as string
-            var type = painting["type"].ToString();
-
-            // Radiant painting
-            if ((bool)painting["is_special_effect"])
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, "Radiant painting detected!: {0}", painting["name"]);
-                ColorConsole.WriteLine(ConsoleColor.DarkMagenta, new string('*', 60));
-                if (Config.ScreenshotRadiantPainting)
-                {
-                    await LabTimings.Delay("Pre-RadiantPaintingScreenshot", this.CancellationToken);
-                    await Adb.SaveScrenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
-                }
-                await Counters.FoundRadiantPainting();
-                var rPriority = 0;
-                if (Config.PaintingPriorityMap.ContainsKey("R")) rPriority = Config.PaintingPriorityMap["R"];
-                return rPriority;
-            }
-
-            // Combatant (1)
-            if (type.Equals("1"))
-            {
-                type += "." + painting["display_type"].ToString();
-
-                // Enemy blocklist
-                var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
-                if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower())))
-                {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding due to blocklist: {0}", enemyName);
-                    return (Config.EnemyBlocklistAvoidOptionOverride ? 512 : 64);
-                }
-            }
-
-            // There's a treasure or explore visible or more paintings not visible yet, but picked a portal
-            if (type.Equals("6") && this.Config.AvoidPortal && (isTreasure || isExplore || (total > 9)))
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
-                return 256;
-            }
-
-            // There's a treasure visible but explore (unless last floor)
-            if (type.Equals("4") && this.Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding explore due to option");
-                return 128;
-            }
-
-            // Lookup or default
-            if (this.Config.PaintingPriorityMap.ContainsKey(type))
-            {
-                return this.Config.PaintingPriorityMap[type];
-            }
-            else
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown painting id: {0}", type);
-                return 1024;
-            }
-
-        }
-
         private async Task SelectTreasures()
         {
 
@@ -253,11 +196,11 @@ namespace FFRK_LabMem.Machines
             JToken treasureToPick = treasures
                 .Select(t => t)
                 .Where(t => {
-                    var filter = GetTreasureFilter(t);
+                    var filter = selector.GetTreasureFilter(t);
                     return filter.Priority > 0 && filter.MaxKeys >= willSpendKeys;
                 })
-                .OrderBy(t => GetTreasureFilter(t).Priority)
-                .ThenBy(t => GetTreasureFilter(t).MaxKeys)
+                .OrderBy(t => selector.GetTreasureFilter(t).Priority)
+                .ThenBy(t => selector.GetTreasureFilter(t).MaxKeys)
                 .ThenBy(t => rng.Next())
                 .FirstOrDefault();
 
@@ -292,7 +235,8 @@ namespace FFRK_LabMem.Machines
                 // Check if key needed
                 if (picked > 0)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0}", picked);
+                    ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0} of {1}", picked, CurrentKeys);
+                    this.CurrentKeys -= picked;
                     await this.Adb.TapPct(58, 44, this.CancellationToken);
                     await LabTimings.Delay("Inter-SelectTreasure", this.CancellationToken);
                 }
@@ -323,23 +267,6 @@ namespace FFRK_LabMem.Machines
             }
 
             await LabTimings.Delay("Post-SelectTreasure", this.CancellationToken);
-
-        }
-
-        private LabConfiguration.TreasureFilter GetTreasureFilter(JToken treasure)
-        {
-
-            var type = treasure.ToString().Substring(0, 1);
-
-            if (this.Config.TreasureFilterMap.ContainsKey(type))
-            {
-                return this.Config.TreasureFilterMap[type];
-            }
-            else
-            {
-                if (!type.Equals("0")) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown treasure filter id: {0}", type);
-                return new LabConfiguration.TreasureFilter() { MaxKeys = 0, Priority = 0 };
-            }
 
         }
 
@@ -420,27 +347,39 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine("Starting Battle");
             }
 
-            // Lethe Tears
-            if (Config.UseLetheTears)
+            // Do we need fatiuge values to proceed?
+            var needsLetheTears = Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2); // Using tears AND Not MasterOnly option or a master painting
+            var needsPartyIndex = Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigueAny || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue12;
+            if (needsLetheTears || needsPartyIndex)
             {
-                // Either a master painting or master only option disabled
-                if (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2) { 
-                    // Wait for fatigue values downloaded on another thread
-                    var gotFatigueValues = await fatigueAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
-                    if (gotFatigueValues)
-                    {
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", fatigueAutoResetEvent);
-                        // Fatigue level check
-                        if (FatigueInfo.Any(f => (Config.LetheTearsSlot & (1 << 4 - FatigueInfo.IndexOf(f))) != 0 && f.Fatigue >= Config.LetheTearsFatigue))
-                        {
-                            await UseLetheTears();
-                        }
-                    }
-                    else
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
-                    }
+                // Wait for fatigue values downloaded on another thread
+                var gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                if (gotFatigueValues)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
+
+                    // Select the party index with fatigue levels available
+                    await SelectParty(selector.GetPartyIndex());
+
+                    // Fatigue level check for tears
+                    if (needsLetheTears &&
+                        SelectedPartyIndex < FatigueInfo.Count && 
+                        FatigueInfo[SelectedPartyIndex].Any(f => 
+                            (Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 && 
+                            f.Fatigue >= Config.LetheTearsFatigue
+                        )
+                    ) await UseLetheTears();
+   
                 }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                }
+                
+            } else
+            {
+                // Just select the party Index
+                await SelectParty(selector.GetPartyIndex());
             }
 
             // Enter
@@ -459,6 +398,26 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        private async Task SelectParty(int index)
+        {
+            SelectedPartyIndex = index;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Selecting party {index + 1}");
+            
+            // 0 already selected by default
+            if (index == 0) return;
+
+            // Delay then select
+            await LabTimings.Delay("Pre-SelectParty", this.CancellationToken);
+            if (index == 1)
+            {
+                await Adb.TapPct(50, 50, this.CancellationToken);
+            } else
+            {
+                await Adb.TapPct(50, 66.7, this.CancellationToken);
+            }
+            await LabTimings.Delay("Post-SelectParty", this.CancellationToken);
+        }
+
         private async Task FinishBattle()
         {
 
@@ -473,8 +432,8 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogBattleDrops(this);
 
             // Update fatigue unknown value
-            FatigueInfo.ForEach(f => f.Fatigue = -1);
-            fatigueAutoResetEvent.Reset();
+            if (SelectedPartyIndex < FatigueInfo.Count) FatigueInfo[SelectedPartyIndex].ForEach(f => f.Fatigue = -1);
+            AutoResetEventFatigue.Reset();
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
@@ -504,9 +463,15 @@ namespace FFRK_LabMem.Machines
         private async Task<bool> UseLetheTears()
         {
 
-            int numberUsed = Convert.ToString(Config.LetheTearsSlot, 2).ToCharArray().Count(c => c == '1');
-            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0}", numberUsed);
+            int numberUsed = Convert.ToString(Config.LetheTearsSlots[SelectedPartyIndex], 2).ToCharArray().Count(c => c == '1');
 
+            // Check remaining qty
+            if (numberUsed > CurrentTears){
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough lethe tears!");
+                return true;
+            }
+
+            ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Lethe Tears] x{0} of {1}", numberUsed, CurrentTears);
             await LabTimings.Delay("Pre-LetheTears", this.CancellationToken);
 
             // Lethe tears button
@@ -514,11 +479,12 @@ namespace FFRK_LabMem.Machines
             await LabTimings.Delay("Inter-LetheTears", this.CancellationToken);
 
             // Each unit if selected
+            var partyY = 32.33333 + (16.66666 * SelectedPartyIndex);
             for (int i = 0; i < 5; i++)
             {
-                if ((Config.LetheTearsSlot & (1 << 4-i)) != 0)
+                if ((Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4-i)) != 0)
                 {
-                    await this.Adb.TapPct(11.11 + (i * 15.55), 31.64, this.CancellationToken);
+                    await this.Adb.TapPct(11.11 + (i * 15.55), partyY, this.CancellationToken);
                     await LabTimings.Delay("Inter-LetheTears-Unit", this.CancellationToken);
                 }
             }
@@ -540,6 +506,7 @@ namespace FFRK_LabMem.Machines
                         if (await Adb.FindButtonAndTap(BUTTON_BLUE, 3000, 38.8, 55, 70, 5, this.CancellationToken))
                         {
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
+                            this.CurrentTears -= numberUsed;
                             await Counters.UsedTears(numberUsed);
                             return true;
                         } else
@@ -601,20 +568,20 @@ namespace FFRK_LabMem.Machines
         private async Task FinishLab(StateMachine<State, Trigger>.Transition t)
         {
 
-            // Disable machine
+            // Ending on master painting not defeated
             if (t.Destination == State.WaitForBoss)
             {
-                ColorConsole.Write(ConsoleColor.Green, "We reached the master painting.  ");
+                ColorConsole.WriteLine(ConsoleColor.Green, "We reached the master painting.  ");
+
+                // Stop on master painting takes priority
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     await Notify(Notifications.EventType.LAB_COMPLETED);
+                    await Counters.LabRunCompleted(false);
                     base.OnMachineFinished();
-                    await Counters.LabRunCompleted();
-                } 
-                if (Config.UseTeleportStoneOnMasterPainting)
+                } else if (Config.UseTeleportStoneOnMasterPainting)
                 {
-                    ColorConsole.WriteLine("");
                     await UseTeleportStone();
                     await StateMachine.FireAsync(Trigger.FinishedLab);
                 }
@@ -628,7 +595,7 @@ namespace FFRK_LabMem.Machines
                 if (t.Source != State.Unknown)
                 {
                     await Notify(Notifications.EventType.LAB_COMPLETED);
-                    await Counters.LabRunCompleted();
+                    await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
                 // Restart or not
@@ -685,7 +652,7 @@ namespace FFRK_LabMem.Machines
                 await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
             } else
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Dungeon complete dialog not present");
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Dungeon complete dialog not present");
             }
 
             // Mission Complete
@@ -751,7 +718,7 @@ namespace FFRK_LabMem.Machines
                 else
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
-                    var b = Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
+                    var b = await Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken);
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
@@ -1031,7 +998,7 @@ namespace FFRK_LabMem.Machines
                         {
 
                             // Wait for results
-                            if (await quickExploreAutoResetEvent.WaitAsync(await LabTimings.GetTimeSpan("Inter-QuickExplore-Timeout"), this.CancellationToken)){
+                            if (await AutoResetEventQuickExplore.WaitAsync(await LabTimings.GetTimeSpan("Inter-QuickExplore-Timeout"), this.CancellationToken)){
                                 await LabTimings.Delay("Post-QuickExplore", this.CancellationToken);
                                 return true;
                             } else

@@ -79,6 +79,7 @@ namespace FFRK_LabMem.Data.UI
         private void LoadAll()
         {
             LoadCounters();
+            LoadTimestamps();
             LoadRuntimes();
             LoadDrops("HE");
             LoadDrops("Drops");
@@ -169,6 +170,35 @@ namespace FFRK_LabMem.Data.UI
                 newItem.SubItems[4].Text = Counters.Default.CounterSets["Total"].Counters[item.Key].ToString();
 
             }
+
+        }
+
+        private void LoadTimestamps()
+        {
+
+            ListViewItem newItem;
+            if (listViewCounters.Items.ContainsKey("Timestamp"))
+            {
+                newItem = listViewCounters.Items["Timestamp"];
+            }
+            else
+            {
+                // Add
+                newItem = new ListViewItem();
+                newItem.Name = "Timestamp";
+                newItem.Tag = "Timestamp";
+                newItem.Group = listViewCounters.Groups["Counters"];
+                newItem.Text = "Last Completed";
+                newItem.SubItems.Add("");
+                newItem.SubItems.Add("");
+                newItem.SubItems.Add("");
+                newItem.SubItems.Add("");
+                listViewCounters.Items.Add(newItem);
+            }
+            newItem.SubItems[1].Text = PrettyTimestamp(Counters.Default.CounterSets["Session"].LastCompleted);
+            newItem.SubItems[2].Text = PrettyTimestamp(GetSelectedLab().LastCompleted);
+            newItem.SubItems[3].Text = PrettyTimestamp(Counters.Default.CounterSets["Group"].LastCompleted);
+            newItem.SubItems[4].Text = PrettyTimestamp(Counters.Default.CounterSets["Total"].LastCompleted);
 
         }
 
@@ -308,6 +338,19 @@ namespace FFRK_LabMem.Data.UI
             {
                 listViewCounters.Items.Remove(item);
             }
+        }
+
+        private string PrettyTimestamp(DateTime timeStamp)
+        {
+            if (timeStamp.Equals(DateTime.MinValue)) return "-";
+            if (timeStamp.Date.Equals(DateTime.Now.Date))
+            {
+                return timeStamp.ToString("T");
+            } else
+            {
+                return timeStamp.Date.ToString("d");
+            }
+            
         }
 
         private void ButtonCountersReset_Click(object sender, EventArgs e)

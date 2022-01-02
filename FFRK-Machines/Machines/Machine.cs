@@ -28,7 +28,7 @@ namespace FFRK_Machines.Machines
         public StateMachine<S, T> StateMachine { get; set; }
         public C Config { get; set; }
         protected Random rng = new Random();
-        protected CancellationToken CancellationToken { get; set; }
+        public CancellationToken CancellationToken { get; set; }
         private CancellationTokenSource cancelSource = new CancellationTokenSource();
 
         // Data property
