@@ -14,17 +14,19 @@ namespace FFRK_LabMem.Machines
 
         private ConfigHelper configHelper;
         private bool isQuickExploring = false;
-
-        public static async Task<LabController> CreateAndStart(ConfigHelper config)
+        public static async Task<LabController> Create(ConfigHelper config)
         {
-            
+
             // Create instance
-            var ret = new LabController();
-            ret.configHelper = config;
+            var ret = new LabController
+            {
+                configHelper = config
+            };
 
             // Validate config file
             var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
-            if (!File.Exists(configFilePath)){
+            if (!File.Exists(configFilePath))
+            {
                 ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", configFilePath);
                 return ret;
             }
@@ -33,6 +35,15 @@ namespace FFRK_LabMem.Machines
             await DataLogger.Initalize(config);
             await Counters.Initalize(config, ret);
             await Notifications.Initalize();
+
+            return ret;
+
+        }
+
+        public static async Task<LabController> CreateAndStart(ConfigHelper config)
+        {
+
+            var ret = await Create(config);
 
             // Start it
             await ret.Start(

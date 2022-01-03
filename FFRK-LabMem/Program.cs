@@ -6,6 +6,7 @@ using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
 using FFRK_Machines.Services;
+using System.Linq;
 
 namespace FFRK_LabMem
 {
@@ -19,6 +20,9 @@ namespace FFRK_LabMem
             ConsoleTasks.DisableQuickEditMode();
             Console.TreatControlCAsInput = true;
 
+            // Enable visual styles in forms
+            System.Windows.Forms.Application.EnableVisualStyles();
+
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
             var config = new ConfigHelper(configFile);
@@ -27,7 +31,15 @@ namespace FFRK_LabMem
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
             ColorConsole.LogBuffer.Enabled = config.GetBool("console.logging", false);
-            
+
+            // Config arg switch
+            if (args.Contains("-c"))
+            {
+                ConfigForm.CreateAndShow(config, LabController.Create(config).Result);
+                Tray.Hide();
+                return;
+            }
+
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
             var versionTitle = String.Format("{0} {1}", Updates.GetName(), versionCode);
@@ -39,9 +51,6 @@ namespace FFRK_LabMem
 
             // Controller
             LabController controller = LabController.CreateAndStart(config).Result;
-
-            // Enable visual styles in forms
-            System.Windows.Forms.Application.EnableVisualStyles();
 
             // Ad-hoc command loop
             Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");

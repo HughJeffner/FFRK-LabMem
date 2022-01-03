@@ -83,6 +83,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Title
             this.Text += " " + Updates.GetVersionCode();
+            if (this.controller.Machine == null) this.Text += " (Config Only)";
 
             // Tab fakery
             listView1.Items[0].Selected = true;
@@ -361,8 +362,8 @@ namespace FFRK_LabMem.Config.UI
             ColorConsole.WriteLine("Done!");
 
             // Update machine
-            controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogBattleMinutes, labConfig.WatchdogCrashSeconds);
+            if (controller.Machine != null) controller.Machine.Config = labConfig;
+            controller.Machine?.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogBattleMinutes, labConfig.WatchdogCrashSeconds);
 
             // Restart warning
             if (lblRestart.Visible)
