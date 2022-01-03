@@ -907,6 +907,7 @@ namespace FFRK_LabMem.Machines
                 await this.Adb.TapPct(50, 72, this.CancellationToken);
                 await LabTimings.Delay("Inter-RestartBattle", this.CancellationToken);
                 await this.Adb.TapPct(25, 55, this.CancellationToken);
+                await CheckAutoBattle();
             }
             else
             {
@@ -1030,6 +1031,35 @@ namespace FFRK_LabMem.Machines
             }
 
             return false;
+
+        }
+
+        private async Task CheckAutoBattle()
+        {
+
+            await LabTimings.Delay("Pre-CheckAutoBattle", this.CancellationToken);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for auto-battle");
+            List<Adb.ImageDef> items = new List<Adb.ImageDef>
+            {
+                new Adb.ImageDef() { Image = Properties.Resources.battle_commands, Simalarity = 0.90f }
+            };
+
+            for (int i = 0; i < 9; i++)
+            {
+                var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                if (ret != null)
+                {
+                    // Tap it
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Auto-battle disabled, attempting to enable it now!");
+                    await Adb.TapPct(9.1, 77.2, CancellationToken);
+                    return;
+                } else
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Did not find disabled auto-battle state");
+                }
+                await LabTimings.Delay("Inter-CheckAutoBattle", this.CancellationToken);
+            }
+            await LabTimings.Delay("Post-CheckAutoBattle", this.CancellationToken);
 
         }
 

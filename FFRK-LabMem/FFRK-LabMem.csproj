@@ -168,6 +168,7 @@
     <None Include="Resources\button_brown_ok.bmp" />
     <None Include="Resources\button_inventory.bmp" />
     <None Include="Resources\button_skip.bmp" />
+    <None Include="Resources\battle_commands.bmp" />
     <Content Include="Resources\drop.ico" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\error.png" />
@@ -213,6 +214,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
