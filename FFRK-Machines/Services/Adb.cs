@@ -618,7 +618,7 @@ namespace FFRK_LabMem.Services
             }
         }
 
-        public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken)
+        public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken, double granularity = 0.5)
         {
 
             if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
@@ -629,7 +629,7 @@ namespace FFRK_LabMem.Services
             }
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
-            for (double i = yPctStart; i < yPctEnd; i+=0.5)
+            for (double i = yPctStart; i < yPctEnd; i+= granularity)
             {
                 coords.Add(new Tuple<double, double>(xPct, i));
             }
@@ -672,10 +672,10 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
+        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
         {
             
-            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken);
+            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity);
             if (button == null)
             {
                 return false;
@@ -687,13 +687,13 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken)
+        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
         {
 
             int tries = 0;
             do
             {
-                var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken);
+                var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, granularity);
                 if (b != null)
                 {
                     return b;
