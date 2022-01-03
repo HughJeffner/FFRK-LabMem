@@ -19,6 +19,7 @@ namespace FFRK_LabMem.Machines
 
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
+        private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
             { "1","G" },
@@ -437,17 +438,25 @@ namespace FFRK_LabMem.Machines
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
-
-            //Tappy taps
+                        
+            // Initial delay
             await LabTimings.Delay("Post-Battle", this.CancellationToken);
-            await this.Adb.TapPct(85, 85, this.CancellationToken);
-            await Task.Delay(1000, this.CancellationToken);
-            await this.Adb.TapPct(50, 85, this.CancellationToken);
+            
+            // Wait for skip button
+            var skip = await Adb.FindButtonAndTap(BUTTON_SKIP, 3000, 85, 80, 90, 10, CancellationToken, 0.2);
+            if (skip)
+            {
+                //Tappy taps
+                await Task.Delay(1000, this.CancellationToken);
+                await this.Adb.TapPct(50, 85, this.CancellationToken);
 
-            // Check if we defeated the boss
-            if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
-                await this.StateMachine.FireAsync(Trigger.FinishedLab);
-
+                // Check if we defeated the boss
+                if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
+                    await this.StateMachine.FireAsync(Trigger.FinishedLab);
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Did not find skip button!");
+            }
 
         }
 

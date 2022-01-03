@@ -2,16 +2,30 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace FFRK_LabMem.Machines
 {
     public class LabConfiguration : MachineConfiguration
     {
 
-        protected override void Migrate()
+        protected override void Migrate(String oldVersion, String newVersion)
         {
+            // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
+
+            // Backwards-compatibilty for old lethe tears slots
+#pragma warning disable CS0612 // Type or member is obsolete
             if (LetheTearsSlot > 0) LetheTearsSlots[0] = LetheTearsSlot;
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            // First time migrate on 6.5 sets post-battle timing to default
+            if (!oldVersion.Equals("6.5.0.0") && newVersion.Equals("6.5.0.0")) LabTimings.Timings["Post-Battle"] = LabTimings.GetDefaultTimings()["Post-Battle"];
+        }
+
+        protected override string GetVersion()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
         public enum PartyIndexOption

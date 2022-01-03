@@ -121,7 +121,7 @@ namespace FFRK_LabMem.Machines
                 { "Pre-StartBattle-Fatigue", new Timing() { Delay=20000} },
                 { "Inter-StartBattle", new Timing() { Delay=500} },
                 { "Post-StartBattle", new Timing() { Delay=0} },
-                { "Post-Battle", new Timing(){ Delay=7000 } },
+                { "Post-Battle", new Timing(){ Delay=1000 } },
                 { "Pre-ConfirmPortal", new Timing(){ Delay=5000 } },
                 { "Post-ConfirmPortal", new Timing(){ Delay=2000 } },
                 { "Pre-LetheTears", new Timing(){ Delay=4000 } },
