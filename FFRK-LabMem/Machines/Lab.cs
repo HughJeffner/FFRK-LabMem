@@ -270,7 +270,8 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 
             {
                 this.Data = data;
-                await this.StateMachine.FireAsync(Trigger.BattleSuccess);
+                // Prevent unexpected state change if error present
+                if (data["error"] == null) await this.StateMachine.FireAsync(Trigger.BattleSuccess);
             });
             Proxy.AddRegistration("continue/get_info", async(data, url) =>
             {
