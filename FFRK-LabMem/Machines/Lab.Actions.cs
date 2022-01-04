@@ -607,8 +607,16 @@ namespace FFRK_LabMem.Machines
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
-                // Restart or not
                 ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+
+                // Mission
+                var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.QuickExplore && !Counters.IsMissionCompleted();
+                if (Config.UseTeleportStoneOnMasterPainting && needsMission)
+                {
+                    await CompleteMissionByQE();
+                }
+
+                // Restart or not
                 if (!Config.RestartLab)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, " Press 'E' to enable when ready.");
@@ -1069,6 +1077,20 @@ namespace FFRK_LabMem.Machines
                 await LabTimings.Delay("Inter-CheckAutoBattle", this.CancellationToken);
             }
             await LabTimings.Delay("Post-CheckAutoBattle", this.CancellationToken);
+
+        }
+
+        private async Task<bool> CompleteMissionByQE()
+        {
+            ColorConsole.WriteLine(ConsoleColor.Green, "Doing Quick Explore for daily mission");
+            ColorConsole.WriteLine("Waiting for 60 seconds");
+            await Task.Delay(30000);
+            ColorConsole.WriteLine("Waiting for 30 seconds");
+            await Task.Delay(20000);
+            ColorConsole.WriteLine("Waiting for 10 seconds");
+            await Task.Delay(10000);
+            ColorConsole.WriteLine(ConsoleColor.Green, "Starting Quick Explore");
+            return await QuickExplore();
 
         }
 

@@ -41,7 +41,8 @@ namespace FFRK_LabMem.Machines
         public enum CompleteMissionOption
         {
             None,
-            DefeatMasterPainting
+            DefeatMasterPainting,
+            QuickExplore
         }
         public bool AutoStart { get; set; } = false;
         public bool OpenDoors { get; set; } = true;
