@@ -607,7 +607,7 @@ namespace FFRK_LabMem.Machines
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
-                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!");
 
                 // Mission
                 var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.QuickExplore && !Counters.IsMissionCompleted();
@@ -619,12 +619,11 @@ namespace FFRK_LabMem.Machines
                 // Restart or not
                 if (!Config.RestartLab)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Green, " Press 'E' to enable when ready.");
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     base.OnMachineFinished();
                 }
                 else
                 {
-                    ColorConsole.WriteLine("");
                     await this.StateMachine.FireAsync(Trigger.Restart);
                 }
             }
