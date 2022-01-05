@@ -157,6 +157,9 @@ namespace FFRK_LabMem.Machines
                     return;
                 }
 
+                // Pause the watchdog
+                Machine.Watchdog.Kick(false);
+
                 // Run as new task
                 Task.Run(async () =>
                 {

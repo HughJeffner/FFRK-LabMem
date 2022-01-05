@@ -940,7 +940,6 @@ namespace FFRK_LabMem.Machines
         {
 
             // Inital delay
-            Watchdog.Kick(false); // Pause the watchdog
             await LabTimings.Delay("Pre-QuickExplore", this.CancellationToken);
            
             // Dungeon Complete
@@ -1082,6 +1081,7 @@ namespace FFRK_LabMem.Machines
 
         private async Task<bool> CompleteMissionByQE()
         {
+            Watchdog.Kick(false); // Pause the watchdog
             ColorConsole.WriteLine(ConsoleColor.Green, "Doing Quick Explore for daily mission");
             ColorConsole.WriteLine("Waiting for 60 seconds");
             await Task.Delay(30000);
@@ -1090,7 +1090,9 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Waiting for 10 seconds");
             await Task.Delay(10000);
             ColorConsole.WriteLine(ConsoleColor.Green, "Starting Quick Explore");
-            return await QuickExplore();
+            var ret = await QuickExplore();
+            Watchdog.Kick(); // Resume the watchdog
+            return ret;
 
         }
 
