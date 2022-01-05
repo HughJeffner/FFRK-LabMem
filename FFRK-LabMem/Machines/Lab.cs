@@ -285,6 +285,19 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
+            Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", (data, url) => {
+                // Default fatigue info on lab entry
+                FatigueInfo = Enumerable.Range(0, 3).Select(l1 =>
+                {
+                    return Enumerable.Range(0, 5).Select(l2 => 
+                    {
+                        return new BuddyInfo() { Fatigue = 3 };
+                    }).ToList();
+                }).ToList();
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values set to DEFAULT: {0}", AutoResetEventFatigue);
+                AutoResetEventFatigue.Set();
+                return Task.CompletedTask;
+            });
         }
 
         public void DisableSafe()
