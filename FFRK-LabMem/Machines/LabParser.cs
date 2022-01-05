@@ -282,17 +282,16 @@ namespace FFRK_LabMem.Machines
             await Task.CompletedTask;
         }
 
-
-
         public async Task ParseAllData(JObject data, string url)
         {
             var info = data["labyrinth_dungeon"];
             if (info != null)
             {
                 Counters.SetCurrentLab(info["node_id"].ToString(), info["name"].ToString());
-                if (Lab.FinalFloor == 0)
+                int maxFloor = (int)info["floor_num"];
+                if (Lab.FinalFloor != maxFloor)
                 {
-                    Lab.FinalFloor = (int)info["floor_num"];
+                    Lab.FinalFloor = maxFloor;
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", Lab.FinalFloor);
                 }
             }
@@ -314,6 +313,36 @@ namespace FFRK_LabMem.Machines
             }
 
         }
+
+        public async Task ParseEnterLab(JObject data, string url)
+        {
+            // Update or create fatigue info
+            if (Lab.FatigueInfo.Count == 3)
+            {
+                // Set all units in all parties fatigue info to 3
+                Lab.FatigueInfo.ForEach(p => p.ForEach(u => u.Fatigue = 3));
+
+            } else
+            {
+                // Create default 3 parties, 5 units, with 3 fatigue
+                Lab.FatigueInfo = Enumerable.Range(0, 3).Select(l1 =>
+                {
+                    return Enumerable.Range(0, 5).Select(l2 =>
+                    {
+                        return new BuddyInfo() { Fatigue = 3 };
+                    }).ToList();
+                }).ToList();
+            }
+
+            // Pre-set the downloaded signal
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values set to DEFAULT: {0}", Lab.AutoResetEventFatigue);
+            Lab.AutoResetEventFatigue.Set();
+
+            // Parse lab info
+            await ParseAllData(data, url);
+
+        }
+
         private async Task<bool> IsFinalFloor()
         {
             try
