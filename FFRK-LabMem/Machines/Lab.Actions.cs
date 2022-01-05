@@ -624,7 +624,18 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    await this.StateMachine.FireAsync(Trigger.Restart);
+                    // Check restart counter
+                    if (RestartLabCounter != 0)
+                    {
+                        if (RestartLabCounter >= 0) ColorConsole.WriteLine(ConsoleColor.Green, "{0} Restart(s) remaining", RestartLabCounter);
+                        RestartLabCounter -= 1;
+                        await this.StateMachine.FireAsync(Trigger.Restart);
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Green, "Maximum number of restarts reached");
+                        base.OnMachineFinished();
+                    }
+                    
                 }
             }
 

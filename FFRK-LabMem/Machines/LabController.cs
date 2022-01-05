@@ -194,5 +194,31 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        public void SetRestartCount(int count)
+        {
+            if (Enabled)
+            {
+                if (Machine.Config.RestartLab)
+                {
+                    if (count > 0)
+                    {
+                        ColorConsole.WriteLine("Setting lab restart count limit to {0}", count);
+                    } else if (count == 0)
+                    {
+                        ColorConsole.WriteLine("Disabling lab after this run", count);
+                    } else
+                    {
+                        ColorConsole.WriteLine("Setting lab restart count limit to unlimited", count);
+                    }
+                    Machine.RestartLabCounter = count;
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Ignoring because Restart Lab control not enabled");
+                }
+                
+            }
+            
+        }
+
     }
 }

@@ -70,6 +70,8 @@ namespace FFRK_LabMem
                 if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
                 if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
                 if (key.Key == ConsoleKey.Q) controller.QuickExplore();
+                if (key.Key >= ConsoleKey.D0 && key.Key <= ConsoleKey.D9) controller.SetRestartCount(int.Parse(key.KeyChar.ToString()));
+                if (key.Key == ConsoleKey.OemMinus) controller.SetRestartCount(-1);
                 if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
 
             }
