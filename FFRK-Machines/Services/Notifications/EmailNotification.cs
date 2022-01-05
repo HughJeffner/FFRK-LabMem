@@ -27,7 +27,8 @@ namespace FFRK_Machines.Services.Notifications
                 EnableSsl = EnableSsl,
             })
             {
-                await smtpClient.SendMailAsync(From, To, "FFRK-LabMem Notification", "LabMem encountered event: " + args.EventType.ToString());
+                var body = String.Format(@"LabMem encountered event: {0}\n{1}", args.EventType, args.Message);
+                await smtpClient.SendMailAsync(From, To, "FFRK-LabMem Notification", body);
             };
             
             

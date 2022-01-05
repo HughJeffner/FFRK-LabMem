@@ -586,7 +586,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
-                    await Notify(Notifications.EventType.LAB_COMPLETED);
+                    await Notify(Notifications.EventType.LAB_COMPLETED, "Stopped on master painting");
                     await Counters.LabRunCompleted(false);
                     base.OnMachineFinished();
                 } else if (Config.UseTeleportStoneOnMasterPainting)
@@ -603,7 +603,7 @@ namespace FFRK_LabMem.Machines
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
-                    await Notify(Notifications.EventType.LAB_COMPLETED);
+                    await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
@@ -749,7 +749,7 @@ namespace FFRK_LabMem.Machines
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(Notifications.EventType.LAB_FAULT);
+                        await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
                         OnMachineFinished();
                     } else
                     {
@@ -939,7 +939,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                await Notify(Notifications.EventType.LAB_FAULT);
+                await Notify(Notifications.EventType.LAB_FAULT, "Battle failed");
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);

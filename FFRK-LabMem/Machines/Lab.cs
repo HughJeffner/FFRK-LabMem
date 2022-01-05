@@ -236,7 +236,7 @@ namespace FFRK_LabMem.Machines
                     else
                     {
                         // Retries exhausted
-                        await Notify(Notifications.EventType.LAB_FAULT);
+                        await Notify(Notifications.EventType.LAB_FAULT, "Max FFRK restarts reached");
                         OnMachineFinished();
                     }
                 }

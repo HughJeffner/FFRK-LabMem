@@ -54,19 +54,19 @@ namespace FFRK_Machines.Services.Notifications
             await Default.Load();
         }
 
-        public async Task ProcessEvent(EventType eventType) {
+        public async Task ProcessEvent(EventType eventType, string message) {
 
-            await ProcessEvent(eventType, this.Events);
+            await ProcessEvent(eventType, message, this.Events);
             
         }
 
-        public async Task ProcessEvent(EventType eventType, EventList events)
+        public async Task ProcessEvent(EventType eventType, string message, EventList events)
         {
 
             ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Processing event {0}", eventType);
             try
             {
-                var args = new NotificationArgs() { EventType = eventType };
+                var args = new NotificationArgs() { EventType = eventType, Message = message };
                 await Task.WhenAll(events[eventType].Where(n => n.Enabled).Select(t => t.Notify(args)));
 
                 //foreach (var item in this.Events[eventType].Where(i => i.Enabled))
@@ -115,6 +115,7 @@ namespace FFRK_Machines.Services.Notifications
         public class NotificationArgs
         {
             public EventType EventType { get; set; }
+            public String Message { get; set; }
         }
 
         public abstract class Notification

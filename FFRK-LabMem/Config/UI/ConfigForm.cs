@@ -1018,7 +1018,7 @@ namespace FFRK_LabMem.Config.UI
         {
             ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
             var testEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
-            await Notifications.Default.ProcessEvent(testEvent, notificationEvents);
+            await Notifications.Default.ProcessEvent(testEvent, "Testing Notification", notificationEvents);
         }
 
         private void ButtonNotificationSoundBrowse_Click(object sender, EventArgs e)
