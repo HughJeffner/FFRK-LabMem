@@ -270,7 +270,7 @@ namespace FFRK_LabMem.Data.UI
             if (isHE && comboBoxLab.SelectedIndex > 0)
             {
                 keySet = keySet.Where(i => GetSelectedLab().GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).ContainsKey(i));
-            }
+            } 
 
             // Remove any items present in the list that do not match
             CleanGroup(group, keySet);
