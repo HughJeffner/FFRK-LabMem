@@ -62,7 +62,7 @@ namespace FFRK_LabMem.Machines
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Title Screen");
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Home screen");
             }
 
             // Scheduler
