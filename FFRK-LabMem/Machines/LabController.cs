@@ -72,11 +72,16 @@ namespace FFRK_LabMem.Machines
         }
         protected override Lab CreateMachine(LabConfiguration config)
         {
-            config.WatchdogHangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3);
-            config.WatchdogBattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
-            config.WatchdogCrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
-            config.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10);
-            return new Lab(this.Adb, config);
+            var watchdogConfig = new LabWatchdog.Configuration()
+            {
+                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3),
+                BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
+                CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
+                MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10),
+                RestartLoopThreshold = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6),
+                RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60)
+            };
+            return new Lab(this.Adb, config, watchdogConfig);
         }
 
         public async void AutoDetectOffsets(ConfigHelper config) {

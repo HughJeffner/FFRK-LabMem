@@ -77,14 +77,6 @@ namespace FFRK_LabMem.Machines
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
-        [JsonIgnore]
-        public int WatchdogHangMinutes { get; set; }
-        [JsonIgnore]
-        public int WatchdogBattleMinutes { get; set; }
-        [JsonIgnore]
-        public int WatchdogCrashSeconds { get; set; }
-        [JsonIgnore]
-        public int WatchdogMaxRetries { get; set; }
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
 
         public LabConfiguration() {

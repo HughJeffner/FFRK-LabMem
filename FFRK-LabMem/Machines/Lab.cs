@@ -83,14 +83,15 @@ namespace FFRK_LabMem.Machines
 
         public List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
 
-        public Lab(Adb adb, LabConfiguration config)
+        public Lab(Adb adb, LabConfiguration config, LabWatchdog.Configuration watchdogConfig)
         {
 
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.Watchdog = new LabWatchdog(this);
+            this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
+            this.Watchdog.LoopDetected += Watchdog_LoopDetected;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
 
@@ -227,7 +228,7 @@ namespace FFRK_LabMem.Machines
                 {
 
                     // Limit number of retries
-                    if (restartTries < Config.WatchdogMaxRetries)
+                    if (restartTries < Watchdog.Config.MaxRetries)
                     {
                         restartTries += 1;
                         ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
@@ -252,6 +253,12 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
 
+        }
+        private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restart loop detected!");
+            await Notify(Notifications.EventType.LAB_FAULT, "Restart loop detected");
+            OnMachineFinished();
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
