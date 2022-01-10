@@ -267,7 +267,7 @@ namespace FFRK_LabMem.Data.UI
             keySet = keySet.Distinct();
 
             // If stage selected then only show its HE
-            if (isHE && comboBoxLab.SelectedIndex > 0)
+            if (isHE)
             {
                 keySet = keySet.Where(i => GetSelectedLab().GetHEFiltered((CounterSet.FilterType)comboBoxQE.SelectedIndex).ContainsKey(i));
             } 
