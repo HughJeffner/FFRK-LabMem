@@ -24,7 +24,7 @@ namespace FFRK_LabMem.Data.UI
         private LabController controller = null;
         private HashSet<string> PerfectPassives { get; set; } = new HashSet<string>();
         private const string CONFIG_PATH = "./Data/counters_passives.json";
-
+        
 
         public CountersForm()
         {
@@ -235,7 +235,33 @@ namespace FFRK_LabMem.Data.UI
 
             }
 
+            // Avg Battle
+            ListViewItem newItem2;
+            if (listViewCounters.Items.ContainsKey("BattleAvg"))
+            {
+                newItem2 = listViewCounters.Items["BattleAvg"];
+            }
+            else
+            {
+                newItem2 = new ListViewItem();
+                newItem2.Text = "Avg. Battle";
+                newItem2.Name = "BattleAvg";
+                newItem2.Group = listViewCounters.Groups["Runtime"];
+                newItem2.SubItems.Add("");
+                newItem2.SubItems.Add("");
+                newItem2.SubItems.Add("");
+                newItem2.SubItems.Add("");
+                listViewCounters.Items.Add(newItem2);
+            }
+
+            newItem2.SubItems[1].Text = Counters.Default.CounterSets["Session"].AvgBattle.ToString(runtimeFormat);
+            newItem2.SubItems[2].Text = GetSelectedLab().AvgBattle.ToString(runtimeFormat);
+            newItem2.SubItems[3].Text = Counters.Default.CounterSets["Group"].AvgBattle.ToString(runtimeFormat);
+            newItem2.SubItems[4].Text = Counters.Default.CounterSets["Total"].AvgBattle.ToString(runtimeFormat);
+
         }
+
+
 
         private void LoadDrops(string group)
         {
@@ -409,6 +435,7 @@ namespace FFRK_LabMem.Data.UI
         {
             if (listViewCounters.SelectedItems.Count == 0 || e.KeyCode != Keys.Delete) return;
             var target = listViewCounters.SelectedItems[0];
+            if (target.Name.Equals("BattleAvg")) return;
             var response = MessageBox.Show($"Are you sure you wish to delete {target.Text} in all counters?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (response == DialogResult.Yes) await Counters.ResetItem(target.Name);
         }

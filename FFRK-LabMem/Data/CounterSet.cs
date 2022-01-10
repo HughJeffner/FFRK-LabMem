@@ -74,7 +74,18 @@ namespace FFRK_LabMem.Data
                 return ret;
             }
         }
+        [JsonIgnore]
+        public TimeSpan AvgBattle
+        {
+            get
+            {
+                var battles = this.Counters["BattlesWon"];
+                var runtime = this.Runtime["Battle"];
 
+                if (battles == 0) return TimeSpan.FromSeconds(0);
+                return TimeSpan.FromSeconds(runtime.TotalSeconds / battles);
+            }
+        }
         public SortedDictionary<string, int> GetHEFiltered(FilterType filter)
         {
             switch (filter)
