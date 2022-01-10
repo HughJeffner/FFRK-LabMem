@@ -64,6 +64,7 @@ namespace FFRK_LabMem.Machines
         public int CurrentFloor { get; set; }
         public int FinalFloor { get; set; }
         public int SelectedPartyIndex { get; set; } = 0;
+        public int RestartLabCounter { get; set; } = -1;
         public LabWatchdog Watchdog { get; }
         public readonly AsyncAutoResetEvent AutoResetEventFatigue = new AsyncAutoResetEvent(false);
         public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
@@ -82,14 +83,15 @@ namespace FFRK_LabMem.Machines
 
         public List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
 
-        public Lab(Adb adb, LabConfiguration config)
+        public Lab(Adb adb, LabConfiguration config, LabWatchdog.Configuration watchdogConfig)
         {
 
             // Config
             this.Config = config;
             this.Adb = adb;
-            this.Watchdog = new LabWatchdog(this);
+            this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
+            this.Watchdog.LoopDetected += Watchdog_LoopDetected;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
 
@@ -226,7 +228,7 @@ namespace FFRK_LabMem.Machines
                 {
 
                     // Limit number of retries
-                    if (restartTries < Config.WatchdogMaxRetries)
+                    if (restartTries < Watchdog.Config.MaxRetries)
                     {
                         restartTries += 1;
                         ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Starting watchdog after failed FFRK restart (try {0})", restartTries);
@@ -235,7 +237,7 @@ namespace FFRK_LabMem.Machines
                     else
                     {
                         // Retries exhausted
-                        await Notify(Notifications.EventType.LAB_FAULT);
+                        await Notify(Notifications.EventType.LAB_FAULT, "Max FFRK restarts reached");
                         OnMachineFinished();
                     }
                 }
@@ -251,6 +253,12 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
 
+        }
+        private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restart loop detected!");
+            await Notify(Notifications.EventType.LAB_FAULT, "Restart loop detected");
+            OnMachineFinished();
         }
 
         public override void RegisterWithProxy(Proxy Proxy)
@@ -270,7 +278,8 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 
             {
                 this.Data = data;
-                await this.StateMachine.FireAsync(Trigger.BattleSuccess);
+                // Prevent unexpected state change if error present
+                if (data["error"] == null) await this.StateMachine.FireAsync(Trigger.BattleSuccess);
             });
             Proxy.AddRegistration("continue/get_info", async(data, url) =>
             {
@@ -284,6 +293,7 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
+            Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
         }
 
         public void DisableSafe()
@@ -315,6 +325,7 @@ namespace FFRK_LabMem.Machines
             this.CurrentKeys = 0;
             this.CurrentTears = 0;
             this.SelectedPartyIndex = 0;
+            this.RestartLabCounter = -1;
             this.FatigueInfo.Clear();
             AutoResetEventFatigue.Reset();
             AutoResetEventQuickExplore.Reset();

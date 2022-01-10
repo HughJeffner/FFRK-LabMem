@@ -39,6 +39,11 @@ namespace FFRK_LabMem.Services
 
         static NotifyIcon notifyIcon = null;
 
+        public static void Hide()
+        {
+            HideWindow(GetConsoleWindow());
+        }
+
         public static void MinimizeTo(ConsoleModifiers modifiers, LabController controller)
         {
             Tray.MinimizeTo(controller, modifiers.HasFlag(ConsoleModifiers.Alt), modifiers.HasFlag(ConsoleModifiers.Control)).Wait();

@@ -33,10 +33,13 @@ namespace FFRK_LabMem.Config.UI
         public static List<AdbHostItem> AdbHosts = new List<AdbHostItem>() {
             new AdbHostItem { Name = "MuMu", Value = "127.0.0.1:7555"} ,
             new AdbHostItem { Name = "Nox", Value = "127.0.0.1:62001"} ,
+            new AdbHostItem { Name = "Nox Alt 1", Value = "127.0.0.1:62025"} ,
+            new AdbHostItem { Name = "Nox Alt 2", Value = "127.0.0.1:62026"} ,
+            new AdbHostItem { Name = "Nox Alt 3", Value = "127.0.0.1:62027"} ,
             new AdbHostItem { Name = "MEmu", Value = "127.0.0.1:21503"} ,
             new AdbHostItem { Name = "MEmu Instance 2", Value = "127.0.0.1:21513"} ,
             new AdbHostItem { Name = "MEmu Instance 3", Value = "127.0.0.1:21523"} ,
-            new AdbHostItem { Name = "LD Player", Value = "127.0.0.1:5555"}
+            new AdbHostItem { Name = "Other", Value = "127.0.0.1:5555"}
         };
 
         public static Dictionary<String, String> Timings = new Dictionary<string, string>() {

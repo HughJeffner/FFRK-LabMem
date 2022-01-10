@@ -35,7 +35,7 @@ _All compatible versions using FFRK 8.0.0+ must install a certificate_
 12. Restart your device/emulator when prompted
 13. Follow any on-screen instructions to install the certificate
 14. Launch FFRK
-15. On the title screen auto-detect screen offsets `Alt+O` ('o' for offsets)
+15. On the home screen (not title screen) auto-detect screen offsets `Alt+O` ('o' for offsets)
 16. Start a lab or enter one in-progress
 
 ## Basic Usage

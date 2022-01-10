@@ -83,6 +83,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Title
             this.Text += " " + Updates.GetVersionCode();
+            if (this.controller.Machine == null) this.Text += " (Config Only)";
 
             // Tab fakery
             listView1.Items[0].Selected = true;
@@ -119,6 +120,9 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
+            numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
+            numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
+            numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 10);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
@@ -246,6 +250,9 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
+            configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
+            configHelper.SetValue("lab.watchdogLoopDetectionWindowMinutes", (int)numericUpDownRestartLoopWindow.Value);
+            configHelper.SetValue("lab.watchdogMaxRetries", (int)numericUpDownRestartMaxRetries.Value);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
 
@@ -297,10 +304,6 @@ namespace FFRK_LabMem.Config.UI
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
-            labConfig.WatchdogCrashSeconds = (int)numericUpDownWatchdogCrash.Value;
-            labConfig.WatchdogHangMinutes = (int)numericUpDownWatchdogHang.Value;
-            labConfig.WatchdogBattleMinutes = (int)numericUpDownWatchdogBattle.Value;
-            labConfig.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10); // Not exposed in UI
 
             // Paintings
             labConfig.PaintingPriorityMap.Clear();
@@ -361,8 +364,19 @@ namespace FFRK_LabMem.Config.UI
             ColorConsole.WriteLine("Done!");
 
             // Update machine
-            controller.Machine.Config = labConfig;
-            controller.Machine.Watchdog.Update(labConfig.WatchdogHangMinutes, labConfig.WatchdogBattleMinutes, labConfig.WatchdogCrashSeconds);
+            if (controller.Machine != null) controller.Machine.Config = labConfig;
+
+            // Watchdog
+            var watchdogConfig = new LabWatchdog.Configuration()
+            {
+                CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
+                HangMinutes = (int)numericUpDownWatchdogHang.Value,
+                BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
+                RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
+                RestartLoopWindowMinutes = (int)numericUpDownRestartLoopWindow.Value,
+                MaxRetries = (int)numericUpDownRestartMaxRetries.Value
+            };
+            controller.Machine?.Watchdog.Update(watchdogConfig);
 
             // Restart warning
             if (lblRestart.Visible)
@@ -1017,7 +1031,7 @@ namespace FFRK_LabMem.Config.UI
         {
             ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);
             var testEvent = Lookups.NotificationEventsInverse[comboBoxNotificationEvents.SelectedItem.ToString()];
-            await Notifications.Default.ProcessEvent(testEvent, notificationEvents);
+            await Notifications.Default.ProcessEvent(testEvent, "Testing Notification", notificationEvents);
         }
 
         private void ButtonNotificationSoundBrowse_Click(object sender, EventArgs e)
@@ -1042,6 +1056,11 @@ namespace FFRK_LabMem.Config.UI
         {
             textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
-        
+
+        private void numericUpDownRestartLoopThreshold_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDownRestartLoopWindow.Enabled = numericUpDownRestartLoopThreshold.Value > 0;
+            label27.Enabled = numericUpDownRestartLoopWindow.Enabled;
+        }
     }
 }

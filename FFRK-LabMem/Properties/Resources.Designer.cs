@@ -63,6 +63,16 @@ namespace FFRK_LabMem.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap battle_commands {
+            get {
+                object obj = ResourceManager.GetObject("battle_commands", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button_blue_play {
             get {
                 object obj = ResourceManager.GetObject("button_blue_play", resourceCulture);
@@ -121,19 +131,17 @@ namespace FFRK_LabMem.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ****** Interactive Commands ******
+        ///   Looks up a localized string similar to *************************** Interactive Commands ***************************
         ///[E]      Enables lab bot (triggering auto-start if enabled)
         ///[D]      Disables the bot, all running operations are immediately cancelled
         ///[C]      Opens the configuration UI
         ///[S]      Opens the statistic counters UI
         ///[H]      Hides the bot in the system tray
         ///[Q]      Starts a Quick Explore operation
+        ///[1-9]    Sets lab restart count limit to the pressed number
+        ///[-]      Removes lab restart count limit
         ///
-        ///[Alt+O]  Attemps to automatically detect FFRK screen offsets
-        ///[Alt+R]  Performs a manually-triggered restart of FFRK
-        ///[Alt+U]  Starts automatic update operation
-        ///
-        ///[Ctrl+B [rest of string was truncated]&quot;;.
+        ///[Alt+O]  Attemps to automa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpString {
             get {

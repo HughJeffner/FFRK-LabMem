@@ -19,6 +19,7 @@ namespace FFRK_LabMem.Machines
 
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
+        private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
             { "1","G" },
@@ -437,17 +438,25 @@ namespace FFRK_LabMem.Machines
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
-
-            //Tappy taps
+                        
+            // Initial delay
             await LabTimings.Delay("Post-Battle", this.CancellationToken);
-            await this.Adb.TapPct(85, 85, this.CancellationToken);
-            await Task.Delay(1000, this.CancellationToken);
-            await this.Adb.TapPct(50, 85, this.CancellationToken);
+            
+            // Wait for skip button
+            var skip = await Adb.FindButtonAndTap(BUTTON_SKIP, 3000, 85, 80, 90, 10, CancellationToken, 0.2);
+            if (skip)
+            {
+                //Tappy taps
+                await Task.Delay(1000, this.CancellationToken);
+                await this.Adb.TapPct(50, 85, this.CancellationToken);
 
-            // Check if we defeated the boss
-            if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
-                await this.StateMachine.FireAsync(Trigger.FinishedLab);
-
+                // Check if we defeated the boss
+                if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
+                    await this.StateMachine.FireAsync(Trigger.FinishedLab);
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Did not find skip button!");
+            }
 
         }
 
@@ -577,7 +586,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.StopOnMasterPainting)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
-                    await Notify(Notifications.EventType.LAB_COMPLETED);
+                    await Notify(Notifications.EventType.LAB_COMPLETED, "Stopped on master painting");
                     await Counters.LabRunCompleted(false);
                     base.OnMachineFinished();
                 } else if (Config.UseTeleportStoneOnMasterPainting)
@@ -594,21 +603,39 @@ namespace FFRK_LabMem.Machines
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
-                    await Notify(Notifications.EventType.LAB_COMPLETED);
+                    await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
 
+                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!");
+
+                // Mission
+                var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.QuickExplore && !Counters.IsMissionCompleted();
+                if (Config.UseTeleportStoneOnMasterPainting && needsMission)
+                {
+                    await CompleteMissionByQE();
+                }
+
                 // Restart or not
-                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
                 if (!Config.RestartLab)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Green, " Press 'E' to enable when ready.");
+                    ColorConsole.WriteLine(ConsoleColor.Green, "Press 'E' to enable when ready.");
                     base.OnMachineFinished();
                 }
                 else
                 {
-                    ColorConsole.WriteLine("");
-                    await this.StateMachine.FireAsync(Trigger.Restart);
+                    // Check restart counter
+                    if (RestartLabCounter != 0)
+                    {
+                        if (RestartLabCounter >= 0) ColorConsole.WriteLine(ConsoleColor.Green, "{0} Restart(s) remaining", RestartLabCounter);
+                        RestartLabCounter -= 1;
+                        await this.StateMachine.FireAsync(Trigger.Restart);
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Green, "Maximum number of restarts reached");
+                        base.OnMachineFinished();
+                    }
+                    
                 }
             }
 
@@ -722,7 +749,7 @@ namespace FFRK_LabMem.Machines
                     if (b!= null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(Notifications.EventType.LAB_FAULT);
+                        await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
                         OnMachineFinished();
                     } else
                     {
@@ -907,11 +934,12 @@ namespace FFRK_LabMem.Machines
                 await this.Adb.TapPct(50, 72, this.CancellationToken);
                 await LabTimings.Delay("Inter-RestartBattle", this.CancellationToken);
                 await this.Adb.TapPct(25, 55, this.CancellationToken);
+                await CheckAutoBattle();
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Waiting for user input...");
-                await Notify(Notifications.EventType.LAB_FAULT);
+                await Notify(Notifications.EventType.LAB_FAULT, "Battle failed");
                 Watchdog.Kick(false);
             }
             await LabTimings.Delay("Post-RestartBattle", this.CancellationToken);
@@ -922,7 +950,6 @@ namespace FFRK_LabMem.Machines
         {
 
             // Inital delay
-            Watchdog.Kick(false); // Pause the watchdog
             await LabTimings.Delay("Pre-QuickExplore", this.CancellationToken);
            
             // Dungeon Complete
@@ -1030,6 +1057,52 @@ namespace FFRK_LabMem.Machines
             }
 
             return false;
+
+        }
+
+        private async Task CheckAutoBattle()
+        {
+
+            await LabTimings.Delay("Pre-CheckAutoBattle", this.CancellationToken);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for auto-battle");
+            List<Adb.ImageDef> items = new List<Adb.ImageDef>
+            {
+                new Adb.ImageDef() { Image = Properties.Resources.battle_commands, Simalarity = 0.90f }
+            };
+
+            for (int i = 0; i < 9; i++)
+            {
+                var ret = await Adb.FindImages(items, 3, this.CancellationToken);
+                if (ret != null)
+                {
+                    // Tap it
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Auto-battle disabled, attempting to enable it now!");
+                    await Adb.TapPct(9.1, 77.2, CancellationToken);
+                    return;
+                } else
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Did not find disabled auto-battle state");
+                }
+                await LabTimings.Delay("Inter-CheckAutoBattle", this.CancellationToken);
+            }
+            await LabTimings.Delay("Post-CheckAutoBattle", this.CancellationToken);
+
+        }
+
+        private async Task<bool> CompleteMissionByQE()
+        {
+            Watchdog.Kick(false); // Pause the watchdog
+            ColorConsole.WriteLine(ConsoleColor.Green, "Doing Quick Explore for daily mission");
+            ColorConsole.WriteLine("Waiting for 60 seconds");
+            await Task.Delay(30000);
+            ColorConsole.WriteLine("Waiting for 30 seconds");
+            await Task.Delay(20000);
+            ColorConsole.WriteLine("Waiting for 10 seconds");
+            await Task.Delay(10000);
+            ColorConsole.WriteLine(ConsoleColor.Green, "Starting Quick Explore");
+            var ret = await QuickExplore();
+            Watchdog.Kick(); // Resume the watchdog
+            return ret;
 
         }
 

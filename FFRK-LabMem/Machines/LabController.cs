@@ -14,17 +14,19 @@ namespace FFRK_LabMem.Machines
 
         private ConfigHelper configHelper;
         private bool isQuickExploring = false;
-
-        public static async Task<LabController> CreateAndStart(ConfigHelper config)
+        public static async Task<LabController> Create(ConfigHelper config)
         {
-            
+
             // Create instance
-            var ret = new LabController();
-            ret.configHelper = config;
+            var ret = new LabController
+            {
+                configHelper = config
+            };
 
             // Validate config file
             var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
-            if (!File.Exists(configFilePath)){
+            if (!File.Exists(configFilePath))
+            {
                 ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", configFilePath);
                 return ret;
             }
@@ -33,6 +35,15 @@ namespace FFRK_LabMem.Machines
             await DataLogger.Initalize(config);
             await Counters.Initalize(config, ret);
             await Notifications.Initalize();
+
+            return ret;
+
+        }
+
+        public static async Task<LabController> CreateAndStart(ConfigHelper config)
+        {
+
+            var ret = await Create(config);
 
             // Start it
             await ret.Start(
@@ -51,7 +62,7 @@ namespace FFRK_LabMem.Machines
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Title Screen");
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Home screen");
             }
 
             // Scheduler
@@ -61,11 +72,16 @@ namespace FFRK_LabMem.Machines
         }
         protected override Lab CreateMachine(LabConfiguration config)
         {
-            config.WatchdogHangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3);
-            config.WatchdogBattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
-            config.WatchdogCrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
-            config.WatchdogMaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10);
-            return new Lab(this.Adb, config);
+            var watchdogConfig = new LabWatchdog.Configuration()
+            {
+                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3),
+                BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
+                CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
+                MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10),
+                RestartLoopThreshold = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6),
+                RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60)
+            };
+            return new Lab(this.Adb, config, watchdogConfig);
         }
 
         public async void AutoDetectOffsets(ConfigHelper config) {
@@ -146,6 +162,9 @@ namespace FFRK_LabMem.Machines
                     return;
                 }
 
+                // Pause the watchdog
+                Machine.Watchdog.Kick(false);
+
                 // Run as new task
                 Task.Run(async () =>
                 {
@@ -178,6 +197,32 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Red, "Bot disabled, enable with 'E' first");
             }
 
+        }
+
+        public void SetRestartCount(int count)
+        {
+            if (Enabled)
+            {
+                if (Machine.Config.RestartLab)
+                {
+                    if (count > 0)
+                    {
+                        ColorConsole.WriteLine("Setting lab restart count limit to {0}", count);
+                    } else if (count == 0)
+                    {
+                        ColorConsole.WriteLine("Disabling lab after this run", count);
+                    } else
+                    {
+                        ColorConsole.WriteLine("Setting lab restart count limit to unlimited", count);
+                    }
+                    Machine.RestartLabCounter = count;
+                } else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Ignoring because Restart Lab control not enabled");
+                }
+                
+            }
+            
         }
 
     }
