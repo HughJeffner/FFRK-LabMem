@@ -150,4 +150,4 @@ Please keep your `rootCert.pfx` file, or you will have to re-install the certifi
 
 
 ## Common Issues / FAQ
-Check https://github.com/HughJeffner/FFRK-LabMem/wiki/Common-Issues-%5C-FAQ
+Check https://github.com/HughJeffner/FFRK-LabMem/wiki/Common-Issues-FAQ
