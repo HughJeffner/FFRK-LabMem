@@ -154,6 +154,7 @@ namespace FFRK_LabMem.Machines
                 { "Pre-CheckAutoBattle", new Timing(){ Delay=10000 } },
                 { "Inter-CheckAutoBattle", new Timing(){ Delay=1000 } },
                 { "Post-CheckAutoBattle", new Timing(){ Delay=0 } },
+                { "Pre-BattleInfo", new Timing(){ Delay=0 } },
             };
         }
 
