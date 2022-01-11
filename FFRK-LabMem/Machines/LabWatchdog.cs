@@ -195,7 +195,7 @@ namespace FFRK_LabMem.Machines
 
             // If we reached or exceeded the threshold count
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, $"Number of restarts in loop detection window: {pastRestarts.Count}/{Config.RestartLoopThreshold}");
-            if (pastRestarts.Count >= Config.RestartLoopThreshold)
+            if (pastRestarts.Count > Config.RestartLoopThreshold)
             {
                 // Restart loop detected
                 return true;
