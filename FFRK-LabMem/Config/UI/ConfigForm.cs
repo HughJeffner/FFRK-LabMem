@@ -21,7 +21,6 @@ namespace FFRK_LabMem.Config.UI
     {
         public static bool IsLoaded { get; set; } = false;
 
-        private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
         private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
         private ConfigHelper configHelper = null;
@@ -708,6 +707,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Changed timings
             int i;
+            var DefaultTimings = LabTimings.DefaultTimings;
             if (e.ColumnIndex == 1 && int.TryParse(row.Cells[1].Value.ToString(), out i))
             {
                 if (DefaultTimings.ContainsKey(key) && DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);

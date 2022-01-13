@@ -20,7 +20,7 @@ namespace FFRK_LabMem.Machines
 #pragma warning restore CS0612 // Type or member is obsolete
 
             // First time migrate on 6.5 sets post-battle timing to default
-            if (!oldVersion.Equals("6.5.0.0") && newVersion.Equals("6.5.0.0")) LabTimings.Timings["Post-Battle"] = LabTimings.GetDefaultTimings()["Post-Battle"];
+            if (!oldVersion.Equals("6.5.0.0") && newVersion.Equals("6.5.0.0")) LabTimings.Timings["Post-Battle"] = LabTimings.DefaultTimings["Post-Battle"];
         }
 
         protected override string GetVersion()
