@@ -170,7 +170,7 @@ namespace FFRK_LabMem.Machines
             public TimingDictionary(Dictionary<string, Timing> from) : base(from) { }
         }
 
-        public class TimingTuning
+        public class TimingTuningParameters
         {
             public int IncrementThreshold { get; set; } = 1;
             public int IncrementAmount { get; set; } = 100;
@@ -178,7 +178,7 @@ namespace FFRK_LabMem.Machines
             public int DecrementAmount { get; set; } = 10;
         }
 
-        public class Timing
+        public class TimingTuning
         {
             public enum TuningState
             {
@@ -187,10 +187,20 @@ namespace FFRK_LabMem.Machines
                 Learned,
                 Ignore
             }
+            public TuningState State { get; set; } = TuningState.Normal;
+            public int SuccessCounter { get; set; } = 0;
+            public int RetryCounter { get; set; } = 0;
+
+        }
+
+        public class Timing
+        {
 
             public int Delay { get; set; } = 5000;
             public int Jitter { get; set; } = 0;
-            public TuningState State { get; set; } = TuningState.Normal;
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+            public TimingTuning Tuning { get; set; } = new TimingTuning();
+            
         }
 
     }
