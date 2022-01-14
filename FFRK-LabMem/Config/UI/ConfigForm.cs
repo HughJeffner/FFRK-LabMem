@@ -121,7 +121,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
             numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
-            numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 10);
+            numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 5);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
