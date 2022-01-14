@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FFRK_Machines;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace FFRK_LabMem.Machines
         private static LabTimings _instance = null;
         private static readonly Random rng = new Random();
         private TimingDictionary timings { get; set; } = new TimingDictionary(DefaultTimings);
-        private TimingTuning tuning { get; set; } = new TimingTuning();
+        private TimingTuningParameters tuningParams { get; set; } = new TimingTuningParameters();
         public LabTimings()
         {
         }
@@ -43,11 +44,11 @@ namespace FFRK_LabMem.Machines
             }
         }
 
-        public static TimingTuning Tuning
+        public static TimingTuningParameters TuningParams
         {
             get
             {
-                return GetInstance().Result.tuning;
+                return GetInstance().Result.tuningParams;
             }
         }
 
@@ -87,7 +88,9 @@ namespace FFRK_LabMem.Machines
         /// <returns></returns>
         public static async Task Delay(string key, CancellationToken cancellationToken)
         {
-            await Task.Delay(DelayWithJitter((await GetInstance()).timings[key]), cancellationToken);
+            int delay = DelayWithJitter((await GetInstance()).timings[key]);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Delay {key} : {delay}ms");
+            await Task.Delay(delay, cancellationToken);
         }
         /// <summary>
         /// Gets a timespan for the specified timing
@@ -199,7 +202,7 @@ namespace FFRK_LabMem.Machines
             public int Delay { get; set; } = 5000;
             public int Jitter { get; set; } = 0;
             [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-            public TimingTuning Tuning { get; set; } = new TimingTuning();
+            public TimingTuning Tuning { get; set; } = null;
             
         }
 
