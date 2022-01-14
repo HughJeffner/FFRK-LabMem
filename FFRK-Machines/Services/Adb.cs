@@ -675,22 +675,30 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
+        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
         {
             
             var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity);
             if (button == null)
             {
-                return false;
+                return new FindButtonResult();
             } else
             {
-                await TapPct(button.Item1, button.Item2, cancellationToken);
-                return true;
+                await TapPct(button.button.Item1, button.button.Item2, cancellationToken);
+                button.tapped = true;
+                return button;
             }
 
         }
 
-        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
+        public class FindButtonResult
+        {
+            public Tuple<double, double> button = null;
+            public int retries = 0;
+            public bool tapped = false;
+        }
+
+        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
         {
 
             int tries = 0;
@@ -699,10 +707,10 @@ namespace FFRK_LabMem.Services
                 var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, granularity);
                 if (b != null)
                 {
-                    return b;
+                    return new FindButtonResult() { button = b, retries = tries };
                 }
                 tries++;
-                await Task.Delay(1000, cancellationToken);
+                if (retries > 0) await Task.Delay(1000, cancellationToken);
             } while (tries < retries);
 
             return null;

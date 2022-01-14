@@ -110,6 +110,52 @@ namespace FFRK_LabMem.Machines
             (await GetInstance()).timings = DefaultTimings;
         }
 
+        public static void TuneTiming(string key, bool found, int tries)
+        {
+
+            var timing = LabTimings.Timings[key];
+            if (timing.Tuning == null) timing.Tuning = new LabTimings.TimingTuning();
+            var tuning = timing.Tuning;
+            if (tuning.State != LabTimings.TimingTuning.TuningState.Learned || tuning.State != LabTimings.TimingTuning.TuningState.Ignore)
+            {
+                var parameters = LabTimings.TuningParams;
+                tuning.RetryCounter = tries;
+                if (found)
+                {
+                    if (tries == 0)
+                    {
+                        tuning.SuccessCounter += 1;
+                        if (tuning.SuccessCounter >= parameters.DecrementThreshold)
+                        {
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Decrementing timing: {key} by {parameters.DecrementAmount}ms after {parameters.DecrementThreshold} successes");
+                            timing.Delay -= LabTimings.TuningParams.DecrementAmount;
+                            tuning.State = LabTimings.TimingTuning.TuningState.Learning;
+                            tuning.SuccessCounter = 0;
+                        }
+                    }
+                    if (tries == 1 && tuning.State == LabTimings.TimingTuning.TuningState.Learning)
+                    {
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Freezing timing: {key} at {parameters.DecrementAmount}ms");
+                        timing.Delay += LabTimings.TuningParams.DecrementAmount;
+                        tuning.State = LabTimings.TimingTuning.TuningState.Learned;
+                    }
+                    if (tries > 1)
+                    {
+                        tuning.RetryCounter += 1;
+                        if (tuning.RetryCounter >= parameters.IncrementThreshold)
+                        {
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Incrementing timing: {key} by {parameters.IncrementAmount}ms after {parameters.IncrementThreshold} retries");
+                            timing.Delay += LabTimings.TuningParams.IncrementAmount;
+                            tuning.State = LabTimings.TimingTuning.TuningState.Normal;
+                            tuning.RetryCounter = 0;
+                            tuning.SuccessCounter = 0;
+                        }
+                    }
+                }
+            }
+
+        }
+
         public static readonly TimingDictionary DefaultTimings = new TimingDictionary()
         {
             { "Pre-AutoStart", new Timing() { Delay=10} },
@@ -177,7 +223,7 @@ namespace FFRK_LabMem.Machines
         {
             public int IncrementThreshold { get; set; } = 1;
             public int IncrementAmount { get; set; } = 100;
-            public int DecrementThreshold { get; set; } = 10;
+            public int DecrementThreshold { get; set; } = 3;
             public int DecrementAmount { get; set; } = 10;
         }
 

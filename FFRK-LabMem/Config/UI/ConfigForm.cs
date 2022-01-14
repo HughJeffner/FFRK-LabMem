@@ -334,14 +334,11 @@ namespace FFRK_LabMem.Config.UI
             await labConfig.Save(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
 
             // Save Timings
-            LabTimings.Timings.Clear();
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
-                LabTimings.Timings.Add(item.Cells[0].Value.ToString(), new LabTimings.Timing()
-                {
-                    Delay = int.Parse(item.Cells[1].Value.ToString()),
-                    Jitter = int.Parse(item.Cells[2].Value.ToString())
-                });
+                var t = LabTimings.Timings[item.Cells[0].Value.ToString()];
+                t.Delay = int.Parse(item.Cells[1].Value.ToString());
+                t.Jitter = int.Parse(item.Cells[2].Value.ToString());
             }
             await LabTimings.Save();
 

@@ -35,14 +35,28 @@ namespace FFRK_LabMem.Machines
 
         private async Task<bool> DelayedTapButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries, double granularity = 0.5)
         {
+
+            // Initial delay
             await LabTimings.Delay(key, this.CancellationToken);
-            return await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity);
+
+            // Find
+            var ret = await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity);
+
+            // Tuning
+            LabTimings.TuneTiming(key, ret.tapped, ret.retries);
+            
+            return ret.tapped;
         }
 
         private async Task<Tuple<double,double>> DelayedFindButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries)
         {
+            // Initial delay
             await LabTimings.Delay(key, this.CancellationToken);
-            return await this.Adb.FindButton(color, threshold, X, Y1, Y2, retries, this.CancellationToken);
+
+            // Find
+            var ret = await this.Adb.FindButton(color, threshold, X, Y1, Y2, retries, this.CancellationToken);
+
+            return ret.button;
         }
 
         private async Task DetermineState()
@@ -754,7 +768,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.UsePotions)
                 {
                     // Select potions
-                    await Adb.TapPct(staminaButton.Item1, staminaButton.Item2, this.CancellationToken);
+                    await Adb.TapPct(staminaButton.button.Item1, staminaButton.button.Item2, this.CancellationToken);
 
                     // Use potion
                     ret.PotionUsed = await UseStaminaPotion();
