@@ -532,13 +532,16 @@ namespace FFRK_LabMem.Services
 
         }
 
+        Stopwatch frameBufferStopwatch = new Stopwatch();
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords, CancellationToken cancellationToken)
         {
 
             var ret = new List<Color>();
-
+            frameBufferStopwatch.Restart();
             using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
             {
+                frameBufferStopwatch.Stop();
+                ColorConsole.Debug(ColorConsole.DebugCategory.Timings, "Frame buffer delay: {0}ms", frameBufferStopwatch.ElapsedMilliseconds);
                 using (Bitmap b = new Bitmap(framebuffer))
                 {
                     foreach (var item in coords)
