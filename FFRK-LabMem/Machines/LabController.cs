@@ -57,11 +57,9 @@ namespace FFRK_LabMem.Machines
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
+                capture: config.GetEnum("adb.capture", Services.Adb.CaptureType.ADB),
+                captureRate: config.GetInt("adb.captureRate", 500),
                 consumers: 2);
-
-            // Adb options
-            ret.Adb.CaptureRate = config.GetInt("adb.captureRate", 500);
-            ret.Adb.Capture = config.GetEnum("adb.capture", Services.Adb.CaptureType.ADB);
 
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)

@@ -303,32 +303,6 @@ namespace FFRK_LabMem.Services
             return true;
         }
 
-        public async Task<Image> Minicap(CancellationToken cancellationToken)
-        {
-            Image ret = null;
-
-            // Execute minicap on device
-            if (screenSize == null) await GetScreenSize();
-            string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -s > /data/local/tmp/screen.jpg";
-
-            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
-                this.Device,
-                null,
-                cancellationToken,
-                2000);
-
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    service.Pull("/data/local/tmp/screen.jpg", stream, null, cancellationToken);
-                    ret = Image.FromStream(stream);
-                }
-            }
-
-            return ret;
-        }
-
         public async Task<RootCertInstalledStatus> CheckIfRootCertInstalled(int apiLevel)
         {
             using (var service = Factories.SyncServiceFactory(this.Device))
@@ -502,6 +476,109 @@ namespace FFRK_LabMem.Services
                 }
 
             }
+
+        }
+        private async Task<Image> Minicap(CancellationToken cancellationToken)
+        {
+            Image ret = null;
+
+            // Execute minicap on device
+            string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -s > /data/local/tmp/screen.jpg";
+
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
+                this.Device,
+                null,
+                cancellationToken,
+                2000);
+
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    service.Pull("/data/local/tmp/screen.jpg", stream, null, cancellationToken);
+                    ret = Image.FromStream(stream);
+                }
+            }
+
+            return ret;
+        }
+
+        private async Task<bool> MinicapInstall(CancellationToken cancellationToken)
+        {
+
+            // Get ABI
+            var receiver = new ConsoleOutputReceiver();
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Getting device ABI");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi | tr -d '\r'",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            var abi = receiver.ToString().TrimEnd();
+
+            // Get Api level
+            var apiLevel = await GetAPILevel(cancellationToken);
+
+            // Push binary
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (Stream stream = File.OpenRead($"./minicap/{abi}/bin/minicap"))
+                {
+                    service.Push(stream, "/data/local/tmp/minicap", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+            // Push shared library
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (Stream stream = File.OpenRead($"./minicap/{abi}/lib/android-{apiLevel}/minicap.so"))
+                {
+                    service.Push(stream, "/data/local/tmp/minicap.so", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
+        {
+
+            // Execute minicap on device
+            if (screenSize == null) screenSize = await GetScreenSize();
+            string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -t";
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            return receiver.ToString().TrimEnd().EndsWith("OK");
+
+        }
+
+        public async Task MinicapSetup(CancellationToken cancellationToken)
+        {
+            if (this.Capture != CaptureType.Minicap) return;
+            if (await MinicapVerify(cancellationToken))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed and ready");
+                return;
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap not installed, attempting to install it now");
+                if (await MinicapInstall(cancellationToken))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
+                    if (await MinicapVerify(cancellationToken))
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed and ready!");
+                        return;
+                    } 
+                } 
+            }
+
+            ColorConsole.WriteLine(ConsoleColor.Red, "Failed to install minicap! Reverting to Adb");
+            this.Capture = CaptureType.ADB;
 
         }
 
