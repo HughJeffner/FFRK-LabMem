@@ -67,7 +67,7 @@ namespace FFRK_LabMem.Services
             client.BeginReceive(clientBuffer, 0, clientBuffer.Length, SocketFlags.None, OnReceive, this);
         }
 
-        public static async Task<Image> CaptureFrame()
+        public static async Task<Image> CaptureFrame(int timeout, CancellationToken cancellationToken)
         {
 
             var client = new Minicap();
@@ -82,7 +82,17 @@ namespace FFRK_LabMem.Services
                 }
             };
             client.Start();
-            return await tcs.Task;
+            Task winner = await Task.WhenAny(tcs.Task, Task.Delay(timeout, cancellationToken));
+            if (winner == tcs.Task)
+            {
+                // The task was signaled.
+                return tcs.Task.Result;
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
         private void OnReceive(IAsyncResult ar)
