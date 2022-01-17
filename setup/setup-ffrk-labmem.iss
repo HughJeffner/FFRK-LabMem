@@ -48,6 +48,7 @@ Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe.config"; DestDir: "{app}"; F
 Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\FFRK-LabMem\bin\Release\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
 Source: "..\FFRK-LabMem\bin\Release\Sounds\*.*"; DestDir: "{app}\Sounds"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
+Source: "..\FFRK-LabMem\bin\Release\Minicap\*.*"; DestDir: "{app}\Minicap"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
 Source: "{app}\DataLog\*"; DestDir: "{app}\Data\"; Flags: external skipifsourcedoesntexist onlyifdoesntexist
 
 [Icons]
