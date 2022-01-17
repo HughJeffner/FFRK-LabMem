@@ -134,6 +134,8 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
+            comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
+            trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 500) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
@@ -244,6 +246,8 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.connectionPooling", checkBoxProxyConnectionPool.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
+            configHelper.SetValue("adb.capture", comboBoxCapture.SelectedIndex);
+            configHelper.SetValue("adb.captureRate", trackBarCaptureRate.Value * 10);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
@@ -360,7 +364,11 @@ namespace FFRK_LabMem.Config.UI
             ColorConsole.WriteLine("Done!");
 
             // Update machine
-            if (controller.Machine != null) controller.Machine.Config = labConfig;
+            if (controller.Machine != null)
+            {
+                controller.Machine.Config = labConfig;
+                controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
+            }
 
             // Watchdog
             var watchdogConfig = new LabWatchdog.Configuration()
@@ -594,7 +602,8 @@ namespace FFRK_LabMem.Config.UI
                 checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
                 checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555")
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 0)
             );
 
             lblRestart.Visible = changed;
@@ -1054,10 +1063,15 @@ namespace FFRK_LabMem.Config.UI
             textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
 
-        private void numericUpDownRestartLoopThreshold_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDownRestartLoopThreshold_ValueChanged(object sender, EventArgs e)
         {
             numericUpDownRestartLoopWindow.Enabled = numericUpDownRestartLoopThreshold.Value > 0;
             label27.Enabled = numericUpDownRestartLoopWindow.Enabled;
+        }
+
+        private void TrackBarCaptureRate_ValueChanged(object sender, EventArgs e)
+        {
+            labelCaptureRate.Text = $"{trackBarCaptureRate.Value * 10}ms";
         }
     }
 }

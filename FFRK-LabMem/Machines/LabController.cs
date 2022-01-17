@@ -58,7 +58,11 @@ namespace FFRK_LabMem.Machines
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
                 consumers: 2);
-            
+
+            // Adb options
+            ret.Adb.CaptureRate = config.GetInt("adb.captureRate", 500);
+            ret.Adb.Capture = config.GetEnum("adb.capture", Services.Adb.CaptureType.ADB);
+
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
