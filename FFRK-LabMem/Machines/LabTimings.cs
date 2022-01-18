@@ -112,16 +112,27 @@ namespace FFRK_LabMem.Machines
 
         public static void TuneTiming(string key, bool found, int tries)
         {
-
+            // Main switch
+            if (!LabTimings.TuningParams.Enabled) return;
+            
+            // Get specivied timing and tuning data
             var timing = LabTimings.Timings[key];
             if (timing.Tuning == null) timing.Tuning = new LabTimings.TimingTuning();
             var tuning = timing.Tuning;
+
+            // State check
             if (tuning.State != LabTimings.TimingTuning.TuningState.Learned || tuning.State != LabTimings.TimingTuning.TuningState.Ignore)
             {
+                // Global tuning parameters
                 var parameters = LabTimings.TuningParams;
+                
+                // Set retry counter
                 tuning.RetryCounter = tries;
+                
+                // Was the button found?
                 if (found)
                 {
+                    // On the first try then decrement
                     if (tries == 0)
                     {
                         tuning.SuccessCounter += 1;
@@ -133,12 +144,14 @@ namespace FFRK_LabMem.Machines
                             tuning.SuccessCounter = 0;
                         }
                     }
+                    // With 1 retry and in learning state then freeze timing
                     if (tries == 1 && tuning.State == LabTimings.TimingTuning.TuningState.Learning)
                     {
                         ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Freezing timing: {key} at {parameters.DecrementAmount}ms");
                         timing.Delay += LabTimings.TuningParams.DecrementAmount;
                         tuning.State = LabTimings.TimingTuning.TuningState.Learned;
                     }
+                    // More than 1 retry then incrment
                     if (tries > 1)
                     {
                         tuning.RetryCounter += 1;
@@ -225,6 +238,7 @@ namespace FFRK_LabMem.Machines
             public int IncrementAmount { get; set; } = 100;
             public int DecrementThreshold { get; set; } = 3;
             public int DecrementAmount { get; set; } = 10;
+            public bool Enabled { get; set; } = false;
         }
 
         public class TimingTuning
