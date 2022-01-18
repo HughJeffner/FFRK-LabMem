@@ -143,7 +143,7 @@ namespace FFRK_Machines.Machines
             Machine.RegisterWithProxy(Proxy);
             if (this.proxySecure) await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
             if (this.proxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
-            if (Adb.Capture == Adb.CaptureType.Minicap) await Adb.MinicapSetup(CancellationToken.None);
+            await Adb.MinicapSetup(CancellationToken.None);
         }
 
         private void Adb_DeviceAvailable(object sender, SharpAdbClient.DeviceDataEventArgs e)

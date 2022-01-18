@@ -368,6 +368,7 @@ namespace FFRK_LabMem.Config.UI
             {
                 controller.Machine.Config = labConfig;
                 controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
+                controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
             }
 
             // Watchdog

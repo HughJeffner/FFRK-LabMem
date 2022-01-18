@@ -25,6 +25,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private int cachedApiLevel = 0;
+        private Process minicapProcess = null;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -32,7 +33,9 @@ namespace FFRK_LabMem.Services
         public enum CaptureType
         {
             ADB = 0,
-            Minicap = 1
+            Minicap = 1,
+            Minicap2 = 2,
+            Minicap3 = 3
         }
 
         public class Size {
@@ -478,6 +481,65 @@ namespace FFRK_LabMem.Services
             }
 
         }
+
+        private async Task<Image> Minicap2(CancellationToken cancellationToken)
+        {
+            Image ret = null;
+
+            using (IAdbSocket socket = Factories.AdbSocketFactory(AdbClient.Instance.EndPoint))
+            {
+                // Send command with adb sockets
+                AdbClient.Instance.SetDevice(socket, Device);
+                var command = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -s"; ;
+                socket.SendAdbRequest($"shell:{command}");
+                var response = socket.ReadAdbResponse();
+
+                // Jpeg header
+                byte[] header = new byte[] { 0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10 };
+
+                // Read stream
+                using (MemoryStream reader = new MemoryStream())
+                {
+                    // Copy shell stream to reader
+                    await socket.GetShellStream().CopyToAsync(reader);
+                    
+                    // Get location of Jpeg header
+                    int loc = Search(reader.ToArray(), header);
+                    
+                    // Set the position of the reader
+                    reader.Position = loc;
+
+                    // Image.Fromstream resets position to 0 so need a new memory stream
+                    using (var m = new MemoryStream())
+                    {
+                        await reader.CopyToAsync(m);
+                        ret = Image.FromStream(m);
+                    }
+                    
+                }
+
+                return await Task.FromResult(ret);
+            }
+        }
+
+        int Search(byte[] src, byte[] pattern)
+        {
+            int maxFirstCharSlot = src.Length - pattern.Length + 1;
+            for (int i = 0; i < maxFirstCharSlot; i++)
+            {
+                if (src[i] != pattern[0]) // compare only first byte
+                    continue;
+
+                // found a match on first byte, now try to match rest of the pattern
+                for (int j = pattern.Length - 1; j >= 1; j--)
+                {
+                    if (src[i + j] != pattern[j]) break;
+                    if (j == 1) return i;
+                }
+            }
+            return -1;
+        }
+
         private async Task<Image> Minicap(CancellationToken cancellationToken)
         {
             Image ret = null;
@@ -491,6 +553,7 @@ namespace FFRK_LabMem.Services
                 cancellationToken,
                 2000);
 
+            // Pull file via adb
             using (var service = Factories.SyncServiceFactory(this.Device))
             {
                 using (MemoryStream stream = new MemoryStream())
@@ -558,11 +621,14 @@ namespace FFRK_LabMem.Services
 
         public async Task MinicapSetup(CancellationToken cancellationToken)
         {
-            if (this.Capture != CaptureType.Minicap) return;
+            if (this.Capture == CaptureType.ADB) return;
+
+            bool installed = false;
+
             if (await MinicapVerify(cancellationToken))
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed and ready");
-                return;
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed");
+                installed = true;
             } else
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap not installed, attempting to install it now");
@@ -571,26 +637,68 @@ namespace FFRK_LabMem.Services
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
                     if (await MinicapVerify(cancellationToken))
                     {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed and ready!");
-                        return;
-                    } 
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed");
+                        installed = true;
+                    }
                 } 
             }
 
-            ColorConsole.WriteLine(ConsoleColor.Red, "Failed to install minicap! Reverting to Adb");
-            this.Capture = CaptureType.ADB;
+            if (!installed)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB framebuffer");
+                this.Capture = CaptureType.ADB;
+                return;
+            }
+
+            if (this.Capture == CaptureType.Minicap3 && !await IsPackageRunning("minicap", cancellationToken))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
+
+                string cmd = $"adb shell \"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0\"";
+                minicapProcess = new Process
+                {
+                    StartInfo = {
+                    FileName = "cmd.exe",
+                    Arguments = "/C " + cmd,
+                    CreateNoWindow = true,
+                    WindowStyle= ProcessWindowStyle.Hidden
+                    }
+                };
+                minicapProcess.Start();
+
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
+                AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
+
+            }
+
 
         }
 
-        Stopwatch frameBufferStopwatch = new Stopwatch();
+        
         private async Task<Image> GetFrame(CancellationToken cancellationToken)
         {
             Image ret = null;
-            frameBufferStopwatch.Restart();
+            var frameBufferStopwatch = new Stopwatch();
+            frameBufferStopwatch.Start();
             if (Capture == CaptureType.Minicap)
             {
                 ret = await Minicap(cancellationToken);
-            } else
+            } 
+            else if (Capture == CaptureType.Minicap2)
+            {
+                ret = await Minicap2(cancellationToken);
+            }
+            else if (Capture == CaptureType.Minicap3)
+            {
+                ret = await Services.Minicap.CaptureFrame(1000, cancellationToken);
+                if (ret == null)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
+                    this.Capture = CaptureType.ADB;
+                    ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
+                }
+            }
+            else
             {
                 ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
             }

@@ -848,15 +848,17 @@ namespace FFRK_LabMem.Config.UI
             this.label31.Text = "Capture Rate:";
             this.label31.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBoxFrameCapture
+            // comboBoxCapture
             // 
             this.comboBoxCapture.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCapture.FormattingEnabled = true;
             this.comboBoxCapture.Items.AddRange(new object[] {
             "Adb (default)",
-            "Minicap"});
+            "Minicap (adb pull)",
+            "Minicap (shell)",
+            "Minicap (tcp)"});
             this.comboBoxCapture.Location = new System.Drawing.Point(153, 99);
-            this.comboBoxCapture.Name = "comboBoxFrameCapture";
+            this.comboBoxCapture.Name = "comboBoxCapture";
             this.comboBoxCapture.Size = new System.Drawing.Size(280, 23);
             this.comboBoxCapture.TabIndex = 8;
             this.toolTip1.SetToolTip(this.comboBoxCapture, "Selects the method of getting the device screen");
