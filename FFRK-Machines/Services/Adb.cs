@@ -59,6 +59,7 @@ namespace FFRK_LabMem.Services
 
         public int CaptureRate { get; set; } = 500;
         public CaptureType Capture { get; set; } = CaptureType.ADB;
+        public int TapDelay { get; set; } = 100;
         public bool HasDevice
         {
             get
@@ -690,7 +691,7 @@ namespace FFRK_LabMem.Services
             }
             else if (Capture == CaptureType.Minicap3)
             {
-                ret = await Services.Minicap.CaptureFrame(1000, cancellationToken);
+                ret = await Services.Minicap.CaptureFrame(2000, cancellationToken);
                 if (ret == null)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
@@ -918,6 +919,7 @@ namespace FFRK_LabMem.Services
                 return new FindButtonResult();
             } else
             {
+                await Task.Delay(TapDelay);
                 await TapPct(button.button.Item1, button.button.Item2, cancellationToken);
                 button.tapped = true;
                 return button;

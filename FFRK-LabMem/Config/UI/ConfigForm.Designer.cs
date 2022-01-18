@@ -31,14 +31,14 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Proxy", 1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Android", 2);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Lab", 3);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Timings", 4);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Schedule", 5);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Counters", 6);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Notifications", 7);
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Proxy", 1);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Android", 2);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Lab", 3);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Timings", 4);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Schedule", 5);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Counters", 6);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Notifications", 7);
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -84,6 +84,9 @@ namespace FFRK_LabMem.Config.UI
             this.label3 = new System.Windows.Forms.Label();
             this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.labelTapDelay = new System.Windows.Forms.Label();
+            this.trackBarTapDelay = new System.Windows.Forms.TrackBar();
+            this.label32 = new System.Windows.Forms.Label();
             this.labelCaptureRate = new System.Windows.Forms.Label();
             this.trackBarCaptureRate = new System.Windows.Forms.TrackBar();
             this.label31 = new System.Windows.Forms.Label();
@@ -231,6 +234,7 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).BeginInit();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarCaptureRate)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -800,6 +804,9 @@ namespace FFRK_LabMem.Config.UI
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.labelTapDelay);
+            this.tabPage3.Controls.Add(this.trackBarTapDelay);
+            this.tabPage3.Controls.Add(this.label32);
             this.tabPage3.Controls.Add(this.labelCaptureRate);
             this.tabPage3.Controls.Add(this.trackBarCaptureRate);
             this.tabPage3.Controls.Add(this.label31);
@@ -815,6 +822,37 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage3.Size = new System.Drawing.Size(504, 466);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Adb";
+            // 
+            // labelTapDelay
+            // 
+            this.labelTapDelay.Location = new System.Drawing.Point(433, 184);
+            this.labelTapDelay.Name = "labelTapDelay";
+            this.labelTapDelay.Size = new System.Drawing.Size(68, 23);
+            this.labelTapDelay.TabIndex = 14;
+            this.labelTapDelay.Text = "100ms";
+            this.labelTapDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // trackBarTapDelay
+            // 
+            this.trackBarTapDelay.LargeChange = 10;
+            this.trackBarTapDelay.Location = new System.Drawing.Point(153, 184);
+            this.trackBarTapDelay.Maximum = 100;
+            this.trackBarTapDelay.Name = "trackBarTapDelay";
+            this.trackBarTapDelay.Size = new System.Drawing.Size(280, 45);
+            this.trackBarTapDelay.TabIndex = 13;
+            this.trackBarTapDelay.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackBarTapDelay, "The delay before tapping a screen element");
+            this.trackBarTapDelay.Value = 10;
+            this.trackBarTapDelay.ValueChanged += new System.EventHandler(this.TrackBarTapDelay_ValueChanged);
+            // 
+            // label32
+            // 
+            this.label32.Location = new System.Drawing.Point(-1, 184);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(146, 23);
+            this.label32.TabIndex = 12;
+            this.label32.Text = "Tap Delay:";
+            this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCaptureRate
             // 
@@ -870,7 +908,7 @@ namespace FFRK_LabMem.Config.UI
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(146, 23);
             this.label30.TabIndex = 7;
-            this.label30.Text = "Frame Capture:";
+            this.label30.Text = "Frame Capture Method:";
             this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // checkBoxAdbClose
@@ -2253,14 +2291,14 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8});
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 5);
@@ -2397,6 +2435,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarCaptureRate)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -2618,5 +2657,8 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.ComboBox comboBoxCapture;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label labelCaptureRate;
+        private System.Windows.Forms.Label labelTapDelay;
+        private System.Windows.Forms.TrackBar trackBarTapDelay;
+        private System.Windows.Forms.Label label32;
     }
 }

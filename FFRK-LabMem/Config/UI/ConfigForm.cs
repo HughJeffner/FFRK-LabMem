@@ -136,6 +136,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
             trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 500) / 10;
+            trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 100) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
@@ -248,6 +249,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("adb.capture", comboBoxCapture.SelectedIndex);
             configHelper.SetValue("adb.captureRate", trackBarCaptureRate.Value * 10);
+            configHelper.SetValue("adb.tapDelay", trackBarTapDelay.Value * 10);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
@@ -368,6 +370,7 @@ namespace FFRK_LabMem.Config.UI
             {
                 controller.Machine.Config = labConfig;
                 controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
+                controller.Adb.TapDelay = trackBarTapDelay.Value * 10;
                 controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
             }
 
@@ -1073,6 +1076,11 @@ namespace FFRK_LabMem.Config.UI
         private void TrackBarCaptureRate_ValueChanged(object sender, EventArgs e)
         {
             labelCaptureRate.Text = $"{trackBarCaptureRate.Value * 10}ms";
+        }
+
+        private void TrackBarTapDelay_ValueChanged(object sender, EventArgs e)
+        {
+            labelTapDelay.Text = $"{trackBarTapDelay.Value * 10}ms";
         }
     }
 }

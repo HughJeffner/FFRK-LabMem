@@ -61,6 +61,9 @@ namespace FFRK_LabMem.Machines
                 captureRate: config.GetInt("adb.captureRate", 500),
                 consumers: 2);
 
+            // Adb options
+            ret.Adb.TapDelay = config.GetInt("adb.tapDelay", 100);
+
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
