@@ -60,6 +60,33 @@ namespace FFRK_LabMem.Machines
                 }
             }
 
+            // Master avoidance options
+            if (type.Equals("2"))
+            {
+
+                // There's a treasure visible
+                if (Config.AvoidMasterIfTreasure && isTreasure)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return 256;
+                }
+
+                // There's a explore visible
+                if (Config.AvoidMasterIfExplore && isExplore)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return 256;
+                }
+
+                // There's more paintings to reveal
+                if (Config.AvoidMasterIfMore && total > 9)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return 256;
+                }
+
+            }
+
             // Portal avoidance options
             if (type.Equals("6")){
 

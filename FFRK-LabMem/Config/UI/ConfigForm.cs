@@ -281,6 +281,9 @@ namespace FFRK_LabMem.Config.UI
             labConfig.AvoidPortal = checkBoxLabAvoidPortal.Checked;
             labConfig.AvoidPortalIfExplore = checkBoxLabAvoidPortalExplore.Checked;
             labConfig.AvoidPortalIfMore = checkBoxLabAvoidPortalMore.Checked;
+            labConfig.AvoidMasterIfTreasure = checkBoxLabAvoidMaster.Checked;
+            labConfig.AvoidMasterIfExplore = checkBoxLabAvoidMasterExplore.Checked;
+            labConfig.AvoidMasterIfMore = checkBoxLabAvoidMasterMore.Checked;
             labConfig.RestartFailedBattle = checkBoxLabRestartFailedBattle.Checked;
             labConfig.StopOnMasterPainting = checkBoxLabStopOnMasterPainting.Checked;
             labConfig.RestartLab = checkBoxLabRestart.Checked;
@@ -421,6 +424,9 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
             checkBoxLabAvoidPortalExplore.Checked = labConfig.AvoidPortalIfExplore;
             checkBoxLabAvoidPortalMore.Checked = labConfig.AvoidPortalIfMore;
+            checkBoxLabAvoidMaster.Checked = labConfig.AvoidMasterIfTreasure;
+            checkBoxLabAvoidMasterExplore.Checked = labConfig.AvoidMasterIfExplore;
+            checkBoxLabAvoidMasterMore.Checked = labConfig.AvoidMasterIfMore;
             checkBoxLabRestartFailedBattle.Checked = labConfig.RestartFailedBattle;
             checkBoxLabStopOnMasterPainting.Checked = labConfig.StopOnMasterPainting;
             CheckBoxLabStopOnMasterPainting_CheckedChanged(sender, e);
