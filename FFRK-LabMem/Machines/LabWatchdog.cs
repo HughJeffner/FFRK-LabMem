@@ -114,6 +114,7 @@ namespace FFRK_LabMem.Machines
             if (config.HangMinutes > 0)
             {
                 // Divide by ratio to get warning interval
+                if (config.HangWarningRatio == 0) config.HangWarningRatio = 1;
                 watchdogHangTimer.Interval = TimeSpan.FromMinutes(config.HangMinutes).TotalMilliseconds / config.HangWarningRatio;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
             }

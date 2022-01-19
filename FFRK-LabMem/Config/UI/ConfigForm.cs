@@ -122,6 +122,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
             numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
             numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 5);
+            checkBoxWatchdogAutostart.Checked = configHelper.GetInt("lab.watchdogHangWarningRatio", 2) == 2;
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
@@ -258,6 +259,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionWindowMinutes", (int)numericUpDownRestartLoopWindow.Value);
             configHelper.SetValue("lab.watchdogMaxRetries", (int)numericUpDownRestartMaxRetries.Value);
+            configHelper.SetValue("lab.watchdogHangWarningRatio", (checkBoxWatchdogAutostart.Checked) ? 2 : 1);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
 
@@ -379,6 +381,7 @@ namespace FFRK_LabMem.Config.UI
             {
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
                 HangMinutes = (int)numericUpDownWatchdogHang.Value,
+                HangWarningRatio = (checkBoxWatchdogAutostart.Checked) ? 2 : 1,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
                 RestartLoopWindowMinutes = (int)numericUpDownRestartLoopWindow.Value,
