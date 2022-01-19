@@ -680,6 +680,7 @@ namespace FFRK_LabMem.Machines
             }
 
             // Mission Complete
+            Watchdog.Kick(true);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for mission complete dialog");
             await DelayedTapButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 61, 82, 5);
             
