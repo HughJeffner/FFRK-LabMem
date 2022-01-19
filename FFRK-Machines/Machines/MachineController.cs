@@ -162,10 +162,11 @@ namespace FFRK_Machines.Machines
         }
 
         // Event handlers
-        void Machine_MachineError(object sender, Exception e)
+        async void Machine_MachineError(object sender, Exception e)
         {
             ColorConsole.WriteLine(ConsoleColor.Red, "Something unexpected happened ({0}).  To prevent damages, {1} will now be reset.  Please re-enable when ready with 'E'", e.Message, typeof(M).Name);
             Disable();
+            await Machine.Notify(Services.Notifications.Notifications.EventType.LAB_FAULT, "Unexpected state");
         }
 
         void Machine_MachineFinished(object sender, EventArgs e)

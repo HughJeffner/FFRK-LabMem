@@ -258,7 +258,12 @@ namespace FFRK_LabMem.Machines
         private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
         {
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, trying auto-start");
-            await AutoStart();
+
+            // Reset state
+            ConfigureStateMachine();
+
+            // Manual auto-start if not enabled
+            if (!Config.AutoStart) await AutoStart();
         }
         private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
         {
