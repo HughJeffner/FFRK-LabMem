@@ -91,6 +91,7 @@ namespace FFRK_LabMem.Machines
             this.Adb = adb;
             this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
+            this.Watchdog.Warning += Watchdog_Warning;
             this.Watchdog.LoopDetected += Watchdog_LoopDetected;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
@@ -253,6 +254,11 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
 
+        }
+        private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, trying auto-start");
+            await AutoStart();
         }
         private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
         {

@@ -61,8 +61,13 @@ namespace FFRK_LabMem.Machines
 
         private async Task DetermineState()
         {
-
             if (!Config.AutoStart || this.Data != null) return;
+            await AutoStart();
+        }
+
+        private async Task AutoStart()
+        {
+
             try
             {
                 await LabTimings.Delay("Pre-AutoStart", this.CancellationToken);
