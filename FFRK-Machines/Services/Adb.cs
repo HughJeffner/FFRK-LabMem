@@ -26,6 +26,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private int cachedApiLevel = 0;
         private Process minicapProcess = null;
+        private int minicapTimeouts = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -33,9 +34,7 @@ namespace FFRK_LabMem.Services
         public enum CaptureType
         {
             ADB = 0,
-            Minicap = 1,
-            Minicap2 = 2,
-            Minicap3 = 3
+            Minicap = 1
         }
 
         public class Size {
@@ -651,7 +650,7 @@ namespace FFRK_LabMem.Services
                 return;
             }
 
-            if (this.Capture == CaptureType.Minicap3 && !await IsPackageRunning("minicap", cancellationToken))
+            if (this.Capture == CaptureType.Minicap && !await IsPackageRunning("minicap", cancellationToken))
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
 
@@ -674,7 +673,6 @@ namespace FFRK_LabMem.Services
 
 
         }
-
         
         private async Task<Image> GetFrame(CancellationToken cancellationToken)
         {
@@ -683,20 +681,19 @@ namespace FFRK_LabMem.Services
             frameBufferStopwatch.Start();
             if (Capture == CaptureType.Minicap)
             {
-                ret = await Minicap(cancellationToken);
-            } 
-            else if (Capture == CaptureType.Minicap2)
-            {
-                ret = await Minicap2(cancellationToken);
-            }
-            else if (Capture == CaptureType.Minicap3)
-            {
                 ret = await Services.Minicap.CaptureFrame(2000, cancellationToken);
                 if (ret == null)
                 {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
-                    this.Capture = CaptureType.ADB;
+                    minicapTimeouts += 1;
+                    if (minicapTimeouts >= 5)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
+                        this.Capture = CaptureType.ADB;
+                    }
                     ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
+                } else
+                {
+                    minicapTimeouts = 0;
                 }
             }
             else
