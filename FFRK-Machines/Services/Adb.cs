@@ -25,7 +25,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private int cachedApiLevel = 0;
-        private Process minicapProcess = null;
+        private Task minicapTask = null;
         private int minicapTimeouts = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
@@ -518,7 +518,7 @@ namespace FFRK_LabMem.Services
                     
                 }
 
-                return await Task.FromResult(ret);
+                return ret;
             }
         }
 
@@ -654,17 +654,12 @@ namespace FFRK_LabMem.Services
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
 
-                string cmd = $"adb shell \"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0\"";
-                minicapProcess = new Process
+                // Start on background thread
+                minicapTask = Task.Run(() =>
                 {
-                    StartInfo = {
-                    FileName = "cmd.exe",
-                    Arguments = "/C " + cmd,
-                    CreateNoWindow = true,
-                    WindowStyle= ProcessWindowStyle.Hidden
-                    }
-                };
-                minicapProcess.Start();
+                    string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
+                    AdbClient.Instance.ExecuteRemoteCommand(cmd, this.Device, null);
+                });
 
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
                 AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
@@ -674,7 +669,7 @@ namespace FFRK_LabMem.Services
 
         }
         
-        private async Task<Image> GetFrame(CancellationToken cancellationToken)
+        public async Task<Image> GetFrame(CancellationToken cancellationToken)
         {
             Image ret = null;
             var frameBufferStopwatch = new Stopwatch();
