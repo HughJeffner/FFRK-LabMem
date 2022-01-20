@@ -147,6 +147,15 @@ namespace FFRK_LabMem.Services
                 1000);
         }
 
+        public async Task NavigateBack(CancellationToken cancellationToken)
+        {
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input keyevent {0}", "KEYCODE_BACK"),
+                this.Device,
+                null,
+                cancellationToken,
+                1000);
+        }
+
         public async Task StopPackage(String packageName, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am force-stop {0}", packageName),

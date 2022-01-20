@@ -89,7 +89,8 @@ namespace FFRK_LabMem.Machines
                     if (ret.Equals(items[0]))
                     {
                         await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
-                        await DelayedTapPct("Inter-AutoStart", 5, 96);
+                        await LabTimings.Delay("Inter-AutoStart", this.CancellationToken);
+                        await Adb.NavigateBack(this.CancellationToken);
                     }
 
                     // Skip button
@@ -270,11 +271,11 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.WriteLine(ConsoleColor.Magenta, "Using [Magic Key] x{0} of {1}", picked, CurrentKeys);
                     this.CurrentKeys -= picked;
-                    await DelayedTapPct("Inter-SelectTreasure", 58, 44);
+                    await DelayedTapButton("Inter-SelectTreasure", BUTTON_BROWN, 4000, 58, 40, 50, 10);
                 }
 
                 // Confirm
-                await DelayedTapPct("Inter-SelectTreasure", 70, 64);
+                await DelayedTapButton("Inter-SelectTreasure", BUTTON_BLUE, 4000, 70, 60, 70, 10);
                 await Counters.UsedKeys(picked);
                 await Counters.TreasureOpened();
 
@@ -288,7 +289,7 @@ namespace FFRK_LabMem.Machines
                 {
                     if (picked != 3)
                     {
-                        await DelayedTapPct("Inter-SelectTreasure", 70, 64);
+                        await DelayedTapButton("Inter-SelectTreasure", BUTTON_BLUE, 4000, 60, 58, 68, 10);
                     }
                     await this.StateMachine.FireAsync(Trigger.MoveOn);
                 }
@@ -430,7 +431,6 @@ namespace FFRK_LabMem.Machines
 
             // Delay then select
             await DelayedTapPct("Pre-SelectParty", 50, (index == 1) ? 50 : 66.7);
-
             await LabTimings.Delay("Post-SelectParty", this.CancellationToken);
         }
 
@@ -473,7 +473,7 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            await DelayedTapPct("Pre-ConfirmPortal", 71, 62);
+            await DelayedTapButton("Pre-ConfirmPortal", BUTTON_BLUE, 3000, 86, 58, 68, 10);
             await LabTimings.Delay("Post-ConfirmPortal", this.CancellationToken);
         }
 
@@ -843,7 +843,7 @@ namespace FFRK_LabMem.Machines
             // Kill FFRK
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Kill ffrk process...");
             await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);
-            await LabTimings.Delay("Pre-RestartFFRK", this.CancellationToken);
+            await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
 
             // Launch app
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Launching app");
@@ -884,7 +884,7 @@ namespace FFRK_LabMem.Machines
 
                 }
                 // Delay between finds
-                await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
+                await Task.Delay(Adb.CaptureRate, this.CancellationToken);
             }
 
             // Loop finshed, check state
@@ -1058,7 +1058,7 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Did not find disabled auto-battle state");
                 }
-                await LabTimings.Delay("Inter-CheckAutoBattle", this.CancellationToken);
+                await Task.Delay(Adb.CaptureRate, this.CancellationToken);
             }
             await LabTimings.Delay("Post-CheckAutoBattle", this.CancellationToken);
 
