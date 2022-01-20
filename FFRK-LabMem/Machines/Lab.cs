@@ -36,7 +36,8 @@ namespace FFRK_LabMem.Machines
             FoundBoss,
             MissedButton,
             FinishedLab,
-            Restart
+            Restart,
+            EnteredOutpost
         }
 
         public enum State
@@ -55,7 +56,8 @@ namespace FFRK_LabMem.Machines
             Failed,
             WaitForBoss,
             Completed,
-            Restarting
+            Restarting,
+            Outpost
         }
 
         public int CurrentKeys { get; set; }
@@ -119,7 +121,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed)
                 .Permit(Trigger.FoundBoss, State.WaitForBoss)
-                .Permit(Trigger.FinishedLab, State.Completed);
+                .Permit(Trigger.FinishedLab, State.Completed)
+                .Permit(Trigger.EnteredOutpost, State.Outpost);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
@@ -204,6 +207,10 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .PermitReentry(Trigger.BattleFailed);
 
+            this.StateMachine.Configure(State.Outpost)
+                .OnEntryAsync(async (t) => await EnterOutpost())
+                .Permit(Trigger.FinishedLab, State.Completed);
+
             base.ConfigureStateMachine();
 
             // Start machine
@@ -257,13 +264,35 @@ namespace FFRK_LabMem.Machines
         }
         private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, trying auto-start");
+            List<State> autoStartStates = new List<State>() {
+                State.Unknown,
+                State.FoundSealedDoor,
+                State.FoundThing,
+                State.FoundTreasure,
+                State.Ready,
+                State.PortalConfirm
+            };
 
-            // Reset state
-            ConfigureStateMachine();
+            List<State> backStates = new List<State>
+            {
+                State.Ready,
+                State.BattleInfo,
+                State.EquipParty
+            };
 
-            // Manual auto-start if not enabled
-            if (!Config.AutoStart) await AutoStart();
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
+
+            if (backStates.Contains(StateMachine.State))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Navigating back");
+                await Adb.NavigateBack(this.CancellationToken);
+            }
+
+            if (autoStartStates.Contains(StateMachine.State))
+            {
+                await AutoStart();
+            }
+           
         }
         private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
         {
@@ -305,6 +334,10 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
             Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (data, url) =>
+            {
+                await this.StateMachine.FireAsync(Trigger.EnteredOutpost);
+            });
         }
 
         public void DisableSafe()

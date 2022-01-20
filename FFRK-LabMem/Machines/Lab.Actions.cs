@@ -56,6 +56,7 @@ namespace FFRK_LabMem.Machines
             // Find
             var ret = await this.Adb.FindButton(color, threshold, X, Y1, Y2, retries, this.CancellationToken);
 
+            if (ret == null) return null;
             return ret.button;
         }
 
@@ -312,7 +313,11 @@ namespace FFRK_LabMem.Machines
             {
                 foundButton = await DelayedTapButton("Pre-Door", BUTTON_BROWN, 4000, 30, 66, 80, 3);
             }
-            if (!foundButton) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
+            if (!foundButton)
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
+                await AutoStart();
+            }
             await LabTimings.Delay("Post-Door", this.CancellationToken);
 
         }
@@ -857,14 +862,12 @@ namespace FFRK_LabMem.Machines
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
-            items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_outpost, Simalarity = 0.85f });
 
             // Stopwatch to limit how long we try to find buttons
             recoverStopwatch.Restart();
 
             // Button Finding Loop with timeout and break if stopwatch stopped
             TimeSpan loopTimeout = await LabTimings.GetTimeSpan("Inter-RestartFFRK-Timeout");
-            bool labFinished = false;
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Button finding loop for {0}s", loopTimeout.TotalSeconds);
             while (recoverStopwatch.Elapsed < loopTimeout && recoverStopwatch.IsRunning)
             {
@@ -874,14 +877,6 @@ namespace FFRK_LabMem.Machines
                 {
                     // Tap it
                     await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
-
-                    // Check for outpost
-                    if (ret.Equals(items[3]))
-                    {
-                        labFinished = true;
-                        break;
-                    }
-
                 }
                 // Delay between finds
                 await Task.Delay(Adb.CaptureRate, this.CancellationToken);
@@ -903,7 +898,6 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "FFRK restarted!");
                 await Counters.FFRKRestarted();
-                if (labFinished) await StateMachine.FireAsync(Trigger.FinishedLab);
             }
             await LabTimings.Delay("Post-RestartFFRK", this.CancellationToken);
             return true;
@@ -1078,6 +1072,14 @@ namespace FFRK_LabMem.Machines
             var ret = await QuickExplore();
             Watchdog.Kick(); // Resume the watchdog
             return ret;
+
+        }
+
+        private async Task EnterOutpost()
+        {
+
+            await DelayedTapPct("Pre-EnterOutpost", 50, 40);
+            if (Config.RestartLab) await StateMachine.FireAsync(Trigger.FinishedLab);
 
         }
 
