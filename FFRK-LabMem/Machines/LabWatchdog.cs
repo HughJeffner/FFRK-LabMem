@@ -159,6 +159,7 @@ namespace FFRK_LabMem.Machines
             {
                 // Only on first
                 if (hangWarnings == 1) Warning?.Invoke(sender, new WatchdogEventArgs() { ElapsedEventArgs = e, Type = WatchdogEventArgs.TYPE.Hang });
+                watchdogHangTimer.Start();
             } else
             {
                 InvokeTimeout(sender, WatchdogEventArgs.TYPE.Hang, e);

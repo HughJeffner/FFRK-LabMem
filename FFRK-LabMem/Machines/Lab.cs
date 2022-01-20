@@ -398,7 +398,11 @@ namespace FFRK_LabMem.Machines
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
-            await RestartFFRK();
+            await Task.Run(()=>
+            {
+                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Crash });
+            });
+            
         }
 
     }

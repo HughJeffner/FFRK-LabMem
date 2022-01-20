@@ -109,26 +109,10 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public void ManualFFRKRestart()
+        public async void ManualFFRKRestart()
         {
 
-            if (Enabled)
-            {
-
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        await this.Machine.ManualFFRKRestart();
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception ex)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                    }
-
-                });
-            }
+            if (Enabled) await this.Machine.ManualFFRKRestart();
 
         }
 
