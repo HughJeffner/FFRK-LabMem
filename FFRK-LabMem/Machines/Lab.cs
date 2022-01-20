@@ -271,7 +271,8 @@ namespace FFRK_LabMem.Machines
                 State.FoundTreasure,
                 State.Ready,
                 State.PortalConfirm,
-                State.EquipParty
+                State.EquipParty,
+                State.BattleInfo,
             };
 
             List<State> backStates = new List<State>
@@ -282,6 +283,7 @@ namespace FFRK_LabMem.Machines
             };
 
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
+            await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
 
             if (backStates.Contains(StateMachine.State))
             {
