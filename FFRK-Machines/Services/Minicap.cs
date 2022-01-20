@@ -11,6 +11,7 @@ namespace FFRK_LabMem.Services
     public class Minicap : IDisposable
     {
         private object _lock = new object();
+        private static SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private int readBannerBytes = 0;
         private int bannerLength = 2;
         private int readFrameBytes = 0;
@@ -70,18 +71,36 @@ namespace FFRK_LabMem.Services
         public static async Task<Image> CaptureFrame(int timeout, CancellationToken cancellationToken)
         {
 
+            // New client instance and tcs
             var client = new Minicap();
             var tcs = new TaskCompletionSource<Image>();
 
+            // Hook into event
             client.MinicapFrameEvent += (f) =>
             {
+                // Done with client, release
                 client.Dispose();
+                semaphore.Release();
+                // Get frame and send to TCS
                 using (Image image = Image.FromStream(new MemoryStream(f)))
                 {
                     tcs.TrySetResult(image);
                 }
             };
-            client.Start();
+
+            // Only one at a time plz
+            var ready = await semaphore.WaitAsync(timeout, cancellationToken);
+
+            // Did we get in?  Start the client.
+            if (ready)
+            {
+                client.Start();
+            } else
+            {
+                // Didn't get in, dispose this client
+                client.Dispose();
+                return null;
+            }
             Task winner = await Task.WhenAny(tcs.Task, Task.Delay(timeout, cancellationToken));
             if (winner == tcs.Task)
             {
@@ -90,6 +109,9 @@ namespace FFRK_LabMem.Services
             }
             else
             {
+                // No signal
+                client.Dispose();
+                semaphore.Release();
                 return null;
             }
 

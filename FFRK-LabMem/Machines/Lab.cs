@@ -270,7 +270,8 @@ namespace FFRK_LabMem.Machines
                 State.FoundThing,
                 State.FoundTreasure,
                 State.Ready,
-                State.PortalConfirm
+                State.PortalConfirm,
+                State.EquipParty
             };
 
             List<State> backStates = new List<State>
@@ -284,8 +285,9 @@ namespace FFRK_LabMem.Machines
 
             if (backStates.Contains(StateMachine.State))
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Navigating back");
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
                 await Adb.NavigateBack(this.CancellationToken);
+                await Task.Delay(5000);
             }
 
             if (autoStartStates.Contains(StateMachine.State))

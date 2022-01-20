@@ -78,6 +78,7 @@ namespace FFRK_LabMem.Machines
                 List<Adb.ImageDef> items = new List<Adb.ImageDef>();
                 items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_inventory, Simalarity = 0.90f });
                 items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_skip, Simalarity = 0.90f });
+                items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
 
                 // Find
                 var ret = await Adb.FindImages(items, 3, this.CancellationToken);
@@ -98,6 +99,12 @@ namespace FFRK_LabMem.Machines
                     if (ret.Equals(items[1]))
                     {
                         await StateMachine.FireAsync(Trigger.BattleSuccess);
+                    }
+
+                    // Lab segment
+                    if (ret.Equals(items[2]))
+                    {
+                        await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
                     }
 
                     ColorConsole.WriteLine(ConsoleColor.DarkGray, "Auto-start complete, Have fun!");
