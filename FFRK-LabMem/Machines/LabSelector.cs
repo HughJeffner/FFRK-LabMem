@@ -129,7 +129,7 @@ namespace FFRK_LabMem.Machines
             if (type.Equals("4") && Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding explore due to option");
-                return portalPriority -1;
+                return maxPriority +1;
             }
 
             // Lookup or default
