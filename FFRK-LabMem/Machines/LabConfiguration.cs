@@ -74,7 +74,7 @@ namespace FFRK_LabMem.Machines
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
+        public List<EnemyPriority> EnemyPriorityList { get; set; } = new List<EnemyPriority>();
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
 
         public LabConfiguration() {
@@ -101,21 +101,21 @@ namespace FFRK_LabMem.Machines
                 {"2", new TreasureFilter(){ Priority=0, MaxKeys=0}},
                 {"1", new TreasureFilter(){ Priority=0, MaxKeys=0}}
             };
-            this.EnemyBlocklist = new List<EnemyBlocklistEntry>
+            this.EnemyPriorityList = new List<EnemyPriority>
             {
-                new EnemyBlocklistEntry(){Name="Alexander", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Atomos" ,Enabled=false},
-                new EnemyBlocklistEntry(){Name="Diablos", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Lani & Scarlet Hair", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Lunasaurs", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Octomammoth", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Marilith", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Behemoth", Enabled=false, PriorityAdjust=-1},
-                new EnemyBlocklistEntry(){Name="Nidhogg", Enabled=false, PriorityAdjust=-1},
-                new EnemyBlocklistEntry(){Name="Odin", Enabled=false, PriorityAdjust=-1},
-                new EnemyBlocklistEntry(){Name="Faeryl", Enabled=false, PriorityAdjust=-1},
-                new EnemyBlocklistEntry(){Name="Ultima Weapon", Enabled=false, PriorityAdjust=-1},
-                new EnemyBlocklistEntry(){Name="Deathclaws", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Alexander", Enabled=false},
+                new EnemyPriority(){Name="Atomos" ,Enabled=false},
+                new EnemyPriority(){Name="Diablos", Enabled=false},
+                new EnemyPriority(){Name="Lani & Scarlet Hair", Enabled=false},
+                new EnemyPriority(){Name="Lunasaurs", Enabled=false},
+                new EnemyPriority(){Name="Octomammoth", Enabled=false},
+                new EnemyPriority(){Name="Marilith", Enabled=false},
+                new EnemyPriority(){Name="Behemoth", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Nidhogg", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Odin", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Faeryl", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Ultima Weapon", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Deathclaws", Enabled=false, PriorityAdjust=-1},
             };
 
         }
@@ -126,7 +126,7 @@ namespace FFRK_LabMem.Machines
             public int MaxKeys { get; set; }
         }
 
-        public class EnemyBlocklistEntry
+        public class EnemyPriority
         {
             public string Name { get; set; }
             public bool Enabled { get; set; } = false;

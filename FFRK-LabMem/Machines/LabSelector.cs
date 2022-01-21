@@ -56,7 +56,7 @@ namespace FFRK_LabMem.Machines
 
                 // Enemy blocklist
                 var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
-                var enemyEntry = Config.EnemyBlocklist.FirstOrDefault(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower()));
+                var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower()));
                 if (enemyEntry != null)
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Adjusting priority {(enemyEntry.PriorityAdjust >= 0 ? "+" : "-")}{ enemyEntry.PriorityAdjust} due to blocklist: {enemyName}");

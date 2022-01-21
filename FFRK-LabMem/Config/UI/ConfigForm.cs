@@ -333,12 +333,12 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Enemy blocklist
-            labConfig.EnemyBlocklist.Clear();
+            labConfig.EnemyPriorityList.Clear();
             for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
             {
-                LabConfiguration.EnemyBlocklistEntry item = (LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[i];
+                LabConfiguration.EnemyPriority item = (LabConfiguration.EnemyPriority)checkedListBoxBlocklist.Items[i];
                 item.Enabled = checkedListBoxBlocklist.GetItemChecked(i);
-                labConfig.EnemyBlocklist.Add(item);
+                labConfig.EnemyPriorityList.Add(item);
             }
 
             // Save Lab to .json
@@ -488,7 +488,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Enemy blocklist
             checkedListBoxBlocklist.Items.Clear();
-            foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
+            foreach (LabConfiguration.EnemyPriority entry in labConfig.EnemyPriorityList)
             {
                 checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
             }
@@ -783,7 +783,7 @@ namespace FFRK_LabMem.Config.UI
             var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Blocklist Entry");
             if (!String.IsNullOrEmpty(input))
             {
-                var newItem = new LabConfiguration.EnemyBlocklistEntry() { Name = input, Enabled = true };
+                var newItem = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true };
                 checkedListBoxBlocklist.Items.Add(newItem, true);
                 buttonRemoveBlocklist.Enabled = true;
             }
@@ -822,7 +822,7 @@ namespace FFRK_LabMem.Config.UI
                 {
                     //Set tooltip text for the row now under the mouse:
                     toolTip1.Active = false;
-                    var name = ((LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[hoveredIndex]).Name;
+                    var name = ((LabConfiguration.EnemyPriority)checkedListBoxBlocklist.Items[hoveredIndex]).Name;
                     if (Lookups.Blocklist.ContainsKey(name))
                     {
                         toolTip1.SetToolTip(checkedListBoxBlocklist, Lookups.Blocklist[name]);
