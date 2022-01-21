@@ -82,10 +82,7 @@ namespace FFRK_LabMem.Services
                 client.Dispose();
                 semaphore.Release();
                 // Get frame and send to TCS
-                using (Image image = Image.FromStream(new MemoryStream(f)))
-                {
-                    tcs.TrySetResult(image);
-                }
+                tcs.TrySetResult(Image.FromStream(new MemoryStream(f)));
             };
 
             // Only one at a time plz

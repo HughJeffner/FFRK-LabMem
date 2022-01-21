@@ -24,9 +24,15 @@ namespace FFRK_LabMem.Services
             Stopwatch time = new Stopwatch();
             while (!Console.KeyAvailable)
             {
+                // Time the image capture
                 time.Restart();
-                _ = controller.Adb.GetFrame(CancellationToken.None).Result;
+                var img = controller.Adb.GetFrame(CancellationToken.None).Result;
                 time.Stop();
+
+                // Dispose the result
+                img.Dispose();
+
+                // Stats
                 count += 1;
                 avg -= avg / count;
                 avg += time.ElapsedMilliseconds / count;
