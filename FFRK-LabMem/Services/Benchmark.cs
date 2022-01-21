@@ -21,6 +21,7 @@ namespace FFRK_LabMem.Services
             var hasTimings = ColorConsole.DebugCategories.HasFlag(ColorConsole.DebugCategory.Timings);
             if (hasTimings) ColorConsole.DebugCategories &= ~ColorConsole.DebugCategory.Timings;
             ColorConsole.WriteLine("Benchmarking frame capture, press any key to stop");
+            ColorConsole.WriteLine("Make sure the screen has motion!");
             Stopwatch time = new Stopwatch();
             while (!Console.KeyAvailable)
             {
