@@ -151,7 +151,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(async (t) => await OpenSealedDoor())
-                .Permit(Trigger.FoundDoor, State.FoundThing)
+                .PermitReentry(Trigger.FoundDoor)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
@@ -165,6 +165,7 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(async (t) => await StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
                 .Permit(Trigger.StartBattle, State.Battle)
+                .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
@@ -279,7 +280,8 @@ namespace FFRK_LabMem.Machines
             {
                 State.Ready,
                 State.BattleInfo,
-                State.EquipParty
+                State.EquipParty,
+                State.BattleFinished
             };
 
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");

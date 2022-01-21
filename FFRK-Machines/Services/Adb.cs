@@ -680,7 +680,7 @@ namespace FFRK_LabMem.Services
         
         public async Task<Image> GetFrame(CancellationToken cancellationToken)
         {
-            Image ret = null;
+            Image ret;
             var frameBufferStopwatch = new Stopwatch();
             frameBufferStopwatch.Start();
             if (Capture == CaptureType.Minicap)
@@ -695,7 +695,8 @@ namespace FFRK_LabMem.Services
                         this.Capture = CaptureType.ADB;
                     }
                     ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
-                } else
+                }
+                else
                 {
                     minicapTimeouts = 0;
                 }

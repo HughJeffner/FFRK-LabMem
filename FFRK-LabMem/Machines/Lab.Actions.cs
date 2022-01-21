@@ -314,11 +314,11 @@ namespace FFRK_LabMem.Machines
             bool foundButton;
             if (this.Config.OpenDoors)
             {
-                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BLUE, 4000, 70, 66, 80, 3);
+                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BLUE, 4000, 70, 66, 80, 10);
             }
             else
             {
-                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BROWN, 4000, 30, 66, 80, 3);
+                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BROWN, 4000, 30, 66, 80, 10);
             }
             if (!foundButton)
             {
