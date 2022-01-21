@@ -334,11 +334,11 @@ namespace FFRK_LabMem.Config.UI
 
             // Enemy blocklist
             labConfig.EnemyPriorityList.Clear();
-            for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
+            foreach (ListViewItem item in listViewEnemies.Items)
             {
-                LabConfiguration.EnemyPriority item = (LabConfiguration.EnemyPriority)checkedListBoxBlocklist.Items[i];
-                item.Enabled = checkedListBoxBlocklist.GetItemChecked(i);
-                labConfig.EnemyPriorityList.Add(item);
+                LabConfiguration.EnemyPriority entry = (LabConfiguration.EnemyPriority)item.Tag;
+                entry.Enabled = item.Checked;
+                labConfig.EnemyPriorityList.Add(entry);
             }
 
             // Save Lab to .json
@@ -487,12 +487,22 @@ namespace FFRK_LabMem.Config.UI
             treasuresLoaded = true;
 
             // Enemy blocklist
-            checkedListBoxBlocklist.Items.Clear();
+            listViewEnemies.Items.Clear();
             foreach (LabConfiguration.EnemyPriority entry in labConfig.EnemyPriorityList)
             {
-                checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
+                var newItem = new ListViewItem();
+                int priorityIndex = entry.PriorityAdjust + 3;
+                var priorityText = (priorityIndex <= comboBoxEnemyPriority.Items.Count) ? comboBoxEnemyPriority.Items[priorityIndex].ToString() : "???";
+                newItem.Text = "";
+                newItem.SubItems.Add(priorityText);
+                newItem.SubItems.Add(entry.Name);
+                newItem.Checked = entry.Enabled;
+                newItem.Tag = entry;
+                newItem.ImageIndex = 2;
+                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.ToolTipText = Lookups.Blocklist[entry.Name];
+                listViewEnemies.Items.Add(newItem);
             }
-            buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
+            buttonRemoveBlocklist.Enabled = listViewEnemies.Items.Count > 0;
 
         }
 
@@ -780,21 +790,29 @@ namespace FFRK_LabMem.Config.UI
 
         private void ButtonAddBlocklist_Click(object sender, EventArgs e)
         {
-            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Blocklist Entry");
+            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Enemy Entry");
             if (!String.IsNullOrEmpty(input))
             {
-                var newItem = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true };
-                checkedListBoxBlocklist.Items.Add(newItem, true);
+                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true };
+                var newItem = new ListViewItem();
+                newItem.Text = "";
+                newItem.SubItems.Add(entry.PriorityAdjust.ToString());
+                newItem.SubItems.Add(entry.Name);
+                newItem.Checked = entry.Enabled;
+                newItem.Tag = entry;
+                newItem.ImageIndex = 2;
+                listViewEnemies.Items.Add(newItem);
                 buttonRemoveBlocklist.Enabled = true;
             }
         }
 
         private void ButtonRemoveBlocklist_Click(object sender, EventArgs e)
         {
+            if (listViewEnemies.SelectedItems[0] == null) return;
             var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
-                checkedListBoxBlocklist.Items.Remove(checkedListBoxBlocklist.SelectedItem);
+                listViewEnemies.Items.Remove(listViewEnemies.SelectedItems[0]);
             }
         }
 
@@ -802,37 +820,6 @@ namespace FFRK_LabMem.Config.UI
         {
             ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
             LoadConfigs();
-        }
-
-        // Class variable to keep track of which row is currently selected:
-        int hoveredIndex = -1;
-        private void checkedListBoxBlocklist_MouseMove(object sender, MouseEventArgs e)
-        {
-            // See which row is currently under the mouse:
-            int newHoveredIndex = checkedListBoxBlocklist.IndexFromPoint(e.Location);
-
-            // If the row has changed since last moving the mouse:
-            if (hoveredIndex != newHoveredIndex)
-            {
-                // Change the variable for the next time we move the mouse:
-                hoveredIndex = newHoveredIndex;
-
-                // If over a row showing data (rather than blank space):
-                if (hoveredIndex > -1)
-                {
-                    //Set tooltip text for the row now under the mouse:
-                    toolTip1.Active = false;
-                    var name = ((LabConfiguration.EnemyPriority)checkedListBoxBlocklist.Items[hoveredIndex]).Name;
-                    if (Lookups.Blocklist.ContainsKey(name))
-                    {
-                        toolTip1.SetToolTip(checkedListBoxBlocklist, Lookups.Blocklist[name]);
-                    } else
-                    {
-                        toolTip1.SetToolTip(checkedListBoxBlocklist, "User-defined");
-                    }
-                    toolTip1.Active = true;
-                }
-            }
         }
 
         private void buttonScheduleAdd_Click(object sender, EventArgs e)
@@ -1090,6 +1077,36 @@ namespace FFRK_LabMem.Config.UI
         private void TrackBarTapDelay_ValueChanged(object sender, EventArgs e)
         {
             labelTapDelay.Text = $"{trackBarTapDelay.Value * 10}ms";
+        }
+
+        private void ComboBoxEnemyPriority_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listViewEnemies.SelectedItems.Count == 0) return;
+            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
+            listViewEnemies.SelectedItems[0].SubItems[1].Text = comboBoxEnemyPriority.Text;
+            entry.PriorityAdjust = comboBoxEnemyPriority.SelectedIndex - 3;
+            comboBoxEnemyPriority.Visible = false;
+        }
+
+        private void ComboBoxEnemyPriority_Leave(object sender, EventArgs e)
+        {
+            comboBoxEnemyPriority.Visible = false;
+        }
+
+        private void listViewEnemies_MouseUp(object sender, MouseEventArgs e)
+        {
+            var lvItem = this.listViewEnemies.GetItemAt(e.X, e.Y);
+            if (lvItem == null) return;
+            var entry = (LabConfiguration.EnemyPriority)lvItem.Tag;
+            comboBoxEnemyPriority.SelectedIndex = entry.PriorityAdjust + 3;
+            comboBoxEnemyPriority.Size = listViewEnemies.SelectedItems[0].SubItems[1].Bounds.Size;
+            comboBoxEnemyPriority.Bounds = listViewEnemies.SelectedItems[0].SubItems[1].Bounds;
+            comboBoxEnemyPriority.Left += listViewEnemies.Left;
+            comboBoxEnemyPriority.Top += listViewEnemies.Top;
+            comboBoxEnemyPriority.Visible = true;
+            comboBoxEnemyPriority.BringToFront();
+            comboBoxEnemyPriority.Focus();
+
         }
     }
 }
