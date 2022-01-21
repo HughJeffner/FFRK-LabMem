@@ -122,7 +122,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.BattleFailed, State.Failed)
                 .Permit(Trigger.FoundBoss, State.WaitForBoss)
                 .Permit(Trigger.FinishedLab, State.Completed)
-                .Permit(Trigger.EnteredOutpost, State.Outpost);
+                .IgnoreIf(Trigger.EnteredOutpost, () => this.Data == null)
+                .PermitIf(Trigger.EnteredOutpost, State.Outpost, () => this.Data != null);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
