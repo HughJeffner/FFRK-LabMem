@@ -109,7 +109,13 @@ namespace FFRK_LabMem.Machines
                 new EnemyBlocklistEntry(){Name="Lani & Scarlet Hair", Enabled=false},
                 new EnemyBlocklistEntry(){Name="Lunasaurs", Enabled=false},
                 new EnemyBlocklistEntry(){Name="Octomammoth", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Marilith", Enabled=false}
+                new EnemyBlocklistEntry(){Name="Marilith", Enabled=false},
+                new EnemyBlocklistEntry(){Name="Behemoth", Enabled=false, PriorityAdjust=-1},
+                new EnemyBlocklistEntry(){Name="Nidhogg", Enabled=false, PriorityAdjust=-1},
+                new EnemyBlocklistEntry(){Name="Odin", Enabled=false, PriorityAdjust=-1},
+                new EnemyBlocklistEntry(){Name="Faeryl", Enabled=false, PriorityAdjust=-1},
+                new EnemyBlocklistEntry(){Name="Ultima Weapon", Enabled=false, PriorityAdjust=-1},
+                new EnemyBlocklistEntry(){Name="Deathclaws", Enabled=false, PriorityAdjust=-1},
             };
 
         }
@@ -124,6 +130,7 @@ namespace FFRK_LabMem.Machines
         {
             public string Name { get; set; }
             public bool Enabled { get; set; } = false;
+            public int PriorityAdjust { get; set; } = 1;
             public override string ToString()
             {
                 return Name;
