@@ -16,6 +16,7 @@ namespace FFRK_LabMem.Machines
         {
             public int HangMinutes { get; set; }
             public int HangWarningRatio { get; set; } = 2;
+            public bool HangScreenshot { get; set; } = false;
             public int BattleMinutes { get; set; }
             public int CrashSeconds { get; set; }
             public int MaxRetries { get; set; }
