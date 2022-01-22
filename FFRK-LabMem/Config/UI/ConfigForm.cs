@@ -796,10 +796,10 @@ namespace FFRK_LabMem.Config.UI
             var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Enemy Entry");
             if (!String.IsNullOrEmpty(input))
             {
-                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true };
+                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true, PriorityAdjust = 0 };
                 var newItem = new ListViewItem();
                 newItem.Text = "";
-                newItem.SubItems.Add(entry.PriorityAdjust.ToString());
+                newItem.SubItems.Add(comboBoxEnemyPriority.Items[3].ToString());
                 newItem.SubItems.Add(entry.Name);
                 newItem.Checked = entry.Enabled;
                 newItem.Tag = entry;
