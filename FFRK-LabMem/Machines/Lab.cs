@@ -291,8 +291,12 @@ namespace FFRK_LabMem.Machines
             if (backStates.Contains(StateMachine.State))
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
-                await Adb.NavigateBack(this.CancellationToken);
-                await Task.Delay(5000);
+                for (int i = 0; i < 3; i++)
+                {
+                    await Adb.NavigateBack(this.CancellationToken);
+                    await Task.Delay(500);
+                }
+                await Task.Delay(2000);
             }
 
             if (autoStartStates.Contains(StateMachine.State))

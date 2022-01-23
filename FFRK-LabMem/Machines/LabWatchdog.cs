@@ -55,6 +55,7 @@ namespace FFRK_LabMem.Machines
         {
             this.Lab = lab;
             watchdogHangTimer.AutoReset = false;
+            watchdogHangWarningTimer.AutoReset = false;
             watchdogBattleTimer.AutoReset = false;
             watchdogCrashTimer.AutoReset = true;
             Update(config);
