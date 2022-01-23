@@ -275,14 +275,14 @@ namespace FFRK_LabMem.Machines
                 State.PortalConfirm,
                 State.EquipParty,
                 State.BattleInfo,
+                State.BattleFinished
             };
 
             List<State> backStates = new List<State>
             {
                 State.Ready,
                 State.BattleInfo,
-                State.EquipParty,
-                State.BattleFinished
+                State.EquipParty
             };
 
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
