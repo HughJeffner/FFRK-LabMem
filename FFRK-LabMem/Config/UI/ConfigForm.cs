@@ -116,13 +116,13 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
-            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
+            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 2);
+            numericUpDownWatchdogHangWarning.Value = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
             numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
             numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 5);
-            checkBoxWatchdogAutostart.Checked = configHelper.GetInt("lab.watchdogHangWarningRatio", 2) == 2;
             checkBoxWatchdogScreenshot.Checked = configHelper.GetBool("lab.watchdogHangScreenshot", false);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
@@ -255,12 +255,12 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogHangWarningSeconds", (int)numericUpDownWatchdogHangWarning.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionWindowMinutes", (int)numericUpDownRestartLoopWindow.Value);
             configHelper.SetValue("lab.watchdogMaxRetries", (int)numericUpDownRestartMaxRetries.Value);
-            configHelper.SetValue("lab.watchdogHangWarningRatio", (checkBoxWatchdogAutostart.Checked) ? 2 : 1);
             configHelper.SetValue("lab.watchdogHangScreenshot", checkBoxWatchdogScreenshot.Checked);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
@@ -386,7 +386,7 @@ namespace FFRK_LabMem.Config.UI
             {
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
                 HangMinutes = (int)numericUpDownWatchdogHang.Value,
-                HangWarningRatio = (checkBoxWatchdogAutostart.Checked) ? 2 : 1,
+                HangWarningSeconds = (int)numericUpDownWatchdogHangWarning.Value,
                 HangScreenshot = checkBoxWatchdogScreenshot.Checked,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
@@ -1112,9 +1112,14 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private void CheckBoxWatchdogAutostart_CheckedChanged(object sender, EventArgs e)
+        private void NumericUpDownWatchdogHangWarning_ValueChanged(object sender, EventArgs e)
         {
-            checkBoxWatchdogScreenshot.Enabled = checkBoxWatchdogAutostart.Checked;
+            checkBoxWatchdogScreenshot.Enabled = numericUpDownWatchdogHangWarning.Value > 0;
+        }
+
+        private void NumericUpDownWatchdogHang_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 45;
         }
     }
 }

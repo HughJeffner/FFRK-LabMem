@@ -79,8 +79,8 @@ namespace FFRK_LabMem.Machines
         {
             var watchdogConfig = new LabWatchdog.Configuration()
             {
-                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3),
-                HangWarningRatio = configHelper.GetInt("lab.watchdogHangWarningRatio", 2),
+                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 2),
+                HangWarningSeconds = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60),
                 HangScreenshot = configHelper.GetBool("lab.watchdogHangScreenshot", false),
                 BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
                 CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
