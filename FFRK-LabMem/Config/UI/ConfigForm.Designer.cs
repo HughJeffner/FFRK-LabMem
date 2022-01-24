@@ -349,7 +349,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLogging.Location = new System.Drawing.Point(0, 78);
             this.checkBoxLogging.Name = "checkBoxLogging";
             this.checkBoxLogging.Size = new System.Drawing.Size(192, 19);
-            this.checkBoxLogging.TabIndex = 23;
+            this.checkBoxLogging.TabIndex = 4;
             this.checkBoxLogging.Text = "Enable console output logging";
             this.toolTip1.SetToolTip(this.checkBoxLogging, "Logs all program output to timestamped files in the Logs directory");
             this.checkBoxLogging.UseVisualStyleBackColor = true;
@@ -362,7 +362,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonDebug.Location = new System.Drawing.Point(149, 131);
             this.buttonDebug.Name = "buttonDebug";
             this.buttonDebug.Size = new System.Drawing.Size(233, 26);
-            this.buttonDebug.TabIndex = 22;
+            this.buttonDebug.TabIndex = 7;
             this.buttonDebug.Text = "Adb,Proxy";
             this.buttonDebug.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.buttonDebug.UseVisualStyleBackColor = false;
@@ -373,7 +373,7 @@ namespace FFRK_LabMem.Config.UI
             this.label12.Location = new System.Drawing.Point(-3, 132);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(143, 23);
-            this.label12.TabIndex = 21;
+            this.label12.TabIndex = 6;
             this.label12.Text = "Show debug info:";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -382,7 +382,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonCheckForUpdates.Location = new System.Drawing.Point(236, 22);
             this.buttonCheckForUpdates.Name = "buttonCheckForUpdates";
             this.buttonCheckForUpdates.Size = new System.Drawing.Size(87, 27);
-            this.buttonCheckForUpdates.TabIndex = 9;
+            this.buttonCheckForUpdates.TabIndex = 2;
             this.buttonCheckForUpdates.Text = "Check Now";
             this.buttonCheckForUpdates.UseVisualStyleBackColor = true;
             this.buttonCheckForUpdates.Click += new System.EventHandler(this.ButtonCheckForUpdates_Click);
@@ -402,7 +402,7 @@ namespace FFRK_LabMem.Config.UI
             -2147483648});
             this.numericUpDownScreenBottom.Name = "numericUpDownScreenBottom";
             this.numericUpDownScreenBottom.Size = new System.Drawing.Size(110, 21);
-            this.numericUpDownScreenBottom.TabIndex = 8;
+            this.numericUpDownScreenBottom.TabIndex = 11;
             this.toolTip1.SetToolTip(this.numericUpDownScreenBottom, "Number of pixels of the gray bar at the bottom of FFRK\r\n0 for none, -1 to prompt " +
         "auto-detect");
             this.numericUpDownScreenBottom.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
@@ -412,7 +412,7 @@ namespace FFRK_LabMem.Config.UI
             this.label2.Location = new System.Drawing.Point(-3, 192);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(146, 23);
-            this.label2.TabIndex = 7;
+            this.label2.TabIndex = 10;
             this.label2.Text = "Screen bottom offset:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -431,7 +431,7 @@ namespace FFRK_LabMem.Config.UI
             -2147483648});
             this.numericUpDownScreenTop.Name = "numericUpDownScreenTop";
             this.numericUpDownScreenTop.Size = new System.Drawing.Size(110, 21);
-            this.numericUpDownScreenTop.TabIndex = 6;
+            this.numericUpDownScreenTop.TabIndex = 9;
             this.toolTip1.SetToolTip(this.numericUpDownScreenTop, "Number of pixels of the gray bar at the top of FFRK\r\n0 for none, -1 to prompt aut" +
         "o-detect");
             this.numericUpDownScreenTop.ValueChanged += new System.EventHandler(this.NeedsRestart_Changed);
@@ -441,7 +441,7 @@ namespace FFRK_LabMem.Config.UI
             this.label1.Location = new System.Drawing.Point(-3, 163);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(146, 23);
-            this.label1.TabIndex = 5;
+            this.label1.TabIndex = 8;
             this.label1.Text = "Screen top offset:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -451,7 +451,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxDatalog.Location = new System.Drawing.Point(0, 103);
             this.checkBoxDatalog.Name = "checkBoxDatalog";
             this.checkBoxDatalog.Size = new System.Drawing.Size(136, 19);
-            this.checkBoxDatalog.TabIndex = 4;
+            this.checkBoxDatalog.TabIndex = 5;
             this.checkBoxDatalog.Text = "Enable data logging";
             this.toolTip1.SetToolTip(this.checkBoxDatalog, "Logs battle drops, found items, painting rates and other data in the DataLog dire" +
         "ctory");
@@ -475,7 +475,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxUpdates.Location = new System.Drawing.Point(0, 27);
             this.checkBoxUpdates.Name = "checkBoxUpdates";
             this.checkBoxUpdates.Size = new System.Drawing.Size(208, 19);
-            this.checkBoxUpdates.TabIndex = 2;
+            this.checkBoxUpdates.TabIndex = 1;
             this.checkBoxUpdates.Text = "Check for new versions on startup";
             this.toolTip1.SetToolTip(this.checkBoxUpdates, "Checks the github repository for new releases");
             this.checkBoxUpdates.UseVisualStyleBackColor = true;
@@ -525,7 +525,7 @@ namespace FFRK_LabMem.Config.UI
             this.label34.Location = new System.Drawing.Point(0, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(146, 23);
-            this.label34.TabIndex = 55;
+            this.label34.TabIndex = 0;
             this.label34.Text = "Attempt recovery when:";
             this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -535,7 +535,7 @@ namespace FFRK_LabMem.Config.UI
             this.label35.Location = new System.Drawing.Point(215, 4);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(176, 15);
-            this.label35.TabIndex = 54;
+            this.label35.TabIndex = 2;
             this.label35.Text = "seconds(s) pass with no activity";
             // 
             // numericUpDownWatchdogHangWarning
@@ -548,7 +548,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownWatchdogHangWarning.Name = "numericUpDownWatchdogHangWarning";
             this.numericUpDownWatchdogHangWarning.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownWatchdogHangWarning.TabIndex = 53;
+            this.numericUpDownWatchdogHangWarning.TabIndex = 1;
             this.toolTip1.SetToolTip(this.numericUpDownWatchdogHangWarning, "If an action doesn\'t complete in this number seconds, a soft recovery is performe" +
         "d.\r\nSet to \'0\' to disable");
             this.numericUpDownWatchdogHangWarning.ValueChanged += new System.EventHandler(this.NumericUpDownWatchdogHangWarning_ValueChanged);
@@ -560,7 +560,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxWatchdogScreenshot.Location = new System.Drawing.Point(3, 31);
             this.checkBoxWatchdogScreenshot.Name = "checkBoxWatchdogScreenshot";
             this.checkBoxWatchdogScreenshot.Size = new System.Drawing.Size(215, 19);
-            this.checkBoxWatchdogScreenshot.TabIndex = 52;
+            this.checkBoxWatchdogScreenshot.TabIndex = 3;
             this.checkBoxWatchdogScreenshot.Text = "Take a screenshot prior to recovery";
             this.toolTip1.SetToolTip(this.checkBoxWatchdogScreenshot, "Screenshot is placed in the bot directory");
             this.checkBoxWatchdogScreenshot.UseVisualStyleBackColor = true;
@@ -570,7 +570,7 @@ namespace FFRK_LabMem.Config.UI
             this.label29.Location = new System.Drawing.Point(214, 218);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(209, 23);
-            this.label29.TabIndex = 50;
+            this.label29.TabIndex = 18;
             this.label29.Text = "consecutive restart attempts";
             this.label29.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -584,7 +584,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownRestartMaxRetries.Name = "numericUpDownRestartMaxRetries";
             this.numericUpDownRestartMaxRetries.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownRestartMaxRetries.TabIndex = 49;
+            this.numericUpDownRestartMaxRetries.TabIndex = 17;
             this.toolTip1.SetToolTip(this.numericUpDownRestartMaxRetries, "Restart loop detection, number of consecutive restart attempts that will disable " +
         "the bot\r\n");
             // 
@@ -593,7 +593,7 @@ namespace FFRK_LabMem.Config.UI
             this.label28.Location = new System.Drawing.Point(112, 218);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(35, 23);
-            this.label28.TabIndex = 48;
+            this.label28.TabIndex = 16;
             this.label28.Text = "or";
             this.label28.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -602,7 +602,7 @@ namespace FFRK_LabMem.Config.UI
             this.label27.Location = new System.Drawing.Point(215, 190);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(79, 23);
-            this.label27.TabIndex = 47;
+            this.label27.TabIndex = 15;
             this.label27.Text = "minutes";
             this.label27.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -616,7 +616,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownRestartLoopWindow.Name = "numericUpDownRestartLoopWindow";
             this.numericUpDownRestartLoopWindow.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownRestartLoopWindow.TabIndex = 46;
+            this.numericUpDownRestartLoopWindow.TabIndex = 14;
             this.toolTip1.SetToolTip(this.numericUpDownRestartLoopWindow, "Restart loop detection, the size of the window in minutes\r\n");
             // 
             // label26
@@ -624,7 +624,7 @@ namespace FFRK_LabMem.Config.UI
             this.label26.Location = new System.Drawing.Point(214, 163);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(78, 23);
-            this.label26.TabIndex = 45;
+            this.label26.TabIndex = 13;
             this.label26.Text = "time(s) in";
             this.label26.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -638,7 +638,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownRestartLoopThreshold.Name = "numericUpDownRestartLoopThreshold";
             this.numericUpDownRestartLoopThreshold.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownRestartLoopThreshold.TabIndex = 44;
+            this.numericUpDownRestartLoopThreshold.TabIndex = 12;
             this.toolTip1.SetToolTip(this.numericUpDownRestartLoopThreshold, "Restart loop detection, number of FFRK restarts\r\nSet to \'0\' to disable");
             // 
             // label25
@@ -646,40 +646,40 @@ namespace FFRK_LabMem.Config.UI
             this.label25.Location = new System.Drawing.Point(0, 163);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(146, 23);
-            this.label25.TabIndex = 43;
+            this.label25.TabIndex = 11;
             this.label25.Text = "Disable when restarting";
             this.label25.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(215, 96);
+            this.label21.Location = new System.Drawing.Point(215, 123);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(144, 15);
-            this.label21.TabIndex = 42;
+            this.label21.TabIndex = 10;
             this.label21.Text = "minute(s) pass in a battle";
             // 
             // numericUpDownWatchdogBattle
             // 
-            this.numericUpDownWatchdogBattle.Location = new System.Drawing.Point(152, 94);
+            this.numericUpDownWatchdogBattle.Location = new System.Drawing.Point(153, 121);
             this.numericUpDownWatchdogBattle.Name = "numericUpDownWatchdogBattle";
             this.numericUpDownWatchdogBattle.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownWatchdogBattle.TabIndex = 41;
+            this.numericUpDownWatchdogBattle.TabIndex = 9;
             this.toolTip1.SetToolTip(this.numericUpDownWatchdogBattle, "If a battle doesn\'t complete in this number of minutes, FFRK restart is performed" +
         ".\r\nSet to \'0\' to disable");
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(214, 123);
+            this.label10.Location = new System.Drawing.Point(215, 96);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(233, 15);
-            this.label10.TabIndex = 40;
+            this.label10.TabIndex = 8;
             this.label10.Text = "second(s) pass while FFRK not is running";
             // 
             // numericUpDownWatchdogCrash
             // 
-            this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(152, 121);
+            this.numericUpDownWatchdogCrash.Location = new System.Drawing.Point(152, 94);
             this.numericUpDownWatchdogCrash.Maximum = new decimal(new int[] {
             300,
             0,
@@ -687,7 +687,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownWatchdogCrash.Name = "numericUpDownWatchdogCrash";
             this.numericUpDownWatchdogCrash.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownWatchdogCrash.TabIndex = 39;
+            this.numericUpDownWatchdogCrash.TabIndex = 7;
             this.toolTip1.SetToolTip(this.numericUpDownWatchdogCrash, "Checks if FFRK is running and starts it if not. \r\nSet to \'0\' to disable");
             // 
             // label7
@@ -695,7 +695,7 @@ namespace FFRK_LabMem.Config.UI
             this.label7.Location = new System.Drawing.Point(0, 67);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(146, 23);
-            this.label7.TabIndex = 38;
+            this.label7.TabIndex = 4;
             this.label7.Text = "Restart FFRK when:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -705,7 +705,7 @@ namespace FFRK_LabMem.Config.UI
             this.label8.Location = new System.Drawing.Point(215, 71);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(176, 15);
-            this.label8.TabIndex = 37;
+            this.label8.TabIndex = 6;
             this.label8.Text = "seconds(s) pass with no activity";
             // 
             // numericUpDownWatchdogHang
@@ -718,8 +718,8 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownWatchdogHang.Name = "numericUpDownWatchdogHang";
             this.numericUpDownWatchdogHang.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownWatchdogHang.TabIndex = 36;
-            this.toolTip1.SetToolTip(this.numericUpDownWatchdogHang, "If an action doesn\'t complete in this number of minutes, FFRK restart is performe" +
+            this.numericUpDownWatchdogHang.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.numericUpDownWatchdogHang, "If an action doesn\'t complete in this number of seconds, FFRK restart is performe" +
         "d.\r\nSet to \'0\' to disable");
             this.numericUpDownWatchdogHang.ValueChanged += new System.EventHandler(this.NumericUpDownWatchdogHang_ValueChanged);
             // 
@@ -735,10 +735,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage2.Controls.Add(this.numericUpDownProxyPort);
             this.tabPage2.Controls.Add(this.label3);
             this.tabPage2.Controls.Add(this.buttonProxyBlocklist);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(504, 468);
+            this.tabPage2.Size = new System.Drawing.Size(504, 466);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Proxy";
             // 
@@ -748,7 +748,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxProxyConnectionPool.Location = new System.Drawing.Point(3, 122);
             this.checkBoxProxyConnectionPool.Name = "checkBoxProxyConnectionPool";
             this.checkBoxProxyConnectionPool.Size = new System.Drawing.Size(155, 19);
-            this.checkBoxProxyConnectionPool.TabIndex = 8;
+            this.checkBoxProxyConnectionPool.TabIndex = 7;
             this.checkBoxProxyConnectionPool.Text = "Use connection pooling";
             this.toolTip1.SetToolTip(this.checkBoxProxyConnectionPool, "May improve performance by reusing existing connections.  \r\nDisable if you experi" +
         "ence frequent connection issues");
@@ -761,7 +761,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxProxyAutoConfig.Location = new System.Drawing.Point(3, 96);
             this.checkBoxProxyAutoConfig.Name = "checkBoxProxyAutoConfig";
             this.checkBoxProxyAutoConfig.Size = new System.Drawing.Size(303, 19);
-            this.checkBoxProxyAutoConfig.TabIndex = 7;
+            this.checkBoxProxyAutoConfig.TabIndex = 6;
             this.checkBoxProxyAutoConfig.Text = "Auto-configure device system proxy settings via Adb";
             this.toolTip1.SetToolTip(this.checkBoxProxyAutoConfig, "Attempts to automatically configure proxy settings on the device. \r\nThis does not" +
         " show in the wifi settings UI!  Use the button below to revert.");
@@ -776,7 +776,7 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox1.Location = new System.Drawing.Point(0, 183);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(300, 202);
-            this.groupBox1.TabIndex = 6;
+            this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Actions";
             // 
@@ -785,7 +785,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonProxyReset.Location = new System.Drawing.Point(7, 55);
             this.buttonProxyReset.Name = "buttonProxyReset";
             this.buttonProxyReset.Size = new System.Drawing.Size(267, 27);
-            this.buttonProxyReset.TabIndex = 2;
+            this.buttonProxyReset.TabIndex = 1;
             this.buttonProxyReset.Text = "Reset System Proxy";
             this.buttonProxyReset.UseVisualStyleBackColor = true;
             this.buttonProxyReset.Click += new System.EventHandler(this.ButtonProxyReset_Click);
@@ -805,7 +805,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonProxyRegenCert.Location = new System.Drawing.Point(7, 88);
             this.buttonProxyRegenCert.Name = "buttonProxyRegenCert";
             this.buttonProxyRegenCert.Size = new System.Drawing.Size(267, 27);
-            this.buttonProxyRegenCert.TabIndex = 1;
+            this.buttonProxyRegenCert.TabIndex = 2;
             this.buttonProxyRegenCert.Text = "Regenerate Certificate";
             this.buttonProxyRegenCert.UseVisualStyleBackColor = true;
             this.buttonProxyRegenCert.Click += new System.EventHandler(this.ButtonProxyRegenCert_Click);
@@ -900,9 +900,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage3.Controls.Add(this.label6);
             this.tabPage3.Controls.Add(this.textBoxAdbPath);
             this.tabPage3.Controls.Add(this.label5);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(504, 468);
+            this.tabPage3.Size = new System.Drawing.Size(504, 466);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Adb";
             // 
@@ -911,7 +911,7 @@ namespace FFRK_LabMem.Config.UI
             this.labelTapDelay.Location = new System.Drawing.Point(433, 184);
             this.labelTapDelay.Name = "labelTapDelay";
             this.labelTapDelay.Size = new System.Drawing.Size(68, 23);
-            this.labelTapDelay.TabIndex = 14;
+            this.labelTapDelay.TabIndex = 12;
             this.labelTapDelay.Text = "100ms";
             this.labelTapDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -922,7 +922,7 @@ namespace FFRK_LabMem.Config.UI
             this.trackBarTapDelay.Maximum = 100;
             this.trackBarTapDelay.Name = "trackBarTapDelay";
             this.trackBarTapDelay.Size = new System.Drawing.Size(280, 45);
-            this.trackBarTapDelay.TabIndex = 13;
+            this.trackBarTapDelay.TabIndex = 11;
             this.trackBarTapDelay.TickFrequency = 10;
             this.toolTip1.SetToolTip(this.trackBarTapDelay, "The delay before tapping a screen element");
             this.trackBarTapDelay.Value = 10;
@@ -933,7 +933,7 @@ namespace FFRK_LabMem.Config.UI
             this.label32.Location = new System.Drawing.Point(-1, 184);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(146, 23);
-            this.label32.TabIndex = 12;
+            this.label32.TabIndex = 10;
             this.label32.Text = "Tap Delay:";
             this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -942,7 +942,7 @@ namespace FFRK_LabMem.Config.UI
             this.labelCaptureRate.Location = new System.Drawing.Point(433, 133);
             this.labelCaptureRate.Name = "labelCaptureRate";
             this.labelCaptureRate.Size = new System.Drawing.Size(68, 23);
-            this.labelCaptureRate.TabIndex = 11;
+            this.labelCaptureRate.TabIndex = 9;
             this.labelCaptureRate.Text = "500ms";
             this.labelCaptureRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -953,7 +953,7 @@ namespace FFRK_LabMem.Config.UI
             this.trackBarCaptureRate.Maximum = 100;
             this.trackBarCaptureRate.Name = "trackBarCaptureRate";
             this.trackBarCaptureRate.Size = new System.Drawing.Size(280, 45);
-            this.trackBarCaptureRate.TabIndex = 10;
+            this.trackBarCaptureRate.TabIndex = 8;
             this.trackBarCaptureRate.TickFrequency = 10;
             this.toolTip1.SetToolTip(this.trackBarCaptureRate, "The delay between finding screen elements.  Smaller values increase the resposive" +
         "ness at the cost of CPU");
@@ -965,7 +965,7 @@ namespace FFRK_LabMem.Config.UI
             this.label31.Location = new System.Drawing.Point(-1, 133);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(146, 23);
-            this.label31.TabIndex = 9;
+            this.label31.TabIndex = 7;
             this.label31.Text = "Capture Rate:";
             this.label31.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -979,7 +979,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxCapture.Location = new System.Drawing.Point(153, 99);
             this.comboBoxCapture.Name = "comboBoxCapture";
             this.comboBoxCapture.Size = new System.Drawing.Size(280, 23);
-            this.comboBoxCapture.TabIndex = 8;
+            this.comboBoxCapture.TabIndex = 6;
             this.toolTip1.SetToolTip(this.comboBoxCapture, "Selects the method of getting the device screen");
             this.comboBoxCapture.SelectedIndexChanged += new System.EventHandler(this.NeedsRestart_Changed);
             // 
@@ -988,7 +988,7 @@ namespace FFRK_LabMem.Config.UI
             this.label30.Location = new System.Drawing.Point(0, 100);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(146, 23);
-            this.label30.TabIndex = 7;
+            this.label30.TabIndex = 5;
             this.label30.Text = "Frame Capture Method:";
             this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -998,7 +998,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxAdbClose.Location = new System.Drawing.Point(3, 70);
             this.checkBoxAdbClose.Name = "checkBoxAdbClose";
             this.checkBoxAdbClose.Size = new System.Drawing.Size(120, 19);
-            this.checkBoxAdbClose.TabIndex = 6;
+            this.checkBoxAdbClose.TabIndex = 4;
             this.checkBoxAdbClose.Text = "Close Adb on exit";
             this.checkBoxAdbClose.UseVisualStyleBackColor = true;
             // 
@@ -1056,9 +1056,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage4.Controls.Add(this.buttonLabConfigurations);
             this.tabPage4.Controls.Add(this.tabControl1);
             this.tabPage4.Controls.Add(this.comboBoxLab);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(504, 468);
+            this.tabPage4.Size = new System.Drawing.Size(504, 466);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Lab";
             // 
@@ -1068,7 +1068,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonLabConfigurations.Location = new System.Drawing.Point(471, -1);
             this.buttonLabConfigurations.Name = "buttonLabConfigurations";
             this.buttonLabConfigurations.Size = new System.Drawing.Size(33, 25);
-            this.buttonLabConfigurations.TabIndex = 2;
+            this.buttonLabConfigurations.TabIndex = 1;
             this.buttonLabConfigurations.Text = "...";
             this.buttonLabConfigurations.UseVisualStyleBackColor = true;
             this.buttonLabConfigurations.Click += new System.EventHandler(this.ButtonLabConfigurations_Click);
@@ -1087,8 +1087,8 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl1.Location = new System.Drawing.Point(3, 35);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(500, 414);
-            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Size = new System.Drawing.Size(500, 412);
+            this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
             // tabPage5
@@ -1104,7 +1104,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(492, 386);
+            this.tabPage5.Size = new System.Drawing.Size(492, 384);
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1121,7 +1121,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxLabMission.Location = new System.Drawing.Point(253, 85);
             this.comboBoxLabMission.Name = "comboBoxLabMission";
             this.comboBoxLabMission.Size = new System.Drawing.Size(203, 23);
-            this.comboBoxLabMission.TabIndex = 17;
+            this.comboBoxLabMission.TabIndex = 4;
             this.toolTip1.SetToolTip(this.comboBoxLabMission, "This will be performed once a day to complete the daily mission");
             // 
             // labelLabMission
@@ -1131,7 +1131,7 @@ namespace FFRK_LabMem.Config.UI
             this.labelLabMission.Location = new System.Drawing.Point(21, 88);
             this.labelLabMission.Name = "labelLabMission";
             this.labelLabMission.Size = new System.Drawing.Size(225, 15);
-            this.labelLabMission.TabIndex = 16;
+            this.labelLabMission.TabIndex = 3;
             this.labelLabMission.Text = "Automatically complete daily mission by:";
             // 
             // checkBoxLabAutoStart
@@ -1140,7 +1140,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAutoStart.Location = new System.Drawing.Point(7, 168);
             this.checkBoxLabAutoStart.Name = "checkBoxLabAutoStart";
             this.checkBoxLabAutoStart.Size = new System.Drawing.Size(158, 19);
-            this.checkBoxLabAutoStart.TabIndex = 15;
+            this.checkBoxLabAutoStart.TabIndex = 7;
             this.checkBoxLabAutoStart.Text = "Auto-start when enabled";
             this.toolTip1.SetToolTip(this.checkBoxLabAutoStart, "Attempts to automaticaly get things going");
             this.checkBoxLabAutoStart.UseVisualStyleBackColor = true;
@@ -1151,7 +1151,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabUseTeleport.Location = new System.Drawing.Point(7, 59);
             this.checkBoxLabUseTeleport.Name = "checkBoxLabUseTeleport";
             this.checkBoxLabUseTeleport.Size = new System.Drawing.Size(307, 19);
-            this.checkBoxLabUseTeleport.TabIndex = 3;
+            this.checkBoxLabUseTeleport.TabIndex = 2;
             this.checkBoxLabUseTeleport.Text = "Use teleport stone when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabUseTeleport, "Escapes the dungeon without fighting the master painting");
             this.checkBoxLabUseTeleport.UseVisualStyleBackColor = true;
@@ -1163,7 +1163,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabUsePotions.Location = new System.Drawing.Point(21, 142);
             this.checkBoxLabUsePotions.Name = "checkBoxLabUsePotions";
             this.checkBoxLabUsePotions.Size = new System.Drawing.Size(138, 19);
-            this.checkBoxLabUsePotions.TabIndex = 5;
+            this.checkBoxLabUsePotions.TabIndex = 6;
             this.checkBoxLabUsePotions.Text = "Use stamina potions";
             this.checkBoxLabUsePotions.UseVisualStyleBackColor = true;
             // 
@@ -1173,7 +1173,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabRestart.Location = new System.Drawing.Point(7, 116);
             this.checkBoxLabRestart.Name = "checkBoxLabRestart";
             this.checkBoxLabRestart.Size = new System.Drawing.Size(179, 19);
-            this.checkBoxLabRestart.TabIndex = 4;
+            this.checkBoxLabRestart.TabIndex = 5;
             this.checkBoxLabRestart.Text = "Restart lab when completed";
             this.toolTip1.SetToolTip(this.checkBoxLabRestart, "Restarts the lab run once completed, use for degenerate 24/7 farming");
             this.checkBoxLabRestart.UseVisualStyleBackColor = true;
@@ -1185,7 +1185,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabStopOnMasterPainting.Location = new System.Drawing.Point(7, 33);
             this.checkBoxLabStopOnMasterPainting.Name = "checkBoxLabStopOnMasterPainting";
             this.checkBoxLabStopOnMasterPainting.Size = new System.Drawing.Size(233, 19);
-            this.checkBoxLabStopOnMasterPainting.TabIndex = 2;
+            this.checkBoxLabStopOnMasterPainting.TabIndex = 1;
             this.checkBoxLabStopOnMasterPainting.Text = "Stop when Master Painting is reached";
             this.toolTip1.SetToolTip(this.checkBoxLabStopOnMasterPainting, "Disables the bot when the Master painting is reached");
             this.checkBoxLabStopOnMasterPainting.UseVisualStyleBackColor = true;
@@ -1197,7 +1197,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabRestartFailedBattle.Location = new System.Drawing.Point(7, 7);
             this.checkBoxLabRestartFailedBattle.Name = "checkBoxLabRestartFailedBattle";
             this.checkBoxLabRestartFailedBattle.Size = new System.Drawing.Size(188, 19);
-            this.checkBoxLabRestartFailedBattle.TabIndex = 1;
+            this.checkBoxLabRestartFailedBattle.TabIndex = 0;
             this.checkBoxLabRestartFailedBattle.Text = "Restart battles when defeated";
             this.toolTip1.SetToolTip(this.checkBoxLabRestartFailedBattle, "Restarts the battle if you are defeated.  \r\nIf not set then plays a tone and wait" +
         "s for your input.");
@@ -1216,9 +1216,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage15.Controls.Add(this.label22);
             this.tabPage15.Controls.Add(this.numericUpDownFatigue);
             this.tabPage15.Controls.Add(this.checkBoxLabUseLetheTears);
-            this.tabPage15.Location = new System.Drawing.Point(4, 22);
+            this.tabPage15.Location = new System.Drawing.Point(4, 24);
             this.tabPage15.Name = "tabPage15";
-            this.tabPage15.Size = new System.Drawing.Size(492, 388);
+            this.tabPage15.Size = new System.Drawing.Size(492, 384);
             this.tabPage15.TabIndex = 6;
             this.tabPage15.Text = "Party";
             this.tabPage15.UseVisualStyleBackColor = true;
@@ -1235,7 +1235,7 @@ namespace FFRK_LabMem.Config.UI
             this.flowLayoutPanelTeam3.Location = new System.Drawing.Point(92, 120);
             this.flowLayoutPanelTeam3.Name = "flowLayoutPanelTeam3";
             this.flowLayoutPanelTeam3.Size = new System.Drawing.Size(195, 25);
-            this.flowLayoutPanelTeam3.TabIndex = 47;
+            this.flowLayoutPanelTeam3.TabIndex = 9;
             // 
             // checkBoxSlot11
             // 
@@ -1243,7 +1243,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot11.Location = new System.Drawing.Point(3, 3);
             this.checkBoxSlot11.Name = "checkBoxSlot11";
             this.checkBoxSlot11.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot11.TabIndex = 5;
+            this.checkBoxSlot11.TabIndex = 0;
             this.checkBoxSlot11.Text = "1";
             this.toolTip1.SetToolTip(this.checkBoxSlot11, "Party slot 1");
             this.checkBoxSlot11.UseVisualStyleBackColor = true;
@@ -1254,7 +1254,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot12.Location = new System.Drawing.Point(42, 3);
             this.checkBoxSlot12.Name = "checkBoxSlot12";
             this.checkBoxSlot12.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot12.TabIndex = 6;
+            this.checkBoxSlot12.TabIndex = 1;
             this.checkBoxSlot12.Text = "2";
             this.toolTip1.SetToolTip(this.checkBoxSlot12, "Party slot 2");
             this.checkBoxSlot12.UseVisualStyleBackColor = true;
@@ -1265,7 +1265,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot13.Location = new System.Drawing.Point(81, 3);
             this.checkBoxSlot13.Name = "checkBoxSlot13";
             this.checkBoxSlot13.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot13.TabIndex = 7;
+            this.checkBoxSlot13.TabIndex = 2;
             this.checkBoxSlot13.Text = "3";
             this.toolTip1.SetToolTip(this.checkBoxSlot13, "Party slot 3");
             this.checkBoxSlot13.UseVisualStyleBackColor = true;
@@ -1276,7 +1276,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot14.Location = new System.Drawing.Point(120, 3);
             this.checkBoxSlot14.Name = "checkBoxSlot14";
             this.checkBoxSlot14.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot14.TabIndex = 8;
+            this.checkBoxSlot14.TabIndex = 3;
             this.checkBoxSlot14.Text = "4";
             this.toolTip1.SetToolTip(this.checkBoxSlot14, "Party slot 4");
             this.checkBoxSlot14.UseVisualStyleBackColor = true;
@@ -1287,7 +1287,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot15.Location = new System.Drawing.Point(159, 3);
             this.checkBoxSlot15.Name = "checkBoxSlot15";
             this.checkBoxSlot15.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot15.TabIndex = 9;
+            this.checkBoxSlot15.TabIndex = 4;
             this.checkBoxSlot15.Text = "5";
             this.toolTip1.SetToolTip(this.checkBoxSlot15, "Party slot 5");
             this.checkBoxSlot15.UseVisualStyleBackColor = true;
@@ -1297,7 +1297,7 @@ namespace FFRK_LabMem.Config.UI
             this.label23.Location = new System.Drawing.Point(26, 120);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(60, 22);
-            this.label23.TabIndex = 46;
+            this.label23.TabIndex = 8;
             this.label23.Text = "Party 3:";
             this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1313,7 +1313,7 @@ namespace FFRK_LabMem.Config.UI
             this.flowLayoutPanelTeam1.Location = new System.Drawing.Point(92, 64);
             this.flowLayoutPanelTeam1.Name = "flowLayoutPanelTeam1";
             this.flowLayoutPanelTeam1.Size = new System.Drawing.Size(195, 25);
-            this.flowLayoutPanelTeam1.TabIndex = 43;
+            this.flowLayoutPanelTeam1.TabIndex = 5;
             // 
             // checkBoxSlot1
             // 
@@ -1321,7 +1321,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot1.Location = new System.Drawing.Point(3, 3);
             this.checkBoxSlot1.Name = "checkBoxSlot1";
             this.checkBoxSlot1.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot1.TabIndex = 5;
+            this.checkBoxSlot1.TabIndex = 1;
             this.checkBoxSlot1.Text = "1";
             this.toolTip1.SetToolTip(this.checkBoxSlot1, "Party slot 1");
             this.checkBoxSlot1.UseVisualStyleBackColor = true;
@@ -1332,7 +1332,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot2.Location = new System.Drawing.Point(42, 3);
             this.checkBoxSlot2.Name = "checkBoxSlot2";
             this.checkBoxSlot2.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot2.TabIndex = 6;
+            this.checkBoxSlot2.TabIndex = 2;
             this.checkBoxSlot2.Text = "2";
             this.toolTip1.SetToolTip(this.checkBoxSlot2, "Party slot 2");
             this.checkBoxSlot2.UseVisualStyleBackColor = true;
@@ -1343,7 +1343,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot3.Location = new System.Drawing.Point(81, 3);
             this.checkBoxSlot3.Name = "checkBoxSlot3";
             this.checkBoxSlot3.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot3.TabIndex = 7;
+            this.checkBoxSlot3.TabIndex = 3;
             this.checkBoxSlot3.Text = "3";
             this.toolTip1.SetToolTip(this.checkBoxSlot3, "Party slot 3");
             this.checkBoxSlot3.UseVisualStyleBackColor = true;
@@ -1354,7 +1354,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot4.Location = new System.Drawing.Point(120, 3);
             this.checkBoxSlot4.Name = "checkBoxSlot4";
             this.checkBoxSlot4.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot4.TabIndex = 8;
+            this.checkBoxSlot4.TabIndex = 4;
             this.checkBoxSlot4.Text = "4";
             this.toolTip1.SetToolTip(this.checkBoxSlot4, "Party slot 4");
             this.checkBoxSlot4.UseVisualStyleBackColor = true;
@@ -1365,7 +1365,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot5.Location = new System.Drawing.Point(159, 3);
             this.checkBoxSlot5.Name = "checkBoxSlot5";
             this.checkBoxSlot5.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot5.TabIndex = 9;
+            this.checkBoxSlot5.TabIndex = 0;
             this.checkBoxSlot5.Text = "5";
             this.toolTip1.SetToolTip(this.checkBoxSlot5, "Party slot 5");
             this.checkBoxSlot5.UseVisualStyleBackColor = true;
@@ -1375,7 +1375,7 @@ namespace FFRK_LabMem.Config.UI
             this.label20.Location = new System.Drawing.Point(26, 64);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(60, 22);
-            this.label20.TabIndex = 42;
+            this.label20.TabIndex = 4;
             this.label20.Text = "Party 1:";
             this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1394,7 +1394,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxLabParty.Location = new System.Drawing.Point(80, 7);
             this.comboBoxLabParty.Name = "comboBoxLabParty";
             this.comboBoxLabParty.Size = new System.Drawing.Size(280, 23);
-            this.comboBoxLabParty.TabIndex = 41;
+            this.comboBoxLabParty.TabIndex = 1;
             this.toolTip1.SetToolTip(this.comboBoxLabParty, "Party selection options\r\n");
             this.comboBoxLabParty.SelectedIndexChanged += new System.EventHandler(this.CheckBoxLabUseLetheTears_CheckedChanged);
             // 
@@ -1403,7 +1403,7 @@ namespace FFRK_LabMem.Config.UI
             this.label11.Location = new System.Drawing.Point(7, 6);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(67, 23);
-            this.label11.TabIndex = 40;
+            this.label11.TabIndex = 0;
             this.label11.Text = "Use Party:";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1413,7 +1413,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLetheTearsMasterOnly.Location = new System.Drawing.Point(95, 150);
             this.checkBoxLetheTearsMasterOnly.Name = "checkBoxLetheTearsMasterOnly";
             this.checkBoxLetheTearsMasterOnly.Size = new System.Drawing.Size(176, 19);
-            this.checkBoxLetheTearsMasterOnly.TabIndex = 39;
+            this.checkBoxLetheTearsMasterOnly.TabIndex = 10;
             this.checkBoxLetheTearsMasterOnly.Text = "Only on the Master Painting";
             this.toolTip1.SetToolTip(this.checkBoxLetheTearsMasterOnly, "When checked, only uses tears on the Master Painting fight");
             this.checkBoxLetheTearsMasterOnly.UseVisualStyleBackColor = true;
@@ -1430,7 +1430,7 @@ namespace FFRK_LabMem.Config.UI
             this.flowLayoutPanelTeam2.Location = new System.Drawing.Point(92, 92);
             this.flowLayoutPanelTeam2.Name = "flowLayoutPanelTeam2";
             this.flowLayoutPanelTeam2.Size = new System.Drawing.Size(195, 25);
-            this.flowLayoutPanelTeam2.TabIndex = 45;
+            this.flowLayoutPanelTeam2.TabIndex = 7;
             // 
             // checkBoxSlot6
             // 
@@ -1449,7 +1449,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot7.Location = new System.Drawing.Point(42, 3);
             this.checkBoxSlot7.Name = "checkBoxSlot7";
             this.checkBoxSlot7.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot7.TabIndex = 6;
+            this.checkBoxSlot7.TabIndex = 0;
             this.checkBoxSlot7.Text = "2";
             this.toolTip1.SetToolTip(this.checkBoxSlot7, "Party slot 2");
             this.checkBoxSlot7.UseVisualStyleBackColor = true;
@@ -1460,7 +1460,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot8.Location = new System.Drawing.Point(81, 3);
             this.checkBoxSlot8.Name = "checkBoxSlot8";
             this.checkBoxSlot8.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot8.TabIndex = 7;
+            this.checkBoxSlot8.TabIndex = 1;
             this.checkBoxSlot8.Text = "3";
             this.toolTip1.SetToolTip(this.checkBoxSlot8, "Party slot 3");
             this.checkBoxSlot8.UseVisualStyleBackColor = true;
@@ -1471,7 +1471,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot9.Location = new System.Drawing.Point(120, 3);
             this.checkBoxSlot9.Name = "checkBoxSlot9";
             this.checkBoxSlot9.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot9.TabIndex = 8;
+            this.checkBoxSlot9.TabIndex = 2;
             this.checkBoxSlot9.Text = "4";
             this.toolTip1.SetToolTip(this.checkBoxSlot9, "Party slot 4");
             this.checkBoxSlot9.UseVisualStyleBackColor = true;
@@ -1482,7 +1482,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSlot10.Location = new System.Drawing.Point(159, 3);
             this.checkBoxSlot10.Name = "checkBoxSlot10";
             this.checkBoxSlot10.Size = new System.Drawing.Size(33, 19);
-            this.checkBoxSlot10.TabIndex = 9;
+            this.checkBoxSlot10.TabIndex = 3;
             this.checkBoxSlot10.Text = "5";
             this.toolTip1.SetToolTip(this.checkBoxSlot10, "Party slot 5");
             this.checkBoxSlot10.UseVisualStyleBackColor = true;
@@ -1492,7 +1492,7 @@ namespace FFRK_LabMem.Config.UI
             this.label22.Location = new System.Drawing.Point(26, 92);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(60, 22);
-            this.label22.TabIndex = 44;
+            this.label22.TabIndex = 6;
             this.label22.Text = "Party 2:";
             this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1511,7 +1511,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownFatigue.Name = "numericUpDownFatigue";
             this.numericUpDownFatigue.Size = new System.Drawing.Size(56, 21);
-            this.numericUpDownFatigue.TabIndex = 38;
+            this.numericUpDownFatigue.TabIndex = 3;
             this.toolTip1.SetToolTip(this.numericUpDownFatigue, "Fatigue that must be reached before Lethe Tears are used");
             this.numericUpDownFatigue.Value = new decimal(new int[] {
             7,
@@ -1525,7 +1525,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabUseLetheTears.Location = new System.Drawing.Point(7, 37);
             this.checkBoxLabUseLetheTears.Name = "checkBoxLabUseLetheTears";
             this.checkBoxLabUseLetheTears.Size = new System.Drawing.Size(236, 19);
-            this.checkBoxLabUseLetheTears.TabIndex = 37;
+            this.checkBoxLabUseLetheTears.TabIndex = 2;
             this.checkBoxLabUseLetheTears.Text = "Use Lethe Tears when fatigue reaches";
             this.checkBoxLabUseLetheTears.UseVisualStyleBackColor = true;
             this.checkBoxLabUseLetheTears.CheckedChanged += new System.EventHandler(this.CheckBoxLabUseLetheTears_CheckedChanged);
@@ -1543,9 +1543,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage8.Controls.Add(this.checkBoxLabAvoidPortal);
             this.tabPage8.Controls.Add(this.checkBoxLabAvoidExplore);
             this.tabPage8.Controls.Add(this.checkBoxLabDoors);
-            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Location = new System.Drawing.Point(4, 24);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(492, 388);
+            this.tabPage8.Size = new System.Drawing.Size(492, 384);
             this.tabPage8.TabIndex = 3;
             this.tabPage8.Text = "Options";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -1556,7 +1556,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidMasterMore.Location = new System.Drawing.Point(27, 238);
             this.checkBoxLabAvoidMasterMore.Name = "checkBoxLabAvoidMasterMore";
             this.checkBoxLabAvoidMasterMore.Size = new System.Drawing.Size(213, 19);
-            this.checkBoxLabAvoidMasterMore.TabIndex = 43;
+            this.checkBoxLabAvoidMasterMore.TabIndex = 9;
             this.checkBoxLabAvoidMasterMore.Text = "There are more paintings to reveal";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidMasterMore, "Overrides the painting priority and avoids the Master painting if there are more " +
         "paintings to reveal\r\n");
@@ -1568,7 +1568,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidMasterExplore.Location = new System.Drawing.Point(27, 213);
             this.checkBoxLabAvoidMasterExplore.Name = "checkBoxLabAvoidMasterExplore";
             this.checkBoxLabAvoidMasterExplore.Size = new System.Drawing.Size(230, 19);
-            this.checkBoxLabAvoidMasterExplore.TabIndex = 42;
+            this.checkBoxLabAvoidMasterExplore.TabIndex = 8;
             this.checkBoxLabAvoidMasterExplore.Text = "An explore painting is visible behind it";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidMasterExplore, "Overrides the painting priority and avoids Master paintings if an explore paintin" +
         "g is visible in the background");
@@ -1579,7 +1579,7 @@ namespace FFRK_LabMem.Config.UI
             this.label33.Location = new System.Drawing.Point(6, 163);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(351, 22);
-            this.label33.TabIndex = 41;
+            this.label33.TabIndex = 6;
             this.label33.Text = "Avoid the Master Painting if:";
             this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1589,7 +1589,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidMaster.Location = new System.Drawing.Point(27, 188);
             this.checkBoxLabAvoidMaster.Name = "checkBoxLabAvoidMaster";
             this.checkBoxLabAvoidMaster.Size = new System.Drawing.Size(208, 19);
-            this.checkBoxLabAvoidMaster.TabIndex = 40;
+            this.checkBoxLabAvoidMaster.TabIndex = 7;
             this.checkBoxLabAvoidMaster.Text = "A treasure vault is visible behind it";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidMaster, "Overrides the painting priority and avoids Master paintings if a treasure vault i" +
         "s visible in the background");
@@ -1601,7 +1601,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidPortalMore.Location = new System.Drawing.Point(27, 130);
             this.checkBoxLabAvoidPortalMore.Name = "checkBoxLabAvoidPortalMore";
             this.checkBoxLabAvoidPortalMore.Size = new System.Drawing.Size(213, 19);
-            this.checkBoxLabAvoidPortalMore.TabIndex = 39;
+            this.checkBoxLabAvoidPortalMore.TabIndex = 5;
             this.checkBoxLabAvoidPortalMore.Text = "There are more paintings to reveal";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortalMore, "Overrides the painting priority and avoids Portal if there are more paintings to " +
         "reveal\r\n");
@@ -1613,7 +1613,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidPortalExplore.Location = new System.Drawing.Point(27, 105);
             this.checkBoxLabAvoidPortalExplore.Name = "checkBoxLabAvoidPortalExplore";
             this.checkBoxLabAvoidPortalExplore.Size = new System.Drawing.Size(230, 19);
-            this.checkBoxLabAvoidPortalExplore.TabIndex = 38;
+            this.checkBoxLabAvoidPortalExplore.TabIndex = 4;
             this.checkBoxLabAvoidPortalExplore.Text = "An explore painting is visible behind it";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortalExplore, "Overrides the painting priority and avoids Portal paintings if an explore paintin" +
         "g is visible in the background");
@@ -1624,7 +1624,7 @@ namespace FFRK_LabMem.Config.UI
             this.label24.Location = new System.Drawing.Point(6, 55);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(351, 22);
-            this.label24.TabIndex = 37;
+            this.label24.TabIndex = 2;
             this.label24.Text = "Avoid a Portal if:";
             this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1634,7 +1634,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabScreenshotRadiant.Location = new System.Drawing.Point(7, 340);
             this.checkBoxLabScreenshotRadiant.Name = "checkBoxLabScreenshotRadiant";
             this.checkBoxLabScreenshotRadiant.Size = new System.Drawing.Size(293, 19);
-            this.checkBoxLabScreenshotRadiant.TabIndex = 15;
+            this.checkBoxLabScreenshotRadiant.TabIndex = 10;
             this.checkBoxLabScreenshotRadiant.Text = "Take screenshot when a radiant painting is found";
             this.toolTip1.SetToolTip(this.checkBoxLabScreenshotRadiant, "Saves a PNG file to the bot\'s current directory");
             this.checkBoxLabScreenshotRadiant.UseVisualStyleBackColor = true;
@@ -1645,7 +1645,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(27, 80);
             this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
             this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(208, 19);
-            this.checkBoxLabAvoidPortal.TabIndex = 2;
+            this.checkBoxLabAvoidPortal.TabIndex = 3;
             this.checkBoxLabAvoidPortal.Text = "A treasure vault is visible behind it";
             this.toolTip1.SetToolTip(this.checkBoxLabAvoidPortal, "Overrides the painting priority and avoids Portal paintings if a treasure vault i" +
         "s visible in the background");
@@ -1679,10 +1679,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage6.Controls.Add(this.buttonPaintingMoveUp);
             this.tabPage6.Controls.Add(this.buttonPaintingMoveDown);
             this.tabPage6.Controls.Add(this.listViewPaintings);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Location = new System.Drawing.Point(4, 24);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(492, 388);
+            this.tabPage6.Size = new System.Drawing.Size(492, 384);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Paintings";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1693,7 +1693,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSwap.AutoSize = true;
             this.checkBoxSwap.Checked = true;
             this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(374, 353);
+            this.checkBoxSwap.Location = new System.Drawing.Point(374, 349);
             this.checkBoxSwap.Name = "checkBoxSwap";
             this.checkBoxSwap.Size = new System.Drawing.Size(109, 19);
             this.checkBoxSwap.TabIndex = 3;
@@ -1703,7 +1703,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveUp
             // 
             this.buttonPaintingMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 345);
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 341);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveUp.TabIndex = 1;
@@ -1714,7 +1714,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveDown
             // 
             this.buttonPaintingMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 345);
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 341);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveDown.TabIndex = 2;
@@ -1735,7 +1735,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(7, 7);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(476, 328);
+            this.listViewPaintings.Size = new System.Drawing.Size(476, 324);
             this.listViewPaintings.SmallImageList = this.imageList2;
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
@@ -1765,9 +1765,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage7.Controls.Add(this.buttonTreasureUp);
             this.tabPage7.Controls.Add(this.buttonTreasureDown);
             this.tabPage7.Controls.Add(this.listViewTreasures);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Location = new System.Drawing.Point(4, 24);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(492, 388);
+            this.tabPage7.Size = new System.Drawing.Size(492, 384);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Treasures";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -1776,7 +1776,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(201, 351);
+            this.label9.Location = new System.Drawing.Point(201, 347);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 15);
             this.label9.TabIndex = 3;
@@ -1791,7 +1791,7 @@ namespace FFRK_LabMem.Config.UI
             "0",
             "1",
             "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(342, 347);
+            this.comboBoxKeys.Location = new System.Drawing.Point(342, 343);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(140, 23);
             this.comboBoxKeys.TabIndex = 4;
@@ -1800,7 +1800,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureUp
             // 
             this.buttonTreasureUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 345);
+            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 341);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureUp.TabIndex = 1;
@@ -1811,7 +1811,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureDown
             // 
             this.buttonTreasureDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 345);
+            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 341);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureDown.TabIndex = 2;
@@ -1835,7 +1835,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(7, 7);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(476, 328);
+            this.listViewTreasures.Size = new System.Drawing.Size(476, 324);
             this.listViewTreasures.SmallImageList = this.imageList2;
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
@@ -1869,10 +1869,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage10.Controls.Add(this.checkBoxLabBlockListOverride);
             this.tabPage10.Controls.Add(this.buttonRemoveBlocklist);
             this.tabPage10.Controls.Add(this.buttonAddBlocklist);
-            this.tabPage10.Location = new System.Drawing.Point(4, 22);
+            this.tabPage10.Location = new System.Drawing.Point(4, 24);
             this.tabPage10.Name = "tabPage10";
             this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(492, 388);
+            this.tabPage10.Size = new System.Drawing.Size(492, 384);
             this.tabPage10.TabIndex = 5;
             this.tabPage10.Text = "Enemies";
             this.tabPage10.UseVisualStyleBackColor = true;
@@ -1891,10 +1891,10 @@ namespace FFRK_LabMem.Config.UI
             "Avoid",
             "Avoid +2",
             "Avoid +3"});
-            this.comboBoxEnemyPriority.Location = new System.Drawing.Point(194, 345);
+            this.comboBoxEnemyPriority.Location = new System.Drawing.Point(194, 341);
             this.comboBoxEnemyPriority.Name = "comboBoxEnemyPriority";
             this.comboBoxEnemyPriority.Size = new System.Drawing.Size(140, 23);
-            this.comboBoxEnemyPriority.TabIndex = 6;
+            this.comboBoxEnemyPriority.TabIndex = 3;
             this.comboBoxEnemyPriority.Visible = false;
             this.comboBoxEnemyPriority.SelectedIndexChanged += new System.EventHandler(this.ComboBoxEnemyPriority_SelectedIndexChanged);
             this.comboBoxEnemyPriority.Leave += new System.EventHandler(this.ComboBoxEnemyPriority_Leave);
@@ -1914,9 +1914,9 @@ namespace FFRK_LabMem.Config.UI
             this.listViewEnemies.HideSelection = false;
             this.listViewEnemies.Location = new System.Drawing.Point(7, 7);
             this.listViewEnemies.Name = "listViewEnemies";
-            this.listViewEnemies.Size = new System.Drawing.Size(476, 328);
+            this.listViewEnemies.Size = new System.Drawing.Size(476, 324);
             this.listViewEnemies.SmallImageList = this.imageList2;
-            this.listViewEnemies.TabIndex = 5;
+            this.listViewEnemies.TabIndex = 0;
             this.listViewEnemies.UseCompatibleStateImageBehavior = false;
             this.listViewEnemies.View = System.Windows.Forms.View.Details;
             this.listViewEnemies.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ListViewEnemies_MouseUp);
@@ -1940,7 +1940,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.checkBoxLabBlockListOverride.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 347);
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 343);
             this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
             this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(147, 19);
             this.checkBoxLabBlockListOverride.TabIndex = 4;
@@ -1953,10 +1953,10 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonRemoveBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonRemoveBlocklist.Enabled = false;
-            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 345);
+            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 341);
             this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
             this.buttonRemoveBlocklist.Size = new System.Drawing.Size(87, 27);
-            this.buttonRemoveBlocklist.TabIndex = 3;
+            this.buttonRemoveBlocklist.TabIndex = 2;
             this.buttonRemoveBlocklist.Text = "Remove";
             this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
             this.buttonRemoveBlocklist.Click += new System.EventHandler(this.ButtonRemoveBlocklist_Click);
@@ -1964,10 +1964,10 @@ namespace FFRK_LabMem.Config.UI
             // buttonAddBlocklist
             // 
             this.buttonAddBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 345);
+            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 341);
             this.buttonAddBlocklist.Name = "buttonAddBlocklist";
             this.buttonAddBlocklist.Size = new System.Drawing.Size(87, 27);
-            this.buttonAddBlocklist.TabIndex = 2;
+            this.buttonAddBlocklist.TabIndex = 1;
             this.buttonAddBlocklist.Text = "Add";
             this.buttonAddBlocklist.UseVisualStyleBackColor = true;
             this.buttonAddBlocklist.Click += new System.EventHandler(this.ButtonAddBlocklist_Click);
@@ -1989,9 +1989,9 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.tabPage13.Controls.Add(this.buttonTimingDefaults);
             this.tabPage13.Controls.Add(this.dataGridView1);
-            this.tabPage13.Location = new System.Drawing.Point(4, 22);
+            this.tabPage13.Location = new System.Drawing.Point(4, 24);
             this.tabPage13.Name = "tabPage13";
-            this.tabPage13.Size = new System.Drawing.Size(504, 468);
+            this.tabPage13.Size = new System.Drawing.Size(504, 466);
             this.tabPage13.TabIndex = 6;
             this.tabPage13.Text = "Timings";
             this.tabPage13.UseVisualStyleBackColor = true;
@@ -1999,10 +1999,10 @@ namespace FFRK_LabMem.Config.UI
             // buttonTimingDefaults
             // 
             this.buttonTimingDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 418);
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 416);
             this.buttonTimingDefaults.Name = "buttonTimingDefaults";
             this.buttonTimingDefaults.Size = new System.Drawing.Size(140, 27);
-            this.buttonTimingDefaults.TabIndex = 3;
+            this.buttonTimingDefaults.TabIndex = 1;
             this.buttonTimingDefaults.Text = "Reset Defaults";
             this.buttonTimingDefaults.UseVisualStyleBackColor = true;
             this.buttonTimingDefaults.Click += new System.EventHandler(this.ButtonTimingDefaults_Click);
@@ -2022,8 +2022,8 @@ namespace FFRK_LabMem.Config.UI
             this.Jitter});
             this.dataGridView1.Location = new System.Drawing.Point(3, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(495, 410);
-            this.dataGridView1.TabIndex = 2;
+            this.dataGridView1.Size = new System.Drawing.Size(495, 408);
+            this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
             // 
@@ -2051,9 +2051,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage11.Controls.Add(this.buttonScheduleAdd);
             this.tabPage11.Controls.Add(this.buttonScheduleDelete);
             this.tabPage11.Controls.Add(this.listViewSchedule);
-            this.tabPage11.Location = new System.Drawing.Point(4, 22);
+            this.tabPage11.Location = new System.Drawing.Point(4, 24);
             this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Size = new System.Drawing.Size(504, 468);
+            this.tabPage11.Size = new System.Drawing.Size(504, 466);
             this.tabPage11.TabIndex = 4;
             this.tabPage11.Text = "Schedule";
             // 
@@ -2061,10 +2061,10 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(306, 426);
+            this.linkLabel1.Location = new System.Drawing.Point(306, 424);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(175, 15);
-            this.linkLabel1.TabIndex = 5;
+            this.linkLabel1.TabIndex = 3;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Click here for more information";
             this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -2074,10 +2074,10 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleAdd
             // 
             this.buttonScheduleAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 420);
+            this.buttonScheduleAdd.Location = new System.Drawing.Point(0, 418);
             this.buttonScheduleAdd.Name = "buttonScheduleAdd";
             this.buttonScheduleAdd.Size = new System.Drawing.Size(87, 27);
-            this.buttonScheduleAdd.TabIndex = 3;
+            this.buttonScheduleAdd.TabIndex = 1;
             this.buttonScheduleAdd.Text = "Add";
             this.buttonScheduleAdd.UseVisualStyleBackColor = true;
             this.buttonScheduleAdd.Click += new System.EventHandler(this.buttonScheduleAdd_Click);
@@ -2085,10 +2085,10 @@ namespace FFRK_LabMem.Config.UI
             // buttonScheduleDelete
             // 
             this.buttonScheduleDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 420);
+            this.buttonScheduleDelete.Location = new System.Drawing.Point(94, 418);
             this.buttonScheduleDelete.Name = "buttonScheduleDelete";
             this.buttonScheduleDelete.Size = new System.Drawing.Size(87, 27);
-            this.buttonScheduleDelete.TabIndex = 4;
+            this.buttonScheduleDelete.TabIndex = 2;
             this.buttonScheduleDelete.Text = "Delete";
             this.buttonScheduleDelete.UseVisualStyleBackColor = true;
             this.buttonScheduleDelete.Click += new System.EventHandler(this.buttonScheduleDelete_Click);
@@ -2107,8 +2107,8 @@ namespace FFRK_LabMem.Config.UI
             this.listViewSchedule.HideSelection = false;
             this.listViewSchedule.Location = new System.Drawing.Point(3, 0);
             this.listViewSchedule.Name = "listViewSchedule";
-            this.listViewSchedule.Size = new System.Drawing.Size(495, 412);
-            this.listViewSchedule.TabIndex = 1;
+            this.listViewSchedule.Size = new System.Drawing.Size(495, 410);
+            this.listViewSchedule.TabIndex = 0;
             this.listViewSchedule.UseCompatibleStateImageBehavior = false;
             this.listViewSchedule.View = System.Windows.Forms.View.Details;
             this.listViewSchedule.DoubleClick += new System.EventHandler(this.listViewSchedule_DoubleClick);
@@ -2136,10 +2136,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage12.Controls.Add(this.buttonShowCounters);
             this.tabPage12.Controls.Add(this.checkedListBoxDropCategories);
             this.tabPage12.Controls.Add(this.checkBoxCountersLogDropsTotal);
-            this.tabPage12.Location = new System.Drawing.Point(4, 22);
+            this.tabPage12.Location = new System.Drawing.Point(4, 24);
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage12.Size = new System.Drawing.Size(504, 468);
+            this.tabPage12.Size = new System.Drawing.Size(504, 466);
             this.tabPage12.TabIndex = 5;
             this.tabPage12.Text = "Counters";
             // 
@@ -2153,7 +2153,7 @@ namespace FFRK_LabMem.Config.UI
             0});
             this.numericUpDownCountersRarity.Name = "numericUpDownCountersRarity";
             this.numericUpDownCountersRarity.Size = new System.Drawing.Size(52, 21);
-            this.numericUpDownCountersRarity.TabIndex = 6;
+            this.numericUpDownCountersRarity.TabIndex = 2;
             this.numericUpDownCountersRarity.Value = new decimal(new int[] {
             6,
             0,
@@ -2166,13 +2166,13 @@ namespace FFRK_LabMem.Config.UI
             this.label19.Location = new System.Drawing.Point(3, 31);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(279, 15);
-            this.label19.TabIndex = 5;
+            this.label19.TabIndex = 1;
             this.label19.Text = "Don\'t count drops for materials with rarity under: ★";
             // 
             // buttonShowCounters
             // 
             this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonShowCounters.Location = new System.Drawing.Point(6, 418);
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 416);
             this.buttonShowCounters.Name = "buttonShowCounters";
             this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
             this.buttonShowCounters.TabIndex = 4;
@@ -2190,8 +2190,8 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxDropCategories.IntegralHeight = false;
             this.checkedListBoxDropCategories.Location = new System.Drawing.Point(3, 61);
             this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
-            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 349);
-            this.checkedListBoxDropCategories.TabIndex = 0;
+            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 347);
+            this.checkedListBoxDropCategories.TabIndex = 3;
             // 
             // checkBoxCountersLogDropsTotal
             // 
@@ -2199,7 +2199,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxCountersLogDropsTotal.Location = new System.Drawing.Point(6, 0);
             this.checkBoxCountersLogDropsTotal.Name = "checkBoxCountersLogDropsTotal";
             this.checkBoxCountersLogDropsTotal.Size = new System.Drawing.Size(340, 19);
-            this.checkBoxCountersLogDropsTotal.TabIndex = 1;
+            this.checkBoxCountersLogDropsTotal.TabIndex = 0;
             this.checkBoxCountersLogDropsTotal.Text = "Log drops to All-Time counters (may grow large over time)";
             this.checkBoxCountersLogDropsTotal.UseVisualStyleBackColor = true;
             // 
@@ -2214,10 +2214,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage9.Controls.Add(this.checkBoxNotificationSound);
             this.tabPage9.Controls.Add(this.buttonNotificationTest);
             this.tabPage9.Controls.Add(this.comboBoxNotificationEvents);
-            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Location = new System.Drawing.Point(4, 24);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(504, 468);
+            this.tabPage9.Size = new System.Drawing.Size(504, 466);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Notifications";
             this.tabPage9.UseVisualStyleBackColor = true;
@@ -2243,7 +2243,7 @@ namespace FFRK_LabMem.Config.UI
             this.panelSMTP.Location = new System.Drawing.Point(22, 174);
             this.panelSMTP.Name = "panelSMTP";
             this.panelSMTP.Size = new System.Drawing.Size(476, 145);
-            this.panelSMTP.TabIndex = 11;
+            this.panelSMTP.TabIndex = 8;
             // 
             // label17
             // 
@@ -2251,7 +2251,7 @@ namespace FFRK_LabMem.Config.UI
             this.label17.Location = new System.Drawing.Point(4, 114);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(24, 15);
-            this.label17.TabIndex = 12;
+            this.label17.TabIndex = 11;
             this.label17.Text = "To:";
             // 
             // textBoxSMTPTo
@@ -2261,7 +2261,7 @@ namespace FFRK_LabMem.Config.UI
             this.textBoxSMTPTo.Location = new System.Drawing.Point(112, 111);
             this.textBoxSMTPTo.Name = "textBoxSMTPTo";
             this.textBoxSMTPTo.Size = new System.Drawing.Size(202, 21);
-            this.textBoxSMTPTo.TabIndex = 11;
+            this.textBoxSMTPTo.TabIndex = 12;
             // 
             // textBoxSMTPFrom
             // 
@@ -2288,7 +2288,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSMTPSSL.Location = new System.Drawing.Point(396, 32);
             this.checkBoxSMTPSSL.Name = "checkBoxSMTPSSL";
             this.checkBoxSMTPSSL.Size = new System.Drawing.Size(74, 19);
-            this.checkBoxSMTPSSL.TabIndex = 8;
+            this.checkBoxSMTPSSL.TabIndex = 6;
             this.checkBoxSMTPSSL.Text = "SSL/TLS";
             this.checkBoxSMTPSSL.UseVisualStyleBackColor = true;
             // 
@@ -2309,7 +2309,7 @@ namespace FFRK_LabMem.Config.UI
             this.textBoxSMTPPassword.Name = "textBoxSMTPPassword";
             this.textBoxSMTPPassword.PasswordChar = '*';
             this.textBoxSMTPPassword.Size = new System.Drawing.Size(202, 21);
-            this.textBoxSMTPPassword.TabIndex = 6;
+            this.textBoxSMTPPassword.TabIndex = 8;
             // 
             // textBoxSMTPUser
             // 
@@ -2383,7 +2383,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxNotifcationEmail.Location = new System.Drawing.Point(3, 148);
             this.checkBoxNotifcationEmail.Name = "checkBoxNotifcationEmail";
             this.checkBoxNotifcationEmail.Size = new System.Drawing.Size(106, 19);
-            this.checkBoxNotifcationEmail.TabIndex = 10;
+            this.checkBoxNotifcationEmail.TabIndex = 7;
             this.checkBoxNotifcationEmail.Text = "Send an email";
             this.checkBoxNotifcationEmail.UseVisualStyleBackColor = true;
             this.checkBoxNotifcationEmail.CheckedChanged += new System.EventHandler(this.CheckBoxNotifcationEmail_CheckedChanged);
@@ -2394,7 +2394,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxNotificationFlashTaskbar.Location = new System.Drawing.Point(3, 123);
             this.checkBoxNotificationFlashTaskbar.Name = "checkBoxNotificationFlashTaskbar";
             this.checkBoxNotificationFlashTaskbar.Size = new System.Drawing.Size(119, 19);
-            this.checkBoxNotificationFlashTaskbar.TabIndex = 9;
+            this.checkBoxNotificationFlashTaskbar.TabIndex = 6;
             this.checkBoxNotificationFlashTaskbar.Text = "Flash the taskbar";
             this.checkBoxNotificationFlashTaskbar.UseVisualStyleBackColor = true;
             // 
@@ -2404,7 +2404,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxNotificationConsole.Location = new System.Drawing.Point(3, 98);
             this.checkBoxNotificationConsole.Name = "checkBoxNotificationConsole";
             this.checkBoxNotificationConsole.Size = new System.Drawing.Size(132, 19);
-            this.checkBoxNotificationConsole.TabIndex = 8;
+            this.checkBoxNotificationConsole.TabIndex = 5;
             this.checkBoxNotificationConsole.Text = "Play console beeps";
             this.checkBoxNotificationConsole.UseVisualStyleBackColor = true;
             // 
@@ -2416,7 +2416,7 @@ namespace FFRK_LabMem.Config.UI
             this.textBoxNotificationSound.Location = new System.Drawing.Point(3, 65);
             this.textBoxNotificationSound.Name = "textBoxNotificationSound";
             this.textBoxNotificationSound.Size = new System.Drawing.Size(460, 21);
-            this.textBoxNotificationSound.TabIndex = 6;
+            this.textBoxNotificationSound.TabIndex = 3;
             this.toolTip1.SetToolTip(this.textBoxNotificationSound, "Specifies a text file to block connections.  \r\nThe file should contain a domain n" +
         "ame on each line of the file.");
             // 
@@ -2429,7 +2429,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonNotificationSoundBrowse.Location = new System.Drawing.Point(469, 65);
             this.buttonNotificationSoundBrowse.Name = "buttonNotificationSoundBrowse";
             this.buttonNotificationSoundBrowse.Size = new System.Drawing.Size(29, 21);
-            this.buttonNotificationSoundBrowse.TabIndex = 7;
+            this.buttonNotificationSoundBrowse.TabIndex = 4;
             this.buttonNotificationSoundBrowse.UseVisualStyleBackColor = true;
             this.buttonNotificationSoundBrowse.Click += new System.EventHandler(this.ButtonNotificationSoundBrowse_Click);
             // 
@@ -2439,7 +2439,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxNotificationSound.Location = new System.Drawing.Point(3, 40);
             this.checkBoxNotificationSound.Name = "checkBoxNotificationSound";
             this.checkBoxNotificationSound.Size = new System.Drawing.Size(131, 19);
-            this.checkBoxNotificationSound.TabIndex = 5;
+            this.checkBoxNotificationSound.TabIndex = 2;
             this.checkBoxNotificationSound.Text = "Play a sound (.wav)";
             this.checkBoxNotificationSound.UseVisualStyleBackColor = true;
             this.checkBoxNotificationSound.CheckedChanged += new System.EventHandler(this.CheckBoxNotificationSound_CheckedChanged);
@@ -2450,7 +2450,7 @@ namespace FFRK_LabMem.Config.UI
             this.buttonNotificationTest.Location = new System.Drawing.Point(439, 0);
             this.buttonNotificationTest.Name = "buttonNotificationTest";
             this.buttonNotificationTest.Size = new System.Drawing.Size(63, 25);
-            this.buttonNotificationTest.TabIndex = 4;
+            this.buttonNotificationTest.TabIndex = 1;
             this.buttonNotificationTest.Text = "Test";
             this.buttonNotificationTest.UseVisualStyleBackColor = true;
             this.buttonNotificationTest.Click += new System.EventHandler(this.ButtonNotificationTest_Click);
@@ -2465,7 +2465,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxNotificationEvents.Location = new System.Drawing.Point(3, 0);
             this.comboBoxNotificationEvents.Name = "comboBoxNotificationEvents";
             this.comboBoxNotificationEvents.Size = new System.Drawing.Size(426, 24);
-            this.comboBoxNotificationEvents.TabIndex = 3;
+            this.comboBoxNotificationEvents.TabIndex = 0;
             this.comboBoxNotificationEvents.SelectedIndexChanged += new System.EventHandler(this.ComboBoxNotificationEvents_SelectedIndexChanged);
             // 
             // listView1
