@@ -56,9 +56,9 @@ namespace FFRK_LabMem.Services
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
 
-        public int CaptureRate { get; set; } = 500;
+        public int CaptureRate { get; set; } = 200;
         public CaptureType Capture { get; set; } = CaptureType.ADB;
-        public int TapDelay { get; set; } = 100;
+        public int TapDelay { get; set; } = 30;
         public bool HasDevice
         {
             get

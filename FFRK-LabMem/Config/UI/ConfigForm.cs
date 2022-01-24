@@ -116,7 +116,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
-            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 2);
+            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangSeconds", 120);
             numericUpDownWatchdogHangWarning.Value = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
@@ -137,8 +137,8 @@ namespace FFRK_LabMem.Config.UI
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
-            trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 500) / 10;
-            trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 100) / 10;
+            trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 200) / 10;
+            trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 30) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
@@ -254,7 +254,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.tapDelay", trackBarTapDelay.Value * 10);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogHangSeconds", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogHangWarningSeconds", (int)numericUpDownWatchdogHangWarning.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
@@ -385,7 +385,7 @@ namespace FFRK_LabMem.Config.UI
             var watchdogConfig = new LabWatchdog.Configuration()
             {
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
-                HangMinutes = (int)numericUpDownWatchdogHang.Value,
+                HangSeconds = (int)numericUpDownWatchdogHang.Value,
                 HangWarningSeconds = (int)numericUpDownWatchdogHangWarning.Value,
                 HangScreenshot = checkBoxWatchdogScreenshot.Checked,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
@@ -1119,7 +1119,7 @@ namespace FFRK_LabMem.Config.UI
 
         private void NumericUpDownWatchdogHang_ValueChanged(object sender, EventArgs e)
         {
-            numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 45;
+            numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 0.75M;
         }
     }
 }

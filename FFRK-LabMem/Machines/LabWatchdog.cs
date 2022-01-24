@@ -14,7 +14,7 @@ namespace FFRK_LabMem.Machines
 
         public class Configuration
         {
-            public int HangMinutes { get; set; } = 2;
+            public int HangSeconds { get; set; } = 120;
             public int HangWarningSeconds { get; set; } = 60;
             public bool HangScreenshot { get; set; } = false;
             public int BattleMinutes { get; set; } = 15;
@@ -114,9 +114,9 @@ namespace FFRK_LabMem.Machines
         {
             this.Config = config;
             watchdogHangTimer.Elapsed -= WatchdogHangTimer_Elapsed;
-            if (config.HangMinutes > 0)
+            if (config.HangSeconds > 0)
             {
-                watchdogHangTimer.Interval = TimeSpan.FromMinutes(config.HangMinutes).TotalMilliseconds;
+                watchdogHangTimer.Interval = TimeSpan.FromSeconds(config.HangSeconds).TotalMilliseconds;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
             }
             watchdogHangWarningTimer.Elapsed -= WatchdogHangWarningTimer_Elapsed;
@@ -137,7 +137,7 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(config.CrashSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}m, battle:{1}m, crash:{2}s", config.HangMinutes, config.BattleMinutes, config.CrashSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}s, battle:{1}m, crash:{2}s", config.HangSeconds, config.BattleMinutes, config.CrashSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)

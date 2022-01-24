@@ -58,11 +58,11 @@ namespace FFRK_LabMem.Machines
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
                 capture: config.GetEnum("adb.capture", Services.Adb.CaptureType.ADB),
-                captureRate: config.GetInt("adb.captureRate", 500),
+                captureRate: config.GetInt("adb.captureRate", 200),
                 consumers: 2);
 
             // Adb options
-            ret.Adb.TapDelay = config.GetInt("adb.tapDelay", 100);
+            ret.Adb.TapDelay = config.GetInt("adb.tapDelay", 30);
 
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
@@ -79,7 +79,7 @@ namespace FFRK_LabMem.Machines
         {
             var watchdogConfig = new LabWatchdog.Configuration()
             {
-                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 2),
+                HangSeconds = configHelper.GetInt("lab.watchdogHangSeconds", 120),
                 HangWarningSeconds = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60),
                 HangScreenshot = configHelper.GetBool("lab.watchdogHangScreenshot", false),
                 BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
