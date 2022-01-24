@@ -36,7 +36,8 @@ namespace FFRK_LabMem.Machines
             FoundBoss,
             MissedButton,
             FinishedLab,
-            Restart
+            Restart,
+            EnteredOutpost
         }
 
         public enum State
@@ -55,7 +56,8 @@ namespace FFRK_LabMem.Machines
             Failed,
             WaitForBoss,
             Completed,
-            Restarting
+            Restarting,
+            Outpost
         }
 
         public int CurrentKeys { get; set; }
@@ -91,6 +93,7 @@ namespace FFRK_LabMem.Machines
             this.Adb = adb;
             this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
+            this.Watchdog.Warning += Watchdog_Warning;
             this.Watchdog.LoopDetected += Watchdog_LoopDetected;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
@@ -118,7 +121,9 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.PickedCombatant, State.BattleInfo)
                 .Permit(Trigger.BattleFailed, State.Failed)
                 .Permit(Trigger.FoundBoss, State.WaitForBoss)
-                .Permit(Trigger.FinishedLab, State.Completed);
+                .Permit(Trigger.FinishedLab, State.Completed)
+                .IgnoreIf(Trigger.EnteredOutpost, () => this.Data == null)
+                .PermitIf(Trigger.EnteredOutpost, State.Outpost, () => this.Data != null);
 
             this.StateMachine.Configure(State.Ready)
                 .OnEntryAsync(async (t) => await SelectPainting())
@@ -147,7 +152,7 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundSealedDoor)
                 .OnEntryAsync(async (t) => await OpenSealedDoor())
-                .Permit(Trigger.FoundDoor, State.FoundThing)
+                .PermitReentry(Trigger.FoundDoor)
                 .Permit(Trigger.FoundBattle, State.EquipParty)
                 .Permit(Trigger.FoundThing, State.FoundThing)
                 .Permit(Trigger.FoundTreasure, State.FoundTreasure);
@@ -161,6 +166,7 @@ namespace FFRK_LabMem.Machines
                 .OnEntryAsync(async (t) => await StartBattle())
                 .PermitReentry(Trigger.FoundBattle)
                 .Permit(Trigger.StartBattle, State.Battle)
+                .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.Battle)
@@ -202,6 +208,10 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.BattleSuccess, State.BattleFinished)
                 .PermitReentry(Trigger.BattleFailed);
+
+            this.StateMachine.Configure(State.Outpost)
+                .OnEntryAsync(async (t) => await EnterOutpost())
+                .Permit(Trigger.FinishedLab, State.Completed);
 
             base.ConfigureStateMachine();
 
@@ -254,6 +264,47 @@ namespace FFRK_LabMem.Machines
             }
 
         }
+        private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            List<State> autoStartStates = new List<State>() {
+                State.Unknown,
+                State.FoundSealedDoor,
+                State.FoundThing,
+                State.FoundTreasure,
+                State.Ready,
+                State.PortalConfirm,
+                State.EquipParty,
+                State.BattleInfo,
+                State.BattleFinished
+            };
+
+            List<State> backStates = new List<State>
+            {
+                State.Ready,
+                State.BattleInfo,
+                State.EquipParty
+            };
+
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
+            if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
+
+            if (backStates.Contains(StateMachine.State))
+            {
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
+                for (int i = 0; i < 3; i++)
+                {
+                    await Adb.NavigateBack(this.CancellationToken);
+                    await Task.Delay(500);
+                }
+                await Task.Delay(2000);
+            }
+
+            if (autoStartStates.Contains(StateMachine.State))
+            {
+                await AutoStart();
+            }
+           
+        }
         private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restart loop detected!");
@@ -294,6 +345,10 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
             Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (data, url) =>
+            {
+                await this.StateMachine.FireAsync(Trigger.EnteredOutpost);
+            });
         }
 
         public void DisableSafe()
@@ -354,7 +409,11 @@ namespace FFRK_LabMem.Machines
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
-            await RestartFFRK();
+            await Task.Run(()=>
+            {
+                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Crash });
+            });
+            
         }
 
     }

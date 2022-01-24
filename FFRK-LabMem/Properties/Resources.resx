@@ -141,6 +141,7 @@
   </data>
   <data name="HelpString" xml:space="preserve">
     <value>*************************** Interactive Commands ***************************
+[B]      Starts frame capture benchmark
 [E]      Enables lab bot (triggering auto-start if enabled)
 [D]      Disables the bot, all running operations are immediately cancelled
 [C]      Opens the configuration UI

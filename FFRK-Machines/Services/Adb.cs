@@ -25,12 +25,20 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private int cachedApiLevel = 0;
+        private Task minicapTask = null;
+        private int minicapTimeouts = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
 
+        public enum CaptureType
+        {
+            ADB = 0,
+            Minicap = 1
+        }
+
         public class Size {
-            public int Width {get; set;}
+            public int Width { get; set; }
             public int Height { get; set; }
         }
         public class ImageDef
@@ -47,6 +55,10 @@ namespace FFRK_LabMem.Services
         protected DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
+
+        public int CaptureRate { get; set; } = 200;
+        public CaptureType Capture { get; set; } = CaptureType.ADB;
+        public int TapDelay { get; set; } = 30;
         public bool HasDevice
         {
             get
@@ -129,6 +141,15 @@ namespace FFRK_LabMem.Services
         public async Task NavigateHome(CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input keyevent {0}", "KEYCODE_HOME"),
+                this.Device,
+                null,
+                cancellationToken,
+                1000);
+        }
+
+        public async Task NavigateBack(CancellationToken cancellationToken)
+        {
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input keyevent {0}", "KEYCODE_BACK"),
                 this.Device,
                 null,
                 cancellationToken,
@@ -470,6 +491,225 @@ namespace FFRK_LabMem.Services
 
         }
 
+        private async Task<Image> Minicap2(CancellationToken cancellationToken)
+        {
+            Image ret = null;
+
+            using (IAdbSocket socket = Factories.AdbSocketFactory(AdbClient.Instance.EndPoint))
+            {
+                // Send command with adb sockets
+                AdbClient.Instance.SetDevice(socket, Device);
+                var command = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -s"; ;
+                socket.SendAdbRequest($"shell:{command}");
+                var response = socket.ReadAdbResponse();
+
+                // Jpeg header
+                byte[] header = new byte[] { 0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10 };
+
+                // Read stream
+                using (MemoryStream reader = new MemoryStream())
+                {
+                    // Copy shell stream to reader
+                    await socket.GetShellStream().CopyToAsync(reader);
+                    
+                    // Get location of Jpeg header
+                    int loc = Search(reader.ToArray(), header);
+                    
+                    // Set the position of the reader
+                    reader.Position = loc;
+
+                    // Image.Fromstream resets position to 0 so need a new memory stream
+                    using (var m = new MemoryStream())
+                    {
+                        await reader.CopyToAsync(m);
+                        ret = Image.FromStream(m);
+                    }
+                    
+                }
+
+                return ret;
+            }
+        }
+
+        int Search(byte[] src, byte[] pattern)
+        {
+            int maxFirstCharSlot = src.Length - pattern.Length + 1;
+            for (int i = 0; i < maxFirstCharSlot; i++)
+            {
+                if (src[i] != pattern[0]) // compare only first byte
+                    continue;
+
+                // found a match on first byte, now try to match rest of the pattern
+                for (int j = pattern.Length - 1; j >= 1; j--)
+                {
+                    if (src[i + j] != pattern[j]) break;
+                    if (j == 1) return i;
+                }
+            }
+            return -1;
+        }
+
+        private async Task<Image> Minicap(CancellationToken cancellationToken)
+        {
+            Image ret = null;
+
+            // Execute minicap on device
+            string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -s > /data/local/tmp/screen.jpg";
+
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
+                this.Device,
+                null,
+                cancellationToken,
+                2000);
+
+            // Pull file via adb
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    service.Pull("/data/local/tmp/screen.jpg", stream, null, cancellationToken);
+                    ret = Image.FromStream(stream);
+                }
+            }
+
+            return ret;
+        }
+
+        private async Task<bool> MinicapInstall(CancellationToken cancellationToken)
+        {
+
+            // Get ABI
+            var receiver = new ConsoleOutputReceiver();
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Getting device ABI");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi | tr -d '\r'",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            var abi = receiver.ToString().TrimEnd();
+
+            // Get Api level
+            var apiLevel = await GetAPILevel(cancellationToken);
+
+            // Push binary
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (Stream stream = File.OpenRead($"./minicap/{abi}/bin/minicap"))
+                {
+                    service.Push(stream, "/data/local/tmp/minicap", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+            // Push shared library
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                using (Stream stream = File.OpenRead($"./minicap/{abi}/lib/android-{apiLevel}/minicap.so"))
+                {
+                    service.Push(stream, "/data/local/tmp/minicap.so", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
+        {
+
+            // Execute minicap on device
+            if (screenSize == null) screenSize = await GetScreenSize();
+            string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -t";
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
+            var receiver = new ConsoleOutputReceiver();
+            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            return receiver.ToString().TrimEnd().EndsWith("OK");
+
+        }
+
+        public async Task MinicapSetup(CancellationToken cancellationToken)
+        {
+            if (this.Capture == CaptureType.ADB) return;
+
+            bool installed = false;
+
+            if (await MinicapVerify(cancellationToken))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed");
+                installed = true;
+            } else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap not installed, attempting to install it now");
+                if (await MinicapInstall(cancellationToken))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
+                    if (await MinicapVerify(cancellationToken))
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed");
+                        installed = true;
+                    }
+                } 
+            }
+
+            if (!installed)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB framebuffer");
+                this.Capture = CaptureType.ADB;
+                return;
+            }
+
+            if (this.Capture == CaptureType.Minicap && !await IsPackageRunning("minicap", cancellationToken))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
+
+                // Start on background thread
+                minicapTask = Task.Run(() =>
+                {
+                    string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
+                    AdbClient.Instance.ExecuteRemoteCommand(cmd, this.Device, null);
+                });
+
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
+                AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
+
+            }
+
+
+        }
+        
+        public async Task<Image> GetFrame(CancellationToken cancellationToken)
+        {
+            Image ret;
+            var frameBufferStopwatch = new Stopwatch();
+            frameBufferStopwatch.Start();
+            if (Capture == CaptureType.Minicap)
+            {
+                ret = await Services.Minicap.CaptureFrame(2000, cancellationToken);
+                if (ret == null)
+                {
+                    minicapTimeouts += 1;
+                    if (minicapTimeouts >= 5)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
+                        this.Capture = CaptureType.ADB;
+                    }
+                    ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
+                }
+                else
+                {
+                    minicapTimeouts = 0;
+                }
+            }
+            else
+            {
+                ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
+            }
+            frameBufferStopwatch.Stop();
+            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Frame capture [{Capture}] delay: {frameBufferStopwatch.ElapsedMilliseconds}ms");
+            return ret;
+        }
+
         public async Task TapXY(int X, int Y, CancellationToken cancellationToken)
         {
             await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y), 
@@ -489,7 +729,7 @@ namespace FFRK_LabMem.Services
         {
             ImageDef ret = null;
 
-            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
+            using (var framebuffer = await GetFrame(cancellationToken))
             {
                 double ratio = (double)framebuffer.Height / (double)framebuffer.Width;
                 int width = (720 / scaleFactor);
@@ -532,12 +772,12 @@ namespace FFRK_LabMem.Services
 
         }
 
+        
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords, CancellationToken cancellationToken)
         {
 
             var ret = new List<Color>();
-
-            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
+            using (var framebuffer = await GetFrame(cancellationToken))
             {
                 using (Bitmap b = new Bitmap(framebuffer))
                 {
@@ -564,7 +804,7 @@ namespace FFRK_LabMem.Services
 
         public async Task SaveScrenshot(String fileName, CancellationToken cancellationToken)
         {
-            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, cancellationToken))
+            using (var framebuffer = await GetFrame(cancellationToken))
             {
                 framebuffer.Save(fileName, ImageFormat.Png);
             }
@@ -672,35 +912,45 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<bool> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
+        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
         {
             
             var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity);
             if (button == null)
             {
-                return false;
+                return new FindButtonResult();
             } else
             {
-                await TapPct(button.Item1, button.Item2, cancellationToken);
-                return true;
+                await Task.Delay(TapDelay);
+                await TapPct(button.button.Item1, button.button.Item2, cancellationToken);
+                button.tapped = true;
+                return button;
             }
 
         }
 
-        public async Task<Tuple<double, double>> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
+        public class FindButtonResult
         {
+            public Tuple<double, double> button = null;
+            public int retries = 0;
+            public bool tapped = false;
+        }
 
+        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int timeout, CancellationToken cancellationToken, double granularity = 0.5)
+        {
+            var time = new Stopwatch();
+            time.Start();
             int tries = 0;
             do
             {
                 var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, granularity);
                 if (b != null)
                 {
-                    return b;
+                    return new FindButtonResult() { button = b, retries = tries };
                 }
                 tries++;
-                await Task.Delay(1000, cancellationToken);
-            } while (tries < retries);
+                if (timeout > 0) await Task.Delay(CaptureRate, cancellationToken);
+            } while (time.ElapsedMilliseconds < timeout * 1000);
 
             return null;
 

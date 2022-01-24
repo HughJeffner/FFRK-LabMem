@@ -28,6 +28,9 @@ namespace FFRK_LabMem.Machines
 
             // Type as string
             var type = painting["type"].ToString();
+            var maxPriority = Config.PaintingPriorityMap.Values.Max() * 10;
+            var portalPriority = Config.PaintingPriorityMap.Where(p => p.Key.Equals("6")).FirstOrDefault().Value * 10;
+            var masterPriority = Config.PaintingPriorityMap.Where(p => p.Key.Equals("2")).FirstOrDefault().Value * 10;
 
             // Radiant painting
             if ((bool)painting["is_special_effect"])
@@ -43,7 +46,7 @@ namespace FFRK_LabMem.Machines
                 await Counters.FoundRadiantPainting();
                 var rPriority = 0;
                 if (Config.PaintingPriorityMap.ContainsKey("R")) rPriority = Config.PaintingPriorityMap["R"];
-                return rPriority;
+                return rPriority * 10;
             }
 
             // Combatant (1)
@@ -53,11 +56,47 @@ namespace FFRK_LabMem.Machines
 
                 // Enemy blocklist
                 var enemyName = painting["dungeon"]["captures"][0]["tip_battle"]["title"].ToString();
-                if (Config.EnemyBlocklist.Any(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower())))
+                var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower()));
+                if (enemyEntry != null)
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding due to blocklist: {0}", enemyName);
-                    return (Config.EnemyBlocklistAvoidOptionOverride ? 512 : 64);
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Adjusting priority {0:+#;-#;0} due to blocklist: {1}",
+                        enemyEntry.PriorityAdjust,
+                        enemyName);
+                    var combatants = Config.PaintingPriorityMap.Where(p => p.Key.StartsWith("1."));
+                    var highest = combatants.OrderByDescending(p2=>p2.Value).First().Value * 10;
+                    var lowest = combatants.OrderBy(p2=>p2.Value).First().Value * 10;
+                    var priority = Config.PaintingPriorityMap[type] * 10;
+                    if (enemyEntry.PriorityAdjust > 0) priority = highest + enemyEntry.PriorityAdjust;
+                    if (enemyEntry.PriorityAdjust < 0) priority = lowest + enemyEntry.PriorityAdjust;
+                    return (Config.EnemyBlocklistAvoidOptionOverride ? maxPriority + 10 : priority);
                 }
+            }
+
+            // Master avoidance options
+            if (type.Equals("2"))
+            {
+
+                // There's a treasure visible
+                if (Config.AvoidMasterIfTreasure && isTreasure)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return maxPriority + 5;
+                }
+
+                // There's a explore visible
+                if (Config.AvoidMasterIfExplore && isExplore)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return maxPriority + 5;
+                }
+
+                // There's more paintings to reveal
+                if (Config.AvoidMasterIfMore && total > 9)
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding master due to option");
+                    return maxPriority + 5;
+                }
+
             }
 
             // Portal avoidance options
@@ -67,21 +106,21 @@ namespace FFRK_LabMem.Machines
                 if (Config.AvoidPortal && isTreasure)
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
-                    return 256;
+                    return maxPriority + 5;
                 }
 
                 // There's a explore visible but picked a portal
                 if (Config.AvoidPortalIfExplore && isExplore)
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
-                    return 256;
+                    return maxPriority + 5;
                 }
 
                 // There's more paintings to reveal but picked a portal
                 if (Config.AvoidPortalIfExplore && total > 9)
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding portal due to option");
-                    return 256;
+                    return maxPriority + 5;
                 }
 
             }
@@ -90,18 +129,18 @@ namespace FFRK_LabMem.Machines
             if (type.Equals("4") && Config.AvoidExploreIfTreasure && isTreasure && !isLastFloor)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Avoiding explore due to option");
-                return 128;
+                return maxPriority +1;
             }
 
             // Lookup or default
             if (Config.PaintingPriorityMap.ContainsKey(type))
             {
-                return Config.PaintingPriorityMap[type];
+                return Config.PaintingPriorityMap[type] * 10;
             }
             else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Unknown painting id: {0}", type);
-                return 1024;
+                return maxPriority + 100;
             }
 
         }

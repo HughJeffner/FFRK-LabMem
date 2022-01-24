@@ -148,7 +148,7 @@ namespace FFRK_Machines.Machines
         /// Notifies the user, by default embedded wav file
         /// </summary>
         /// <returns></returns>
-        protected virtual async Task Notify(Notifications.EventType eventType, string message)
+        public virtual async Task Notify(Notifications.EventType eventType, string message)
         {
             await Notifications.Default.ProcessEvent(eventType, message);
         }

@@ -9,18 +9,13 @@ namespace FFRK_LabMem.Machines
     public class LabConfiguration : MachineConfiguration
     {
 
-        protected override void Migrate(String oldVersion, String newVersion)
+        protected override async void Migrate(String oldVersion, String newVersion)
         {
             // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
 
-            // Backwards-compatibilty for old lethe tears slots
-#pragma warning disable CS0612 // Type or member is obsolete
-            if (LetheTearsSlot > 0) LetheTearsSlots[0] = LetheTearsSlot;
-#pragma warning restore CS0612 // Type or member is obsolete
-
-            // First time migrate on 6.5 sets post-battle timing to default
-            if (!oldVersion.Equals("6.5.0.0") && newVersion.Equals("6.5.0.0")) LabTimings.Timings["Post-Battle"] = LabTimings.GetDefaultTimings()["Post-Battle"];
+            // First time migrate on 7.0 sets all timings to default
+            if (!oldVersion.Equals("7.0.0.0") && newVersion.Equals("7.0.0.0")) await LabTimings.ResetToDefaults();
         }
 
         protected override string GetVersion()
@@ -50,6 +45,9 @@ namespace FFRK_LabMem.Machines
         public bool AvoidPortal { get; set; } = true;
         public bool AvoidPortalIfExplore { get; set; } = true;
         public bool AvoidPortalIfMore { get; set; } = true;
+        public bool AvoidMasterIfTreasure { get; set; } = true;
+        public bool AvoidMasterIfExplore { get; set; } = true;
+        public bool AvoidMasterIfMore { get; set; } = true;
         public bool RestartFailedBattle { get; set; } = false;
         public bool StopOnMasterPainting { get; set; } = false;
         public bool RestartLab { get; set; } = false;
@@ -76,7 +74,7 @@ namespace FFRK_LabMem.Machines
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public Dictionary<string, TreasureFilter> TreasureFilterMap { get; set; } = new Dictionary<string, TreasureFilter>();
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-        public List<EnemyBlocklistEntry> EnemyBlocklist { get; set; } = new List<EnemyBlocklistEntry>();
+        public List<EnemyPriority> EnemyPriorityList { get; set; } = new List<EnemyPriority>();
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
 
         public LabConfiguration() {
@@ -103,15 +101,21 @@ namespace FFRK_LabMem.Machines
                 {"2", new TreasureFilter(){ Priority=0, MaxKeys=0}},
                 {"1", new TreasureFilter(){ Priority=0, MaxKeys=0}}
             };
-            this.EnemyBlocklist = new List<EnemyBlocklistEntry>
+            this.EnemyPriorityList = new List<EnemyPriority>
             {
-                new EnemyBlocklistEntry(){Name="Alexander", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Atomos" ,Enabled=false},
-                new EnemyBlocklistEntry(){Name="Diablos", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Lani & Scarlet Hair", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Lunasaurs", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Octomammoth", Enabled=false},
-                new EnemyBlocklistEntry(){Name="Marilith", Enabled=false}
+                new EnemyPriority(){Name="Alexander", Enabled=false},
+                new EnemyPriority(){Name="Atomos" ,Enabled=false},
+                new EnemyPriority(){Name="Diablos", Enabled=false},
+                new EnemyPriority(){Name="Lani & Scarlet Hair", Enabled=false},
+                new EnemyPriority(){Name="Lunasaurs", Enabled=false},
+                new EnemyPriority(){Name="Octomammoth", Enabled=false},
+                new EnemyPriority(){Name="Marilith", Enabled=false},
+                new EnemyPriority(){Name="Behemoth", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Nidhogg", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Odin", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Faeryl", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Ultima Weapon", Enabled=false, PriorityAdjust=-1},
+                new EnemyPriority(){Name="Deathclaws", Enabled=false, PriorityAdjust=-1},
             };
 
         }
@@ -122,10 +126,11 @@ namespace FFRK_LabMem.Machines
             public int MaxKeys { get; set; }
         }
 
-        public class EnemyBlocklistEntry
+        public class EnemyPriority
         {
             public string Name { get; set; }
             public bool Enabled { get; set; } = false;
+            public int PriorityAdjust { get; set; } = 1;
             public override string ToString()
             {
                 return Name;

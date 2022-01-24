@@ -132,6 +132,7 @@ namespace FFRK_LabMem.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to *************************** Interactive Commands ***************************
+        ///[B]      Starts frame capture benchmark
         ///[E]      Enables lab bot (triggering auto-start if enabled)
         ///[D]      Disables the bot, all running operations are immediately cancelled
         ///[C]      Opens the configuration UI
@@ -139,9 +140,7 @@ namespace FFRK_LabMem.Properties {
         ///[H]      Hides the bot in the system tray
         ///[Q]      Starts a Quick Explore operation
         ///[1-9]    Sets lab restart count limit to the pressed number
-        ///[-]      Removes lab restart count limit
-        ///
-        ///[Alt+O]  Attemps to automa [rest of string was truncated]&quot;;.
+        ///[-]      Removes lab restart  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpString {
             get {

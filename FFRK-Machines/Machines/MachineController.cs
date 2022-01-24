@@ -53,12 +53,14 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, string configFile, int consumers = 2)
+        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, Adb.CaptureType capture, int captureRate, string configFile, int consumers = 2)
         {
 
             // Adb
             this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
             this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
+            this.Adb.Capture = capture;
+            this.Adb.CaptureRate = captureRate;
 
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist, proxyConnectionPooling);
@@ -141,6 +143,7 @@ namespace FFRK_Machines.Machines
             Machine.RegisterWithProxy(Proxy);
             if (this.proxySecure) await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
             if (this.proxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
+            await Adb.MinicapSetup(CancellationToken.None);
         }
 
         private void Adb_DeviceAvailable(object sender, SharpAdbClient.DeviceDataEventArgs e)
@@ -159,10 +162,11 @@ namespace FFRK_Machines.Machines
         }
 
         // Event handlers
-        void Machine_MachineError(object sender, Exception e)
+        async void Machine_MachineError(object sender, Exception e)
         {
             ColorConsole.WriteLine(ConsoleColor.Red, "Something unexpected happened ({0}).  To prevent damages, {1} will now be reset.  Please re-enable when ready with 'E'", e.Message, typeof(M).Name);
             Disable();
+            await Machine.Notify(Services.Notifications.Notifications.EventType.LAB_FAULT, "Unexpected state");
         }
 
         void Machine_MachineFinished(object sender, EventArgs e)

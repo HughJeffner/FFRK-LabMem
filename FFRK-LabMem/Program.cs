@@ -5,7 +5,6 @@ using FFRK_LabMem.Data.UI;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
-using FFRK_Machines.Services;
 using System.Linq;
 
 namespace FFRK_LabMem
@@ -73,6 +72,7 @@ namespace FFRK_LabMem
                 if (key.Key >= ConsoleKey.D0 && key.Key <= ConsoleKey.D9) controller.SetRestartCount(int.Parse(key.KeyChar.ToString()));
                 if (key.Key == ConsoleKey.OemMinus) controller.SetRestartCount(-1);
                 if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
+                if (key.Key == ConsoleKey.B) Benchmark.FrameCapture(controller);
 
             }
             

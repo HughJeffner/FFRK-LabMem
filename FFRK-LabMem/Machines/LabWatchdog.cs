@@ -14,15 +14,18 @@ namespace FFRK_LabMem.Machines
 
         public class Configuration
         {
-            public int HangMinutes { get; set; }
-            public int BattleMinutes { get; set; }
-            public int CrashSeconds { get; set; }
-            public int MaxRetries { get; set; }
+            public int HangSeconds { get; set; } = 120;
+            public int HangWarningSeconds { get; set; } = 60;
+            public bool HangScreenshot { get; set; } = false;
+            public int BattleMinutes { get; set; } = 15;
+            public int CrashSeconds { get; set; } = 30;
+            public int MaxRetries { get; set; } = 5;
             public int RestartLoopThreshold { get; set; } = 6;
             public int RestartLoopWindowMinutes { get; set; } = 60;
         }
 
         private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
+        private readonly Timer watchdogHangWarningTimer = new Timer(Int32.MaxValue);
         private readonly Timer watchdogBattleTimer = new Timer(Int32.MaxValue);
         private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
         private List<DateTime> pastRestarts = new List<DateTime>();
@@ -30,6 +33,7 @@ namespace FFRK_LabMem.Machines
         public bool Enabled { get; set; } = false;
         public Configuration Config { get; private set; } = new Configuration();
         public event EventHandler<WatchdogEventArgs> Timeout;
+        public event EventHandler<WatchdogEventArgs> Warning;
         public event EventHandler<WatchdogEventArgs> LoopDetected;
 
         public class WatchdogEventArgs
@@ -51,6 +55,7 @@ namespace FFRK_LabMem.Machines
         {
             this.Lab = lab;
             watchdogHangTimer.AutoReset = false;
+            watchdogHangWarningTimer.AutoReset = false;
             watchdogBattleTimer.AutoReset = false;
             watchdogCrashTimer.AutoReset = true;
             Update(config);
@@ -65,11 +70,13 @@ namespace FFRK_LabMem.Machines
             if (!this.Enabled) return;
 
             watchdogHangTimer.Stop();
+            watchdogHangWarningTimer.Stop();
             watchdogBattleTimer.Stop();
             watchdogCrashTimer.Stop();
             if (restart)
             {
                 watchdogHangTimer.Start();
+                watchdogHangWarningTimer.Start();
                 watchdogBattleTimer.Start();
                 watchdogCrashTimer.Start();
                 ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Kicked");
@@ -98,6 +105,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Disabled");
             this.Enabled = false;
             watchdogHangTimer.Stop();
+            watchdogHangWarningTimer.Stop();
             watchdogBattleTimer.Stop();
             watchdogCrashTimer.Stop();
         }
@@ -106,10 +114,16 @@ namespace FFRK_LabMem.Machines
         {
             this.Config = config;
             watchdogHangTimer.Elapsed -= WatchdogHangTimer_Elapsed;
-            if (config.HangMinutes > 0)
+            if (config.HangSeconds > 0)
             {
-                watchdogHangTimer.Interval = TimeSpan.FromMinutes(config.HangMinutes).TotalMilliseconds;
+                watchdogHangTimer.Interval = TimeSpan.FromSeconds(config.HangSeconds).TotalMilliseconds;
                 watchdogHangTimer.Elapsed += WatchdogHangTimer_Elapsed;
+            }
+            watchdogHangWarningTimer.Elapsed -= WatchdogHangWarningTimer_Elapsed;
+            if (config.HangWarningSeconds > 0)
+            {
+                watchdogHangWarningTimer.Interval = TimeSpan.FromSeconds(config.HangWarningSeconds).TotalMilliseconds;
+                watchdogHangWarningTimer.Elapsed += WatchdogHangWarningTimer_Elapsed;
             }
             watchdogBattleTimer.Elapsed -= WatchdogBattleTimer_Elapsed;
             if (config.BattleMinutes > 0)
@@ -123,7 +137,7 @@ namespace FFRK_LabMem.Machines
                 watchdogCrashTimer.Interval = TimeSpan.FromSeconds(config.CrashSeconds).TotalMilliseconds;
                 watchdogCrashTimer.Elapsed += WatchdogCrashTimer_Elapsed;
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}m, battle:{1}m, crash:{2}s", config.HangMinutes, config.BattleMinutes, config.CrashSeconds);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Updated timers; hang:{0}s, battle:{1}m, crash:{2}s", config.HangSeconds, config.BattleMinutes, config.CrashSeconds);
         }
 
         private async void WatchdogCrashTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -136,6 +150,15 @@ namespace FFRK_LabMem.Machines
             }
         }
 
+        private void WatchdogHangWarningTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Ignore if in battle
+            if (Lab.StateMachine.State == Lab.State.Battle) return;
+   
+            Warning?.Invoke(sender, new WatchdogEventArgs() { ElapsedEventArgs = e, Type = WatchdogEventArgs.TYPE.Hang });
+
+        }
+
         private void WatchdogHangTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
 
@@ -145,8 +168,9 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Ignoring hang timer because in battle");
                 return;
             }
-
+           
             InvokeTimeout(sender, WatchdogEventArgs.TYPE.Hang, e);
+                
         }
 
         private void WatchdogBattleTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -195,7 +219,7 @@ namespace FFRK_LabMem.Machines
 
             // If we reached or exceeded the threshold count
             ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, $"Number of restarts in loop detection window: {pastRestarts.Count}/{Config.RestartLoopThreshold}");
-            if (pastRestarts.Count >= Config.RestartLoopThreshold)
+            if (pastRestarts.Count > Config.RestartLoopThreshold)
             {
                 // Restart loop detected
                 return true;

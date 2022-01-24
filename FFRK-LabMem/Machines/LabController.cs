@@ -57,8 +57,13 @@ namespace FFRK_LabMem.Machines
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
+                capture: config.GetEnum("adb.capture", Services.Adb.CaptureType.ADB),
+                captureRate: config.GetInt("adb.captureRate", 200),
                 consumers: 2);
-            
+
+            // Adb options
+            ret.Adb.TapDelay = config.GetInt("adb.tapDelay", 30);
+
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
             {
@@ -74,10 +79,12 @@ namespace FFRK_LabMem.Machines
         {
             var watchdogConfig = new LabWatchdog.Configuration()
             {
-                HangMinutes = configHelper.GetInt("lab.watchdogHangMinutes", 3),
+                HangSeconds = configHelper.GetInt("lab.watchdogHangSeconds", 120),
+                HangWarningSeconds = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60),
+                HangScreenshot = configHelper.GetBool("lab.watchdogHangScreenshot", false),
                 BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
                 CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
-                MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 10),
+                MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 5),
                 RestartLoopThreshold = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6),
                 RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60)
             };
@@ -103,26 +110,10 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public void ManualFFRKRestart()
+        public async void ManualFFRKRestart()
         {
 
-            if (Enabled)
-            {
-
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        await this.Machine.ManualFFRKRestart();
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception ex)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                    }
-
-                });
-            }
+            if (Enabled) await this.Machine.ManualFFRKRestart();
 
         }
 

@@ -128,6 +128,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\Benchmark.cs" />
     <Compile Include="Services\Clipboard.cs" />
     <Compile Include="Services\ConsoleTasks.cs" />
     <Compile Include="Services\Scheduler.cs" />

@@ -21,7 +21,6 @@ namespace FFRK_LabMem.Config.UI
     {
         public static bool IsLoaded { get; set; } = false;
 
-        private LabTimings.TimingDictionary DefaultTimings = LabTimings.GetDefaultTimings();
         private bool treasuresTabLoaded = false;
         private bool treasuresLoaded = false;
         private ConfigHelper configHelper = null;
@@ -117,12 +116,14 @@ namespace FFRK_LabMem.Config.UI
             checkBoxDatalog.Checked = configHelper.GetBool("datalogger.enabled", false);
             numericUpDownScreenTop.Value = configHelper.GetInt("screen.topOffset", -1);
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
-            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangMinutes", 10);
+            numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangSeconds", 120);
+            numericUpDownWatchdogHangWarning.Value = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
             numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
-            numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 10);
+            numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 5);
+            checkBoxWatchdogScreenshot.Checked = configHelper.GetBool("lab.watchdogHangScreenshot", false);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
             textBoxProxyBlocklist.Text = configHelper.GetString("proxy.blocklist", "");
@@ -135,6 +136,9 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
+            comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
+            trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 200) / 10;
+            trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 30) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
@@ -245,14 +249,19 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("proxy.connectionPooling", checkBoxProxyConnectionPool.Checked);
             configHelper.SetValue("adb.path", textBoxAdbPath.Text);
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
+            configHelper.SetValue("adb.capture", comboBoxCapture.SelectedIndex);
+            configHelper.SetValue("adb.captureRate", trackBarCaptureRate.Value * 10);
+            configHelper.SetValue("adb.tapDelay", trackBarTapDelay.Value * 10);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
-            configHelper.SetValue("lab.watchdogHangMinutes", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogHangSeconds", (int)numericUpDownWatchdogHang.Value);
+            configHelper.SetValue("lab.watchdogHangWarningSeconds", (int)numericUpDownWatchdogHangWarning.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionWindowMinutes", (int)numericUpDownRestartLoopWindow.Value);
             configHelper.SetValue("lab.watchdogMaxRetries", (int)numericUpDownRestartMaxRetries.Value);
+            configHelper.SetValue("lab.watchdogHangScreenshot", checkBoxWatchdogScreenshot.Checked);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
 
@@ -274,6 +283,9 @@ namespace FFRK_LabMem.Config.UI
             labConfig.AvoidPortal = checkBoxLabAvoidPortal.Checked;
             labConfig.AvoidPortalIfExplore = checkBoxLabAvoidPortalExplore.Checked;
             labConfig.AvoidPortalIfMore = checkBoxLabAvoidPortalMore.Checked;
+            labConfig.AvoidMasterIfTreasure = checkBoxLabAvoidMaster.Checked;
+            labConfig.AvoidMasterIfExplore = checkBoxLabAvoidMasterExplore.Checked;
+            labConfig.AvoidMasterIfMore = checkBoxLabAvoidMasterMore.Checked;
             labConfig.RestartFailedBattle = checkBoxLabRestartFailedBattle.Checked;
             labConfig.StopOnMasterPainting = checkBoxLabStopOnMasterPainting.Checked;
             labConfig.RestartLab = checkBoxLabRestart.Checked;
@@ -323,26 +335,23 @@ namespace FFRK_LabMem.Config.UI
             }
 
             // Enemy blocklist
-            labConfig.EnemyBlocklist.Clear();
-            for (int i = 0; i < checkedListBoxBlocklist.Items.Count; i++)
+            labConfig.EnemyPriorityList.Clear();
+            foreach (ListViewItem item in listViewEnemies.Items)
             {
-                LabConfiguration.EnemyBlocklistEntry item = (LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[i];
-                item.Enabled = checkedListBoxBlocklist.GetItemChecked(i);
-                labConfig.EnemyBlocklist.Add(item);
+                LabConfiguration.EnemyPriority entry = (LabConfiguration.EnemyPriority)item.Tag;
+                entry.Enabled = item.Checked;
+                labConfig.EnemyPriorityList.Add(entry);
             }
 
             // Save Lab to .json
             await labConfig.Save(ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
 
             // Save Timings
-            LabTimings.Timings.Clear();
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
-                LabTimings.Timings.Add(item.Cells[0].Value.ToString(), new LabTimings.Timing()
-                {
-                    Delay = int.Parse(item.Cells[1].Value.ToString()),
-                    Jitter = int.Parse(item.Cells[2].Value.ToString())
-                });
+                var t = LabTimings.Timings[item.Cells[0].Value.ToString()];
+                t.Delay = int.Parse(item.Cells[1].Value.ToString());
+                t.Jitter = int.Parse(item.Cells[2].Value.ToString());
             }
             await LabTimings.Save();
 
@@ -364,13 +373,21 @@ namespace FFRK_LabMem.Config.UI
             ColorConsole.WriteLine("Done!");
 
             // Update machine
-            if (controller.Machine != null) controller.Machine.Config = labConfig;
+            if (controller.Machine != null)
+            {
+                controller.Machine.Config = labConfig;
+                controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
+                controller.Adb.TapDelay = trackBarTapDelay.Value * 10;
+                controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
+            }
 
             // Watchdog
             var watchdogConfig = new LabWatchdog.Configuration()
             {
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
-                HangMinutes = (int)numericUpDownWatchdogHang.Value,
+                HangSeconds = (int)numericUpDownWatchdogHang.Value,
+                HangWarningSeconds = (int)numericUpDownWatchdogHangWarning.Value,
+                HangScreenshot = checkBoxWatchdogScreenshot.Checked,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
                 RestartLoopWindowMinutes = (int)numericUpDownRestartLoopWindow.Value,
@@ -410,6 +427,9 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabAvoidPortal.Checked = labConfig.AvoidPortal;
             checkBoxLabAvoidPortalExplore.Checked = labConfig.AvoidPortalIfExplore;
             checkBoxLabAvoidPortalMore.Checked = labConfig.AvoidPortalIfMore;
+            checkBoxLabAvoidMaster.Checked = labConfig.AvoidMasterIfTreasure;
+            checkBoxLabAvoidMasterExplore.Checked = labConfig.AvoidMasterIfExplore;
+            checkBoxLabAvoidMasterMore.Checked = labConfig.AvoidMasterIfMore;
             checkBoxLabRestartFailedBattle.Checked = labConfig.RestartFailedBattle;
             checkBoxLabStopOnMasterPainting.Checked = labConfig.StopOnMasterPainting;
             CheckBoxLabStopOnMasterPainting_CheckedChanged(sender, e);
@@ -470,12 +490,22 @@ namespace FFRK_LabMem.Config.UI
             treasuresLoaded = true;
 
             // Enemy blocklist
-            checkedListBoxBlocklist.Items.Clear();
-            foreach (LabConfiguration.EnemyBlocklistEntry entry in labConfig.EnemyBlocklist)
+            listViewEnemies.Items.Clear();
+            foreach (LabConfiguration.EnemyPriority entry in labConfig.EnemyPriorityList)
             {
-                checkedListBoxBlocklist.Items.Add(entry, entry.Enabled);
+                var newItem = new ListViewItem();
+                int priorityIndex = entry.PriorityAdjust + 3;
+                var priorityText = (priorityIndex <= comboBoxEnemyPriority.Items.Count) ? comboBoxEnemyPriority.Items[priorityIndex].ToString() : "???";
+                newItem.Text = "";
+                newItem.SubItems.Add(priorityText);
+                newItem.SubItems.Add(entry.Name);
+                newItem.Checked = entry.Enabled;
+                newItem.Tag = entry;
+                newItem.ImageIndex = 2;
+                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.ToolTipText = Lookups.Blocklist[entry.Name];
+                listViewEnemies.Items.Add(newItem);
             }
-            buttonRemoveBlocklist.Enabled = checkedListBoxBlocklist.Items.Count > 0;
+            buttonRemoveBlocklist.Enabled = listViewEnemies.Items.Count > 0;
 
         }
 
@@ -598,7 +628,8 @@ namespace FFRK_LabMem.Config.UI
                 checkBoxProxyAutoConfig.Checked != configHelper.GetBool("proxy.autoconfig", false) |
                 checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
-                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555")
+                ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
+                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 0)
             );
 
             lblRestart.Visible = changed;
@@ -708,6 +739,7 @@ namespace FFRK_LabMem.Config.UI
 
             // Changed timings
             int i;
+            var DefaultTimings = LabTimings.DefaultTimings;
             if (e.ColumnIndex == 1 && int.TryParse(row.Cells[1].Value.ToString(), out i))
             {
                 if (DefaultTimings.ContainsKey(key) && DefaultTimings[key].Delay != i) e.CellStyle.Font = new Font(e.CellStyle.Font, FontStyle.Bold);
@@ -761,21 +793,29 @@ namespace FFRK_LabMem.Config.UI
 
         private void ButtonAddBlocklist_Click(object sender, EventArgs e)
         {
-            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Blocklist Entry");
+            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Enemy Entry");
             if (!String.IsNullOrEmpty(input))
             {
-                var newItem = new LabConfiguration.EnemyBlocklistEntry() { Name = input, Enabled = true };
-                checkedListBoxBlocklist.Items.Add(newItem, true);
+                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true, PriorityAdjust = 0 };
+                var newItem = new ListViewItem();
+                newItem.Text = "";
+                newItem.SubItems.Add(comboBoxEnemyPriority.Items[3].ToString());
+                newItem.SubItems.Add(entry.Name);
+                newItem.Checked = entry.Enabled;
+                newItem.Tag = entry;
+                newItem.ImageIndex = 2;
+                listViewEnemies.Items.Add(newItem);
                 buttonRemoveBlocklist.Enabled = true;
             }
         }
 
         private void ButtonRemoveBlocklist_Click(object sender, EventArgs e)
         {
+            if (listViewEnemies.SelectedItems[0] == null) return;
             var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
-                checkedListBoxBlocklist.Items.Remove(checkedListBoxBlocklist.SelectedItem);
+                listViewEnemies.Items.Remove(listViewEnemies.SelectedItems[0]);
             }
         }
 
@@ -783,37 +823,6 @@ namespace FFRK_LabMem.Config.UI
         {
             ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
             LoadConfigs();
-        }
-
-        // Class variable to keep track of which row is currently selected:
-        int hoveredIndex = -1;
-        private void checkedListBoxBlocklist_MouseMove(object sender, MouseEventArgs e)
-        {
-            // See which row is currently under the mouse:
-            int newHoveredIndex = checkedListBoxBlocklist.IndexFromPoint(e.Location);
-
-            // If the row has changed since last moving the mouse:
-            if (hoveredIndex != newHoveredIndex)
-            {
-                // Change the variable for the next time we move the mouse:
-                hoveredIndex = newHoveredIndex;
-
-                // If over a row showing data (rather than blank space):
-                if (hoveredIndex > -1)
-                {
-                    //Set tooltip text for the row now under the mouse:
-                    toolTip1.Active = false;
-                    var name = ((LabConfiguration.EnemyBlocklistEntry)checkedListBoxBlocklist.Items[hoveredIndex]).Name;
-                    if (Lookups.Blocklist.ContainsKey(name))
-                    {
-                        toolTip1.SetToolTip(checkedListBoxBlocklist, Lookups.Blocklist[name]);
-                    } else
-                    {
-                        toolTip1.SetToolTip(checkedListBoxBlocklist, "User-defined");
-                    }
-                    toolTip1.Active = true;
-                }
-            }
         }
 
         private void buttonScheduleAdd_Click(object sender, EventArgs e)
@@ -1057,10 +1066,60 @@ namespace FFRK_LabMem.Config.UI
             textBoxSMTPFrom.Text = textBoxSMTPUser.Text;
         }
 
-        private void numericUpDownRestartLoopThreshold_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDownRestartLoopThreshold_ValueChanged(object sender, EventArgs e)
         {
             numericUpDownRestartLoopWindow.Enabled = numericUpDownRestartLoopThreshold.Value > 0;
             label27.Enabled = numericUpDownRestartLoopWindow.Enabled;
+        }
+
+        private void TrackBarCaptureRate_ValueChanged(object sender, EventArgs e)
+        {
+            labelCaptureRate.Text = $"{trackBarCaptureRate.Value * 10}ms";
+        }
+
+        private void TrackBarTapDelay_ValueChanged(object sender, EventArgs e)
+        {
+            labelTapDelay.Text = $"{trackBarTapDelay.Value * 10}ms";
+        }
+
+        private void ComboBoxEnemyPriority_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listViewEnemies.SelectedItems.Count == 0) return;
+            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
+            listViewEnemies.SelectedItems[0].SubItems[1].Text = comboBoxEnemyPriority.Text;
+            entry.PriorityAdjust = comboBoxEnemyPriority.SelectedIndex - 3;
+            comboBoxEnemyPriority.Visible = false;
+        }
+
+        private void ComboBoxEnemyPriority_Leave(object sender, EventArgs e)
+        {
+            comboBoxEnemyPriority.Visible = false;
+        }
+
+        private void ListViewEnemies_MouseUp(object sender, MouseEventArgs e)
+        {
+            var lvItem = this.listViewEnemies.GetItemAt(e.X, e.Y);
+            if (lvItem == null) return;
+            var entry = (LabConfiguration.EnemyPriority)lvItem.Tag;
+            comboBoxEnemyPriority.SelectedIndex = entry.PriorityAdjust + 3;
+            comboBoxEnemyPriority.Size = lvItem.SubItems[1].Bounds.Size;
+            comboBoxEnemyPriority.Bounds = lvItem.SubItems[1].Bounds;
+            comboBoxEnemyPriority.Left += listViewEnemies.Left;
+            comboBoxEnemyPriority.Top += listViewEnemies.Top;
+            comboBoxEnemyPriority.Visible = true;
+            comboBoxEnemyPriority.BringToFront();
+            comboBoxEnemyPriority.Focus();
+
+        }
+
+        private void NumericUpDownWatchdogHangWarning_ValueChanged(object sender, EventArgs e)
+        {
+            checkBoxWatchdogScreenshot.Enabled = numericUpDownWatchdogHangWarning.Value > 0;
+        }
+
+        private void NumericUpDownWatchdogHang_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 0.75M;
         }
     }
 }

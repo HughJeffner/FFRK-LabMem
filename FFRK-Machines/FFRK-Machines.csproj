@@ -101,6 +101,7 @@
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
+    <Compile Include="Services\Minicap.cs" />
     <Compile Include="Services\Notifications\EmailNotification.cs" />
     <Compile Include="Services\Notifications\FlashTaskbarNotification.cs" />
     <Compile Include="Services\Notifications\Notifications.cs" />
@@ -147,4 +148,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Content Include="Minicap\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
