@@ -192,7 +192,7 @@ namespace FFRK_LabMem.Machines
             { "Post-StartBattle", new Timing() { Delay=0} },
             { "Post-Battle", new Timing(){ Delay=1000 } },
             { "Post-BattleButton", new Timing(){ Delay=500 } },
-            { "Pre-ConfirmPortal", new Timing(){ Delay=500 } },
+            { "Pre-ConfirmPortal", new Timing(){ Delay=1500 } },
             { "Post-ConfirmPortal", new Timing(){ Delay=2000 } },
             { "Pre-LetheTears", new Timing(){ Delay=4000 } },
             { "Inter-LetheTears", new Timing(){ Delay=2000 } },

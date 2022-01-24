@@ -15,7 +15,7 @@ namespace FFRK_LabMem.Machines
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
 
             // First time migrate on 7.0 sets all timings to default
-            if (!oldVersion.Equals("7.0.0.0") && newVersion.Equals("7.0.0.0")) await LabTimings.ResetToDefaults();
+            if (!oldVersion.Equals("7.0.1.0") && newVersion.Equals("7.0.1.0")) await LabTimings.ResetToDefaults();
         }
 
         protected override string GetVersion()
