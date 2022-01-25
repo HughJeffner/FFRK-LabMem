@@ -123,6 +123,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
             numericUpDownRestartLoopWindow.Value = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
             numericUpDownRestartMaxRetries.Value = configHelper.GetInt("lab.watchdogMaxRetries", 5);
+            numericUpDownBattleMaxRetries.Value = configHelper.GetInt("lab.watchdogBattleMaxRetries", 5);
             checkBoxWatchdogScreenshot.Checked = configHelper.GetBool("lab.watchdogHangScreenshot", false);
             numericUpDownProxyPort.Value = configHelper.GetInt("proxy.port", 8081);
             checkBoxProxySecure.Checked = configHelper.GetBool("proxy.secure", true);
@@ -261,6 +262,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionWindowMinutes", (int)numericUpDownRestartLoopWindow.Value);
             configHelper.SetValue("lab.watchdogMaxRetries", (int)numericUpDownRestartMaxRetries.Value);
+            configHelper.SetValue("lab.watchdogBattleMaxRetries", (int)numericUpDownBattleMaxRetries.Value);
             configHelper.SetValue("lab.watchdogHangScreenshot", checkBoxWatchdogScreenshot.Checked);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
@@ -391,7 +393,8 @@ namespace FFRK_LabMem.Config.UI
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
                 RestartLoopWindowMinutes = (int)numericUpDownRestartLoopWindow.Value,
-                MaxRetries = (int)numericUpDownRestartMaxRetries.Value
+                MaxRetries = (int)numericUpDownRestartMaxRetries.Value,
+                BattleMaxRetries = (int)numericUpDownBattleMaxRetries.Value
             };
             controller.Machine?.Watchdog.Update(watchdogConfig);
 

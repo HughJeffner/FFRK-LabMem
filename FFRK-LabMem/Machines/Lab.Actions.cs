@@ -455,6 +455,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write(ConsoleColor.DarkGray, " ({0:c})", battleStopwatch.Elapsed);
             await Counters.BattleWon(battleStopwatch.Elapsed);
             battleStopwatch.Reset();
+            Watchdog.BattleReset();
 
             // Drops
             await DataLogger.LogBattleDrops(this);
@@ -927,6 +928,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write(ConsoleColor.DarkRed, "Battle failed! ");
             if (this.Config.RestartFailedBattle)
             {
+                Watchdog.BattleFailed();
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
                 await DelayedTapPct("Pre-RestartBattle", 50, 72);
                 await DelayedTapPct("Inter-RestartBattle", 25, 55);

@@ -94,7 +94,8 @@ namespace FFRK_LabMem.Machines
             this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
             this.Watchdog.Warning += Watchdog_Warning;
-            this.Watchdog.LoopDetected += Watchdog_LoopDetected;
+            this.Watchdog.RestartLoop += Watchdog_RestartLoop;
+            this.Watchdog.BattleLoop += Watchdog_BattleLoop;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
 
@@ -305,10 +306,17 @@ namespace FFRK_LabMem.Machines
             }
            
         }
-        private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
+        private async void Watchdog_RestartLoop(object sender, LabWatchdog.WatchdogEventArgs e)
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restart loop detected!");
             await Notify(Notifications.EventType.LAB_FAULT, "Restart loop detected");
+            OnMachineFinished();
+        }
+
+        private async void Watchdog_BattleLoop(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Battle loop detected!");
+            await Notify(Notifications.EventType.LAB_FAULT, "Battle loop detected");
             OnMachineFinished();
         }
 
@@ -382,6 +390,7 @@ namespace FFRK_LabMem.Machines
             AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;
+            Watchdog.BattleReset();
 
         }
 
