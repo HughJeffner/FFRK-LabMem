@@ -98,7 +98,7 @@ namespace FFRK_LabMem.Machines
                     // Skip button
                     if (ret.Equals(items[1]))
                     {
-                        await StateMachine.FireAsync(Trigger.BattleSuccess);
+                        await MoveOnFromBattle();
                     }
 
                     // Lab segment
@@ -465,7 +465,15 @@ namespace FFRK_LabMem.Machines
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
-            
+
+            // Tap through the results screen
+            await MoveOnFromBattle();
+
+        }
+
+        private async Task MoveOnFromBattle()
+        {
+
             // Wait for skip button
             if (await DelayedTapButton("Post-Battle", BUTTON_SKIP, 3000, 85, 80, 90, 10, 0.2))
             {
@@ -475,7 +483,8 @@ namespace FFRK_LabMem.Machines
                 // Check if we defeated the boss
                 if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
                     await this.StateMachine.FireAsync(Trigger.FinishedLab);
-            } else
+            }
+            else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Did not find skip button!");
             }
