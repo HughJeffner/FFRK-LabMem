@@ -928,11 +928,13 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write(ConsoleColor.DarkRed, "Battle failed! ");
             if (this.Config.RestartFailedBattle)
             {
-                Watchdog.BattleFailed();
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
-                await DelayedTapPct("Pre-RestartBattle", 50, 72);
-                await DelayedTapPct("Inter-RestartBattle", 25, 55);
-                await CheckAutoBattle();
+                if (Watchdog.BattleFailed())
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
+                    await DelayedTapPct("Pre-RestartBattle", 50, 72);
+                    await DelayedTapPct("Inter-RestartBattle", 25, 55);
+                    await CheckAutoBattle();
+                }
             }
             else
             {

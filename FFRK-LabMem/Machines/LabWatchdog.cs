@@ -92,15 +92,21 @@ namespace FFRK_LabMem.Machines
         /// <summary>
         /// Signals a battle failure and checks the retry count
         /// </summary>
-        public void BattleFailed()
+        /// <returns>true if the retry count is still under the threshold, false otherwise</returns>
+        public bool BattleFailed()
         {
-            if (Config.BattleMaxRetries <= 0) return;
-            battleTries += 1;
-            if (battleTries >= Config.BattleMaxRetries)
+            if (Config.BattleMaxRetries > 0)
             {
-                battleTries = 0;
-                BattleLoop?.Invoke(this, new WatchdogEventArgs() { Type = WatchdogEventArgs.TYPE.LongBattle});
+
+                battleTries += 1;
+                if (battleTries >= Config.BattleMaxRetries)
+                {
+                    battleTries = 0;
+                    BattleLoop?.Invoke(this, new WatchdogEventArgs() { Type = WatchdogEventArgs.TYPE.LongBattle });
+                    return false;
+                }
             }
+            return true;
         }
 
         /// <summary>
