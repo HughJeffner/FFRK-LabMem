@@ -452,7 +452,7 @@ namespace FFRK_LabMem.Machines
             // Timer
             battleStopwatch.Stop();
             ColorConsole.Write("Battle Won!");
-            ColorConsole.Write(ConsoleColor.DarkGray, " ({0:c})", battleStopwatch.Elapsed);
+            ColorConsole.Write(ConsoleColor.DarkGray, @" ({0:mm\:ss})", battleStopwatch.Elapsed);
             await Counters.BattleWon(battleStopwatch.Elapsed);
             battleStopwatch.Reset();
             Watchdog.BattleReset();
@@ -621,7 +621,7 @@ namespace FFRK_LabMem.Machines
 
                 // Message
                 ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, " ({0:c})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
 
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)

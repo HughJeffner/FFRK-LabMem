@@ -172,7 +172,7 @@ namespace FFRK_LabMem.Machines
         public static readonly TimingDictionary DefaultTimings = new TimingDictionary()
         {
             { "Pre-AutoStart", new Timing() { Delay=10} },
-            { "Inter-AutoStart", new Timing() { Delay=100} },
+            { "Inter-AutoStart", new Timing() { Delay=1000} },
             { "Post-AutoStart", new Timing() { Delay=0} },
             { "Pre-SelectPainting", new Timing(){ Delay=2000 } },
             { "Inter-SelectPainting", new Timing(){ Delay=500 } },
