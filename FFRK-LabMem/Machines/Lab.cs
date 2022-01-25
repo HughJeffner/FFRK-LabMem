@@ -161,6 +161,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
+                .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
@@ -267,6 +268,8 @@ namespace FFRK_LabMem.Machines
         }
         private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
         {
+
+            // List of valid states for each action
             List<State> autoStartStates = new List<State>() {
                 State.Unknown,
                 State.FoundSealedDoor,
@@ -286,9 +289,14 @@ namespace FFRK_LabMem.Machines
                 State.EquipParty
             };
 
+            // Message and screenshot
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
             if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
 
+            // Keep track of current state in case it changes
+            var previousState = StateMachine.State;
+
+            // Navigate back
             if (backStates.Contains(StateMachine.State))
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
@@ -297,10 +305,11 @@ namespace FFRK_LabMem.Machines
                     await Adb.NavigateBack(this.CancellationToken);
                     await Task.Delay(500);
                 }
-                await Task.Delay(2000);
+                await Task.Delay(3000);
             }
 
-            if (autoStartStates.Contains(StateMachine.State))
+            // Auto start if no state transition
+            if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
             {
                 await AutoStart();
             }
