@@ -14,8 +14,8 @@ namespace FFRK_LabMem.Machines
             // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
 
-            // First time migrate on 7.0 sets all timings to default
-            if (!oldVersion.Equals("7.0.1.0") && newVersion.Equals("7.0.1.0")) await LabTimings.ResetToDefaults();
+            // First time migrate on 7.1 sets Inter-AutoStart to default
+            if (!oldVersion.Equals("7.1.0.0") && newVersion.Equals("7.1.0.0")) await LabTimings.ResetToDefaults();
         }
 
         protected override string GetVersion()

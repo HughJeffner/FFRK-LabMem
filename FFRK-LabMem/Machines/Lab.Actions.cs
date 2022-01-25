@@ -98,7 +98,7 @@ namespace FFRK_LabMem.Machines
                     // Skip button
                     if (ret.Equals(items[1]))
                     {
-                        await StateMachine.FireAsync(Trigger.BattleSuccess);
+                        await MoveOnFromBattle();
                     }
 
                     // Lab segment
@@ -452,9 +452,10 @@ namespace FFRK_LabMem.Machines
             // Timer
             battleStopwatch.Stop();
             ColorConsole.Write("Battle Won!");
-            ColorConsole.Write(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
+            ColorConsole.Write(ConsoleColor.DarkGray, @" ({0:mm\:ss})", battleStopwatch.Elapsed);
             await Counters.BattleWon(battleStopwatch.Elapsed);
             battleStopwatch.Reset();
+            Watchdog.BattleReset();
 
             // Drops
             await DataLogger.LogBattleDrops(this);
@@ -465,7 +466,15 @@ namespace FFRK_LabMem.Machines
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
-            
+
+            // Tap through the results screen
+            await MoveOnFromBattle();
+
+        }
+
+        private async Task MoveOnFromBattle()
+        {
+
             // Wait for skip button
             if (await DelayedTapButton("Post-Battle", BUTTON_SKIP, 3000, 85, 80, 90, 10, 0.2))
             {
@@ -475,7 +484,8 @@ namespace FFRK_LabMem.Machines
                 // Check if we defeated the boss
                 if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
                     await this.StateMachine.FireAsync(Trigger.FinishedLab);
-            } else
+            }
+            else
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Did not find skip button!");
             }
@@ -608,15 +618,17 @@ namespace FFRK_LabMem.Machines
 
             if (t.Destination == State.Completed)
             {
-                
+
+                // Message
+                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
+
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
                     await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
-
-                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!");
 
                 // Mission
                 var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.QuickExplore && !Counters.IsMissionCompleted();
@@ -729,10 +741,10 @@ namespace FFRK_LabMem.Machines
 
                         // Enter if equipment confirmed, otherwise should find nothing
                         ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box");
-                        if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5))
-                        {
-                            await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
-                        }
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5);
+
+                        // Delay
+                        await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
 
                         // Reset state
                         await StateMachine.FireAsync(Trigger.ResetState);
@@ -916,10 +928,13 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Write(ConsoleColor.DarkRed, "Battle failed! ");
             if (this.Config.RestartFailedBattle)
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
-                await DelayedTapPct("Pre-RestartBattle", 50, 72);
-                await DelayedTapPct("Inter-RestartBattle", 25, 55);
-                await CheckAutoBattle();
+                if (Watchdog.BattleFailed())
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
+                    await DelayedTapPct("Pre-RestartBattle", 50, 72);
+                    await DelayedTapPct("Inter-RestartBattle", 25, 55);
+                    await CheckAutoBattle();
+                }
             }
             else
             {

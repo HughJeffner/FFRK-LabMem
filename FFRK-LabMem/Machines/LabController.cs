@@ -86,7 +86,8 @@ namespace FFRK_LabMem.Machines
                 CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
                 MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 5),
                 RestartLoopThreshold = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6),
-                RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60)
+                RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60),
+                BattleMaxRetries = configHelper.GetInt("lab.watchdogBattleMaxRetries", 5)
             };
             return new Lab(this.Adb, config, watchdogConfig);
         }

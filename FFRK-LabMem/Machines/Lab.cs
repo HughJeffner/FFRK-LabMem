@@ -94,7 +94,8 @@ namespace FFRK_LabMem.Machines
             this.Watchdog = new LabWatchdog(this, watchdogConfig);
             this.Watchdog.Timeout += Watchdog_Timeout;
             this.Watchdog.Warning += Watchdog_Warning;
-            this.Watchdog.LoopDetected += Watchdog_LoopDetected;
+            this.Watchdog.RestartLoop += Watchdog_RestartLoop;
+            this.Watchdog.BattleLoop += Watchdog_BattleLoop;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
 
@@ -160,6 +161,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
+                .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.EquipParty)
@@ -266,6 +268,8 @@ namespace FFRK_LabMem.Machines
         }
         private async void Watchdog_Warning(object sender, LabWatchdog.WatchdogEventArgs e)
         {
+
+            // List of valid states for each action
             List<State> autoStartStates = new List<State>() {
                 State.Unknown,
                 State.FoundSealedDoor,
@@ -285,9 +289,14 @@ namespace FFRK_LabMem.Machines
                 State.EquipParty
             };
 
+            // Message and screenshot
             ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
             if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
 
+            // Keep track of current state in case it changes
+            var previousState = StateMachine.State;
+
+            // Navigate back
             if (backStates.Contains(StateMachine.State))
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
@@ -296,19 +305,27 @@ namespace FFRK_LabMem.Machines
                     await Adb.NavigateBack(this.CancellationToken);
                     await Task.Delay(500);
                 }
-                await Task.Delay(2000);
+                await Task.Delay(3000);
             }
 
-            if (autoStartStates.Contains(StateMachine.State))
+            // Auto start if no state transition
+            if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
             {
                 await AutoStart();
             }
            
         }
-        private async void Watchdog_LoopDetected(object sender, LabWatchdog.WatchdogEventArgs e)
+        private async void Watchdog_RestartLoop(object sender, LabWatchdog.WatchdogEventArgs e)
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restart loop detected!");
             await Notify(Notifications.EventType.LAB_FAULT, "Restart loop detected");
+            OnMachineFinished();
+        }
+
+        private async void Watchdog_BattleLoop(object sender, LabWatchdog.WatchdogEventArgs e)
+        {
+            ColorConsole.WriteLine(ConsoleColor.DarkRed, "Battle loop detected!");
+            await Notify(Notifications.EventType.LAB_FAULT, "Battle loop detected");
             OnMachineFinished();
         }
 
@@ -366,11 +383,7 @@ namespace FFRK_LabMem.Machines
         {
             // Stop timers
             Watchdog.Disable();
-            if (battleStopwatch.IsRunning)
-            {
-                battleStopwatch.Stop();
-                battleStopwatch.Reset();
-            }
+            battleStopwatch.Reset();
 
             // Reset status
             this.Data = null;
@@ -386,6 +399,7 @@ namespace FFRK_LabMem.Machines
             AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;
+            Watchdog.BattleReset();
 
         }
 

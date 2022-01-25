@@ -22,6 +22,7 @@ namespace FFRK_LabMem.Machines
             public int MaxRetries { get; set; } = 5;
             public int RestartLoopThreshold { get; set; } = 6;
             public int RestartLoopWindowMinutes { get; set; } = 60;
+            public int BattleMaxRetries { get; set; } = 5;
         }
 
         private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
@@ -29,12 +30,14 @@ namespace FFRK_LabMem.Machines
         private readonly Timer watchdogBattleTimer = new Timer(Int32.MaxValue);
         private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
         private List<DateTime> pastRestarts = new List<DateTime>();
+        private int battleTries = 0;
         private Lab Lab { get; set; }
         public bool Enabled { get; set; } = false;
         public Configuration Config { get; private set; } = new Configuration();
         public event EventHandler<WatchdogEventArgs> Timeout;
         public event EventHandler<WatchdogEventArgs> Warning;
-        public event EventHandler<WatchdogEventArgs> LoopDetected;
+        public event EventHandler<WatchdogEventArgs> RestartLoop;
+        public event EventHandler<WatchdogEventArgs> BattleLoop;
 
         public class WatchdogEventArgs
         {
@@ -85,6 +88,33 @@ namespace FFRK_LabMem.Machines
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, "Paused");
             }
+        }
+        /// <summary>
+        /// Signals a battle failure and checks the retry count
+        /// </summary>
+        /// <returns>true if the retry count is still under the threshold, false otherwise</returns>
+        public bool BattleFailed()
+        {
+            if (Config.BattleMaxRetries > 0)
+            {
+
+                battleTries += 1;
+                if (battleTries >= Config.BattleMaxRetries)
+                {
+                    battleTries = 0;
+                    BattleLoop?.Invoke(this, new WatchdogEventArgs() { Type = WatchdogEventArgs.TYPE.LongBattle });
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Resets the battle failed retry counter
+        /// </summary>
+        public void BattleReset()
+        {
+            battleTries = 0;
         }
 
         /// <summary>
@@ -194,7 +224,7 @@ namespace FFRK_LabMem.Machines
             //Check for restart loop
             if (CheckRestartLoopWindow(e2))
             {
-                LoopDetected?.Invoke(sender, e2);
+                RestartLoop?.Invoke(sender, e2);
                 return;
             }
                         
