@@ -366,11 +366,7 @@ namespace FFRK_LabMem.Machines
         {
             // Stop timers
             Watchdog.Disable();
-            if (battleStopwatch.IsRunning)
-            {
-                battleStopwatch.Stop();
-                battleStopwatch.Reset();
-            }
+            battleStopwatch.Reset();
 
             // Reset status
             this.Data = null;

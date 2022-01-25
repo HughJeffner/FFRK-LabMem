@@ -452,7 +452,7 @@ namespace FFRK_LabMem.Machines
             // Timer
             battleStopwatch.Stop();
             ColorConsole.Write("Battle Won!");
-            ColorConsole.Write(ConsoleColor.DarkGray, " ({0:00}:{1:00})", battleStopwatch.Elapsed.Minutes, battleStopwatch.Elapsed.Seconds);
+            ColorConsole.Write(ConsoleColor.DarkGray, " ({0:c})", battleStopwatch.Elapsed);
             await Counters.BattleWon(battleStopwatch.Elapsed);
             battleStopwatch.Reset();
 
@@ -617,15 +617,17 @@ namespace FFRK_LabMem.Machines
 
             if (t.Destination == State.Completed)
             {
-                
+
+                // Message
+                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                ColorConsole.WriteLine(ConsoleColor.DarkGray, " ({0:c})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
+
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
                     await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
-
-                ColorConsole.WriteLine(ConsoleColor.Green, "Lab run completed!");
 
                 // Mission
                 var needsMission = Config.CompleteDailyMission == LabConfiguration.CompleteMissionOption.QuickExplore && !Counters.IsMissionCompleted();
@@ -738,10 +740,10 @@ namespace FFRK_LabMem.Machines
 
                         // Enter if equipment confirmed, otherwise should find nothing
                         ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box");
-                        if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5))
-                        {
-                            await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
-                        }
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5);
+
+                        // Delay
+                        await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
 
                         // Reset state
                         await StateMachine.FireAsync(Trigger.ResetState);
