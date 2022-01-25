@@ -107,7 +107,7 @@ namespace FFRK_LabMem.Machines
         /// <returns></returns>
         public static async Task ResetToDefaults()
         {
-            (await GetInstance()).timings = DefaultTimings;
+            (await GetInstance()).timings = new TimingDictionary(DefaultTimings);
         }
 
         public static void TuneTiming(string key, bool found, int tries)
@@ -175,7 +175,7 @@ namespace FFRK_LabMem.Machines
             { "Inter-AutoStart", new Timing() { Delay=100} },
             { "Post-AutoStart", new Timing() { Delay=0} },
             { "Pre-SelectPainting", new Timing(){ Delay=2000 } },
-            { "Inter-SelectPainting", new Timing(){ Delay=100 } },
+            { "Inter-SelectPainting", new Timing(){ Delay=500 } },
             { "Post-SelectPainting", new Timing(){ Delay=0 } },
             { "Pre-RadiantPaintingScreenshot", new Timing(){ Delay=4000 } },
             { "Pre-SelectTreasure", new Timing() {Delay=2000 } },
@@ -229,7 +229,13 @@ namespace FFRK_LabMem.Machines
         public class TimingDictionary : Dictionary<string, Timing>
         {
             public TimingDictionary() { }
-            public TimingDictionary(Dictionary<string, Timing> from) : base(from) { }
+            public TimingDictionary(Dictionary<string, Timing> from) 
+            {
+                foreach (KeyValuePair<string, Timing> entry in from)
+                {
+                    this.Add(entry.Key, (Timing)entry.Value.Clone());
+                }
+            }
         }
 
         public class TimingTuningParameters
@@ -241,7 +247,7 @@ namespace FFRK_LabMem.Machines
             public bool Enabled { get; set; } = false;
         }
 
-        public class TimingTuning
+        public class TimingTuning : ICloneable
         {
             public enum TuningState
             {
@@ -254,16 +260,34 @@ namespace FFRK_LabMem.Machines
             public int SuccessCounter { get; set; } = 0;
             public int RetryCounter { get; set; } = 0;
 
+            public object Clone()
+            {
+                return new TimingTuning()
+                {
+                    State = this.State,
+                    SuccessCounter = this.SuccessCounter,
+                    RetryCounter = this.RetryCounter
+                };
+            }
         }
 
-        public class Timing
+        public class Timing : ICloneable
         {
 
             public int Delay { get; set; } = 5000;
             public int Jitter { get; set; } = 0;
             [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
             public TimingTuning Tuning { get; set; } = null;
-            
+
+            public object Clone()
+            {
+                return new Timing()
+                {
+                    Delay = this.Delay,
+                    Jitter = this.Jitter,
+                    Tuning = (TimingTuning)this.Tuning?.Clone()
+                };
+            }
         }
 
     }
