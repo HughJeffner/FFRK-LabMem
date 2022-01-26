@@ -217,7 +217,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task SelectTreasures()
+        private async Task SelectTreasures(StateMachine<State, Trigger>.Transition transition)
         {
 
             // Got Item
@@ -272,6 +272,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
+                if (transition.Source != State.Ready) await Task.Delay(5000); // Additional delay if from any state other than Ready
                 await DelayedTapPct("Pre-SelectTreasure", 17 + (33 * (selectedTreasureIndex)), 50);
 
                 // Check if key needed
