@@ -24,7 +24,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
-        private const String MINICAP_PATH = "/data/data/com.android.shell/";
+        private const String MINICAP_PATH = "/data/local/tmp/";
         private int cachedApiLevel = 0;
         private CancellationToken minicapTaskToken = new CancellationToken();
         private int minicapTimeouts = 0;
@@ -499,7 +499,7 @@ namespace FFRK_LabMem.Services
             // Get ABI
             var receiver = new ConsoleOutputReceiver();
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Getting device ABI");
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi | tr -d '\r'",
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi",
                 this.Device,
                 receiver,
                 cancellationToken,
