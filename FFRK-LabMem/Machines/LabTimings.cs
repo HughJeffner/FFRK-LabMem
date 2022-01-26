@@ -179,7 +179,7 @@ namespace FFRK_LabMem.Machines
             { "Post-SelectPainting", new Timing(){ Delay=0 } },
             { "Pre-RadiantPaintingScreenshot", new Timing(){ Delay=4000 } },
             { "Pre-SelectTreasure", new Timing() {Delay=2000 } },
-            { "Inter-SelectTreasure", new Timing() {Delay=500 } },
+            { "Inter-SelectTreasure", new Timing() {Delay=1000 } },
             { "Post-SelectTreasure", new Timing() {Delay=0 } },
             { "Pre-Door", new Timing() {Delay=1000} },
             { "Post-Door", new Timing(){ Delay=1000} },
