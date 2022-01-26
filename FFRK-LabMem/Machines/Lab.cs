@@ -147,7 +147,7 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.MissedButton, State.Unknown);
 
             this.StateMachine.Configure(State.FoundTreasure)
-                .OnEntryAsync(async (t) => await SelectTreasures())
+                .OnEntryAsync(async (t) => await SelectTreasures(t))
                 .PermitReentry(Trigger.FoundTreasure)
                 .Permit(Trigger.MoveOn, State.Ready);
 
