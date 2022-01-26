@@ -1106,5 +1106,11 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        public async Task HandleError()
+        {
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Connection error, retrying....");
+            await DelayedTapButton("Pre-HandleError", BUTTON_BLUE, 2000, 39.5, 54, 67.5, 10, 0.5, 1);
+        }
+
     }
 }
