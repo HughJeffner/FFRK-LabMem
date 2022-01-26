@@ -386,6 +386,7 @@ namespace FFRK_LabMem.Services
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Scroll to Credential Storage > Install from SD card");
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Use FFRK for certificate name");
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Choose VPN and Apps for credential use");
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
 
                 // Need root
@@ -770,8 +771,7 @@ namespace FFRK_LabMem.Services
                                 ((match.Y + (match.Height/2)) / (double)height) * 100
                             );
                             ret = item;
-                            Debug.Print("matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
-                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Length, matches[0].Similarity);
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1} [{2},{3}]", matches.Length, matches[0].Similarity, item.Location.Item1, item.Location.Item2);
                             break;
                         }
                     }
