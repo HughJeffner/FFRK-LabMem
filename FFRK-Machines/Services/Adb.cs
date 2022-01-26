@@ -742,6 +742,8 @@ namespace FFRK_LabMem.Services
         {
             ImageDef ret = null;
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Finding images: {0} ", images.Count);
+
             using (var framebuffer = await GetFrame(cancellationToken))
             {
                 double ratio = (double)framebuffer.Height / (double)framebuffer.Width;
@@ -771,7 +773,11 @@ namespace FFRK_LabMem.Services
                                 ((match.Y + (match.Height/2)) / (double)height) * 100
                             );
                             ret = item;
-                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1} [{2},{3}]", matches.Length, matches[0].Similarity, item.Location.Item1, item.Location.Item2);
+                            if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
+                            {
+                                var pixelLoc = await ConvertPctToXY(item.Location);
+                                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1} [{2},{3}]", matches.Length, matches[0].Similarity, pixelLoc.Item1, pixelLoc.Item2);
+                            }
                             break;
                         }
                     }
@@ -779,7 +785,7 @@ namespace FFRK_LabMem.Services
                 }
 
             }
-
+            if (ret == null) ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: 0");
             return ret;
 
         }
@@ -973,6 +979,25 @@ namespace FFRK_LabMem.Services
 
             return null;
 
+        }
+
+        public async Task<ImageDef> WaitForImage(Adb.ImageDef image, int timeout, CancellationToken cancellationToken)
+        {
+            List<Adb.ImageDef> items = new List<Adb.ImageDef>() { image };
+
+            // Find
+            var time = new Stopwatch();
+            do
+            {
+                var img = await FindImages(items, 3,cancellationToken);
+                if (img != null)
+                {
+                    return img;
+                }
+                if (timeout > 0) await Task.Delay(CaptureRate, cancellationToken);
+            } while (time.ElapsedMilliseconds < timeout * 1000);
+           
+            return null;
         }
 
         public async Task<Tuple<int, int>> GetOffsets(string htmlColor, int threshold, CancellationToken cancellationToken)
