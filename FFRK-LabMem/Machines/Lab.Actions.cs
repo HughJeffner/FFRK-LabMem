@@ -33,14 +33,14 @@ namespace FFRK_LabMem.Machines
             await this.Adb.TapPct(X, Y, this.CancellationToken);
         }
 
-        private async Task<bool> DelayedTapButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries, double granularity = 0.5)
+        private async Task<bool> DelayedTapButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries, double granularity = 0.5, int certainty = 0)
         {
 
             // Initial delay
             await LabTimings.Delay(key, this.CancellationToken);
 
             // Find
-            var ret = await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity);
+            var ret = await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity, certainty);
 
             // Tuning
             LabTimings.TuneTiming(key, ret.tapped, ret.retries);
@@ -272,7 +272,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                if (transition.Source == State.Unknown || transition.Source == State.FoundTreasure) await Task.Delay(5000); // Additional delay if from explore/unknown
+                if (transition.Source == State.Unknown || transition.Source == State.FoundSealedDoor) await Task.Delay(3000); // Additional delay if from explore/unknown
                 await DelayedTapPct("Pre-SelectTreasure", 17 + (33 * (selectedTreasureIndex)), 50);
 
                 // Check if key needed
@@ -356,7 +356,7 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Battle Info");
-            if (await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 56.6, 80, 95, 30))
+            if (await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 56.6, 80, 95, 30, 0.5, 1))
             {
                 await this.StateMachine.FireAsync(Trigger.EnterDungeon);
             }
@@ -496,7 +496,7 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            await DelayedTapButton("Pre-ConfirmPortal", BUTTON_BLUE, 3000, 86, 58, 68, 10);
+            await DelayedTapButton("Pre-ConfirmPortal", BUTTON_BLUE, 3000, 86, 58, 68, 10, 0.5, 1);
             await LabTimings.Delay("Post-ConfirmPortal", this.CancellationToken);
         }
 

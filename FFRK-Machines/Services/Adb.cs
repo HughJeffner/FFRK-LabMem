@@ -25,7 +25,7 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private int cachedApiLevel = 0;
-        private Task minicapTask = null;
+        private CancellationToken minicapTaskToken = new CancellationToken();
         private int minicapTimeouts = 0;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
@@ -664,10 +664,22 @@ namespace FFRK_LabMem.Services
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
 
                 // Start on background thread
-                minicapTask = Task.Run(() =>
+                _ = Task.Run(async() =>
                 {
-                    string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
-                    AdbClient.Instance.ExecuteRemoteCommand(cmd, this.Device, null);
+                    try
+                    {
+                        string cmd = $"LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
+                        await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception ex)
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                    }
+                    finally
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
+                    }
                 });
 
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
@@ -902,9 +914,13 @@ namespace FFRK_LabMem.Services
             if (matches.Count > 0)
             {
                 var min = matches.Keys.Min();
-                Debug.Print("matches: {0}, closest: {1}", matches.Count, min);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1}", matches.Count, min);
-                return matches[min];
+                var match = matches[min];
+                if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
+                {
+                    var pixelLoc = await ConvertPctToXY(match);
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}, closest: {1} [{2},{3}]", matches.Count, min, pixelLoc.Item1, pixelLoc.Item2);
+                }
+                return match;
             }
             Debug.Print("matches: {0}", matches.Count);
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "matches: {0}", matches.Count);
@@ -912,10 +928,10 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5)
+        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5, int certainty = 0)
         {
             
-            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity);
+            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity, certainty);
             if (button == null)
             {
                 return new FindButtonResult();
@@ -936,17 +952,20 @@ namespace FFRK_LabMem.Services
             public bool tapped = false;
         }
 
-        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int timeout, CancellationToken cancellationToken, double granularity = 0.5)
+        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int timeout, CancellationToken cancellationToken, double granularity = 0.5, int certainty = 0)
         {
             var time = new Stopwatch();
             time.Start();
             int tries = 0;
+            List<Tuple<double, double>> prevButtons = new List<Tuple<double, double>>();
             do
             {
                 var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, granularity);
                 if (b != null)
                 {
-                    return new FindButtonResult() { button = b, retries = tries };
+                    if (certainty <= 0 || prevButtons.Where(i => i.Equals(b)).Count() >= certainty)
+                        return new FindButtonResult() { button = b, retries = tries };
+                    prevButtons.Add(b);
                 }
                 tries++;
                 if (timeout > 0) await Task.Delay(CaptureRate, cancellationToken);
