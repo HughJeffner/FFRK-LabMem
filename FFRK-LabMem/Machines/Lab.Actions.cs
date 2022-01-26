@@ -272,7 +272,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                if (transition.Source != State.Ready) await Task.Delay(5000); // Additional delay if from any state other than Ready
+                if (transition.Source == State.Unknown || transition.Source == State.FoundTreasure) await Task.Delay(5000); // Additional delay if from explore/unknown
                 await DelayedTapPct("Pre-SelectTreasure", 17 + (33 * (selectedTreasureIndex)), 50);
 
                 // Check if key needed
