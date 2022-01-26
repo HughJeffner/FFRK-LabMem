@@ -47,38 +47,50 @@ namespace FFRK_LabMem
             if (config.GetBool("updates.checkForUpdates", false))
                 _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
 
-
-            // Controller
-            LabController controller = LabController.CreateAndStart(config).Result;
-
-            // Ad-hoc command loop
-            Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
-            Console.WriteLine("Type ? for help");
-            while (true)
+            LabController controller = null;
+            try
             {
-                var key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.X && key.Modifiers == ConsoleModifiers.Control) break;
-                if (key.Key == ConsoleKey.E) controller.Enable();
-                if (key.Key == ConsoleKey.D) controller.Disable();
-                if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
-                if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
-                if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
-                if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
-                if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) if (Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Result) break;
-                if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
-                if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
-                if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
-                if (key.Key == ConsoleKey.Q) controller.QuickExplore();
-                if (key.Key >= ConsoleKey.D0 && key.Key <= ConsoleKey.D9) controller.SetRestartCount(int.Parse(key.KeyChar.ToString()));
-                if (key.Key == ConsoleKey.OemMinus) controller.SetRestartCount(-1);
-                if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
-                if (key.Key == ConsoleKey.B) Benchmark.FrameCapture(controller);
+                // Controller
+                controller = LabController.CreateAndStart(config).Result;
 
+                // Ad-hoc command loop
+                Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
+                Console.WriteLine("Type ? for help");
+                while (true)
+                {
+                    var key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.X && key.Modifiers == ConsoleModifiers.Control) break;
+                    if (key.Key == ConsoleKey.E) controller.Enable();
+                    if (key.Key == ConsoleKey.D) controller.Disable();
+                    if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
+                    if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
+                    if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
+                    if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
+                    if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) if (Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Result) break;
+                    if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
+                    if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
+                    if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
+                    if (key.Key == ConsoleKey.Q) controller.QuickExplore();
+                    if (key.Key >= ConsoleKey.D0 && key.Key <= ConsoleKey.D9) controller.SetRestartCount(int.Parse(key.KeyChar.ToString()));
+                    if (key.Key == ConsoleKey.OemMinus) controller.SetRestartCount(-1);
+                    if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
+                    if (key.Key == ConsoleKey.B) Benchmark.FrameCapture(controller);
+
+                }
             }
-            
-            // Stop
-            controller.Stop();
-            OnConsoleExit();
+            catch(Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                ColorConsole.WriteLine("Unhandled exception occured, press any key to exit");
+                ColorConsole.LogBuffer.Flush();
+                Console.ReadKey();
+            }
+            finally
+            {
+                // Stop
+                if (controller != null) controller.Stop();
+                OnConsoleExit();
+            }
 
         }
 
