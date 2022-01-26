@@ -289,29 +289,38 @@ namespace FFRK_LabMem.Machines
                 State.EquipParty
             };
 
-            // Message and screenshot
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
-            if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
-
-            // Keep track of current state in case it changes
-            var previousState = StateMachine.State;
-
-            // Navigate back
-            if (backStates.Contains(StateMachine.State))
+            // On a timer thread, need to handle errors
+            try
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
-                for (int i = 0; i < 3; i++)
+                // Message and screenshot
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
+                if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
+
+                // Keep track of current state in case it changes
+                var previousState = StateMachine.State;
+
+                // Navigate back
+                if (backStates.Contains(StateMachine.State))
                 {
-                    await Adb.NavigateBack(this.CancellationToken);
-                    await Task.Delay(500);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
+                    for (int i = 0; i < 3; i++)
+                    {
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await Task.Delay(500);
+                    }
+                    await Task.Delay(3000);
                 }
-                await Task.Delay(3000);
-            }
 
-            // Auto start if no state transition
-            if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
+                // Auto start if no state transition
+                if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
+                {
+                    await AutoStart();
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
             {
-                await AutoStart();
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
            
         }

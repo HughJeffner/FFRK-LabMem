@@ -981,7 +981,7 @@ namespace FFRK_LabMem.Services
 
         }
 
-        public async Task<ImageDef> WaitForImage(Adb.ImageDef image, int timeout, CancellationToken cancellationToken)
+        public async Task<ImageDef> WaitForImage(Adb.ImageDef image, int scaleFactor, int timeout, CancellationToken cancellationToken)
         {
             List<Adb.ImageDef> items = new List<Adb.ImageDef>() { image };
 
@@ -989,7 +989,7 @@ namespace FFRK_LabMem.Services
             var time = new Stopwatch();
             do
             {
-                var img = await FindImages(items, 3,cancellationToken);
+                var img = await FindImages(items, scaleFactor,cancellationToken);
                 if (img != null)
                 {
                     return img;
