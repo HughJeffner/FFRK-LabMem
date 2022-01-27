@@ -410,7 +410,7 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Timed out waiting for fatigue values");
                 }
                 
             } else
