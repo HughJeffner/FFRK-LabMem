@@ -63,10 +63,9 @@ namespace FFRK_LabMem.Machines
                         enemyEntry.PriorityAdjust,
                         enemyName);
                     var combatants = Config.PaintingPriorityMap.Where(p => p.Key.StartsWith("1."));
-                    var highest = combatants.OrderByDescending(p2=>p2.Value).First().Value * 10;
                     var lowest = combatants.OrderBy(p2=>p2.Value).First().Value * 10;
                     var priority = Config.PaintingPriorityMap[type] * 10;
-                    if (enemyEntry.PriorityAdjust > 0) priority = highest + enemyEntry.PriorityAdjust;
+                    if (enemyEntry.PriorityAdjust > 0) priority = maxPriority + enemyEntry.PriorityAdjust;
                     if (enemyEntry.PriorityAdjust < 0) priority = lowest + enemyEntry.PriorityAdjust;
                     return (Config.EnemyBlocklistAvoidOptionOverride ? maxPriority + 10 : priority);
                 }
