@@ -703,19 +703,25 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
-        public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken)
+        public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken, int tapsPerSecond = 5)
         {
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
 
-            // 1 tap at start
-            await TapXY(target.Item1, target.Item2, cancellationToken);
+            // Taps per second milliseconds
+            var tpsMs = 1000 / tapsPerSecond;
 
             // Tap for duration
             var time = new Stopwatch();
             time.Start();
             do
             {
-                await TapXY(target.Item1, target.Item2, cancellationToken);
+                await Task.WhenAny( 
+                    AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", target.Item1, target.Item2),
+                    this.Device,
+                    null,
+                    cancellationToken,
+                    1000), 
+                    Task.Delay(tpsMs, cancellationToken));
             } while (time.ElapsedMilliseconds < duration.TotalMilliseconds);
 
         }
