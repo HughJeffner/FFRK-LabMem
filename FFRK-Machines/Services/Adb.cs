@@ -536,21 +536,48 @@ namespace FFRK_LabMem.Services
         private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
         {
 
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
+            String filePath = null;
             try
             {
+                // File path unique per emulator
+                var emulatorName = Device.Name;
+                if (String.IsNullOrEmpty(emulatorName)) emulatorName = "unknown";
+                foreach (var c in Path.GetInvalidFileNameChars())
+                {
+                    emulatorName = emulatorName.Replace(c, '-');
+                }
+                filePath = $@".\minicap\verify_{emulatorName}.jpg";
+
+                // If verification image present then immedately return true
+                if (File.Exists(filePath)) return true;
+
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
+
+                // Need to wait for service to fully start
+                await Task.Delay(1000);
+
+                // Save verification image
                 using (var frame = await Minicap.CaptureFrame(2000, cancellationToken))
                 {
+                    // No image, failed
                     if (frame == null) return false;
+
+                    // Save to verification image file
+                    frame.Save(filePath);
+
+                    // Examine
                     using (var bitmap = new Bitmap(frame))
                     {
                         var stat = new AForge.Imaging.ImageStatisticsHSL(bitmap);
                         if (stat.Luminance.Max == 0 || stat.Luminance.Mean < 0.001)
                         {
+                            // Delete verification file and return false
+                            File.Delete(filePath);
                             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Minicap returning blank screen with a avg luminance of {stat.Luminance.Mean}");
                             return false;
                         }
                     }
+
                 }
 
                 return true;
@@ -559,6 +586,8 @@ namespace FFRK_LabMem.Services
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
+            // Delete verification file and return false
+            if (filePath != null) File.Delete(filePath);
             return false;
         }
 
@@ -568,7 +597,7 @@ namespace FFRK_LabMem.Services
             // Execute minicap on device
             if (screenSize == null) screenSize = await GetScreenSize();
             string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -t";
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Verifying minicap: {cmd}");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Testing minicap: {cmd}");
             var receiver = new ConsoleOutputReceiver();
             await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
                 this.Device,
@@ -586,6 +615,7 @@ namespace FFRK_LabMem.Services
 
             bool installed = false;
 
+            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up frame capture");
             if (await MinicapInstalled(cancellationToken))
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed");
@@ -614,7 +644,6 @@ namespace FFRK_LabMem.Services
             if (this.Capture == CaptureType.Minicap && !await IsPackageRunning("minicap", cancellationToken))
             {
 
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up frame capture");
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
 
                 // Start on background thread
@@ -635,9 +664,6 @@ namespace FFRK_LabMem.Services
                         ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
                     }
                 });
-
-                // Need to wait for service to fully start
-                await Task.Delay(1000);
 
                 // Forward port
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
