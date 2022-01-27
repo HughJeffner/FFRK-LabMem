@@ -26,7 +26,7 @@ namespace FFRK_LabMem.Machines
             {"2", "O" },
             {"3", "R" }
         };
-
+ 
         private async Task DelayedTapPct(string key, double X, double Y)
         {
             await LabTimings.Delay(key, this.CancellationToken);
@@ -200,8 +200,10 @@ namespace FFRK_LabMem.Machines
             if (total == 2) margin = 33;
             if (total == 1) margin = 50;
             var target = margin + (offset * selectedPaintingIndex);
-            await DelayedTapPct("Pre-SelectPainting", target, 50);
-            await DelayedTapPct("Inter-SelectPainting", target, 50);
+
+            // Delay, then spam taps for duration
+            await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
+            await Adb.TapPctSpam(target, 50, await LabTimings.GetTimeSpan("Inter-SelectPainting"), this.CancellationToken);
            
             // Counter
             await Counters.PaintingSelected();

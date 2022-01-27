@@ -175,7 +175,7 @@ namespace FFRK_LabMem.Machines
             { "Inter-AutoStart", new Timing() { Delay=1000} },
             { "Post-AutoStart", new Timing() { Delay=0} },
             { "Pre-SelectPainting", new Timing(){ Delay=2000 } },
-            { "Inter-SelectPainting", new Timing(){ Delay=500 } },
+            { "Inter-SelectPainting", new Timing(){ Delay=1000 } },
             { "Post-SelectPainting", new Timing(){ Delay=0 } },
             { "Pre-RadiantPaintingScreenshot", new Timing(){ Delay=4000 } },
             { "Pre-SelectTreasure", new Timing() {Delay=2000 } },

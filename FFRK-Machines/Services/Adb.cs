@@ -613,6 +613,8 @@ namespace FFRK_LabMem.Services
 
             if (this.Capture == CaptureType.Minicap && !await IsPackageRunning("minicap", cancellationToken))
             {
+
+                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up frame capture");
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
 
                 // Start on background thread
@@ -699,6 +701,23 @@ namespace FFRK_LabMem.Services
         {
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
             await TapXY(target.Item1, target.Item2, cancellationToken);
+        }
+
+        public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken)
+        {
+            Tuple<int, int> target = await ConvertPctToXY(X, Y);
+
+            // 1 tap at start
+            await TapXY(target.Item1, target.Item2, cancellationToken);
+
+            // Tap for duration
+            var time = new Stopwatch();
+            time.Start();
+            do
+            {
+                await TapXY(target.Item1, target.Item2, cancellationToken);
+            } while (time.ElapsedMilliseconds < duration.TotalMilliseconds);
+
         }
 
         public async Task<ImageDef> FindImages(List<ImageDef> images, int scaleFactor, CancellationToken cancellationToken)
