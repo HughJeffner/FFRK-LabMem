@@ -265,6 +265,7 @@ namespace FFRK_LabMem.Data
             foreach (var set in GetTargetCounterSets())
             {
                 set.Value.Counters[key] += amt;
+                if (set.Value.Counters[key] < 0) set.Value.Counters[key] = 0;
             }
             if (save) await _instance.Save();
         }
