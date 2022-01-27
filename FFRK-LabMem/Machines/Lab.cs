@@ -162,6 +162,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
+                .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 

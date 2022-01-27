@@ -19,6 +19,7 @@ namespace FFRK_LabMem.Machines
 
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
+        private const string BUTTON_ORANGE = "#c85f07";
         private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
@@ -358,11 +359,17 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Battle Info");
-            if (await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 56.6, 80, 95, 30, 0.5, 1))
+            bool button = false;
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle)
             {
-                await this.StateMachine.FireAsync(Trigger.EnterDungeon);
+                button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, 0.5, 1);
+            } else
+            {
+                button = await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 59, 77, 93, 25, 0.5, 1);
+                if (button) await this.StateMachine.FireAsync(Trigger.EnterDungeon);
             }
-            else
+
+            if(!button)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);

@@ -33,6 +33,7 @@ namespace FFRK_LabMem.Machines
             LowestFatigue12,
             RandomAny,
             Random12,
+            InstaBattle
         }
         public enum CompleteMissionOption
         {
