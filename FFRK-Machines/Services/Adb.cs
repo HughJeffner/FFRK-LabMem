@@ -536,6 +536,35 @@ namespace FFRK_LabMem.Services
         private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
+            try
+            {
+                using (var frame = await Minicap.CaptureFrame(2000, cancellationToken))
+                {
+                    if (frame == null) return false;
+                    using (var bitmap = new Bitmap(frame))
+                    {
+                        var stat = new AForge.Imaging.ImageStatisticsHSL(bitmap);
+                        if (stat.Luminance.Max == 0 || stat.Luminance.Mean < 0.001)
+                        {
+                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Minicap returning blank screen with a avg luminance of {stat.Luminance.Mean}");
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+            }
+            return false;
+        }
+
+        private async Task<bool> MinicapInstalled(CancellationToken cancellationToken)
+        {
+
             // Execute minicap on device
             if (screenSize == null) screenSize = await GetScreenSize();
             string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -t";
@@ -546,7 +575,8 @@ namespace FFRK_LabMem.Services
                 receiver,
                 cancellationToken,
                 2000);
-            return receiver.ToString().TrimEnd().EndsWith("OK");
+
+           return receiver.ToString().TrimEnd().EndsWith("OK");
 
         }
 
@@ -556,7 +586,7 @@ namespace FFRK_LabMem.Services
 
             bool installed = false;
 
-            if (await MinicapVerify(cancellationToken))
+            if (await MinicapInstalled(cancellationToken))
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed");
                 installed = true;
@@ -566,7 +596,7 @@ namespace FFRK_LabMem.Services
                 if (await MinicapInstall(cancellationToken))
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
-                    if (await MinicapVerify(cancellationToken))
+                    if (await MinicapInstalled(cancellationToken))
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed");
                         installed = true;
@@ -576,7 +606,7 @@ namespace FFRK_LabMem.Services
 
             if (!installed)
             {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB framebuffer");
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
                 this.Capture = CaptureType.ADB;
                 return;
             }
@@ -604,8 +634,20 @@ namespace FFRK_LabMem.Services
                     }
                 });
 
+                // Need to wait for service to fully start
+                await Task.Delay(1000);
+
+                // Forward port
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
                 AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
+
+                // Verify install
+                if (!await MinicapVerify(cancellationToken))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
+                    this.Capture = CaptureType.ADB;
+                    return;
+                }
 
             }
 
