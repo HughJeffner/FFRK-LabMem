@@ -137,7 +137,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.PickedPortal, State.PortalConfirm)
                 .Permit(Trigger.FoundBoss, State.WaitForBoss)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
-                .Permit(Trigger.FinishedLab, State.Completed);
+                .Permit(Trigger.FinishedLab, State.Completed)
+                .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
