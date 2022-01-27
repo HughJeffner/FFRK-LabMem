@@ -135,10 +135,13 @@ namespace FFRK_LabMem.Data
                     {"UsedTeleportStones",0},
                     {"UsedStaminaPots",0},
                     {"PulledInPortal",0},
-                    {"FFRKRestarts",0},
                     {"HeroEquipmentGot",0},
                     {"EnemyIsUponYou",0},
                     {"QuickExplores",0},
+                    {"FFRKCrashes",0},
+                    {"FFRKHangs",0},
+                    {"FFRKRecoveries",0},
+                    {"FFRKRestarts",0}
                 };
         }
 

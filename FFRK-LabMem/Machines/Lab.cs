@@ -232,6 +232,9 @@ namespace FFRK_LabMem.Machines
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Crash) await Counters.FFRKCrashed();
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang) await Counters.FFRKHang(Watchdog.Config.HangWarningSeconds > 0);
+
             // On a timer thread, need to handle errors
             try
             {
@@ -316,6 +319,7 @@ namespace FFRK_LabMem.Machines
                 {
                     await AutoStart();
                 }
+                await Counters.FFRKRecovered();
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)

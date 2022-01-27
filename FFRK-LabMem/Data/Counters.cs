@@ -193,6 +193,19 @@ namespace FFRK_LabMem.Data
         {
             await _instance.IncrementCounter("PulledInPortal");
         }
+        public static async Task FFRKCrashed()
+        {
+            await _instance.IncrementCounter("FFRKCrashes");
+        }
+        public static async Task FFRKHang(bool decrementRecovered = false)
+        {
+            await _instance.IncrementCounter("FFRKHangs");
+            if (decrementRecovered) await _instance.IncrementCounter("FFRKRecoveries", -1);
+        }
+        public static async Task FFRKRecovered()
+        {
+            await _instance.IncrementCounter("FFRKRecoveries");
+        }
         public static async Task FFRKRestarted()
         {
             await _instance.IncrementCounter("FFRKRestarts");
