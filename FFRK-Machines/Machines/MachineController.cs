@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using FFRK_LabMem.Services;
+using FFRK_Machines.Services;
 using Newtonsoft.Json.Linq;
 
 namespace FFRK_Machines.Machines

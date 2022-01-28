@@ -15,7 +15,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using FFRK_Machines.Services;
 
-namespace FFRK_LabMem.Services
+namespace FFRK_Machines.Services
 {
     public class Adb
     {

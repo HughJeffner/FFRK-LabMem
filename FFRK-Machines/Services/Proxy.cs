@@ -7,13 +7,12 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 
-namespace FFRK_LabMem.Services
+namespace FFRK_Machines.Services
 {
     public class Proxy
     {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
+using FFRK_Machines.Services;
 using System.Threading;
 using System.Linq;
 using FFRK_LabMem.Data;

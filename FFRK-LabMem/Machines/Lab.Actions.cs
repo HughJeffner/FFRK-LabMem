@@ -1,5 +1,5 @@
 ﻿using FFRK_LabMem.Data;
-using FFRK_LabMem.Services;
+using FFRK_Machines.Services;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
 using FFRK_Machines.Services.Notifications;
