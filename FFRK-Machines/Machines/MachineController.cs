@@ -143,10 +143,10 @@ namespace FFRK_Machines.Machines
         private async Task EngageMachine()
         {
             Machine.RegisterWithProxy(Proxy);
-            if (this.proxySecure) await Adb.InstallRootCert("rootCert.pfx", CancellationToken.None);
+            if (this.proxySecure) await Adb.InstallCertificate("rootCert.pfx", CancellationToken.None);
             if (this.proxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
-            await Adb.MinicapSetup(CancellationToken.None);
-            await Adb.MinitouchSetup(CancellationToken.None);
+            await Adb.CaptureSetup(CancellationToken.None);
+            await Adb.InputSetup(CancellationToken.None);
         }
 
         private void Adb_DeviceAvailable(object sender, SharpAdbClient.DeviceDataEventArgs e)

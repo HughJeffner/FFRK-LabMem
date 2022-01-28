@@ -101,6 +101,10 @@
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
+    <Compile Include="Services\Adb\CaptureManager.cs" />
+    <Compile Include="Services\Adb\CertificateManager.cs" />
+    <Compile Include="Services\Adb\InputManager.cs" />
+    <Compile Include="Services\Adb\ProxyManager.cs" />
     <Compile Include="Services\Minicap.cs" />
     <Compile Include="Services\Minitouch.cs" />
     <Compile Include="Services\Notifications\EmailNotification.cs" />

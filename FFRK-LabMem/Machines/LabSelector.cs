@@ -41,7 +41,7 @@ namespace FFRK_LabMem.Machines
                 if (Config.ScreenshotRadiantPainting)
                 {
                     await LabTimings.Delay("Pre-RadiantPaintingScreenshot", Lab.CancellationToken);
-                    await Adb.SaveScrenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), Lab.CancellationToken);
+                    await Adb.SaveScreenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), Lab.CancellationToken);
                 }
                 await Counters.FoundRadiantPainting();
                 var rPriority = 0;

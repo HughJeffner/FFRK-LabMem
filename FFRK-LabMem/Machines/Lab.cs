@@ -300,7 +300,7 @@ namespace FFRK_LabMem.Machines
             {
                 // Message and screenshot
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
-                if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
+                if (Watchdog.Config.HangScreenshot) await Adb.SaveScreenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
 
                 // Keep track of current state in case it changes
                 var previousState = StateMachine.State;

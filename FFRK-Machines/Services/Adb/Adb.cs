@@ -5,15 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SharpAdbClient;
 using System.Diagnostics;
-using FFRK_Machines;
 using FFRK_Machines.Extensions;
 using System.Threading;
-using System.IO;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using FFRK_Machines.Services;
 
 namespace FFRK_Machines.Services.Adb
 {
@@ -22,15 +18,13 @@ namespace FFRK_Machines.Services.Adb
 
         public const String FFRK_PACKAGE_NAME = "com.dena.west.FFRK";
         public const String FFRK_ACTIVITY_NAME = "jp.dena.dot.Dot";
-        private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
-        private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
-        private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
-        private const String MINICAP_PATH = "/data/local/tmp/";
         private int cachedApiLevel = 0;
         private string cachedAbi = string.Empty;
-        private CancellationToken minicapTaskToken = new CancellationToken();
-        private int minicapTimeouts = 0;
-        private Minitouch minitouch;
+        private Size cachedScreenSize = null;
+        private String host;
+        private DeviceMonitor deviceMonitor = null;
+        private InputManager inputManager;
+        private CaptureManager captureManager;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -62,7 +56,7 @@ namespace FFRK_Machines.Services.Adb
                 return string.Format("{0}: {1} {2}", Image, Simalarity, Location);
             }
         }
-        protected DeviceData Device { get; set; }
+        public DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
 
@@ -77,9 +71,6 @@ namespace FFRK_Machines.Services.Adb
                 return this.Device != null;
             }
         }
-        private Size screenSize = null;
-        private String host;
-        private DeviceMonitor deviceMonitor = null;
         
         public Adb(string path, string host, int topOffset, int bottomOffset)
         {
@@ -147,6 +138,30 @@ namespace FFRK_Machines.Services.Adb
             }
 
 
+        }
+
+        public async Task InstallCertificate(String pfxPath, CancellationToken cancellationToken)
+        {
+            var certificateManager = new CertificateManager(this);
+            await certificateManager.InstallRootCert(pfxPath, cancellationToken);
+        }
+
+        public async Task<bool> SetProxySettings(int proxyPort, CancellationToken cancellationToken)
+        {
+            return await ProxyManager.SetProxySettings(AdbClient.Instance, this.Device, proxyPort, cancellationToken);
+
+        }
+
+        public async Task InputSetup(CancellationToken cancellationToken)
+        {
+            inputManager = new InputManager(this);
+            await inputManager.Setup(cancellationToken);
+        }
+
+        public async Task CaptureSetup(CancellationToken cancellationToken)
+        {
+            captureManager = new CaptureManager(this);
+            await captureManager.Setup(cancellationToken);
         }
 
         public async Task NavigateHome(CancellationToken cancellationToken)
@@ -228,635 +243,15 @@ namespace FFRK_Machines.Services.Adb
             cachedAbi = receiver.ToString().TrimEnd();
             return cachedAbi;
         }
-
-        public async Task<bool> SetProxySettings(int proxyPort, CancellationToken cancellationToken)
-        {
-            var receiver = new ConsoleOutputReceiver();
-
-            // Remove or set
-            if (proxyPort == 0)
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Removing proxy settings...");
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings put global http_proxy :0",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings delete global global_http_proxy_exclusion_list",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Please restart your device/emulator to finish applying proxy settings");
-            } 
-            else
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detecting proxy settings...");
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("ip route list match 0 table all scope global",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                string defaultRoute = "10.0.2.2";
-                if (receiver.ToString().ToLower().StartsWith("default via"))
-                {
-                    defaultRoute = receiver.ToString().Split(' ')[2];
-                } else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Could not determine default route, using default: {0}", defaultRoute);
-                }
-                receiver = new ConsoleOutputReceiver();
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_host",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                bool proxyHostMatch = receiver.ToString().TrimEnd().ToLower().Equals(defaultRoute);
-                receiver = new ConsoleOutputReceiver();
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_port",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                bool proxyPortMatch = receiver.ToString().TrimEnd().Equals(proxyPort.ToString());
-                receiver = new ConsoleOutputReceiver();
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("settings get global global_http_proxy_exclusion_list",
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                bool proxyExclusionMatch = receiver.ToString().TrimEnd().ToLower().Equals(Proxy.PROXY_BYPASS.ToLower());
-                if (!proxyHostMatch || !proxyPortMatch || !proxyExclusionMatch)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Auto-setting system proxy settings...");
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("settings put global http_proxy {0}:{1}", defaultRoute, proxyPort),
-                    this.Device,
-                    receiver,
-                    cancellationToken,
-                    2000);
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("settings put global global_http_proxy_exclusion_list " + Proxy.PROXY_BYPASS,
-                        this.Device,
-                        receiver,
-                        cancellationToken,
-                        2000);
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("settings delete global http_proxy",
-                        this.Device,
-                        receiver,
-                        cancellationToken,
-                        2000);
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Please restart your device/emulator to apply proxy settings");
-                    return await Task.FromResult(false);
-                } else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Proxy settings OK (trouble loading?, try changing port)");
-                }
-                
-            }
-
-            return await Task.FromResult(true);
-
-        }
-
-        public async Task<bool> CopyUserCertsToSystem(CancellationToken cancellationToken)
-        {
-
-            var receiver = new ConsoleOutputReceiver();
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Remount system partition as writeable");
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("mount -o rw,remount /system",
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-            if (receiver.ToString().Contains("denied")) return false;
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy user certs to system certs");
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("cp /data/misc/user/0/cacerts-added/* /system/etc/security/cacerts/",
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Remount system partition as read only");
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("mount -o ro,remount /system",
-               this.Device,
-               receiver,
-               cancellationToken,
-               2000);
-            return true;
-        }
-
-        public async Task<RootCertInstalledStatus> CheckIfRootCertInstalled(int apiLevel)
-        {
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                var ret = new RootCertInstalledStatus();
-                ret.UserExists = service.Stat(CERTIFICATE_USER_PATH).FileMode != 0;
-                ret.SystemExists = service.Stat(CERTIFICATE_SYSTEM_PATH).FileMode != 0;
-                ret.Installed = ((ret.UserExists && apiLevel <= 23) || ret.SystemExists);
-                return await Task.FromResult(ret);
-            }
-
-        }
-
-        public async Task<bool> CopyRootCertToStorage(String certPath, X509Certificate2 rootCert, CancellationToken cancellationToken)
-        {
-
-            try
-            {
-                using (var service = Factories.SyncServiceFactory(this.Device))
-                {
-                    using (MemoryStream stream = new MemoryStream(rootCert.Export(X509ContentType.Cert)))
-                    {
-                        service.Push(stream, certPath, 999, DateTime.Now, null, cancellationToken);
-                    }
-                }
-            } catch (Exception ex)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                return await Task.FromResult(false);
-            }
-     
-            return await Task.FromResult(true);
-
-        }
-
-        public async Task<X509Certificate2> GetInstalledRootCert(bool isSystemCert, CancellationToken cancellationToken)
-        {
-
-            var pathToCert = (isSystemCert) ? CERTIFICATE_SYSTEM_PATH : CERTIFICATE_USER_PATH;
-            X509Certificate2 ret;
-
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    service.Pull(pathToCert, stream, null, cancellationToken);
-                    ret = new X509Certificate2(stream.ToArray());
-                }
-            }
-
-            return await Task.FromResult(ret);
-        }
-
-        public async Task PromptToInstallRootCert(String cert, X509Certificate2 rootCert, int apiLevel, CancellationToken cancellationToken)
-        {
-
-            // First copy it over
-            if (await CopyRootCertToStorage(cert, rootCert, cancellationToken))
-            {
-
-                // Start security settings activity
-                await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("am start -a android.settings.SECURITY_SETTINGS"),
-                                this.Device,
-                                null,
-                                cancellationToken,
-                                2000);
-
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "***************** Install Certificate *****************");
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Scroll to Credential Storage > Install from SD card");
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Browse to {0}", cert);
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Use FFRK for certificate name");
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Choose VPN and Apps for credential use");
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "(You may need to set a device lockscreen)");
-
-                // Need root
-                if (apiLevel >= 24)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************ROOT REQUIRED***********************");
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Please press <Enter> once certificate installed to copy");
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "it to the system store");
-                    while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
-                    if (await CopyUserCertsToSystem(cancellationToken))
-                    {
-                        if ((await CheckIfRootCertInstalled(apiLevel)).Installed)
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy complete.  You may now delete the user certificate");
-                        }
-                        else
-                        {
-                            ColorConsole.WriteLine(ConsoleColor.Yellow, "Copy failed.  Check if the certificate is under the user tab of Trusted Credentials and try again");
-                        }
-
-                    }
-                    else
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "This version of android currently not supported (7+ no root).  Please root your device.");
-                    }
-                }
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "*******************************************************");
-
-            }
-
-        }
-
-        public async Task ValidateInstalledRootCert(String certPath, bool isSystemCert, X509Certificate2 rootCert, int apiLevel, CancellationToken cancellationToken)
-        {
-
-            var installedRootCert = await GetInstalledRootCert(isSystemCert, cancellationToken);
-
-            // Thumbprint check
-            if (!installedRootCert.Thumbprint.Equals(rootCert.Thumbprint))
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE MISMATCH **");
-                ColorConsole.WriteLine(ConsoleColor.Red, "** DELETE THE CURRENT CERTIFICATE IN THE USER TAB BEFORE PROCEEDING**");
-                await PromptToInstallRootCert(certPath, rootCert, apiLevel, cancellationToken);
-                return;
-            }
-
-            // Expired
-            TimeSpan timeLeft = installedRootCert.NotAfter - DateTime.Now;
-            if (timeLeft.TotalMinutes <= 0)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE EXPIRED **");
-                ColorConsole.WriteLine(ConsoleColor.Red, "** DELETE THE CURRENT CERTIFICATE IN THE USER TAB BEFORE PROCEEDING**");
-                await PromptToInstallRootCert(certPath, rootCert, apiLevel, cancellationToken);
-                return;
-            }
-
-            // Expire warning
-            if (timeLeft.Days <= 30)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "** WARNING ** Installed root CA certificate will expire in {0} days", timeLeft.Days);
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Delete .pfx file and relaunch to begin re-install process");
-            }
-
-        }
-
-        public async Task InstallRootCert(String pfxPath, CancellationToken cancellationToken)
-        {
-
-            // Get API level
-            int apiLevel = await GetAPILevel(cancellationToken);
-
-            // Lollipop or higher
-            if (apiLevel >= 21)
-            {
-
-                // If pfx file exists
-                if (File.Exists(pfxPath))
-                {
-
-                    // Root Cert in filesystem
-                    var rootCert = new X509Certificate2(pfxPath, "")
-                    {
-                        PrivateKey = null
-                    };
-
-                    // If needs install
-                    var installStatus = await CheckIfRootCertInstalled(apiLevel);
-                    if (!installStatus.Installed)
-                    {
-                        // Prompt to install
-                        await PromptToInstallRootCert(CERTIFICATE_CRT_PATH, rootCert, apiLevel, cancellationToken);
-
-                    } else
-                    {
-                        // Installed certificate validation checks
-                        await ValidateInstalledRootCert(CERTIFICATE_CRT_PATH, installStatus.SystemExists, rootCert, apiLevel, cancellationToken);
-
-                    }
-                    
-                }
-
-            }
-
-        }
-
-        private async Task<bool> MinitouchInstall(CancellationToken cancellationToken)
-        {
-
-            // Get Abi
-            var abi = await GetABI(cancellationToken);
-
-            // Get Api level
-            var apiLevel = await GetAPILevel(cancellationToken);
-
-            // Push binary
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                var source = $"./minicap/{abi}/bin/minitouch";
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
-                using (Stream stream = File.OpenRead(source))
-                {
-                    service.Push(stream, $"{MINICAP_PATH}minitouch", 777, DateTime.Now, null, cancellationToken);
-                }
-            }
-            return true;
-        }
-
-        private async Task<bool> MinicapInstall(CancellationToken cancellationToken)
-        {
-
-            // Get Abi
-            var abi = await GetABI(cancellationToken);
-
-            // Get Api level
-            var apiLevel = await GetAPILevel(cancellationToken);
-
-            // Push binary
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                var source = $"./minicap/{abi}/bin/minicap";
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
-                using (Stream stream = File.OpenRead(source))
-                {
-                    service.Push(stream, $"{MINICAP_PATH}minicap", 777, DateTime.Now, null, cancellationToken);
-                }
-            }
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                var source = $"./minicap/{abi}/bin/minitouch";
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
-                using (Stream stream = File.OpenRead(source))
-                {
-                    service.Push(stream, $"{MINICAP_PATH}minitouch", 777, DateTime.Now, null, cancellationToken);
-                }
-            }
-            // Push shared library
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                var source = $"./minicap/{abi}/lib/android-{apiLevel}/minicap.so";
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
-                using (Stream stream = File.OpenRead(source))
-                {
-                    service.Push(stream, $"{MINICAP_PATH}minicap.so", 777, DateTime.Now, null, cancellationToken);
-                }
-            }
-
-            return true;
-        }
-
-        private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
-        {
-
-            String filePath = null;
-            try
-            {
-                // File path unique per emulator
-                var emulatorName = Device.Name;
-                if (String.IsNullOrEmpty(emulatorName)) emulatorName = "unknown";
-                foreach (var c in Path.GetInvalidFileNameChars())
-                {
-                    emulatorName = emulatorName.Replace(c, '-');
-                }
-                filePath = $@".\minicap\verify_{emulatorName}.jpg";
-
-                // If verification image present then immedately return true
-                if (File.Exists(filePath)) return true;
-
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
-
-                // Need to wait for service to fully start
-                await Task.Delay(1000);
-
-                // Save verification image
-                using (var frame = await Minicap.CaptureFrame(2000, cancellationToken))
-                {
-                    // No image, failed
-                    if (frame == null) return false;
-
-                    // Save to verification image file
-                    frame.Save(filePath);
-
-                    // Examine
-                    using (var bitmap = new Bitmap(frame))
-                    {
-                        var stat = new AForge.Imaging.ImageStatisticsHSL(bitmap);
-                        if (stat.Luminance.Max == 0 || stat.Luminance.Mean < 0.001)
-                        {
-                            // Delete verification file and return false
-                            File.Delete(filePath);
-                            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Minicap returning blank screen with a avg luminance of {stat.Luminance.Mean}");
-                            return false;
-                        }
-                    }
-
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-            }
-            // Delete verification file and return false
-            if (filePath != null) File.Delete(filePath);
-            return false;
-        }
-
-        private async Task<bool> MinitouchInstalled(CancellationToken cancellationToken)
-        {
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Checking minitouch");
-            using (var service = Factories.SyncServiceFactory(this.Device))
-            {
-                return await Task.FromResult(service.Stat($"{MINICAP_PATH}minitouch").FileMode != 0);
-            }
-
-        }
-
-        private async Task<bool> MinicapInstalled(CancellationToken cancellationToken)
-        {
-
-            // Execute minicap on device
-            if (screenSize == null) screenSize = await GetScreenSize();
-            string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0 -t";
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Testing minicap: {cmd}");
-            var receiver = new ConsoleOutputReceiver();
-            await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd,
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-
-           return receiver.ToString().TrimEnd().EndsWith("OK");
-
-        }
-
-        public async Task MinitouchSetup(CancellationToken cancellationToken)
-        {
-
-            if (this.Input == InputType.ADB) return;
-
-            bool installed = false;
-
-            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up input");
-            if (await MinitouchInstalled(cancellationToken))
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minitouch installed");
-                installed = true;
-            }
-            else
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch not installed, attempting to install it now");
-                if (await MinitouchInstall(cancellationToken))
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch installed, testing...");
-                    if (await MinitouchInstalled(cancellationToken))
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch installed");
-                        installed = true;
-                    }
-                }
-            }
-
-            if (!installed)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not start minitouch client, switching to ADB input");
-                this.Input = InputType.ADB;
-                return;
-            }
-
-
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minitouch service");
-
-            // Start service on device
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    string cmd = $"{MINICAP_PATH}minitouch";
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception ex)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                }
-                finally
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Red, "Minitouch service has shut down, please restart the bot to recover.");
-                }
-            });
-
-            // Forward port
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minitouch port");
-            AdbClient.Instance.CreateForward(this.Device, "tcp:1111", "localabstract:minitouch", true);
-
-            // Start minitouch client
-            _ = Task.Delay(500).ContinueWith(async t =>
-            {
-                minitouch = new Minitouch();
-                if (!await minitouch.Connect())
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not start minitouch client, switching to ADB input");
-                    this.Input = InputType.ADB;
-                }
-            });
-
-        }
-
-        public async Task MinicapSetup(CancellationToken cancellationToken)
-        {
-            if (this.Capture == CaptureType.ADB) return;
-
-            bool installed = false;
-
-            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up frame capture");
-            if (await MinicapInstalled(cancellationToken))
-            {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minicap installed");
-                installed = true;
-            } else
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap not installed, attempting to install it now");
-                if (await MinicapInstall(cancellationToken))
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
-                    if (await MinicapInstalled(cancellationToken))
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed");
-                        installed = true;
-                    }
-                } 
-            }
-
-            if (!installed)
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
-                this.Capture = CaptureType.ADB;
-                return;
-            }
-
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
-
-            // Start on background thread
-            _ = Task.Run(async() =>
-            {
-                try
-                {
-                    string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception ex)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                }
-                finally
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
-                }
-            });
-
-            // Forward port
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
-            AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
-
-            // Verify install
-            if (!await MinicapVerify(cancellationToken))
-            {
-                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
-                this.Capture = CaptureType.ADB;
-                return;
-            }
-
-        }
         
         public async Task<Image> GetFrame(CancellationToken cancellationToken)
         {
-            Image ret;
-            var frameBufferStopwatch = new Stopwatch();
-            frameBufferStopwatch.Start();
-            if (Capture == CaptureType.Minicap)
-            {
-                ret = await Minicap.CaptureFrame(2000, cancellationToken);
-                if (ret == null)
-                {
-                    minicapTimeouts += 1;
-                    if (minicapTimeouts >= 5)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
-                        this.Capture = CaptureType.ADB;
-                    }
-                    ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
-                }
-                else
-                {
-                    minicapTimeouts = 0;
-                }
-            }
-            else
-            {
-                ret = await AdbClient.Instance.GetFrameBufferAsync(Device, cancellationToken);
-            }
-            frameBufferStopwatch.Stop();
-            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Frame capture [{Capture}] delay: {frameBufferStopwatch.ElapsedMilliseconds}ms");
-            return ret;
+            return await captureManager.Capture(cancellationToken);
         }
 
         public async Task TapXY(int X, int Y, CancellationToken cancellationToken)
         {
-            if (this.Input == InputType.Minitouch)
-            {
-                await Task.Delay(TapDelay, cancellationToken);
-                await minitouch.Tap(X, Y);
-            } else
-            {
-                await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y),
-                this.Device,
-                null,
-                cancellationToken,
-                1000);
-            }
-            
+            await inputManager.Tap(X, Y, cancellationToken);
         }
 
         public async Task TapPct(double X, double Y, CancellationToken cancellationToken)
@@ -931,7 +326,6 @@ namespace FFRK_Machines.Services.Adb
             return ret;
 
         }
-
         
         public async Task<List<Color>> GetPixelColorXY(List<Tuple<int, int>> coords, CancellationToken cancellationToken)
         {
@@ -962,7 +356,7 @@ namespace FFRK_Machines.Services.Adb
 
         }
 
-        public async Task SaveScrenshot(String fileName, CancellationToken cancellationToken)
+        public async Task SaveScreenshot(String fileName, CancellationToken cancellationToken)
         {
             using (var framebuffer = await GetFrame(cancellationToken))
             {
@@ -1002,20 +396,25 @@ namespace FFRK_Machines.Services.Adb
 
         public async Task<Size> GetScreenSize()
         {
-            // Get screen dimensions
-            using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, System.Threading.CancellationToken.None))
+            if (cachedScreenSize == null)
             {
-                using (Bitmap b = new Bitmap(framebuffer))
+                // Get screen dimensions
+                using (var framebuffer = await AdbClient.Instance.GetFrameBufferAsync(this.Device, CancellationToken.None))
                 {
-                    var size = new Size()
+                    using (Bitmap b = new Bitmap(framebuffer))
                     {
-                        Width = b.Width,
-                        Height = b.Height
-                    };
-                    return size;
-                }
+                        var size = new Size()
+                        {
+                            Width = b.Width,
+                            Height = b.Height
+                        };
+                        cachedScreenSize = size;
+                    }
 
+                }
             }
+
+            return cachedScreenSize;
         }
 
         public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken, double granularity = 0.5)
@@ -1215,9 +614,9 @@ namespace FFRK_Machines.Services.Adb
         private async Task<Tuple<int, int>> ConvertPctToXY(double xPct, double yPct)
         {
 
-            if (screenSize == null) screenSize = await GetScreenSize();
-            double virtX = screenSize.Width * (xPct / 100);
-            double virtY = (screenSize.Height - this.TopOffset - this.BottomOffset) * (yPct / 100) + this.TopOffset;
+            var size = await GetScreenSize();
+            double virtX = size.Width * (xPct / 100);
+            double virtY = (size.Height - this.TopOffset - this.BottomOffset) * (yPct / 100) + this.TopOffset;
             return new Tuple<int, int>((int)virtX, (int)virtY);
 
         }
@@ -1252,14 +651,6 @@ namespace FFRK_Machines.Services.Adb
         {
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Killing");
             AdbClient.Instance.KillAdb();
-        }
-
-        public class RootCertInstalledStatus
-        {
-            public bool Installed { get; set; }
-            public bool UserExists { get; set; }
-            public bool SystemExists { get; set; }
-
         }
 
     }
