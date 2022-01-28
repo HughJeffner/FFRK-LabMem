@@ -1,5 +1,6 @@
 ﻿using SharpAdbClient;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,6 +132,9 @@ namespace FFRK_Machines.Services.Adb
         public async Task Tap(int X, int Y, CancellationToken cancellationToken)
         {
 
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Tapping screen [{adb.Input}] at: [{X},{Y}]");
+            var inputStopWatch = new Stopwatch();
+            inputStopWatch.Start();
             if (adb.Input == InputType.Minitouch)
             {
                 await Task.Delay(adb.TapDelay, cancellationToken);
@@ -144,6 +148,8 @@ namespace FFRK_Machines.Services.Adb
                 cancellationToken,
                 1000);
             }
+            inputStopWatch.Stop();
+            ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Input [{adb.Input}] delay: {inputStopWatch.ElapsedMilliseconds}ms");
 
         }
 
