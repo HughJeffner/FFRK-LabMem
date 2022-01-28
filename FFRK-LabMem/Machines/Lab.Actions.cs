@@ -202,9 +202,18 @@ namespace FFRK_LabMem.Machines
             if (total == 1) margin = 50;
             var target = margin + (offset * selectedPaintingIndex);
 
-            // Delay, then spam taps for duration
-            await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
-            await Adb.TapPctSpam(target, 50, await LabTimings.GetTimeSpan("Inter-SelectPainting"), this.CancellationToken);
+            // Spam taps if on minitouch
+            if (Adb.Input == Adb.InputType.Minitouch)
+            {
+                // Delay, then spam taps for duration
+                await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
+                await Adb.TapPctSpam(target, 50, await LabTimings.GetTimeSpan("Inter-SelectPainting"), this.CancellationToken);
+            } else
+            {
+                // Delayed tap, then delayed tap again
+                await DelayedTapPct("Pre-SelectPainting", target, 50);
+                await DelayedTapPct("Inter-SelectPainting", target, 50);
+            }
            
             // Counter
             await Counters.PaintingSelected();
