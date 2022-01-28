@@ -138,9 +138,9 @@ namespace FFRK_LabMem.Config.UI
             comboBoxAdbHost.SelectedValue = configHelper.GetString("adb.host", "127.0.0.1:7555");
             if (comboBoxAdbHost.SelectedItem == null) comboBoxAdbHost.Text = configHelper.GetString("adb.host", "127.0.0.1:7555");
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
-            comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
+            comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 1);
             trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 200) / 10;
-            comboBoxInput.SelectedIndex = configHelper.GetInt("adb.input", 0);
+            comboBoxInput.SelectedIndex = configHelper.GetInt("adb.input", 1);
             trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 30) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
@@ -636,8 +636,8 @@ namespace FFRK_LabMem.Config.UI
                 checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
                 ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 0) |
-                comboBoxInput.SelectedIndex != configHelper.GetInt("adb.input", 0)
+                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 1) |
+                comboBoxInput.SelectedIndex != configHelper.GetInt("adb.input", 1)
             );
 
             lblRestart.Visible = changed;
