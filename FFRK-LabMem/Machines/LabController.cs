@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FFRK_LabMem.Config;
 using FFRK_LabMem.Data;
 using FFRK_Machines;
-using FFRK_Machines.Services;
+using FFRK_Machines.Services.Adb;
 using FFRK_Machines.Machines;
 using FFRK_Machines.Services.Notifications;
 
@@ -58,8 +58,9 @@ namespace FFRK_LabMem.Machines
                 configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
                 topOffset: config.GetInt("screen.topOffset", -1),
                 bottomOffset: config.GetInt("screen.bottomOffset", -1),
-                capture: config.GetEnum("adb.capture", Adb.CaptureType.ADB),
+                capture: config.GetEnum("adb.capture", Adb.CaptureType.Minicap),
                 captureRate: config.GetInt("adb.captureRate", 200),
+                input: config.GetEnum("adb.input", Adb.InputType.Minitouch),
                 consumers: 2);
 
             // Adb options

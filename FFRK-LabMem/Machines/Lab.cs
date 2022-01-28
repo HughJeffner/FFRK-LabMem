@@ -11,6 +11,7 @@ using FFRK_LabMem.Data;
 using System.Collections.Generic;
 using FFRK_Machines.Threading;
 using FFRK_Machines.Services.Notifications;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {

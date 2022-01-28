@@ -1,5 +1,4 @@
 ﻿using FFRK_LabMem.Data;
-using FFRK_Machines.Services;
 using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {

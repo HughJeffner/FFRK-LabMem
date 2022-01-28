@@ -112,7 +112,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Services\Adb.cs" />
+    <Compile Include="Services\Adb\Adb.cs" />
     <Compile Include="Services\Notifications\ConsoleNotification.cs" />
     <Compile Include="Services\Notifications\SoundNotification.cs" />
     <Compile Include="Services\Proxy.cs" />

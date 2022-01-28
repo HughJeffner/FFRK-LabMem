@@ -5,8 +5,8 @@ using FFRK_LabMem.Data.UI;
 using FFRK_LabMem.Machines;
 using FFRK_LabMem.Services;
 using FFRK_Machines;
-using FFRK_Machines.Services;
 using System.Linq;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem
 {

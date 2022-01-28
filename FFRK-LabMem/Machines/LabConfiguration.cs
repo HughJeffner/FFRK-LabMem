@@ -9,7 +9,7 @@ namespace FFRK_LabMem.Machines
     public class LabConfiguration : MachineConfiguration
     {
 
-        protected override async void Migrate(String oldVersion, String newVersion)
+        protected override void Migrate(String oldVersion, String newVersion)
         {
             // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);

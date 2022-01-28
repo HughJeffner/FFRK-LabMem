@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using FFRK_Machines;
 using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
-using FFRK_Machines.Services;
 using System.Threading;
 using System.Linq;
 using FFRK_LabMem.Data;
@@ -15,6 +14,7 @@ using FFRK_LabMem.Data.UI;
 using FFRK_Machines.Services.Notifications;
 using System.Threading.Tasks;
 using FFRK_Machines.Threading;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -140,6 +140,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 0);
             trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 200) / 10;
+            comboBoxInput.SelectedIndex = configHelper.GetInt("adb.input", 0);
             trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 30) / 10;
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
@@ -253,6 +254,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("adb.capture", comboBoxCapture.SelectedIndex);
             configHelper.SetValue("adb.captureRate", trackBarCaptureRate.Value * 10);
+            configHelper.SetValue("adb.input", comboBoxInput.SelectedIndex);
             configHelper.SetValue("adb.tapDelay", trackBarTapDelay.Value * 10);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
@@ -382,6 +384,7 @@ namespace FFRK_LabMem.Config.UI
                 controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
                 controller.Adb.TapDelay = trackBarTapDelay.Value * 10;
                 controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
+                controller.Adb.Input = (Adb.InputType)comboBoxInput.SelectedIndex;
             }
 
             // Watchdog
@@ -633,7 +636,8 @@ namespace FFRK_LabMem.Config.UI
                 checkBoxProxyConnectionPool.Checked != configHelper.GetBool("proxy.connectionPooling", false) |
                 textBoxAdbPath.Text != configHelper.GetString("adb.path", "adb.exe") |
                 ((comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text) != configHelper.GetString("adb.host", "127.0.0.1:7555") |
-                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 0)
+                comboBoxCapture.SelectedIndex != configHelper.GetInt("adb.capture", 0) |
+                comboBoxInput.SelectedIndex != configHelper.GetInt("adb.input", 0)
             );
 
             lblRestart.Visible = changed;

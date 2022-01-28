@@ -1,5 +1,4 @@
 ﻿using FFRK_LabMem.Data;
-using FFRK_Machines.Services;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
 using FFRK_Machines.Services.Notifications;
@@ -11,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {

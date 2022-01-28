@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using FFRK_Machines.Services;
+using FFRK_Machines.Services.Adb;
 using Newtonsoft.Json.Linq;
 
 namespace FFRK_Machines.Machines
@@ -53,7 +54,7 @@ namespace FFRK_Machines.Machines
         /// <param name="bottomOffset">Bottom offest of screen</param>
         /// <param name="configFile">Path to the machine config file</param>
         /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, Adb.CaptureType capture, int captureRate, string configFile, int consumers = 2)
+        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, Adb.CaptureType capture, int captureRate, Adb.InputType input, string configFile, int consumers = 2)
         {
 
             // Adb
@@ -61,6 +62,7 @@ namespace FFRK_Machines.Machines
             this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
             this.Adb.Capture = capture;
             this.Adb.CaptureRate = captureRate;
+            this.Adb.Input = input;
 
             // Proxy Server
             Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist, proxyConnectionPooling);
