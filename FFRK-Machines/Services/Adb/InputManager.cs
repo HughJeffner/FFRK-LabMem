@@ -77,6 +77,7 @@ namespace FFRK_Machines.Services.Adb
                 finally
                 {
                     ColorConsole.WriteLine(ConsoleColor.Red, "Minitouch service has shut down, please restart the bot to recover.");
+                    adb.Input = InputType.ADB;
                 }
             });
 

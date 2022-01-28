@@ -78,6 +78,7 @@ namespace FFRK_Machines.Services.Adb
                 finally
                 {
                     ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
+                    adb.Capture = CaptureType.ADB;
                 }
             });
 
@@ -219,7 +220,7 @@ namespace FFRK_Machines.Services.Adb
                     minicapTimeouts += 1;
                     if (minicapTimeouts >= 5)
                     {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out (service not running?) reverting to ADB screencap");
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out reverting to ADB screencap");
                         adb.Capture = CaptureType.ADB;
                     }
                     ret = await AdbClient.Instance.GetFrameBufferAsync(device, cancellationToken);
