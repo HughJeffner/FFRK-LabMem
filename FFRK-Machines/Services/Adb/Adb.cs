@@ -22,6 +22,7 @@ namespace FFRK_Machines.Services.Adb
         private string cachedAbi = string.Empty;
         private Size cachedScreenSize = null;
         private String host;
+        private Random rng = new Random();
         private DeviceMonitor deviceMonitor = null;
         private InputManager inputManager;
         private CaptureManager captureManager;
@@ -263,14 +264,17 @@ namespace FFRK_Machines.Services.Adb
         public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken)
         {
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
+            Tuple<int, int> variance = await ConvertPctToXY(0.5, 0.5);
 
             // Tap for duration
             var time = new Stopwatch();
             time.Start();
             do
             {
-                await TapXY(target.Item1, target.Item2, cancellationToken);
-                await Task.Delay(TapDelay);
+                var tX = rng.Next(target.Item1 - variance.Item1, target.Item1 + variance.Item1);
+                var tY = rng.Next(target.Item2 - variance.Item2, target.Item2 + variance.Item2);
+                await TapXY(tX, tY, cancellationToken);
+                await Task.Delay(TapDelay * 3);
             } while (time.ElapsedMilliseconds < duration.TotalMilliseconds);
 
         }

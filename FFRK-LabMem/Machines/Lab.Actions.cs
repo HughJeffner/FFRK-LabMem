@@ -497,8 +497,17 @@ namespace FFRK_LabMem.Machines
             // Wait for skip button
             if (await DelayedTapButton("Post-Battle", BUTTON_SKIP, 3000, 85, 80, 90, 10, 0.2))
             {
-                //Tappy taps
-                await DelayedTapPct("Post-BattleButton", 50, 85);
+                 // Tappy taps
+                if (Adb.Input == Adb.InputType.Minitouch)
+                {
+                    // Spam taps for duration
+                    await Adb.TapPctSpam(50, 85, await LabTimings.GetTimeSpan("Post-BattleButton"), this.CancellationToken);
+                }
+                else
+                {
+                    // Delayed tap, then delayed tap again
+                    await DelayedTapPct("Post-BattleButton", 50, 85);
+                }
 
                 // Check if we defeated the boss
                 if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
