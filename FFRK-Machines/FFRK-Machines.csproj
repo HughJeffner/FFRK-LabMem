@@ -102,6 +102,7 @@
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
     <Compile Include="Services\Minicap.cs" />
+    <Compile Include="Services\Minitouch.cs" />
     <Compile Include="Services\Notifications\EmailNotification.cs" />
     <Compile Include="Services\Notifications\FlashTaskbarNotification.cs" />
     <Compile Include="Services\Notifications\Notifications.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Threading\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Minicap\x86\bin\minitouch" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

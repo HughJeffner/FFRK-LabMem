@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FFRK_LabMem.Services
+namespace FFRK_Machines.Services
 {
     public delegate void MinicapFrameEventHandle(byte[] frameBody);
     public class Minicap : IDisposable

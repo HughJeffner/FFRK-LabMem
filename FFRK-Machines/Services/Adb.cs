@@ -13,6 +13,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using FFRK_Machines.Services;
 
 namespace FFRK_LabMem.Services
 {
@@ -26,8 +27,10 @@ namespace FFRK_LabMem.Services
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
         private const String MINICAP_PATH = "/data/local/tmp/";
         private int cachedApiLevel = 0;
+        private string cachedAbi = string.Empty;
         private CancellationToken minicapTaskToken = new CancellationToken();
         private int minicapTimeouts = 0;
+        private Minitouch minitouch;
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -36,6 +39,12 @@ namespace FFRK_LabMem.Services
         {
             ADB = 0,
             Minicap = 1
+        }
+
+        public enum InputType
+        {
+            ADB = 0,
+            Minitouch = 1
         }
 
         public class Size {
@@ -59,6 +68,7 @@ namespace FFRK_LabMem.Services
 
         public int CaptureRate { get; set; } = 200;
         public CaptureType Capture { get; set; } = CaptureType.ADB;
+        public InputType Input { get; set; } = InputType.Minitouch;
         public int TapDelay { get; set; } = 30;
         public bool HasDevice
         {
@@ -200,6 +210,23 @@ namespace FFRK_LabMem.Services
             cachedApiLevel = int.Parse(receiver.ToString());
             return cachedApiLevel;
 
+        }
+
+        public async Task<string> GetABI(CancellationToken cancellationToken)
+        {
+
+            if (!String.IsNullOrEmpty(cachedAbi)) return cachedAbi;
+
+            // Get ABI
+            var receiver = new ConsoleOutputReceiver();
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Getting device ABI");
+            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi",
+                this.Device,
+                receiver,
+                cancellationToken,
+                2000);
+            cachedAbi = receiver.ToString().TrimEnd();
+            return cachedAbi;
         }
 
         public async Task<bool> SetProxySettings(int proxyPort, CancellationToken cancellationToken)
@@ -493,18 +520,33 @@ namespace FFRK_LabMem.Services
 
         }
 
+        private async Task<bool> MinitouchInstall(CancellationToken cancellationToken)
+        {
+
+            // Get Abi
+            var abi = await GetABI(cancellationToken);
+
+            // Get Api level
+            var apiLevel = await GetAPILevel(cancellationToken);
+
+            // Push binary
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                var source = $"./minicap/{abi}/bin/minitouch";
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
+                using (Stream stream = File.OpenRead(source))
+                {
+                    service.Push(stream, $"{MINICAP_PATH}minitouch", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+            return true;
+        }
+
         private async Task<bool> MinicapInstall(CancellationToken cancellationToken)
         {
 
-            // Get ABI
-            var receiver = new ConsoleOutputReceiver();
-            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Getting device ABI");
-            await AdbClient.Instance.ExecuteRemoteCommandAsync("getprop ro.product.cpu.abi",
-                this.Device,
-                receiver,
-                cancellationToken,
-                2000);
-            var abi = receiver.ToString().TrimEnd();
+            // Get Abi
+            var abi = await GetABI(cancellationToken);
 
             // Get Api level
             var apiLevel = await GetAPILevel(cancellationToken);
@@ -517,6 +559,15 @@ namespace FFRK_LabMem.Services
                 using (Stream stream = File.OpenRead(source))
                 {
                     service.Push(stream, $"{MINICAP_PATH}minicap", 777, DateTime.Now, null, cancellationToken);
+                }
+            }
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                var source = $"./minicap/{abi}/bin/minitouch";
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
+                using (Stream stream = File.OpenRead(source))
+                {
+                    service.Push(stream, $"{MINICAP_PATH}minitouch", 777, DateTime.Now, null, cancellationToken);
                 }
             }
             // Push shared library
@@ -591,6 +642,16 @@ namespace FFRK_LabMem.Services
             return false;
         }
 
+        private async Task<bool> MinitouchInstalled(CancellationToken cancellationToken)
+        {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Checking minitouch");
+            using (var service = Factories.SyncServiceFactory(this.Device))
+            {
+                return await Task.FromResult(service.Stat($"{MINICAP_PATH}minitouch").FileMode != 0);
+            }
+
+        }
+
         private async Task<bool> MinicapInstalled(CancellationToken cancellationToken)
         {
 
@@ -606,6 +667,79 @@ namespace FFRK_LabMem.Services
                 2000);
 
            return receiver.ToString().TrimEnd().EndsWith("OK");
+
+        }
+
+        public async Task MinitouchSetup(CancellationToken cancellationToken)
+        {
+
+            if (this.Input == InputType.ADB) return;
+
+            bool installed = false;
+
+            ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Setting up input");
+            if (await MinitouchInstalled(cancellationToken))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Minitouch installed");
+                installed = true;
+            }
+            else
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch not installed, attempting to install it now");
+                if (await MinitouchInstall(cancellationToken))
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch installed, testing...");
+                    if (await MinitouchInstalled(cancellationToken))
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Minitouch installed");
+                        installed = true;
+                    }
+                }
+            }
+
+            if (!installed)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not start minitouch client, switching to ADB input");
+                this.Input = InputType.ADB;
+                return;
+            }
+
+
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minitouch service");
+
+            // Start service on device
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    string cmd = $"{MINICAP_PATH}minitouch";
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                }
+                finally
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Minitouch service has shut down, please restart the bot to recover.");
+                }
+            });
+
+            // Forward port
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minitouch port");
+            AdbClient.Instance.CreateForward(this.Device, "tcp:1111", "localabstract:minitouch", true);
+
+            // Start minitouch client
+            _ = Task.Delay(500).ContinueWith(async t =>
+            {
+                minitouch = new Minitouch();
+                if (!await minitouch.Connect())
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not start minitouch client, switching to ADB input");
+                    this.Input = InputType.ADB;
+                }
+            });
 
         }
 
@@ -641,44 +775,38 @@ namespace FFRK_LabMem.Services
                 return;
             }
 
-            if (this.Capture == CaptureType.Minicap && !await IsPackageRunning("minicap", cancellationToken))
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
+
+            // Start on background thread
+            _ = Task.Run(async() =>
             {
-
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting minicap service");
-
-                // Start on background thread
-                _ = Task.Run(async() =>
+                try
                 {
-                    try
-                    {
-                        string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
-                        await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception ex)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
-                    }
-                    finally
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
-                    }
-                });
-
-                // Forward port
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
-                AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
-
-                // Verify install
-                if (!await MinicapVerify(cancellationToken))
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
-                    this.Capture = CaptureType.ADB;
-                    return;
+                    string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync(cmd, this.Device, null, minicapTaskToken, 0);
                 }
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                }
+                finally
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Minicap service has shut down, please restart the bot to recover.");
+                }
+            });
 
+            // Forward port
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Forward minicap port");
+            AdbClient.Instance.CreateForward(this.Device, "tcp:1313", "localabstract:minicap", true);
+
+            // Verify install
+            if (!await MinicapVerify(cancellationToken))
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Could not verify minicap install, switching to ADB frame capture");
+                this.Capture = CaptureType.ADB;
+                return;
             }
-
 
         }
         
@@ -689,7 +817,7 @@ namespace FFRK_LabMem.Services
             frameBufferStopwatch.Start();
             if (Capture == CaptureType.Minicap)
             {
-                ret = await Services.Minicap.CaptureFrame(2000, cancellationToken);
+                ret = await Minicap.CaptureFrame(2000, cancellationToken);
                 if (ret == null)
                 {
                     minicapTimeouts += 1;
@@ -716,11 +844,19 @@ namespace FFRK_LabMem.Services
 
         public async Task TapXY(int X, int Y, CancellationToken cancellationToken)
         {
-            await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y), 
-                this.Device, 
-                null, 
-                cancellationToken, 
+            if (this.Input == InputType.Minitouch)
+            {
+                await Task.Delay(TapDelay, cancellationToken);
+                await minitouch.Tap(X, Y);
+            } else
+            {
+                await AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y),
+                this.Device,
+                null,
+                cancellationToken,
                 1000);
+            }
+            
         }
 
         public async Task TapPct(double X, double Y, CancellationToken cancellationToken)
@@ -729,25 +865,17 @@ namespace FFRK_LabMem.Services
             await TapXY(target.Item1, target.Item2, cancellationToken);
         }
 
-        public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken, int tapsPerSecond = 5)
+        public async Task TapPctSpam(double X, double Y, TimeSpan duration, CancellationToken cancellationToken)
         {
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
-
-            // Taps per second milliseconds
-            var tpsMs = 1000 / tapsPerSecond;
 
             // Tap for duration
             var time = new Stopwatch();
             time.Start();
             do
             {
-                await Task.WhenAny( 
-                    AdbClient.Instance.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", target.Item1, target.Item2),
-                    this.Device,
-                    null,
-                    cancellationToken,
-                    1000), 
-                    Task.Delay(tpsMs, cancellationToken));
+                await TapXY(target.Item1, target.Item2, cancellationToken);
+                await Task.Delay(TapDelay);
             } while (time.ElapsedMilliseconds < duration.TotalMilliseconds);
 
         }
@@ -957,7 +1085,6 @@ namespace FFRK_LabMem.Services
                 return new FindButtonResult();
             } else
             {
-                await Task.Delay(TapDelay);
                 await TapPct(button.button.Item1, button.button.Item2, cancellationToken);
                 button.tapped = true;
                 return button;
