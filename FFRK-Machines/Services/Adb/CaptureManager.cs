@@ -44,7 +44,7 @@ namespace FFRK_Machines.Services.Adb
                 if (await MinicapInstall(cancellationToken))
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed, testing...");
-                    if (await MinicapInstalled(cancellationToken))
+                    if (await MinicapTest(cancellationToken))
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap installed");
                         installed = true;
@@ -129,6 +129,16 @@ namespace FFRK_Machines.Services.Adb
             return true;
         }
 
+        private async Task<bool> MinicapInstalled(CancellationToken cancellationToken)
+        {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Checking minicap");
+            using (var service = Factories.SyncServiceFactory(device))
+            {
+                return await Task.FromResult(service.Stat($"{MINICAP_PATH}minicap").FileMode != 0);
+            }
+
+        }
+
         private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
         {
 
@@ -189,7 +199,7 @@ namespace FFRK_Machines.Services.Adb
 
 
 
-        private async Task<bool> MinicapInstalled(CancellationToken cancellationToken)
+        private async Task<bool> MinicapTest(CancellationToken cancellationToken)
         {
 
             // Execute minicap on device

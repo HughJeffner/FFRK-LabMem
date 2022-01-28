@@ -87,7 +87,7 @@ namespace FFRK_Machines.Services.Adb
             client.CreateForward(device, "tcp:1111", "localabstract:minitouch", true);
 
             // Start minitouch client
-            _ = Task.Delay(500).ContinueWith(async t =>
+            _ = Task.Delay(1000).ContinueWith(async t =>
             {
                 minitouch = new Minitouch();
                 if (!await minitouch.Connect())
