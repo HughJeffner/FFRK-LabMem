@@ -15,6 +15,7 @@ namespace FFRK_Machines.Services.Adb
         private readonly DeviceData device;
         private readonly Adb adb;
         private CancellationToken minicapTaskToken = new CancellationToken();
+        private SemaphoreSlim minicapStarted = new SemaphoreSlim(0);
         private const String MINICAP_PATH = "/data/local/tmp/";
         private int minicapTimeouts = 0;
 
@@ -68,6 +69,7 @@ namespace FFRK_Machines.Services.Adb
                 {
                     var screenSize = await adb.GetScreenSize();
                     string cmd = $"LD_LIBRARY_PATH={MINICAP_PATH} {MINICAP_PATH}minicap -P {screenSize.Width}x{screenSize.Height}@{screenSize.Width}x{screenSize.Height}/0";
+                    minicapStarted.Release();
                     await client.ExecuteRemoteCommandAsync(cmd, device, null, minicapTaskToken, 0);
                 }
                 catch (OperationCanceledException) { }
@@ -160,7 +162,8 @@ namespace FFRK_Machines.Services.Adb
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Verifying minicap");
 
                 // Need to wait for service to fully start
-                await Task.Delay(1000);
+                await minicapStarted.WaitAsync(5000, cancellationToken);
+                await Task.Delay(3000);
 
                 // Save verification image
                 using (var frame = await Minicap.CaptureFrame(2000, cancellationToken))
