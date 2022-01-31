@@ -739,13 +739,13 @@ namespace FFRK_LabMem.Machines
             // Enter button 1
             Watchdog.Kick(true);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 1");
-            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 84, 94, 20))
+            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 44.1, 80, 94, 20))
             {
 
                 // Enter button 2
                 Watchdog.Kick(true);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
-                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20))
+                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 44.1, 80, 90, 20))
                 {
 
                     // Stamina dialog
