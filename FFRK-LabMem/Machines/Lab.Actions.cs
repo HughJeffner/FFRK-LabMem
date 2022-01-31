@@ -348,7 +348,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
 
-            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 4000, 42.7, 65, 81, 30))
+            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 2000, 42.7, 65, 81, 30))
             {
                 await LabTimings.Delay("Post-MoveOn", this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.MoveOn);

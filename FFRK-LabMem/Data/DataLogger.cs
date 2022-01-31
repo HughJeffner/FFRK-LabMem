@@ -82,7 +82,7 @@ namespace FFRK_LabMem.Data
 
         public static async Task LogGotItem(Lab lab)
         {
-
+            if (lab.Data == null) return;
             var items = lab.Data["given_unsettled_items"];
             if (items != null)
             {
