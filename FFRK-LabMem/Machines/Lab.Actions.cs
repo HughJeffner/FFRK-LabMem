@@ -1,5 +1,4 @@
 ﻿using FFRK_LabMem.Data;
-using FFRK_LabMem.Services;
 using FFRK_Machines;
 using FFRK_Machines.Machines;
 using FFRK_Machines.Services.Notifications;
@@ -11,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {
@@ -19,6 +19,7 @@ namespace FFRK_LabMem.Machines
 
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
+        private const string BUTTON_ORANGE = "#c85f07";
         private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
@@ -26,21 +27,21 @@ namespace FFRK_LabMem.Machines
             {"2", "O" },
             {"3", "R" }
         };
-
+ 
         private async Task DelayedTapPct(string key, double X, double Y)
         {
             await LabTimings.Delay(key, this.CancellationToken);
             await this.Adb.TapPct(X, Y, this.CancellationToken);
         }
 
-        private async Task<bool> DelayedTapButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries, double granularity = 0.5)
+        private async Task<bool> DelayedTapButton(string key, string color, int threshold, double X, double Y1, double Y2, int retries, double granularity = 0.5, int certainty = 0)
         {
 
             // Initial delay
             await LabTimings.Delay(key, this.CancellationToken);
 
             // Find
-            var ret = await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity);
+            var ret = await this.Adb.FindButtonAndTap(color, threshold, X, Y1, Y2, retries, this.CancellationToken, granularity, certainty);
 
             // Tuning
             LabTimings.TuneTiming(key, ret.tapped, ret.retries);
@@ -200,8 +201,19 @@ namespace FFRK_LabMem.Machines
             if (total == 2) margin = 33;
             if (total == 1) margin = 50;
             var target = margin + (offset * selectedPaintingIndex);
-            await DelayedTapPct("Pre-SelectPainting", target, 50);
-            await DelayedTapPct("Inter-SelectPainting", target, 50);
+
+            // Spam taps if on minitouch
+            if (Adb.Input == Adb.InputType.Minitouch)
+            {
+                // Delay, then spam taps for duration
+                await LabTimings.Delay("Pre-SelectPainting", this.CancellationToken);
+                await Adb.TapPctSpam(target, 50, await LabTimings.GetTimeSpan("Inter-SelectPainting"), this.CancellationToken);
+            } else
+            {
+                // Delayed tap, then delayed tap again
+                await DelayedTapPct("Pre-SelectPainting", target, 50);
+                await DelayedTapPct("Inter-SelectPainting", target, 50);
+            }
            
             // Counter
             await Counters.PaintingSelected();
@@ -272,7 +284,7 @@ namespace FFRK_LabMem.Machines
 
                 // Click chest
                 ColorConsole.WriteLine("Picking treasure {0}", selectedTreasureIndex + 1);
-                if (transition.Source != State.Ready) await Task.Delay(5000); // Additional delay if from any state other than Ready
+                if (transition.Source == State.Unknown || transition.Source == State.FoundSealedDoor) await Task.Delay(3000); // Additional delay if from explore/unknown
                 await DelayedTapPct("Pre-SelectTreasure", 17 + (33 * (selectedTreasureIndex)), 50);
 
                 // Check if key needed
@@ -336,7 +348,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
 
-            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 4000, 42.7, 65, 81, 30))
+            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 2000, 42.7, 65, 81, 30))
             {
                 await LabTimings.Delay("Post-MoveOn", this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.MoveOn);
@@ -356,11 +368,17 @@ namespace FFRK_LabMem.Machines
         private async Task EnterDungeon()
         {
             ColorConsole.WriteLine("Battle Info");
-            if (await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 56.6, 80, 95, 30))
+            bool button = false;
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle)
             {
-                await this.StateMachine.FireAsync(Trigger.EnterDungeon);
+                button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, 0.5, 1);
+            } else
+            {
+                button = await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 59, 77, 93, 25, 0.5, 1);
+                if (button) await this.StateMachine.FireAsync(Trigger.EnterDungeon);
             }
-            else
+
+            if(!button)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
@@ -410,7 +428,7 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.WriteLine(ConsoleColor.DarkRed, "Timed out waiting for fatigue values");
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Timed out waiting for fatigue values");
                 }
                 
             } else
@@ -423,7 +441,7 @@ namespace FFRK_LabMem.Machines
             if (await DelayedTapButton("Pre-StartBattle", BUTTON_BLUE, 3000, 42.7, 85, 95, 30))
             {
                 // Fatigue warning
-                await DelayedTapButton("Inter-StartBattle", BUTTON_BLUE, 2000, 56, 55, 65, 5);
+                await DelayedTapButton("Inter-StartBattle", BUTTON_BLUE, 2000, 56, 55, 65, 5, 0.5, 1);
             }
             else
             {
@@ -479,8 +497,17 @@ namespace FFRK_LabMem.Machines
             // Wait for skip button
             if (await DelayedTapButton("Post-Battle", BUTTON_SKIP, 3000, 85, 80, 90, 10, 0.2))
             {
-                //Tappy taps
-                await DelayedTapPct("Post-BattleButton", 50, 85);
+                 // Tappy taps
+                if (Adb.Input == Adb.InputType.Minitouch)
+                {
+                    // Spam taps for duration
+                    await Adb.TapPctSpam(50, 85, await LabTimings.GetTimeSpan("Post-BattleButton"), this.CancellationToken);
+                }
+                else
+                {
+                    // Delayed tap, then delayed tap again
+                    await DelayedTapPct("Post-BattleButton", 50, 85);
+                }
 
                 // Check if we defeated the boss
                 if (this.Data != null && this.Data["result"] != null && this.Data["result"]["labyrinth_dungeon_result"] != null)
@@ -496,7 +523,7 @@ namespace FFRK_LabMem.Machines
         private async Task ConfirmPortal()
         {
 
-            await DelayedTapButton("Pre-ConfirmPortal", BUTTON_BLUE, 3000, 86, 58, 68, 10);
+            await DelayedTapButton("Pre-ConfirmPortal", BUTTON_BLUE, 3000, 86, 58, 68, 10, 0.5, 1);
             await LabTimings.Delay("Post-ConfirmPortal", this.CancellationToken);
         }
 
@@ -620,13 +647,13 @@ namespace FFRK_LabMem.Machines
             if (t.Destination == State.Completed)
             {
 
-                // Message
-                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
-
                 // Notify complete (only if not restarting)
-                if (t.Source != State.Unknown)
+                if (t.Source != State.Unknown && t.Source != State.Outpost)
                 {
+                    // Message
+                    ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                    ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
+
                     await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }
@@ -695,7 +722,7 @@ namespace FFRK_LabMem.Machines
 
             // Dungeon Complete
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing dungeon complete dialog");
-            var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 10);
+            var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 5);
             if (closeButton != null)
             {
                 await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
@@ -712,13 +739,13 @@ namespace FFRK_LabMem.Machines
             // Enter button 1
             Watchdog.Kick(true);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 1");
-            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 84, 94, 20))
+            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 84, 94, 20))
             {
 
                 // Enter button 2
                 Watchdog.Kick(true);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
-                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 80, 90, 20))
+                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20))
                 {
 
                     // Stamina dialog
@@ -727,22 +754,22 @@ namespace FFRK_LabMem.Machines
                     if (staminaResult.PotionUsed)
                     {
                         // Enter button 2 again
-                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 80, 90, 20); 
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20); 
                     }
                     else
                     {
                         if (staminaResult.StaminaDialogPresent) return;
                     }
    
-                    // Confirm equipment box or enter
+                    // Confirm equipment box or stamina OK dialog
                     Watchdog.Kick(true);
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 3");
-                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5))
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box or stamina OK dialog");
+                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 20))
                     {
 
                         // Enter if equipment confirmed, otherwise should find nothing
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box");
-                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5);
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina OK dialog");
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 5);
 
                         // Delay
                         await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
@@ -753,7 +780,7 @@ namespace FFRK_LabMem.Machines
                     }
                     else
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 3");
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find equip warning or stamina ok dialog");
                     }
 
 
@@ -1104,6 +1131,12 @@ namespace FFRK_LabMem.Machines
             await DelayedTapPct("Pre-EnterOutpost", 50, 40);
             if (Config.RestartLab) await StateMachine.FireAsync(Trigger.FinishedLab);
 
+        }
+
+        public async Task HandleError()
+        {
+            ColorConsole.WriteLine(ConsoleColor.Yellow, "Connection error, retrying....");
+            await DelayedTapButton("Pre-HandleError", BUTTON_BLUE, 2000, 39.5, 54, 67.5, 10, 0.5, 1);
         }
 
     }

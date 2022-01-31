@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FFRK_LabMem.Services;
 using FFRK_Machines.Services;
+using FFRK_Machines.Services.Adb;
 using FFRK_Machines.Services.Notifications;
 using Newtonsoft.Json.Linq;
 using Stateless;

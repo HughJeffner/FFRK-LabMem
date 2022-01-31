@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FFRK_Machines;
+using FFRK_Machines.Services.Adb;
 using Newtonsoft.Json.Linq;
 using Semver;
 using Syroot.Windows.IO;

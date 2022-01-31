@@ -1,11 +1,11 @@
-﻿using FFRK_LabMem.Services;
-using FFRK_Machines;
+﻿using FFRK_Machines;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {

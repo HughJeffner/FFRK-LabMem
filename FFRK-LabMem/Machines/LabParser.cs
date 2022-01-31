@@ -85,6 +85,9 @@ namespace FFRK_LabMem.Machines
         public async Task ParseDisplayPaintings(JObject data, String url)
         {
 
+            // Handle error
+            if (await CheckError(data)) return;
+
             Lab.Data = data;
 
             // Status
@@ -114,6 +117,9 @@ namespace FFRK_LabMem.Machines
 
         public async Task ParsePainting(JObject data, string url)
         {
+
+            // Handle error
+            if (await CheckError(data)) return;
 
             // Final portal completes dungeon
             if (data["labyrinth_dungeon_result"] != null)
@@ -355,5 +361,14 @@ namespace FFRK_LabMem.Machines
             return false;
         }
 
+        private async Task<bool> CheckError(JObject data)
+        {
+            if (data["error"] != null)
+            {
+                await Lab.HandleError();
+                return true;
+            }
+            return false;
+        }
     }
 }

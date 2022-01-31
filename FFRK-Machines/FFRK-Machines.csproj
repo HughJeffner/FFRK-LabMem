@@ -101,7 +101,12 @@
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />
+    <Compile Include="Services\Adb\CaptureManager.cs" />
+    <Compile Include="Services\Adb\CertificateManager.cs" />
+    <Compile Include="Services\Adb\InputManager.cs" />
+    <Compile Include="Services\Adb\ProxyManager.cs" />
     <Compile Include="Services\Minicap.cs" />
+    <Compile Include="Services\Minitouch.cs" />
     <Compile Include="Services\Notifications\EmailNotification.cs" />
     <Compile Include="Services\Notifications\FlashTaskbarNotification.cs" />
     <Compile Include="Services\Notifications\Notifications.cs" />
@@ -111,7 +116,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Services\Adb.cs" />
+    <Compile Include="Services\Adb\Adb.cs" />
     <Compile Include="Services\Notifications\ConsoleNotification.cs" />
     <Compile Include="Services\Notifications\SoundNotification.cs" />
     <Compile Include="Services\Proxy.cs" />
@@ -120,6 +125,7 @@
     <Compile Include="Threading\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Minicap\x86\bin\minitouch" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

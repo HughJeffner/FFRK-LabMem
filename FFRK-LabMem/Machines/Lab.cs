@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using FFRK_LabMem.Services;
+using FFRK_Machines.Services;
 using Newtonsoft.Json.Linq;
 using Stateless;
 using System.Diagnostics;
@@ -11,6 +11,7 @@ using FFRK_LabMem.Data;
 using System.Collections.Generic;
 using FFRK_Machines.Threading;
 using FFRK_Machines.Services.Notifications;
+using FFRK_Machines.Services.Adb;
 
 namespace FFRK_LabMem.Machines
 {
@@ -137,7 +138,8 @@ namespace FFRK_LabMem.Machines
                 .Permit(Trigger.PickedPortal, State.PortalConfirm)
                 .Permit(Trigger.FoundBoss, State.WaitForBoss)
                 .Permit(Trigger.FoundDoor, State.FoundSealedDoor)
-                .Permit(Trigger.FinishedLab, State.Completed);
+                .Permit(Trigger.FinishedLab, State.Completed)
+                .Ignore(Trigger.MissedButton);
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
@@ -161,6 +163,7 @@ namespace FFRK_LabMem.Machines
             this.StateMachine.Configure(State.BattleInfo)
                 .OnEntryAsync(async (t) => await EnterDungeon())
                 .Permit(Trigger.EnterDungeon, State.EquipParty)
+                .Permit(Trigger.StartBattle, State.Battle)
                 .Permit(Trigger.ResetState, State.Ready)
                 .Ignore(Trigger.MissedButton);
 
@@ -232,6 +235,9 @@ namespace FFRK_LabMem.Machines
         {
             ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Crash) await Counters.FFRKCrashed();
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang) await Counters.FFRKHang(Watchdog.Config.HangWarningSeconds > 0);
+
             // On a timer thread, need to handle errors
             try
             {
@@ -289,29 +295,39 @@ namespace FFRK_LabMem.Machines
                 State.EquipParty
             };
 
-            // Message and screenshot
-            ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
-            if (Watchdog.Config.HangScreenshot) await Adb.SaveScrenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
-
-            // Keep track of current state in case it changes
-            var previousState = StateMachine.State;
-
-            // Navigate back
-            if (backStates.Contains(StateMachine.State))
+            // On a timer thread, need to handle errors
+            try
             {
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
-                for (int i = 0; i < 3; i++)
+                // Message and screenshot
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Possible hang, attempting recovery!");
+                if (Watchdog.Config.HangScreenshot) await Adb.SaveScreenshot(String.Format("hang_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), this.CancellationToken);
+
+                // Keep track of current state in case it changes
+                var previousState = StateMachine.State;
+
+                // Navigate back
+                if (backStates.Contains(StateMachine.State))
                 {
-                    await Adb.NavigateBack(this.CancellationToken);
-                    await Task.Delay(500);
+                    ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
+                    for (int i = 0; i < 3; i++)
+                    {
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await Task.Delay(500);
+                    }
+                    await Task.Delay(3000);
                 }
-                await Task.Delay(3000);
-            }
 
-            // Auto start if no state transition
-            if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
+                // Auto start if no state transition
+                if (autoStartStates.Contains(StateMachine.State) && StateMachine.State.Equals(previousState))
+                {
+                    await AutoStart();
+                }
+                await Counters.FFRKRecovered();
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
             {
-                await AutoStart();
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
             }
            
         }

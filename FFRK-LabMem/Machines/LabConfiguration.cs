@@ -9,13 +9,14 @@ namespace FFRK_LabMem.Machines
     public class LabConfiguration : MachineConfiguration
     {
 
-        protected override async void Migrate(String oldVersion, String newVersion)
+        protected override void Migrate(String oldVersion, String newVersion)
         {
             // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
 
-            // First time migrate on 7.1 sets Inter-AutoStart to default
-            if (!oldVersion.Equals("7.1.0.0") && newVersion.Equals("7.1.0.0")) await LabTimings.ResetToDefaults();
+            // First time migrate on 7.2 sets Inter-SelectPainting to default
+            if (!oldVersion.Equals("7.2.0.0") && newVersion.Equals("7.2.0.0")) LabTimings.Timings["Inter-SelectPainting"].Delay = LabTimings.DefaultTimings["Inter-SelectPainting"].Delay;
+
         }
 
         protected override string GetVersion()
@@ -32,6 +33,7 @@ namespace FFRK_LabMem.Machines
             LowestFatigue12,
             RandomAny,
             Random12,
+            InstaBattle
         }
         public enum CompleteMissionOption
         {

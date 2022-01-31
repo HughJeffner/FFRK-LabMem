@@ -175,7 +175,7 @@ namespace FFRK_LabMem.Machines
             { "Inter-AutoStart", new Timing() { Delay=1000} },
             { "Post-AutoStart", new Timing() { Delay=0} },
             { "Pre-SelectPainting", new Timing(){ Delay=2000 } },
-            { "Inter-SelectPainting", new Timing(){ Delay=500 } },
+            { "Inter-SelectPainting", new Timing(){ Delay=1500 } },
             { "Post-SelectPainting", new Timing(){ Delay=0 } },
             { "Pre-RadiantPaintingScreenshot", new Timing(){ Delay=4000 } },
             { "Pre-SelectTreasure", new Timing() {Delay=2000 } },
@@ -191,8 +191,8 @@ namespace FFRK_LabMem.Machines
             { "Inter-StartBattle", new Timing() { Delay=500} },
             { "Post-StartBattle", new Timing() { Delay=0} },
             { "Post-Battle", new Timing(){ Delay=1000 } },
-            { "Post-BattleButton", new Timing(){ Delay=500 } },
-            { "Pre-ConfirmPortal", new Timing(){ Delay=1500 } },
+            { "Post-BattleButton", new Timing(){ Delay=2000 } },
+            { "Pre-ConfirmPortal", new Timing(){ Delay=0 } },
             { "Post-ConfirmPortal", new Timing(){ Delay=2000 } },
             { "Pre-LetheTears", new Timing(){ Delay=4000 } },
             { "Inter-LetheTears", new Timing(){ Delay=2000 } },
@@ -222,8 +222,10 @@ namespace FFRK_LabMem.Machines
             { "Post-SelectParty", new Timing(){ Delay=0 } },
             { "Pre-CheckAutoBattle", new Timing(){ Delay=10000 } },
             { "Post-CheckAutoBattle", new Timing(){ Delay=0 } },
-            { "Pre-BattleInfo", new Timing(){ Delay=1000} },
-            { "Pre-EnterOutpost", new Timing(){ Delay=1000 } },
+            { "Pre-BattleInfo", new Timing(){ Delay=0} },
+            { "Pre-EnterOutpost", new Timing(){ Delay=4000 } },
+            { "Pre-HandleError", new Timing(){ Delay=2000 } },
+            { "Post-HandleError", new Timing(){ Delay=0 } },
         };
 
         public class TimingDictionary : Dictionary<string, Timing>
