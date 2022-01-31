@@ -648,7 +648,7 @@ namespace FFRK_LabMem.Machines
             {
 
                 // Notify complete (only if not restarting)
-                if (t.Source != State.Unknown)
+                if (t.Source != State.Unknown && t.Source != State.Outpost)
                 {
                     // Message
                     ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
@@ -722,7 +722,7 @@ namespace FFRK_LabMem.Machines
 
             // Dungeon Complete
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing dungeon complete dialog");
-            var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 10);
+            var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 5);
             if (closeButton != null)
             {
                 await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
@@ -739,13 +739,13 @@ namespace FFRK_LabMem.Machines
             // Enter button 1
             Watchdog.Kick(true);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 1");
-            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 84, 94, 20))
+            if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 84, 94, 20))
             {
 
                 // Enter button 2
                 Watchdog.Kick(true);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
-                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 80, 90, 20))
+                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20))
                 {
 
                     // Stamina dialog
@@ -754,22 +754,22 @@ namespace FFRK_LabMem.Machines
                     if (staminaResult.PotionUsed)
                     {
                         // Enter button 2 again
-                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 50, 80, 90, 20); 
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20); 
                     }
                     else
                     {
                         if (staminaResult.StaminaDialogPresent) return;
                     }
    
-                    // Confirm equipment box or enter
+                    // Confirm equipment box or stamina OK dialog
                     Watchdog.Kick(true);
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 3");
-                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5))
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box or stamina OK dialog");
+                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 20))
                     {
 
                         // Enter if equipment confirmed, otherwise should find nothing
-                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box");
-                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 3000, 61, 57, 70, 5);
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina OK dialog");
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 5);
 
                         // Delay
                         await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
@@ -780,7 +780,7 @@ namespace FFRK_LabMem.Machines
                     }
                     else
                     {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 3");
+                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find equip warning or stamina ok dialog");
                     }
 
 
