@@ -647,13 +647,13 @@ namespace FFRK_LabMem.Machines
             if (t.Destination == State.Completed)
             {
 
-                // Message
-                ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
-                ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
-
                 // Notify complete (only if not restarting)
                 if (t.Source != State.Unknown)
                 {
+                    // Message
+                    ColorConsole.Write(ConsoleColor.Green, "Lab run completed!");
+                    ColorConsole.WriteLine(ConsoleColor.DarkGray, @" ({0:h\:mm\:ss})", Counters.Default.CounterSets["CurrentLab"].Runtime["Total"]);
+
                     await Notify(Notifications.EventType.LAB_COMPLETED, "Lab run completed successfully");
                     await Counters.LabRunCompleted(t.Source == State.BattleFinished || t.Source == State.PortalConfirm);
                 }

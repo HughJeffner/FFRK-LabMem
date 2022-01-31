@@ -223,7 +223,7 @@ namespace FFRK_LabMem.Machines
             { "Pre-CheckAutoBattle", new Timing(){ Delay=10000 } },
             { "Post-CheckAutoBattle", new Timing(){ Delay=0 } },
             { "Pre-BattleInfo", new Timing(){ Delay=0} },
-            { "Pre-EnterOutpost", new Timing(){ Delay=1000 } },
+            { "Pre-EnterOutpost", new Timing(){ Delay=4000 } },
             { "Pre-HandleError", new Timing(){ Delay=2000 } },
             { "Post-HandleError", new Timing(){ Delay=0 } },
         };
