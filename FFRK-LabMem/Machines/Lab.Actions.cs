@@ -745,7 +745,7 @@ namespace FFRK_LabMem.Machines
                 // Enter button 2
                 Watchdog.Kick(true);
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for enter button 2");
-                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 44.1, 80, 90, 20))
+                if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 44.1, 80, 90, 20, 0.5, 1))
                 {
 
                     // Stamina dialog
@@ -764,12 +764,12 @@ namespace FFRK_LabMem.Machines
                     // Confirm equipment box or stamina OK dialog
                     Watchdog.Kick(true);
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for confirm equipment box or stamina OK dialog");
-                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 20))
+                    if (await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 20, 0.5, 1))
                     {
 
                         // Enter if equipment confirmed, otherwise should find nothing
                         ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for stamina OK dialog");
-                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 5);
+                        await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 67.3, 57, 70, 5, 0.5, 1);
 
                         // Delay
                         await LabTimings.Delay("Post-RestartLab", this.CancellationToken);
