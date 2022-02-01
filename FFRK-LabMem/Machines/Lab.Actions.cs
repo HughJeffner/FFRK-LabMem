@@ -438,7 +438,7 @@ namespace FFRK_LabMem.Machines
             }
 
             // Enter
-            if (await DelayedTapButton("Pre-StartBattle", BUTTON_BLUE, 3000, 42.7, 85, 95, 30))
+            if (await DelayedTapButton("Pre-StartBattle", BUTTON_BLUE, 3000, 42.7, 85, 95, 30, 0.5, 1))
             {
                 // Fatigue warning
                 await DelayedTapButton("Inter-StartBattle", BUTTON_BLUE, 2000, 56, 55, 65, 5, 0.5, 1);
