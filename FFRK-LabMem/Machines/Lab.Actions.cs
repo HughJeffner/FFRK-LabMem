@@ -371,7 +371,11 @@ namespace FFRK_LabMem.Machines
             bool button = false;
             if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle)
             {
+                // Insta-battle
                 button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, 0.5, 1);
+
+                // Confirmation
+                await Adb.FindButtonAndTap(BUTTON_BLUE, 2050, 58.3, 57, 71.8, 5, this.CancellationToken, 0.5, 1);
             } else
             {
                 button = await DelayedTapButton("Pre-BattleInfo", BUTTON_BLUE, 2000, 59, 77, 93, 25, 0.5, 1);
