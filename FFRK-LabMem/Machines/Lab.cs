@@ -349,7 +349,11 @@ namespace FFRK_LabMem.Machines
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", parser.ParseDisplayPaintings);
-            Proxy.AddRegistration("select_painting", parser.ParsePainting);
+            Proxy.AddRegistration("select_painting", async (data, url) =>
+            {
+                await Adb.StopTaps();
+                await parser.ParsePainting(data, url);
+            });
             Proxy.AddRegistration("choose_explore_painting", parser.ParsePainting);
             Proxy.AddRegistration("open_treasure_chest", async (data, url) =>
             {

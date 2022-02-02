@@ -26,6 +26,7 @@ namespace FFRK_Machines.Services.Adb
         private DeviceMonitor deviceMonitor = null;
         private InputManager inputManager;
         private CaptureManager captureManager;
+        private Stopwatch tappingStopwatch = new Stopwatch();
 
         public event EventHandler<DeviceDataEventArgs> DeviceAvailable;
         public event EventHandler<DeviceDataEventArgs> DeviceUnavailable;
@@ -250,6 +251,12 @@ namespace FFRK_Machines.Services.Adb
             return await captureManager.Capture(cancellationToken);
         }
 
+        public async Task StopTaps()
+        {
+            tappingStopwatch.Stop();
+            await Task.CompletedTask;
+        }
+
         public async Task TapXY(int X, int Y, CancellationToken cancellationToken)
         {
             await inputManager.Tap(X, Y, cancellationToken);
@@ -266,16 +273,15 @@ namespace FFRK_Machines.Services.Adb
             Tuple<int, int> target = await ConvertPctToXY(X, Y);
             Tuple<int, int> variance = await ConvertPctToXY(0.5, 0.5);
 
-            // Tap for duration
-            var time = new Stopwatch();
-            time.Start();
+            // Tap for duration or stopped
+            tappingStopwatch.Restart();
             do
             {
                 var tX = rng.Next(target.Item1 - variance.Item1, target.Item1 + variance.Item1);
                 var tY = rng.Next(target.Item2 - variance.Item2, target.Item2 + variance.Item2);
                 await TapXY(tX, tY, cancellationToken);
                 await Task.Delay(TapDelay * 3);
-            } while (time.ElapsedMilliseconds < duration.TotalMilliseconds);
+            } while (tappingStopwatch.ElapsedMilliseconds < duration.TotalMilliseconds && tappingStopwatch.IsRunning);
 
         }
 
