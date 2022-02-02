@@ -327,11 +327,11 @@ namespace FFRK_LabMem.Machines
             bool foundButton;
             if (this.Config.OpenDoors)
             {
-                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BLUE, 4000, 70, 66, 80, 10);
+                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BLUE, 4000, 70, 66, 80, 10, 0.5, 1);
             }
             else
             {
-                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BROWN, 4000, 30, 66, 80, 10);
+                foundButton = await DelayedTapButton("Pre-Door", BUTTON_BROWN, 4000, 30, 66, 80, 10, 0.5, 1);
             }
             if (!foundButton)
             {
@@ -348,7 +348,7 @@ namespace FFRK_LabMem.Machines
             await DataLogger.LogGotItem(this);
             ColorConsole.WriteLine("Moving On...");
 
-            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 2000, 42.7, 65, 81, 30))
+            if (await DelayedTapButton("Pre-MoveOn", BUTTON_BLUE, 2000, 42.7, 65, 81, 30, 0.5, 1))
             {
                 await LabTimings.Delay("Post-MoveOn", this.CancellationToken);
                 await this.StateMachine.FireAsync(Trigger.MoveOn);
