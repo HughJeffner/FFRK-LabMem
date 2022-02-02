@@ -310,7 +310,7 @@ namespace FFRK_LabMem.Machines
                 {
                     if (picked != 3)
                     {
-                        await DelayedTapButton("Inter-SelectTreasure", BUTTON_BLUE, 4000, 60, 58, 68, 10);
+                        await DelayedTapButton("Inter-SelectTreasure", BUTTON_BLUE, 4000, 60, 58, 68, 10, 0.5, 1);
                     }
                     await this.StateMachine.FireAsync(Trigger.MoveOn);
                 }
@@ -554,16 +554,16 @@ namespace FFRK_LabMem.Machines
             }
 
             // Confirm button
-            if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 37.5, 74, 87, 20))
+            if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 60, 74, 87, 20))
             {
                 //Use Lethe Tears brown button
-                if (await DelayedTapButton("Inter-LetheTears", BUTTON_BROWN, 2000, 50, 29, 42, 20))
+                if (await DelayedTapButton("Inter-LetheTears", BUTTON_BROWN, 2000, 50, 29, 42, 20, 0.5, 1))
                 {
                     // Confirmation
-                    if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 61, 57, 70, 5))
+                    if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 61, 57, 70, 5, 0.5, 1))
                     {
                         // OK
-                        if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 38.8, 55, 70, 5))
+                        if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 38.8, 55, 70, 5, 0.5, 1))
                         {
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
                             this.CurrentTears -= numberUsed;
