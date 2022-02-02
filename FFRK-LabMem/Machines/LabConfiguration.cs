@@ -14,8 +14,8 @@ namespace FFRK_LabMem.Machines
             // Ensure radiant painting in priority list
             if (!PaintingPriorityMap.ContainsKey("R")) PaintingPriorityMap.Add("R", 0);
 
-            // First time migrate on 7.2 sets Inter-SelectPainting to default
-            if (!oldVersion.Equals("7.2.0.0") && newVersion.Equals("7.2.0.0")) LabTimings.Timings["Inter-SelectPainting"].Delay = LabTimings.DefaultTimings["Inter-SelectPainting"].Delay;
+            // First time migrate on 7.3 sets Inter-SelectPainting to default
+            if (!oldVersion.Equals("7.3.0.0") && newVersion.Equals("7.3.0.0")) LabTimings.Timings["Inter-SelectPainting"].Delay = LabTimings.DefaultTimings["Inter-SelectPainting"].Delay;
 
         }
 
