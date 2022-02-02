@@ -50,8 +50,7 @@ namespace FFRK_Machines.Services
                 X = Y;
                 Y = header.MaxY - x1;
             }
-            client.Send(Encoding.ASCII.GetBytes($"d 0 {X} {Y} 50\nc\n"));
-            client.Send(Encoding.ASCII.GetBytes("u 0\nc\n"));
+            client.Send(Encoding.ASCII.GetBytes($"d 0 {X} {Y} 50\nc\nw 0\nu 0\nc\n"));
             return Task.CompletedTask;
         }
         
