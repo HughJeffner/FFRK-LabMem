@@ -361,7 +361,8 @@ namespace FFRK_LabMem.Machines
                 await this.StateMachine.FireAsync(Trigger.FoundTreasure);
             });
             Proxy.AddRegistration("dungeon_recommend_info", async(data, url) => 
-            { 
+            {
+                await Adb.StopTaps();
                 if (this.Data != null) await this.StateMachine.FireAsync(Trigger.PickedCombatant); 
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 
