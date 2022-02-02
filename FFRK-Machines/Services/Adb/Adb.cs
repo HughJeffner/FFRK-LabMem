@@ -412,6 +412,13 @@ namespace FFRK_Machines.Services.Adb
                             Width = b.Width,
                             Height = b.Height
                         };
+                        // Rotation check
+                        if (size.Width > size.Height)
+                        {
+                            var w = size.Width;
+                            size.Width = size.Height;
+                            size.Height = w;
+                        }
                         cachedScreenSize = size;
                     }
 
