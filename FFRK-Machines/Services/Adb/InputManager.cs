@@ -117,6 +117,10 @@ namespace FFRK_Machines.Services.Adb
                     service.Push(stream, $"{MINITOUCH_PATH}minitouch", 777, DateTime.Now, null, cancellationToken);
                 }
             }
+
+            // Set permissions
+            await client.ExecuteRemoteCommandAsync($"chmod 777 {MINITOUCH_PATH}minitouch", device, null, cancellationToken, 2000);
+
             return true;
         }
         private async Task<bool> MinitouchInstalled(CancellationToken cancellationToken)

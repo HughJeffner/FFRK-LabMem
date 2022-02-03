@@ -128,6 +128,9 @@ namespace FFRK_Machines.Services.Adb
                 }
             }
 
+            // Set permissions
+            await client.ExecuteRemoteCommandAsync($"chmod 777 {MINICAP_PATH}minicap", device, null, cancellationToken, 2000);
+
             return true;
         }
 
