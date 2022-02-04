@@ -36,6 +36,8 @@ namespace FFRK_Machines.Machines
             public int BottomOffset { get; set; } = -1;
             public Adb.CaptureType Capture { get; set; } = Services.Adb.Adb.CaptureType.Minicap;
             public int CaptureRate { get; set; } = 200;
+            public double FindPrecision { get; set; } = 0.5;
+            public int FindAccuracy { get; set; } = 0;
             public Adb.InputType Input { get; set; } = Adb.InputType.Minitouch;
             public string ConfigFile { get; set; }
             public int Consumers { get; set; } = 2;
@@ -74,6 +76,8 @@ namespace FFRK_Machines.Machines
             this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
             this.Adb.Capture = args.Capture;
             this.Adb.CaptureRate = args.CaptureRate;
+            this.Adb.FindPrecision = args.FindPrecision;
+            this.Adb.FindAccuracy = args.FindAccuracy;
             this.Adb.Input = args.Input;
             this.Adb.TapDelay = args.TapDelay;
             this.Adb.TapDuration = args.TapDuration;

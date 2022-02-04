@@ -71,6 +71,11 @@ namespace FFRK_LabMem.Config
             SetValue(key, value.ToString());
         }
 
+        public void SetValue(String key, double value)
+        {
+            SetValue(key, value.ToString());
+        }
+
         public void SetValue(String key, bool value)
         {
             SetValue(key, value ? "true" : "false");
@@ -92,6 +97,12 @@ namespace FFRK_LabMem.Config
         {
             if (this[key] == null) return defaultValue;
             return short.Parse(this[key]);
+        }
+
+        public double GetDouble(String key, double defaultValue)
+        {
+            if (this[key] == null) return defaultValue;
+            return double.Parse(this[key]);
         }
 
         public bool GetBool(String key, bool defaultValue)

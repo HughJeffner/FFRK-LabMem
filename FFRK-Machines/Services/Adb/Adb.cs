@@ -67,6 +67,8 @@ namespace FFRK_Machines.Services.Adb
         public double BottomOffset { get; set; }
         public int CaptureRate { get; set; } = 200;
         public CaptureType Capture { get; set; } = CaptureType.ADB;
+        public double FindPrecision { get; set; } = 0.5;
+        public int FindAccuracy { get; set; } = 0;
         public InputType Input { get; set; } = InputType.Minitouch;
         public int TapDelay { get; set; } = 30;
         public int TapDuration { get; set; } = 0;
@@ -440,18 +442,21 @@ namespace FFRK_Machines.Services.Adb
             return cachedScreenSize;
         }
 
-        public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken, double granularity = 0.5)
+        public async Task<Tuple<double, double>> GetButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, CancellationToken cancellationToken, double precision = -1)
         {
+
+            // Defaults
+            if (precision == -1) precision = FindPrecision;
 
             if (ColorConsole.CheckCategory(ColorConsole.DebugCategory.Adb))
             {
                 var dTargetStart = await ConvertPctToXY(xPct, yPctStart);
                 var dTargetEnd = await ConvertPctToXY(xPct, yPctEnd);
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Finding button [{0},{1}-{2}] ({3}): ", dTargetStart.Item1, dTargetStart.Item2, dTargetEnd.Item2, htmlButtonColor);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Finding button {htmlButtonColor} [{dTargetStart.Item1},{dTargetStart.Item2}-{dTargetEnd.Item2}] t:{threshold} p:{precision}");
             }
             // Build input for pixel colors
             var coords = new List<Tuple<double, double>>();
-            for (double i = yPctStart; i < yPctEnd; i+= granularity)
+            for (double i = yPctStart; i < yPctEnd; i+= precision)
             {
                 coords.Add(new Tuple<double, double>(xPct, i));
             }
@@ -498,10 +503,10 @@ namespace FFRK_Machines.Services.Adb
 
         }
 
-        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double granularity = 0.5, int certainty = 0)
+        public async Task<FindButtonResult> FindButtonAndTap(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int retries, CancellationToken cancellationToken, double precision = -1, int accuracy = -1)
         {
-            
-            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, granularity, certainty);
+
+            var button = await FindButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, retries, cancellationToken, precision, accuracy);
             if (button == null)
             {
                 return new FindButtonResult();
@@ -521,18 +526,22 @@ namespace FFRK_Machines.Services.Adb
             public bool tapped = false;
         }
 
-        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int timeout, CancellationToken cancellationToken, double granularity = 0.5, int certainty = 0)
+        public async Task<FindButtonResult> FindButton(String htmlButtonColor, int threshold, double xPct, double yPctStart, double yPctEnd, int timeout, CancellationToken cancellationToken, double precision = -1, int accuracy = -1)
         {
+
+            // Defaults
+            if (accuracy == -1) accuracy = FindAccuracy;
+
             var time = new Stopwatch();
             time.Start();
             int tries = 0;
             List<Tuple<double, double>> prevButtons = new List<Tuple<double, double>>();
             do
             {
-                var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, granularity);
+                var b = await GetButton(htmlButtonColor, threshold, xPct, yPctStart, yPctEnd, cancellationToken, precision);
                 if (b != null)
                 {
-                    if (certainty <= 0 || prevButtons.Where(i => i.Equals(b)).Count() >= certainty)
+                    if (accuracy <= 0 || prevButtons.Where(i => i.Equals(b)).Count() >= accuracy)
                         return new FindButtonResult() { button = b, retries = tries };
                     prevButtons.Add(b);
                 }

@@ -61,6 +61,8 @@ namespace FFRK_LabMem.Machines
                 BottomOffset = config.GetInt("screen.bottomOffset", -1),
                 Capture = config.GetEnum("adb.capture", Adb.CaptureType.Minicap),
                 CaptureRate = config.GetInt("adb.captureRate", 200),
+                FindPrecision = config.GetDouble("adb.findPrecision", 0.5),
+                FindAccuracy = config.GetInt("adb.findAccuracy", 0),
                 Input = config.GetEnum("adb.input", Adb.InputType.Minitouch),
                 TapDelay = config.GetInt("adb.tapDelay", 30),
                 TapDuration = config.GetInt("adb.tapDuration", 0),

@@ -93,13 +93,20 @@ namespace FFRK_LabMem.Config.UI
             this.label3 = new System.Windows.Forms.Label();
             this.buttonProxyBlocklist = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.trackBarFindPrecision = new System.Windows.Forms.TrackBar();
+            this.labelFindAccuracy = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.labelFindPrecision = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.numericUpDownTapPressure = new System.Windows.Forms.NumericUpDown();
+            this.label41 = new System.Windows.Forms.Label();
+            this.labelTapDuration = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
             this.comboBoxInput = new System.Windows.Forms.ComboBox();
             this.label38 = new System.Windows.Forms.Label();
             this.labelTapDelay = new System.Windows.Forms.Label();
-            this.trackBarTapDelay = new System.Windows.Forms.TrackBar();
             this.label32 = new System.Windows.Forms.Label();
             this.labelCaptureRate = new System.Windows.Forms.Label();
-            this.trackBarCaptureRate = new System.Windows.Forms.TrackBar();
             this.label31 = new System.Windows.Forms.Label();
             this.comboBoxCapture = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
@@ -108,6 +115,10 @@ namespace FFRK_LabMem.Config.UI
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxAdbPath = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.trackBarCaptureRate = new System.Windows.Forms.TrackBar();
+            this.trackBarFindAccuracy = new System.Windows.Forms.TrackBar();
+            this.trackBarTapDelay = new System.Windows.Forms.TrackBar();
+            this.trackBarTapDuration = new System.Windows.Forms.TrackBar();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.buttonLabConfigurations = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -240,11 +251,6 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
-            this.labelTapDuration = new System.Windows.Forms.Label();
-            this.trackBarTapDuration = new System.Windows.Forms.TrackBar();
-            this.label40 = new System.Windows.Forms.Label();
-            this.numericUpDownTapPressure = new System.Windows.Forms.NumericUpDown();
-            this.label41 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -262,8 +268,12 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).BeginInit();
             this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFindPrecision)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTapPressure)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarCaptureRate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFindAccuracy)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDuration)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -289,8 +299,6 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDuration)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTapPressure)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -934,18 +942,20 @@ namespace FFRK_LabMem.Config.UI
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.trackBarFindPrecision);
+            this.tabPage3.Controls.Add(this.labelFindAccuracy);
+            this.tabPage3.Controls.Add(this.label44);
+            this.tabPage3.Controls.Add(this.labelFindPrecision);
+            this.tabPage3.Controls.Add(this.label42);
             this.tabPage3.Controls.Add(this.numericUpDownTapPressure);
             this.tabPage3.Controls.Add(this.label41);
             this.tabPage3.Controls.Add(this.labelTapDuration);
-            this.tabPage3.Controls.Add(this.trackBarTapDuration);
             this.tabPage3.Controls.Add(this.label40);
             this.tabPage3.Controls.Add(this.comboBoxInput);
             this.tabPage3.Controls.Add(this.label38);
             this.tabPage3.Controls.Add(this.labelTapDelay);
-            this.tabPage3.Controls.Add(this.trackBarTapDelay);
             this.tabPage3.Controls.Add(this.label32);
             this.tabPage3.Controls.Add(this.labelCaptureRate);
-            this.tabPage3.Controls.Add(this.trackBarCaptureRate);
             this.tabPage3.Controls.Add(this.label31);
             this.tabPage3.Controls.Add(this.comboBoxCapture);
             this.tabPage3.Controls.Add(this.label30);
@@ -954,11 +964,109 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage3.Controls.Add(this.label6);
             this.tabPage3.Controls.Add(this.textBoxAdbPath);
             this.tabPage3.Controls.Add(this.label5);
+            this.tabPage3.Controls.Add(this.trackBarCaptureRate);
+            this.tabPage3.Controls.Add(this.trackBarFindAccuracy);
+            this.tabPage3.Controls.Add(this.trackBarTapDelay);
+            this.tabPage3.Controls.Add(this.trackBarTapDuration);
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(504, 466);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Adb";
+            // 
+            // trackBarFindPrecision
+            // 
+            this.trackBarFindPrecision.LargeChange = 1;
+            this.trackBarFindPrecision.Location = new System.Drawing.Point(153, 179);
+            this.trackBarFindPrecision.Name = "trackBarFindPrecision";
+            this.trackBarFindPrecision.Size = new System.Drawing.Size(280, 45);
+            this.trackBarFindPrecision.TabIndex = 21;
+            this.toolTip1.SetToolTip(this.trackBarFindPrecision, "Controls how many pixels are searched when finding a button.\r\nIncrease to sample " +
+        "more pixels at the cost of CPU cycles");
+            this.trackBarFindPrecision.Value = 5;
+            this.trackBarFindPrecision.ValueChanged += new System.EventHandler(this.TrackBarFindPrecision_ValueChanged);
+            // 
+            // labelFindAccuracy
+            // 
+            this.labelFindAccuracy.Location = new System.Drawing.Point(437, 220);
+            this.labelFindAccuracy.Name = "labelFindAccuracy";
+            this.labelFindAccuracy.Size = new System.Drawing.Size(64, 23);
+            this.labelFindAccuracy.TabIndex = 25;
+            this.labelFindAccuracy.Text = "1";
+            this.labelFindAccuracy.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label44
+            // 
+            this.label44.Location = new System.Drawing.Point(0, 220);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(146, 23);
+            this.label44.TabIndex = 23;
+            this.label44.Text = "Find Accuracy";
+            this.label44.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelFindPrecision
+            // 
+            this.labelFindPrecision.Location = new System.Drawing.Point(433, 179);
+            this.labelFindPrecision.Name = "labelFindPrecision";
+            this.labelFindPrecision.Size = new System.Drawing.Size(68, 23);
+            this.labelFindPrecision.TabIndex = 22;
+            this.labelFindPrecision.Text = "50%";
+            this.labelFindPrecision.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label42
+            // 
+            this.label42.Location = new System.Drawing.Point(-1, 179);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(146, 23);
+            this.label42.TabIndex = 20;
+            this.label42.Text = "Find Precision:";
+            this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // numericUpDownTapPressure
+            // 
+            this.numericUpDownTapPressure.Location = new System.Drawing.Point(153, 420);
+            this.numericUpDownTapPressure.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDownTapPressure.Name = "numericUpDownTapPressure";
+            this.numericUpDownTapPressure.Size = new System.Drawing.Size(110, 21);
+            this.numericUpDownTapPressure.TabIndex = 19;
+            this.toolTip1.SetToolTip(this.numericUpDownTapPressure, "Arbitrary tap pressure value, unknown effect.  Has no effect with Adb input.\r\nDef" +
+        "ault is 50");
+            this.numericUpDownTapPressure.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            // 
+            // label41
+            // 
+            this.label41.Location = new System.Drawing.Point(-3, 420);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(148, 23);
+            this.label41.TabIndex = 18;
+            this.label41.Text = "Tap Pressure:";
+            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelTapDuration
+            // 
+            this.labelTapDuration.Location = new System.Drawing.Point(437, 372);
+            this.labelTapDuration.Name = "labelTapDuration";
+            this.labelTapDuration.Size = new System.Drawing.Size(64, 23);
+            this.labelTapDuration.TabIndex = 17;
+            this.labelTapDuration.Text = "0ms";
+            this.labelTapDuration.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label40
+            // 
+            this.label40.Location = new System.Drawing.Point(-1, 372);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(146, 23);
+            this.label40.TabIndex = 15;
+            this.label40.Text = "Tap Duration:";
+            this.label40.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // comboBoxInput
             // 
@@ -967,7 +1075,7 @@ namespace FFRK_LabMem.Config.UI
             this.comboBoxInput.Items.AddRange(new object[] {
             "Adb (slow, more compatible)",
             "Minitouch (fast)"});
-            this.comboBoxInput.Location = new System.Drawing.Point(153, 190);
+            this.comboBoxInput.Location = new System.Drawing.Point(153, 290);
             this.comboBoxInput.Name = "comboBoxInput";
             this.comboBoxInput.Size = new System.Drawing.Size(280, 23);
             this.comboBoxInput.TabIndex = 14;
@@ -976,7 +1084,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label38
             // 
-            this.label38.Location = new System.Drawing.Point(-1, 189);
+            this.label38.Location = new System.Drawing.Point(-1, 289);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(146, 23);
             this.label38.TabIndex = 13;
@@ -985,29 +1093,16 @@ namespace FFRK_LabMem.Config.UI
             // 
             // labelTapDelay
             // 
-            this.labelTapDelay.Location = new System.Drawing.Point(433, 231);
+            this.labelTapDelay.Location = new System.Drawing.Point(433, 331);
             this.labelTapDelay.Name = "labelTapDelay";
             this.labelTapDelay.Size = new System.Drawing.Size(68, 23);
             this.labelTapDelay.TabIndex = 12;
-            this.labelTapDelay.Text = "100ms";
+            this.labelTapDelay.Text = "30ms";
             this.labelTapDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // trackBarTapDelay
-            // 
-            this.trackBarTapDelay.LargeChange = 10;
-            this.trackBarTapDelay.Location = new System.Drawing.Point(153, 231);
-            this.trackBarTapDelay.Maximum = 100;
-            this.trackBarTapDelay.Name = "trackBarTapDelay";
-            this.trackBarTapDelay.Size = new System.Drawing.Size(280, 45);
-            this.trackBarTapDelay.TabIndex = 11;
-            this.trackBarTapDelay.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackBarTapDelay, "The delay before tapping a screen element");
-            this.trackBarTapDelay.Value = 10;
-            this.trackBarTapDelay.ValueChanged += new System.EventHandler(this.TrackBarTapDelay_ValueChanged);
             // 
             // label32
             // 
-            this.label32.Location = new System.Drawing.Point(-1, 231);
+            this.label32.Location = new System.Drawing.Point(-1, 331);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(146, 23);
             this.label32.TabIndex = 10;
@@ -1016,26 +1111,12 @@ namespace FFRK_LabMem.Config.UI
             // 
             // labelCaptureRate
             // 
-            this.labelCaptureRate.Location = new System.Drawing.Point(433, 133);
+            this.labelCaptureRate.Location = new System.Drawing.Point(433, 138);
             this.labelCaptureRate.Name = "labelCaptureRate";
             this.labelCaptureRate.Size = new System.Drawing.Size(68, 23);
             this.labelCaptureRate.TabIndex = 9;
-            this.labelCaptureRate.Text = "500ms";
+            this.labelCaptureRate.Text = "200ms";
             this.labelCaptureRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // trackBarCaptureRate
-            // 
-            this.trackBarCaptureRate.LargeChange = 10;
-            this.trackBarCaptureRate.Location = new System.Drawing.Point(153, 138);
-            this.trackBarCaptureRate.Maximum = 100;
-            this.trackBarCaptureRate.Name = "trackBarCaptureRate";
-            this.trackBarCaptureRate.Size = new System.Drawing.Size(280, 45);
-            this.trackBarCaptureRate.TabIndex = 8;
-            this.trackBarCaptureRate.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackBarCaptureRate, "The delay between finding screen elements.  Smaller values increase the resposive" +
-        "ness at the cost of CPU");
-            this.trackBarCaptureRate.Value = 50;
-            this.trackBarCaptureRate.ValueChanged += new System.EventHandler(this.TrackBarCaptureRate_ValueChanged);
             // 
             // label31
             // 
@@ -1127,6 +1208,57 @@ namespace FFRK_LabMem.Config.UI
             this.label5.Text = "Adb path:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // trackBarCaptureRate
+            // 
+            this.trackBarCaptureRate.LargeChange = 10;
+            this.trackBarCaptureRate.Location = new System.Drawing.Point(153, 138);
+            this.trackBarCaptureRate.Maximum = 100;
+            this.trackBarCaptureRate.Name = "trackBarCaptureRate";
+            this.trackBarCaptureRate.Size = new System.Drawing.Size(280, 45);
+            this.trackBarCaptureRate.TabIndex = 8;
+            this.trackBarCaptureRate.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackBarCaptureRate, "The delay between finding screen elements.  Smaller values increase the resposive" +
+        "ness at the cost of CPU");
+            this.trackBarCaptureRate.Value = 20;
+            this.trackBarCaptureRate.ValueChanged += new System.EventHandler(this.TrackBarCaptureRate_ValueChanged);
+            // 
+            // trackBarFindAccuracy
+            // 
+            this.trackBarFindAccuracy.LargeChange = 1;
+            this.trackBarFindAccuracy.Location = new System.Drawing.Point(151, 220);
+            this.trackBarFindAccuracy.Maximum = 9;
+            this.trackBarFindAccuracy.Name = "trackBarFindAccuracy";
+            this.trackBarFindAccuracy.Size = new System.Drawing.Size(280, 45);
+            this.trackBarFindAccuracy.TabIndex = 24;
+            this.toolTip1.SetToolTip(this.trackBarFindAccuracy, "Controls how many times a button location is confirmed before proceeding\r\nIncreas" +
+        "e to confirm more times at the cost of additional find calls");
+            this.trackBarFindAccuracy.ValueChanged += new System.EventHandler(this.TrackBarFindAccuracy_ValueChanged);
+            // 
+            // trackBarTapDelay
+            // 
+            this.trackBarTapDelay.LargeChange = 10;
+            this.trackBarTapDelay.Location = new System.Drawing.Point(153, 331);
+            this.trackBarTapDelay.Maximum = 100;
+            this.trackBarTapDelay.Name = "trackBarTapDelay";
+            this.trackBarTapDelay.Size = new System.Drawing.Size(280, 45);
+            this.trackBarTapDelay.TabIndex = 11;
+            this.trackBarTapDelay.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackBarTapDelay, "The delay before tapping a screen element");
+            this.trackBarTapDelay.Value = 3;
+            this.trackBarTapDelay.ValueChanged += new System.EventHandler(this.TrackBarTapDelay_ValueChanged);
+            // 
+            // trackBarTapDuration
+            // 
+            this.trackBarTapDuration.LargeChange = 10;
+            this.trackBarTapDuration.Location = new System.Drawing.Point(153, 372);
+            this.trackBarTapDuration.Maximum = 100;
+            this.trackBarTapDuration.Name = "trackBarTapDuration";
+            this.trackBarTapDuration.Size = new System.Drawing.Size(280, 45);
+            this.trackBarTapDuration.TabIndex = 16;
+            this.trackBarTapDuration.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackBarTapDuration, "How long to hold down when tapping a screen element");
+            this.trackBarTapDuration.ValueChanged += new System.EventHandler(this.TrackBarTapDuration_ValueChanged);
+            // 
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
@@ -1164,7 +1296,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl1.Location = new System.Drawing.Point(3, 35);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(500, 404);
+            this.tabControl1.Size = new System.Drawing.Size(500, 400);
             this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
@@ -1181,7 +1313,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(492, 376);
+            this.tabPage5.Size = new System.Drawing.Size(492, 372);
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1295,7 +1427,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage15.Controls.Add(this.checkBoxLabUseLetheTears);
             this.tabPage15.Location = new System.Drawing.Point(4, 22);
             this.tabPage15.Name = "tabPage15";
-            this.tabPage15.Size = new System.Drawing.Size(492, 378);
+            this.tabPage15.Size = new System.Drawing.Size(492, 374);
             this.tabPage15.TabIndex = 6;
             this.tabPage15.Text = "Party";
             this.tabPage15.UseVisualStyleBackColor = true;
@@ -1623,7 +1755,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage8.Controls.Add(this.checkBoxLabDoors);
             this.tabPage8.Location = new System.Drawing.Point(4, 22);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(492, 378);
+            this.tabPage8.Size = new System.Drawing.Size(492, 374);
             this.tabPage8.TabIndex = 3;
             this.tabPage8.Text = "Options";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -1760,7 +1892,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(492, 378);
+            this.tabPage6.Size = new System.Drawing.Size(492, 374);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Paintings";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1771,7 +1903,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSwap.AutoSize = true;
             this.checkBoxSwap.Checked = true;
             this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(374, 343);
+            this.checkBoxSwap.Location = new System.Drawing.Point(374, 339);
             this.checkBoxSwap.Name = "checkBoxSwap";
             this.checkBoxSwap.Size = new System.Drawing.Size(109, 19);
             this.checkBoxSwap.TabIndex = 3;
@@ -1781,7 +1913,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveUp
             // 
             this.buttonPaintingMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 335);
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 331);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveUp.TabIndex = 1;
@@ -1792,7 +1924,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveDown
             // 
             this.buttonPaintingMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 335);
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 331);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveDown.TabIndex = 2;
@@ -1813,7 +1945,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(7, 7);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(476, 318);
+            this.listViewPaintings.Size = new System.Drawing.Size(476, 314);
             this.listViewPaintings.SmallImageList = this.imageList2;
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
@@ -1845,7 +1977,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage7.Controls.Add(this.listViewTreasures);
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(492, 378);
+            this.tabPage7.Size = new System.Drawing.Size(492, 374);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Treasures";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -1854,7 +1986,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(201, 341);
+            this.label9.Location = new System.Drawing.Point(201, 337);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 15);
             this.label9.TabIndex = 3;
@@ -1869,7 +2001,7 @@ namespace FFRK_LabMem.Config.UI
             "0",
             "1",
             "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(342, 337);
+            this.comboBoxKeys.Location = new System.Drawing.Point(342, 333);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(140, 23);
             this.comboBoxKeys.TabIndex = 4;
@@ -1878,7 +2010,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureUp
             // 
             this.buttonTreasureUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 335);
+            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 331);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureUp.TabIndex = 1;
@@ -1889,7 +2021,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureDown
             // 
             this.buttonTreasureDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 335);
+            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 331);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureDown.TabIndex = 2;
@@ -1913,7 +2045,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(7, 7);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(476, 318);
+            this.listViewTreasures.Size = new System.Drawing.Size(476, 314);
             this.listViewTreasures.SmallImageList = this.imageList2;
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
@@ -1950,7 +2082,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage10.Location = new System.Drawing.Point(4, 22);
             this.tabPage10.Name = "tabPage10";
             this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(492, 378);
+            this.tabPage10.Size = new System.Drawing.Size(492, 374);
             this.tabPage10.TabIndex = 5;
             this.tabPage10.Text = "Enemies";
             this.tabPage10.UseVisualStyleBackColor = true;
@@ -1969,7 +2101,7 @@ namespace FFRK_LabMem.Config.UI
             "Avoid",
             "Avoid +2",
             "Avoid +3"});
-            this.comboBoxEnemyPriority.Location = new System.Drawing.Point(194, 335);
+            this.comboBoxEnemyPriority.Location = new System.Drawing.Point(194, 331);
             this.comboBoxEnemyPriority.Name = "comboBoxEnemyPriority";
             this.comboBoxEnemyPriority.Size = new System.Drawing.Size(140, 23);
             this.comboBoxEnemyPriority.TabIndex = 3;
@@ -1993,7 +2125,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewEnemies.Location = new System.Drawing.Point(7, 7);
             this.listViewEnemies.Name = "listViewEnemies";
             this.listViewEnemies.ShowItemToolTips = true;
-            this.listViewEnemies.Size = new System.Drawing.Size(476, 318);
+            this.listViewEnemies.Size = new System.Drawing.Size(476, 314);
             this.listViewEnemies.SmallImageList = this.imageList2;
             this.listViewEnemies.TabIndex = 0;
             this.listViewEnemies.UseCompatibleStateImageBehavior = false;
@@ -2019,7 +2151,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.checkBoxLabBlockListOverride.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 337);
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 333);
             this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
             this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(147, 19);
             this.checkBoxLabBlockListOverride.TabIndex = 4;
@@ -2032,7 +2164,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonRemoveBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonRemoveBlocklist.Enabled = false;
-            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 335);
+            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 331);
             this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
             this.buttonRemoveBlocklist.Size = new System.Drawing.Size(87, 27);
             this.buttonRemoveBlocklist.TabIndex = 2;
@@ -2043,7 +2175,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonAddBlocklist
             // 
             this.buttonAddBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 335);
+            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 331);
             this.buttonAddBlocklist.Name = "buttonAddBlocklist";
             this.buttonAddBlocklist.Size = new System.Drawing.Size(87, 27);
             this.buttonAddBlocklist.TabIndex = 1;
@@ -2665,64 +2797,6 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
-            // labelTapDuration
-            // 
-            this.labelTapDuration.Location = new System.Drawing.Point(433, 282);
-            this.labelTapDuration.Name = "labelTapDuration";
-            this.labelTapDuration.Size = new System.Drawing.Size(68, 23);
-            this.labelTapDuration.TabIndex = 17;
-            this.labelTapDuration.Text = "0ms";
-            this.labelTapDuration.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // trackBarTapDuration
-            // 
-            this.trackBarTapDuration.LargeChange = 10;
-            this.trackBarTapDuration.Location = new System.Drawing.Point(153, 282);
-            this.trackBarTapDuration.Maximum = 100;
-            this.trackBarTapDuration.Name = "trackBarTapDuration";
-            this.trackBarTapDuration.Size = new System.Drawing.Size(280, 45);
-            this.trackBarTapDuration.TabIndex = 16;
-            this.trackBarTapDuration.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackBarTapDuration, "How long to hold down when tapping a screen element");
-            this.trackBarTapDuration.ValueChanged += new System.EventHandler(this.TrackBarTapDuration_ValueChanged);
-            // 
-            // label40
-            // 
-            this.label40.Location = new System.Drawing.Point(-1, 282);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(146, 23);
-            this.label40.TabIndex = 15;
-            this.label40.Text = "Tap Duration:";
-            this.label40.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // numericUpDownTapPressure
-            // 
-            this.numericUpDownTapPressure.Location = new System.Drawing.Point(153, 330);
-            this.numericUpDownTapPressure.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericUpDownTapPressure.Name = "numericUpDownTapPressure";
-            this.numericUpDownTapPressure.Size = new System.Drawing.Size(110, 21);
-            this.numericUpDownTapPressure.TabIndex = 19;
-            this.toolTip1.SetToolTip(this.numericUpDownTapPressure, "Arbitrary tap pressure value, unknown effect.  Has no effect with Adb input.\r\nDef" +
-        "ault is 50");
-            this.numericUpDownTapPressure.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            // 
-            // label41
-            // 
-            this.label41.Location = new System.Drawing.Point(3, 330);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(142, 23);
-            this.label41.TabIndex = 18;
-            this.label41.Text = "Tap Pressure:";
-            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -2765,8 +2839,12 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownProxyPort)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFindPrecision)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTapPressure)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarCaptureRate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarFindAccuracy)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDuration)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
@@ -2805,8 +2883,6 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarTapDuration)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTapPressure)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3018,5 +3094,11 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.NumericUpDown numericUpDownTapPressure;
         private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label labelFindAccuracy;
+        private System.Windows.Forms.TrackBar trackBarFindAccuracy;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label labelFindPrecision;
+        private System.Windows.Forms.TrackBar trackBarFindPrecision;
+        private System.Windows.Forms.Label label42;
     }
 }
