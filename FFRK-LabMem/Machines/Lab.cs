@@ -28,7 +28,6 @@ namespace FFRK_LabMem.Machines
             FoundPortal,
             PickedCombatant,
             PickedPortal,
-            OpenDoor,
             MoveOn,
             StartBattle,
             EnterDungeon,
@@ -143,7 +142,6 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
-                .OnEntryFromAsync(Trigger.FoundDoor, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
                 .Permit(Trigger.MoveOn, State.Ready)
                 .Permit(Trigger.MissedButton, State.Unknown);
