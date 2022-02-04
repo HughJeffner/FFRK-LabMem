@@ -46,6 +46,10 @@ namespace FFRK_Machines.Services.Adb
         public class Size {
             public int Width { get; set; }
             public int Height { get; set; }
+            public override string ToString()
+            {
+                return $"{Width}x{Height}";
+            }
         }
         public class ImageDef
         {
@@ -426,6 +430,7 @@ namespace FFRK_Machines.Services.Adb
                             size.Height = w;
                         }
                         cachedScreenSize = size;
+                        ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Screen size set to: {cachedScreenSize}");
                     }
 
                 }
