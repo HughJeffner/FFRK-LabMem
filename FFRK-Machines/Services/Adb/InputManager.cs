@@ -142,15 +142,13 @@ namespace FFRK_Machines.Services.Adb
             if (adb.Input == InputType.Minitouch)
             {
                 await Task.Delay(adb.TapDelay, cancellationToken);
-                await minitouch.Tap(X, Y);
+                await minitouch.Tap(X, Y, adb.TapPressure, adb.TapDuration);
             }
             else
             {
-                await client.ExecuteRemoteCommandAsync(String.Format("input tap {0} {1}", X, Y),
-                device,
-                null,
-                cancellationToken,
-                1000);
+                var cmd = $"input tap {X} {Y}";
+                if (adb.TapDuration > 0) cmd = $"input swipe {X} {Y} {X} {Y} {adb.TapDuration}";
+                await client.ExecuteRemoteCommandAsync(cmd, device, null, cancellationToken, adb.TapDuration + 1000);
             }
             inputStopWatch.Stop();
             ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Input [{adb.Input}] delay: {inputStopWatch.ElapsedMilliseconds}ms");

@@ -20,14 +20,34 @@ namespace FFRK_Machines.Machines
         where C : MachineConfiguration
     {
 
+        public class StartArguments
+        {
+            public string AdbPath { get; set; } = "adb.exe";
+            public string AdbHost { get; set; } = "127.0.0.1:5555";
+            public int TapDelay { get; set; } = 30;
+            public int TapDuration { get; set; } = 0;
+            public int TapPressure { get; set; } = 50;
+            public int ProxyPort { get; set; } = 8081;
+            public bool ProxySecure { get; set; } = true;
+            public string ProxyBlocklist { get; set; }
+            public bool ProxyAutoConfig { get; set; } = false;
+            public bool ProxyConnectionPooling { get; set; } = false;
+            public int TopOffset { get; set; } = -1;
+            public int BottomOffset { get; set; } = -1;
+            public Adb.CaptureType Capture { get; set; } = Services.Adb.Adb.CaptureType.Minicap;
+            public int CaptureRate { get; set; } = 200;
+            public Adb.InputType Input { get; set; } = Adb.InputType.Minitouch;
+            public string ConfigFile { get; set; }
+            public int Consumers { get; set; } = 2;
+        }
+
         private const char BOMChar = (char)65279;
 
         public event EventHandler OnEnabled;
         public event EventHandler OnDisabled;
 
         private bool enabled = false;
-        private bool proxySecure = false;
-        private bool proxyAutoConfig = false;
+        private StartArguments startArguments;
         public M Machine { get; set; }
         public Proxy Proxy { get; set; }
         public Adb Adb { get; set; }
@@ -44,36 +64,29 @@ namespace FFRK_Machines.Machines
         /// <summary>
         /// Starts the machine controller
         /// </summary>
-        /// <param name="adbPath">Path to adb executable</param>
-        /// <param name="adbHost">TCP host for adb connection</param>
-        /// <param name="proxyPort">Port to listen for http proxy requests</param>
-        /// <param name="proxySecure">Intercept and decrypt https requests</param>
-        /// <param name="proxyBlocklist">Path to proxy blocklist file</param>
-        /// <param name="proxyBlocklist">Automatic configure of system proxy settings</param>
-        /// <param name="topOffset">Top offset of screen</param>
-        /// <param name="bottomOffset">Bottom offest of screen</param>
-        /// <param name="configFile">Path to the machine config file</param>
-        /// <param name="unkownState">State the machine should enter if reset, or unknown state</param>
-        public async Task Start(string adbPath, string adbHost, int proxyPort, bool proxySecure, string proxyBlocklist, bool proxyAutoConfig, bool proxyConnectionPooling, int topOffset, int bottomOffset, Adb.CaptureType capture, int captureRate, Adb.InputType input, string configFile, int consumers = 2)
+        public async Task Start(StartArguments args)
         {
+            // Args
+            this.startArguments = args;
 
             // Adb
-            this.Adb = new Adb(adbPath, adbHost, topOffset, bottomOffset);
+            this.Adb = new Adb(args.AdbPath, args.AdbHost, args.TopOffset, args.BottomOffset);
             this.Adb.DeviceUnavailable += Adb_DeviceUnavailable;
-            this.Adb.Capture = capture;
-            this.Adb.CaptureRate = captureRate;
-            this.Adb.Input = input;
+            this.Adb.Capture = args.Capture;
+            this.Adb.CaptureRate = args.CaptureRate;
+            this.Adb.Input = args.Input;
+            this.Adb.TapDelay = args.TapDelay;
+            this.Adb.TapDuration = args.TapDuration;
+            this.Adb.TapPressure = args.TapPressure;
 
             // Proxy Server
-            Proxy = new Proxy(proxyPort, proxySecure, proxyBlocklist, proxyConnectionPooling);
+            Proxy = new Proxy(args.ProxyPort, args.ProxySecure, args.ProxyBlocklist, args.ProxyConnectionPooling);
             this.Proxy.ProxyEvent += Proxy_ProxyEvent;
-            this.proxySecure = proxySecure;
-            this.proxyAutoConfig = proxyAutoConfig;
             Proxy.Start();
 
             // Machine
-            ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, configFile);
-            Machine = this.CreateMachine(await MachineConfiguration.Load<C>(configFile));
+            ColorConsole.WriteLine("Setting up {0} with config: {1}", typeof(M).Name, args.ConfigFile);
+            Machine = this.CreateMachine(await MachineConfiguration.Load<C>(args.ConfigFile));
             Machine.MachineFinished += Machine_MachineFinished;
             Machine.MachineError += Machine_MachineError;
 
@@ -93,7 +106,7 @@ namespace FFRK_Machines.Machines
             }
 
             // Start consumers
-            for (int i = 0; i < consumers; i++)
+            for (int i = 0; i < args.Consumers; i++)
             {
                 var consumer = Task.Factory.StartNew(() => Consume());
             }
@@ -143,8 +156,8 @@ namespace FFRK_Machines.Machines
         private async Task EngageMachine()
         {
             Machine.RegisterWithProxy(Proxy);
-            if (this.proxySecure) await Adb.InstallCertificate("rootCert.pfx", CancellationToken.None);
-            if (this.proxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
+            if (startArguments.ProxySecure) await Adb.InstallCertificate("rootCert.pfx", CancellationToken.None);
+            if (startArguments.ProxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
             await Adb.CaptureSetup(CancellationToken.None);
             await Adb.InputSetup(CancellationToken.None);
         }

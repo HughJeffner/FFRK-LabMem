@@ -65,11 +65,12 @@ namespace FFRK_Machines.Services.Adb
         public DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
-
         public int CaptureRate { get; set; } = 200;
         public CaptureType Capture { get; set; } = CaptureType.ADB;
         public InputType Input { get; set; } = InputType.Minitouch;
         public int TapDelay { get; set; } = 30;
+        public int TapDuration { get; set; } = 0;
+        public int TapPressure { get; set; } = 50;
         public bool HasDevice
         {
             get

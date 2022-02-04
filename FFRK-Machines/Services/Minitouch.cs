@@ -42,15 +42,15 @@ namespace FFRK_Machines.Services
             return Task.FromResult(true);
         }
 
-        public Task Tap(int X, int Y)
+        public Task Tap(int x, int y, int pressure = 50, int duration = 0)
         {
             if (header.IsRotated)
             {
-                var x1 = X;
-                X = Y;
-                Y = header.MaxY - x1;
+                var x1 = x;
+                x = y;
+                y = header.MaxY - x1;
             }
-            client.Send(Encoding.ASCII.GetBytes($"d 0 {X} {Y} 50\nc\nw 0\nu 0\nc\n"));
+            client.Send(Encoding.ASCII.GetBytes($"d 0 {x} {y} {pressure}\nc\nw {duration}\nu 0\nc\n"));
             return Task.CompletedTask;
         }
         
