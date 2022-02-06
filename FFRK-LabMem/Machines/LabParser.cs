@@ -200,8 +200,8 @@ namespace FFRK_LabMem.Machines
                         ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
                         await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
-                    case 7:  // Door
-                        await Lab.StateMachine.FireAsync(Trigger.FoundDoor);
+                    case 7:  // Leave Door
+                        await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     case 4:  // Battle
                         await Lab.StateMachine.FireAsync(Trigger.FoundBattle);

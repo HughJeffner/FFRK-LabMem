@@ -47,24 +47,29 @@ namespace FFRK_LabMem.Machines
             var ret = await Create(config);
 
             // Start it
-            await ret.Start(
-                adbPath: config.GetString("adb.path", "adb.exe"),
-                adbHost: config.GetString("adb.host", "127.0.0.1:7555"),
-                proxyPort: config.GetInt("proxy.port", 8081),
-                proxySecure: config.GetBool("proxy.secure", false),
-                proxyBlocklist: config.GetString("proxy.blocklist",""),
-                proxyConnectionPooling: config.GetBool("proxy.connectionPooling", false),
-                proxyAutoConfig: config.GetBool("proxy.autoconfig", false),
-                configFile: config.GetString("lab.configFile", "Config/lab.balanced.json"),
-                topOffset: config.GetInt("screen.topOffset", -1),
-                bottomOffset: config.GetInt("screen.bottomOffset", -1),
-                capture: config.GetEnum("adb.capture", Adb.CaptureType.Minicap),
-                captureRate: config.GetInt("adb.captureRate", 200),
-                input: config.GetEnum("adb.input", Adb.InputType.Minitouch),
-                consumers: 2);
-
-            // Adb options
-            ret.Adb.TapDelay = config.GetInt("adb.tapDelay", 30);
+            var args = new StartArguments()
+            {
+                AdbPath = config.GetString("adb.path", "adb.exe"),
+                AdbHost = config.GetString("adb.host", "127.0.0.1:7555"),
+                ProxyPort = config.GetInt("proxy.port", 8081),
+                ProxySecure = config.GetBool("proxy.secure", false),
+                ProxyBlocklist = config.GetString("proxy.blocklist", ""),
+                ProxyConnectionPooling = config.GetBool("proxy.connectionPooling", false),
+                ProxyAutoConfig = config.GetBool("proxy.autoconfig", false),
+                ConfigFile = config.GetString("lab.configFile", "Config/lab.balanced.json"),
+                TopOffset = config.GetInt("screen.topOffset", -1),
+                BottomOffset = config.GetInt("screen.bottomOffset", -1),
+                Capture = config.GetEnum("adb.capture", Adb.CaptureType.Minicap),
+                CaptureRate = config.GetInt("adb.captureRate", 200),
+                FindPrecision = config.GetDouble("adb.findPrecision", 0.5),
+                FindAccuracy = config.GetInt("adb.findAccuracy", 0),
+                Input = config.GetEnum("adb.input", Adb.InputType.Minitouch),
+                TapDelay = config.GetInt("adb.tapDelay", 30),
+                TapDuration = config.GetInt("adb.tapDuration", 0),
+                TapPressure = config.GetInt("adb.tapPressure", 50),
+                Consumers = 2
+            };
+            await ret.Start(args);
 
             // Auto-detect offsets
             if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)

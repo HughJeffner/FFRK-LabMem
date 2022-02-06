@@ -28,7 +28,6 @@ namespace FFRK_LabMem.Machines
             FoundPortal,
             PickedCombatant,
             PickedPortal,
-            OpenDoor,
             MoveOn,
             StartBattle,
             EnterDungeon,
@@ -143,7 +142,6 @@ namespace FFRK_LabMem.Machines
 
             this.StateMachine.Configure(State.FoundThing)
                 .OnEntryFromAsync(Trigger.FoundThing, async (t) => await MoveOn(false))
-                .OnEntryFromAsync(Trigger.FoundDoor, async (t) => await MoveOn(false))
                 .OnEntryFromAsync(Trigger.FoundPortal, async(t) => await MoveOn(true))
                 .Permit(Trigger.MoveOn, State.Ready)
                 .Permit(Trigger.MissedButton, State.Unknown);
@@ -349,7 +347,11 @@ namespace FFRK_LabMem.Machines
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", parser.ParseDisplayPaintings);
-            Proxy.AddRegistration("select_painting", parser.ParsePainting);
+            Proxy.AddRegistration("select_painting", async (data, url) =>
+            {
+                await Adb.StopTaps();
+                await parser.ParsePainting(data, url);
+            });
             Proxy.AddRegistration("choose_explore_painting", parser.ParsePainting);
             Proxy.AddRegistration("open_treasure_chest", async (data, url) =>
             {
@@ -357,7 +359,8 @@ namespace FFRK_LabMem.Machines
                 await this.StateMachine.FireAsync(Trigger.FoundTreasure);
             });
             Proxy.AddRegistration("dungeon_recommend_info", async(data, url) => 
-            { 
+            {
+                await Adb.StopTaps();
                 if (this.Data != null) await this.StateMachine.FireAsync(Trigger.PickedCombatant); 
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 

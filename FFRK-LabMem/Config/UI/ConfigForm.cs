@@ -140,8 +140,12 @@ namespace FFRK_LabMem.Config.UI
             checkBoxAdbClose.Checked = configHelper.GetBool("adb.closeOnExit", false);
             comboBoxCapture.SelectedIndex = configHelper.GetInt("adb.capture", 1);
             trackBarCaptureRate.Value = configHelper.GetInt("adb.captureRate", 200) / 10;
+            trackBarFindPrecision.Value = 10 - (int)(configHelper.GetDouble("adb.findPrecision", 0.5) * 10);
+            trackBarFindAccuracy.Value = configHelper.GetInt("adb.FindAccuracy", 0);
             comboBoxInput.SelectedIndex = configHelper.GetInt("adb.input", 1);
             trackBarTapDelay.Value = configHelper.GetInt("adb.tapDelay", 30) / 10;
+            trackBarTapDuration.Value = configHelper.GetInt("adb.tapDuration", 0) / 10;
+            numericUpDownTapPressure.Value = configHelper.GetInt("adb.tapPressure", 50);
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
 
@@ -254,8 +258,12 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("adb.host", (comboBoxAdbHost.SelectedItem != null) ? ((AdbHostItem)comboBoxAdbHost.SelectedItem).Value : comboBoxAdbHost.Text);
             configHelper.SetValue("adb.capture", comboBoxCapture.SelectedIndex);
             configHelper.SetValue("adb.captureRate", trackBarCaptureRate.Value * 10);
+            configHelper.SetValue("adb.findPrecision", ((double)(10 - trackBarFindPrecision.Value))/ 10);
+            configHelper.SetValue("adb.findAccuracy", trackBarFindAccuracy.Value);
             configHelper.SetValue("adb.input", comboBoxInput.SelectedIndex);
             configHelper.SetValue("adb.tapDelay", trackBarTapDelay.Value * 10);
+            configHelper.SetValue("adb.tapDuration", trackBarTapDuration.Value * 10);
+            configHelper.SetValue("adb.tapPressure", numericUpDownTapPressure.Value);
             configHelper.SetValue("adb.closeOnExit", checkBoxAdbClose.Checked);
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangSeconds", (int)numericUpDownWatchdogHang.Value);
@@ -382,7 +390,11 @@ namespace FFRK_LabMem.Config.UI
             {
                 controller.Machine.Config = labConfig;
                 controller.Adb.CaptureRate = trackBarCaptureRate.Value * 10;
+                controller.Adb.FindPrecision = ((double)(10 - trackBarFindPrecision.Value)) / 10;
+                controller.Adb.FindAccuracy = trackBarFindAccuracy.Value;
                 controller.Adb.TapDelay = trackBarTapDelay.Value * 10;
+                controller.Adb.TapDuration = trackBarTapDuration.Value * 10;
+                controller.Adb.TapPressure = (int)numericUpDownTapPressure.Value;
                 controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
                 controller.Adb.Input = (Adb.InputType)comboBoxInput.SelectedIndex;
             }
@@ -1090,6 +1102,21 @@ namespace FFRK_LabMem.Config.UI
             labelTapDelay.Text = $"{trackBarTapDelay.Value * 10}ms";
         }
 
+        private void TrackBarTapDuration_ValueChanged(object sender, EventArgs e)
+        {
+            labelTapDuration.Text = $"{trackBarTapDuration.Value * 10}ms";
+        }
+
+        private void TrackBarFindPrecision_ValueChanged(object sender, EventArgs e)
+        {
+            labelFindPrecision.Text = $"{trackBarFindPrecision.Value*10}%";
+        }
+
+        private void TrackBarFindAccuracy_ValueChanged(object sender, EventArgs e)
+        {
+            labelFindAccuracy.Text = $"{trackBarFindAccuracy.Value+1}";
+        }
+
         private void ComboBoxEnemyPriority_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewEnemies.SelectedItems.Count == 0) return;
@@ -1129,5 +1156,6 @@ namespace FFRK_LabMem.Config.UI
         {
             numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 0.75M;
         }
+        
     }
 }
