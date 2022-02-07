@@ -375,7 +375,7 @@ namespace FFRK_LabMem.Machines
             if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle) fatigueResult = await CheckFatigue(false);
 
             // Only insta-battle if tears not needed
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle && !fatigueResult.NeedsTears && FatigueInfo.Count > 0)
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle && !fatigueResult.NeedsTears && (FatigueInfo.Count > 0 || !fatigueResult.Checked))
             {
                 // Insta-battle
                 button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, -1, 1);
@@ -444,6 +444,7 @@ namespace FFRK_LabMem.Machines
         {
             public bool NeedsTears { get; set; } = false;
             public int PartyIndex { get; set; } = 0;
+            public bool Checked { get; set; } = false;
         }
 
         private async Task<CheckFatigueResult> CheckFatigue(bool waitEvent)
@@ -474,6 +475,7 @@ namespace FFRK_LabMem.Machines
                             f.Fatigue >= Config.LetheTearsFatigue
                         )
                     );
+                    ret.Checked = true;
 
                 }
                 else
