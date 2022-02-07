@@ -680,8 +680,12 @@ namespace FFRK_LabMem.Machines
                     // Check restart counter
                     if (RestartLabCounter != 0)
                     {
-                        if (RestartLabCounter >= 0) ColorConsole.WriteLine(ConsoleColor.Green, "{0} Restart(s) remaining", RestartLabCounter);
-                        RestartLabCounter -= 1;
+                        // Only decrement counter if not restarting
+                        if (t.Source != State.Unknown && t.Source != State.Outpost)
+                        {
+                            if (RestartLabCounter >= 0) ColorConsole.WriteLine(ConsoleColor.Green, "{0} Restart(s) remaining", RestartLabCounter);
+                            RestartLabCounter -= 1;
+                        }
                         await this.StateMachine.FireAsync(Trigger.Restart);
                     } else
                     {
