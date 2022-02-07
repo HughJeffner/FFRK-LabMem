@@ -81,9 +81,26 @@ namespace FFRK_LabMem.Machines
         {
             public int BuddyId { get; set; }
             public int Fatigue { get; set; } = 3;
+            public override string ToString()
+            {
+                return Fatigue.ToString();
+            }
         }
 
-        public List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
+        public class BuddyInfoList : List<BuddyInfo>
+        {
+            public BuddyInfoList(int members = 5)
+            {
+                if (members <= 0) return;
+                Enumerable.Range(0, members-1).ToList().ForEach(arg => this.Add(new BuddyInfo()));
+            }
+            public override string ToString()
+            {
+                return $"[{String.Join(",", this)}]";
+            }
+        }
+
+        public List<BuddyInfoList> FatigueInfo = new List<BuddyInfoList>();
 
         public Lab(Adb adb, LabConfiguration config, LabWatchdog.Configuration watchdogConfig)
         {
@@ -438,6 +455,13 @@ namespace FFRK_LabMem.Machines
                 return Task.FromResult(true);
             }
             return Task.FromResult(false);
+        }
+
+        public void UpdatedFatigue(string description)
+        {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Fatigue values {description}: {AutoResetEventFatigue}");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"{String.Join(" ", FatigueInfo)}");
+            AutoResetEventFatigue.Set();
         }
 
         public async Task ManualFFRKRestart(bool showMessage = true)
