@@ -466,7 +466,13 @@ namespace FFRK_LabMem.Machines
             {
                 // Wait for fatigue values downloaded on another thread
                 bool gotFatigueValues = true;
-                if (waitEvent) gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                if (waitEvent)
+                {
+                    gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                } else
+                {
+                    AutoResetEventFatigue.Reset();
+                }
                 if (gotFatigueValues)
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
