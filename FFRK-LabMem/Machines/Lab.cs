@@ -68,7 +68,8 @@ namespace FFRK_LabMem.Machines
         public int SelectedPartyIndex { get; set; } = 0;
         public int RestartLabCounter { get; set; } = -1;
         public LabWatchdog Watchdog { get; }
-        public readonly AsyncAutoResetEvent AutoResetEventFatigue = new AsyncAutoResetEvent(false);
+        public LabFatigueInfo FatigueInfo { get; set; } = new LabFatigueInfo();
+
         public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
@@ -76,31 +77,6 @@ namespace FFRK_LabMem.Machines
         private int restartTries = 0;
         private LabParser parser;
         private LabSelector selector;
-
-        public class BuddyInfo
-        {
-            public int BuddyId { get; set; }
-            public int Fatigue { get; set; } = 3;
-            public override string ToString()
-            {
-                return Fatigue.ToString();
-            }
-        }
-
-        public class BuddyInfoList : List<BuddyInfo>
-        {
-            public BuddyInfoList(int members = 5)
-            {
-                if (members <= 0) return;
-                Enumerable.Range(0, members-1).ToList().ForEach(arg => this.Add(new BuddyInfo()));
-            }
-            public override string ToString()
-            {
-                return $"[{String.Join(",", this)}]";
-            }
-        }
-
-        public List<BuddyInfoList> FatigueInfo = new List<BuddyInfoList>();
 
         public Lab(Adb adb, LabConfiguration config, LabWatchdog.Configuration watchdogConfig)
         {
@@ -432,7 +408,6 @@ namespace FFRK_LabMem.Machines
             this.SelectedPartyIndex = 0;
             this.RestartLabCounter = -1;
             this.FatigueInfo.Clear();
-            AutoResetEventFatigue.Reset();
             AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;
@@ -456,14 +431,7 @@ namespace FFRK_LabMem.Machines
             }
             return Task.FromResult(false);
         }
-
-        public void UpdatedFatigue(string description)
-        {
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Fatigue values {description}: {AutoResetEventFatigue}");
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"{String.Join(" ", FatigueInfo)}");
-            AutoResetEventFatigue.Set();
-        }
-
+        
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");

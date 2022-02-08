@@ -245,11 +245,11 @@ namespace FFRK_LabMem.Machines
                     var party = parties.Where(p => (string)p["party_no"] == (partySlot + 1).ToString()).FirstOrDefault();
                     if (party != null)
                     {
-                        Lab.FatigueInfo.Add(new BuddyInfoList(0));
+                        Lab.FatigueInfo.Add(new LabFatigueInfo.BuddyInfoList(0));
 
                         foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
                         {
-                            Lab.FatigueInfo[partySlot].Add(new BuddyInfo() { BuddyId = (int)item.Value });
+                            Lab.FatigueInfo[partySlot].Add(new LabFatigueInfo.BuddyInfo() { BuddyId = (int)item.Value });
                         }
                     }
                 }
@@ -269,7 +269,7 @@ namespace FFRK_LabMem.Machines
                 var value = map[item.BuddyId.ToString()];
                 if (value != null) item.Fatigue = (int)value["value"];
             }
-            Lab.UpdatedFatigue("WRITE");
+            Lab.FatigueInfo.Set("EVENT");
             return true;
         }
 
@@ -285,7 +285,7 @@ namespace FFRK_LabMem.Machines
                     if (value != null) item.Fatigue = (int)value["memory_abrasion"];
                 }
             }
-            Lab.UpdatedFatigue("WRITE");
+            Lab.FatigueInfo.Set("PARTY");
             await Task.CompletedTask;
         }
 
@@ -332,12 +332,12 @@ namespace FFRK_LabMem.Machines
             } else
             {
                 // Create default 3 parties, 5 units, with 3 fatigue
-                Lab.FatigueInfo = new List<BuddyInfoList>();
+                Lab.FatigueInfo = new LabFatigueInfo(3, 5);
                 
             }
 
             // Pre-set the downloaded signal
-            Lab.UpdatedFatigue("DEFAULT");
+            Lab.FatigueInfo.Set("DEFAULT");
 
             // Parse lab info
             await ParseAllData(data, url);

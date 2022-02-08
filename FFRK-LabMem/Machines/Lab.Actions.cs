@@ -468,14 +468,13 @@ namespace FFRK_LabMem.Machines
                 bool gotFatigueValues = true;
                 if (waitEvent)
                 {
-                    gotFatigueValues = await AutoResetEventFatigue.WaitAsync(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
+                    gotFatigueValues = await FatigueInfo.Wait(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
                 } else
                 {
-                    AutoResetEventFatigue.Reset();
+                    FatigueInfo.Reset("READ");
                 }
                 if (gotFatigueValues)
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values READ: {0}", AutoResetEventFatigue);
 
                     // Get the party index with fatigue levels available
                     ret.PartyIndex = selector.GetPartyIndex();
@@ -533,9 +532,8 @@ namespace FFRK_LabMem.Machines
             // Drops
             await DataLogger.LogBattleDrops(this);
 
-            // Update fatigue (+2 after battle)
-            if (SelectedPartyIndex < FatigueInfo.Count) FatigueInfo[SelectedPartyIndex].ForEach(f => f.Fatigue = Math.Min(f.Fatigue + 2, 10));
-            UpdatedFatigue("UPDATE");
+            // Update fatigue (+2 after battle, -1 for other 2 parties)
+            FatigueInfo.UpdateBattle(SelectedPartyIndex);
 
             // Check if safe disable requested
             if (await CheckDisableSafeRequested()) return;
@@ -599,12 +597,12 @@ namespace FFRK_LabMem.Machines
 
             // Each unit if selected
             var partyY = 32.33333 + (16.66666 * SelectedPartyIndex);
-            var unitsSelected = new List<int>();
+            var selectedUnits = new List<int>();
             for (int i = 0; i < 5; i++)
             {
                 if ((Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4-i)) != 0)
                 {
-                    unitsSelected.Add(i);
+                    selectedUnits.Add(i);
                     await DelayedTapPct("Inter-LetheTears-Unit", 11.11 + (i * 15.55), partyY);
                 }
             }
@@ -622,8 +620,7 @@ namespace FFRK_LabMem.Machines
                         if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 38.8, 55, 70, 5, -1, 1))
                         {
                             // Update fatigue (set to 0)
-                            if (SelectedPartyIndex < FatigueInfo.Count) unitsSelected.ForEach(i => FatigueInfo[SelectedPartyIndex][i].Fatigue = 0);
-                            UpdatedFatigue("UPDATE");
+                            FatigueInfo.UpdateTears(SelectedPartyIndex, selectedUnits);
 
                             // Update counters
                             this.CurrentTears -= numberUsed;
