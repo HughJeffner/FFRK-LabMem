@@ -219,7 +219,7 @@ namespace FFRK_LabMem.Machines
             { "Inter-QuickExplore-Timeout", new Timing(){ Delay=20000 } },
             { "Post-QuickExplore", new Timing(){ Delay=0 } },
             { "Pre-SelectParty", new Timing(){ Delay=1000 } },
-            { "Post-SelectParty", new Timing(){ Delay=1000 } },
+            { "Post-SelectParty", new Timing(){ Delay=0 } },
             { "Pre-CheckAutoBattle", new Timing(){ Delay=10000 } },
             { "Post-CheckAutoBattle", new Timing(){ Delay=0 } },
             { "Pre-BattleInfo", new Timing(){ Delay=0} },

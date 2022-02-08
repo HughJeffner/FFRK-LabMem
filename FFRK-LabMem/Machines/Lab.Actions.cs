@@ -421,8 +421,15 @@ namespace FFRK_LabMem.Machines
             {
                 // Check fatigue values and select party
                 var fatigueResult = await CheckFatigue(true);
-                if (fatigueResult.NeedsTears) await UseLetheTears();
-                await SelectParty(fatigueResult.PartyIndex);
+                if (fatigueResult.NeedsTears)
+                {
+                    await UseLetheTears();
+                    await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
+                }
+                if (await SelectParty(fatigueResult.PartyIndex)) 
+                {
+                    await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
+                }
 
                 // Tap Enter
                 await Adb.TapPct(button.Item1, button.Item2, this.CancellationToken);
@@ -492,17 +499,18 @@ namespace FFRK_LabMem.Machines
             return ret;
         }
 
-        private async Task SelectParty(int index)
+        private async Task<bool> SelectParty(int index)
         {
             SelectedPartyIndex = index;
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, $"Selecting party {index + 1}");
             
             // 0 already selected by default
-            if (index == 0) return;
+            if (index == 0) return false;
 
             // Delay then select
             await DelayedTapPct("Pre-SelectParty", 50, (index == 1) ? 50 : 66.7);
             await LabTimings.Delay("Post-SelectParty", this.CancellationToken);
+            return true;
         }
 
         private async Task FinishBattle()
