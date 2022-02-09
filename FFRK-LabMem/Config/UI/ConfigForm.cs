@@ -349,11 +349,17 @@ namespace FFRK_LabMem.Config.UI
 
             // Enemy blocklist
             labConfig.EnemyPriorityList.Clear();
-            foreach (ListViewItem item in listViewEnemies.Items)
+            foreach (DataGridViewRow item in dataGridViewEnemies.Rows)
             {
-                LabConfiguration.EnemyPriority entry = (LabConfiguration.EnemyPriority)item.Tag;
-                entry.Enabled = item.Checked;
-                labConfig.EnemyPriorityList.Add(entry);
+                if (!String.IsNullOrEmpty(item.Cells[3].Value?.ToString()))
+                {
+                    var entry = new LabConfiguration.EnemyPriority();
+                    if (item.Cells[0].Value != null) entry.Enabled = (bool)item.Cells[0].Value;
+                    if (item.Cells[1].Value != null) entry.PriorityAdjust = ((DataGridViewComboBoxCell)item.Cells[1]).Items.IndexOf(item.Cells[1].Value) - 3;
+                    if (item.Cells[2].Value != null && !item.Cells[2].Value.Equals("Default")) entry.Parties.Add(((DataGridViewComboBoxCell)item.Cells[2]).Items.IndexOf(item.Cells[2].Value) - 1);
+                    entry.Name = item.Cells[3].Value.ToString();
+                    labConfig.EnemyPriorityList.Add(entry);
+                }
             }
 
             // Save Lab to .json
@@ -509,23 +515,18 @@ namespace FFRK_LabMem.Config.UI
             treasuresLoaded = true;
 
             // Enemy blocklist
-            listViewEnemies.Items.Clear();
+            dataGridViewEnemies.Rows.Clear();
             foreach (LabConfiguration.EnemyPriority entry in labConfig.EnemyPriorityList)
             {
-                var newItem = new ListViewItem();
-                int priorityIndex = entry.PriorityAdjust + 3;
-                var priorityText = (priorityIndex <= comboBoxEnemyPriority.Items.Count) ? comboBoxEnemyPriority.Items[priorityIndex].ToString() : "???";
-                newItem.Text = "";
-                newItem.SubItems.Add(priorityText);
-                newItem.SubItems.Add((entry.Parties.Count == 0) ? comboBoxEnemyParty.Items[0].ToString() : comboBoxEnemyParty.Items[entry.Parties[0] + 1].ToString());
-                newItem.SubItems.Add(entry.Name);
-                newItem.Checked = entry.Enabled;
-                newItem.Tag = entry;
-                newItem.ImageIndex = 2;
-                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.ToolTipText = Lookups.Blocklist[entry.Name];
-                listViewEnemies.Items.Add(newItem);
+                var newItem = dataGridViewEnemies.Rows[dataGridViewEnemies.Rows.Add()];
+                var priorityItems = ((DataGridViewComboBoxCell)newItem.Cells[1]).Items;
+                var partyItems = ((DataGridViewComboBoxCell)newItem.Cells[2]).Items;
+                newItem.Cells[0].Value = entry.Enabled;
+                newItem.Cells[1].Value = priorityItems[entry.PriorityAdjust + 3];
+                newItem.Cells[2].Value = entry.Parties.Count == 0 ? partyItems[0] : partyItems[entry.Parties[0] + 1];
+                newItem.Cells[3].Value = entry.Name;
+                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.Cells[3].ToolTipText = Lookups.Blocklist[entry.Name];
             }
-            buttonRemoveBlocklist.Enabled = listViewEnemies.Items.Count > 0;
 
         }
 
@@ -812,35 +813,6 @@ namespace FFRK_LabMem.Config.UI
 
         }
 
-        private void ButtonAddBlocklist_Click(object sender, EventArgs e)
-        {
-            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Enemy Entry");
-            if (!String.IsNullOrEmpty(input))
-            {
-                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true, PriorityAdjust = 0 };
-                var newItem = new ListViewItem();
-                newItem.Text = "";
-                newItem.SubItems.Add(comboBoxEnemyPriority.Items[3].ToString());
-                newItem.SubItems.Add((entry.Parties.Count == 0) ? comboBoxEnemyParty.Items[0].ToString() : comboBoxEnemyParty.Items[entry.Parties[0] + 1].ToString());
-                newItem.SubItems.Add(entry.Name);
-                newItem.Checked = entry.Enabled;
-                newItem.Tag = entry;
-                newItem.ImageIndex = 2;
-                listViewEnemies.Items.Add(newItem);
-                buttonRemoveBlocklist.Enabled = true;
-            }
-        }
-
-        private void ButtonRemoveBlocklist_Click(object sender, EventArgs e)
-        {
-            if (listViewEnemies.SelectedItems[0] == null) return;
-            var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                listViewEnemies.Items.Remove(listViewEnemies.SelectedItems[0]);
-            }
-        }
-
         private void ButtonLabConfigurations_Click(object sender, EventArgs e)
         {
             ConfigListForm.CreateAndShow(configHelper.GetString("lab.configFile", "config/lab.balanced.json").ToLower());
@@ -1119,58 +1091,6 @@ namespace FFRK_LabMem.Config.UI
             labelFindAccuracy.Text = $"{trackBarFindAccuracy.Value+1}";
         }
 
-        private void ComboBoxEnemyPriority_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listViewEnemies.SelectedItems.Count == 0) return;
-            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
-            listViewEnemies.SelectedItems[0].SubItems[1].Text = comboBoxEnemyPriority.Text;
-            entry.PriorityAdjust = comboBoxEnemyPriority.SelectedIndex - 3;
-            comboBoxEnemyPriority.Visible = false;
-        }
-
-        private void ComboBoxEnemyPriority_Leave(object sender, EventArgs e)
-        {
-            comboBoxEnemyPriority.Visible = false;
-        }
-
-        private void ComboBoxEnemyParty_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listViewEnemies.SelectedItems.Count == 0) return;
-            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
-            listViewEnemies.SelectedItems[0].SubItems[2].Text = comboBoxEnemyParty.Text;
-            entry.Parties.Clear();
-            if (comboBoxEnemyParty.SelectedIndex > 0) entry.Parties.Add(comboBoxEnemyParty.SelectedIndex - 1);
-            comboBoxEnemyParty.Visible = false;
-        }
-        private void ComboBoxEnemyParty_Leave(object sender, EventArgs e)
-        {
-            comboBoxEnemyParty.Visible = false;
-        }
-
-        private void ListViewEnemies_MouseUp(object sender, MouseEventArgs e)
-        {
-            var lvItem = this.listViewEnemies.GetItemAt(e.X, e.Y);
-            if (lvItem == null) return;
-            var entry = (LabConfiguration.EnemyPriority)lvItem.Tag;
-
-            comboBoxEnemyPriority.SelectedIndex = entry.PriorityAdjust + 3;
-            comboBoxEnemyPriority.Size = lvItem.SubItems[1].Bounds.Size;
-            comboBoxEnemyPriority.Bounds = lvItem.SubItems[1].Bounds;
-            comboBoxEnemyPriority.Left += listViewEnemies.Left;
-            comboBoxEnemyPriority.Top += listViewEnemies.Top;
-            comboBoxEnemyPriority.Visible = true;
-            comboBoxEnemyPriority.BringToFront();
-
-            comboBoxEnemyParty.SelectedIndex = entry.Parties.Count == 0 ? 0 : entry.Parties[0] + 1;
-            comboBoxEnemyParty.Size = lvItem.SubItems[2].Bounds.Size;
-            comboBoxEnemyParty.Bounds = lvItem.SubItems[2].Bounds;
-            comboBoxEnemyParty.Left += listViewEnemies.Left;
-            comboBoxEnemyParty.Top += listViewEnemies.Top;
-            comboBoxEnemyParty.Visible = true;
-            comboBoxEnemyParty.BringToFront();
-
-        }
-
         private void NumericUpDownWatchdogHangWarning_ValueChanged(object sender, EventArgs e)
         {
             checkBoxWatchdogScreenshot.Enabled = numericUpDownWatchdogHangWarning.Value > 0;
@@ -1180,6 +1100,19 @@ namespace FFRK_LabMem.Config.UI
         {
             numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 0.75M;
         }
-        
+
+        private void DataGridViewEnemies_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (!e.Row.IsNewRow)
+            {
+                DialogResult response = MessageBox.Show($"Are you sure you wish to delete {e.Row.Cells[3].Value}?", "Confirm Delete",
+                                  MessageBoxButtons.YesNo,
+                                  MessageBoxIcon.Question,
+                                  MessageBoxDefaultButton.Button2);
+
+                if (response == DialogResult.No)
+                    e.Cancel = true;
+            }
+        }
     }
 }
