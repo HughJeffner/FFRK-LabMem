@@ -402,6 +402,14 @@ namespace FFRK_LabMem.Data.UI
                 var target = buttonTag.Equals("All") ? null : buttonTag;
                 CounterSet.DataType types = (CounterSet.DataType)Enum.Parse(typeof(CounterSet.DataType), menuItemTag);
                 await Counters.Reset(target, types);
+
+                // Remove from list if resetting ALL for a specific lab
+                if (types == CounterSet.DataType.All && button == buttonCountersResetLab && comboBoxLab.SelectedIndex != 0)
+                {
+                    Counters.Default.CounterSets.Remove(target);
+                    await Counters.Default.Save();
+                    LoadLabs();
+                } 
             }
             listViewCounters.Items.Clear();
             LoadAll();
