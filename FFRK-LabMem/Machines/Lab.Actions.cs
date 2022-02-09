@@ -369,20 +369,13 @@ namespace FFRK_LabMem.Machines
         {
             ColorConsole.WriteLine("Battle Info");
             bool button;
-            CheckFatigueResult fatigueResult = new CheckFatigueResult();
+            CheckPartyResult partyResult = new CheckPartyResult(this);
 
             // Need to check fatigue here because of insta-battle
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle)
-            {
-                fatigueResult = await CheckFatigue(this.CurrentPainting?["dungeon"], false);
-                this.SelectedPartyIndex = 0;
-            }
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle) partyResult = await CheckParty(this.CurrentPainting?["dungeon"], false);
 
             // Only insta-battle if tears or party switch not needed
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle 
-                && fatigueResult.PartyIndex == this.SelectedPartyIndex
-                && !fatigueResult.NeedsTears 
-                && (FatigueInfo.Count > 0 || !fatigueResult.Checked))
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle && partyResult.CanInstaBattle)
             {
                 // Insta-battle
                 button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, -1, 1);
@@ -428,13 +421,13 @@ namespace FFRK_LabMem.Machines
             if (button != null)
             {
                 // Check fatigue values and select party
-                var fatigueResult = await CheckFatigue(dungeon, true);
-                if (fatigueResult.NeedsTears)
+                var partyResult = await CheckParty(dungeon, true);
+                if (partyResult.NeedsTears)
                 {
-                    await UseLetheTears(fatigueResult.PartyIndex);
+                    await UseLetheTears(partyResult.PartyIndex);
                     await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 }
-                if (await SelectParty(fatigueResult.PartyIndex)) 
+                if (await SelectParty(partyResult.PartyIndex)) 
                 {
                     await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 }
@@ -455,17 +448,31 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private class CheckFatigueResult
+        private class CheckPartyResult
         {
+            private readonly Lab lab;
             public bool NeedsTears { get; set; } = false;
             public int PartyIndex { get; set; } = 0;
-            public bool Checked { get; set; } = false;
+            public bool CheckedFatigue { get; set; } = false;
+            public bool CanInstaBattle
+            {
+                get
+                {
+                    return PartyIndex == 0                              // the default party selected
+                    && !NeedsTears                                      // tears not needed
+                    && (lab.FatigueInfo.Count > 0 || !CheckedFatigue);  // fatigue values present OR we didn't check fatigue
+                }
+            }
+            public CheckPartyResult(Lab lab)
+            {
+                this.lab = lab;
+            }
         }
 
-        private async Task<CheckFatigueResult> CheckFatigue(JToken dungeon, bool waitEvent)
+        private async Task<CheckPartyResult> CheckParty(JToken dungeon, bool waitForFatigueEvent)
         {
 
-            var ret = new CheckFatigueResult();
+            var ret = new CheckPartyResult(this);
 
             // Do we need fatigue values to proceed?
             var needsLetheTears = Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2); // Using tears AND Not MasterOnly option or a master painting
@@ -474,7 +481,7 @@ namespace FFRK_LabMem.Machines
             {
                 // Wait for fatigue values downloaded on another thread
                 bool gotFatigueValues = true;
-                if (waitEvent)
+                if (waitForFatigueEvent)
                 {
                     gotFatigueValues = await FatigueInfo.Wait(await LabTimings.GetTimeSpan("Pre-StartBattle-Fatigue"), this.CancellationToken);
                 } else
@@ -495,7 +502,7 @@ namespace FFRK_LabMem.Machines
                             f.Fatigue >= Config.LetheTearsFatigue
                         )
                     );
-                    ret.Checked = true;
+                    ret.CheckedFatigue = true;
 
                 }
                 else
