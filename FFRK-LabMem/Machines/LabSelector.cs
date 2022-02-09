@@ -59,7 +59,7 @@ namespace FFRK_LabMem.Machines
                 var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower()));
                 if (enemyEntry != null)
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Adjusting priority {0:+#;-#;0} due to blocklist: {1}",
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Adjusting priority {0:+#;-#;0} due to enemy list: {1}",
                         enemyEntry.PriorityAdjust,
                         enemyName);
                     var combatants = Config.PaintingPriorityMap.Where(p => p.Key.StartsWith("1."));

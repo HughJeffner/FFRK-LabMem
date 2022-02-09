@@ -372,7 +372,11 @@ namespace FFRK_LabMem.Machines
             CheckFatigueResult fatigueResult = new CheckFatigueResult();
 
             // Need to check fatigue here because of insta-battle
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle) fatigueResult = await CheckFatigue(this.CurrentPainting?["dungeon"], false);
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle)
+            {
+                fatigueResult = await CheckFatigue(this.CurrentPainting?["dungeon"], false);
+                this.SelectedPartyIndex = 0;
+            }
 
             // Only insta-battle if tears or party switch not needed
             if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle 
@@ -405,16 +409,17 @@ namespace FFRK_LabMem.Machines
         private async Task StartBattle()
         {
             // Dungeon info
-            var d = this.Data["labyrinth_dungeon_session"]["dungeon"];
-            if (d != null)
+            var dungeon = this.Data["labyrinth_dungeon_session"]["dungeon"];
+            if (dungeon != null)
             {
-                var title = d["captures"][0]["tip_battle"]["title"];
+                var title = dungeon["captures"][0]["tip_battle"]["title"];
                 ColorConsole.Write("The enemy is upon you! ");
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "{0}", title);
                 await Counters.EnemyIsUponYou();
                 if (title.ToString().ToLower().Contains("magic pot")) await Counters.FoundMagicPot();
             } else
             {
+                dungeon = CurrentPainting["dungeon"];
                 ColorConsole.WriteLine("Starting Battle");
             }
 
@@ -423,7 +428,7 @@ namespace FFRK_LabMem.Machines
             if (button != null)
             {
                 // Check fatigue values and select party
-                var fatigueResult = await CheckFatigue(d, true);
+                var fatigueResult = await CheckFatigue(dungeon, true);
                 if (fatigueResult.NeedsTears)
                 {
                     await UseLetheTears(fatigueResult.PartyIndex);
@@ -495,6 +500,7 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
+                    ret.PartyIndex = selector.GetPartyIndex(dungeon);
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Timed out waiting for fatigue values");
                 }
 
