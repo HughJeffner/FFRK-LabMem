@@ -517,6 +517,7 @@ namespace FFRK_LabMem.Config.UI
                 var priorityText = (priorityIndex <= comboBoxEnemyPriority.Items.Count) ? comboBoxEnemyPriority.Items[priorityIndex].ToString() : "???";
                 newItem.Text = "";
                 newItem.SubItems.Add(priorityText);
+                newItem.SubItems.Add((entry.Parties.Count == 0) ? comboBoxEnemyParty.Items[0].ToString() : comboBoxEnemyParty.Items[entry.Parties[0] + 1].ToString());
                 newItem.SubItems.Add(entry.Name);
                 newItem.Checked = entry.Enabled;
                 newItem.Tag = entry;
@@ -820,6 +821,7 @@ namespace FFRK_LabMem.Config.UI
                 var newItem = new ListViewItem();
                 newItem.Text = "";
                 newItem.SubItems.Add(comboBoxEnemyPriority.Items[3].ToString());
+                newItem.SubItems.Add((entry.Parties.Count == 0) ? comboBoxEnemyParty.Items[0].ToString() : comboBoxEnemyParty.Items[entry.Parties[0] + 1].ToString());
                 newItem.SubItems.Add(entry.Name);
                 newItem.Checked = entry.Enabled;
                 newItem.Tag = entry;
@@ -1131,11 +1133,26 @@ namespace FFRK_LabMem.Config.UI
             comboBoxEnemyPriority.Visible = false;
         }
 
+        private void ComboBoxEnemyParty_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listViewEnemies.SelectedItems.Count == 0) return;
+            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
+            listViewEnemies.SelectedItems[0].SubItems[2].Text = comboBoxEnemyParty.Text;
+            entry.Parties.Clear();
+            if (comboBoxEnemyParty.SelectedIndex > 0) entry.Parties.Add(comboBoxEnemyParty.SelectedIndex - 1);
+            comboBoxEnemyParty.Visible = false;
+        }
+        private void ComboBoxEnemyParty_Leave(object sender, EventArgs e)
+        {
+            comboBoxEnemyParty.Visible = false;
+        }
+
         private void ListViewEnemies_MouseUp(object sender, MouseEventArgs e)
         {
             var lvItem = this.listViewEnemies.GetItemAt(e.X, e.Y);
             if (lvItem == null) return;
             var entry = (LabConfiguration.EnemyPriority)lvItem.Tag;
+
             comboBoxEnemyPriority.SelectedIndex = entry.PriorityAdjust + 3;
             comboBoxEnemyPriority.Size = lvItem.SubItems[1].Bounds.Size;
             comboBoxEnemyPriority.Bounds = lvItem.SubItems[1].Bounds;
@@ -1143,7 +1160,14 @@ namespace FFRK_LabMem.Config.UI
             comboBoxEnemyPriority.Top += listViewEnemies.Top;
             comboBoxEnemyPriority.Visible = true;
             comboBoxEnemyPriority.BringToFront();
-            comboBoxEnemyPriority.Focus();
+
+            comboBoxEnemyParty.SelectedIndex = entry.Parties.Count == 0 ? 0 : entry.Parties[0] + 1;
+            comboBoxEnemyParty.Size = lvItem.SubItems[2].Bounds.Size;
+            comboBoxEnemyParty.Bounds = lvItem.SubItems[2].Bounds;
+            comboBoxEnemyParty.Left += listViewEnemies.Left;
+            comboBoxEnemyParty.Top += listViewEnemies.Top;
+            comboBoxEnemyParty.Visible = true;
+            comboBoxEnemyParty.BringToFront();
 
         }
 

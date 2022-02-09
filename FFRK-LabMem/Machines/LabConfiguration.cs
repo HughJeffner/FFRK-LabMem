@@ -133,6 +133,7 @@ namespace FFRK_LabMem.Machines
             public string Name { get; set; }
             public bool Enabled { get; set; } = false;
             public int PriorityAdjust { get; set; } = 1;
+            public List<int> Parties { get; set; } = new List<int>();
             public override string ToString()
             {
                 return Name;

@@ -161,9 +161,18 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public int GetPartyIndex()
+        public int GetPartyIndex(JToken dungeon)
         {
 
+            // Check for enemy priority list
+            var enemyName = dungeon["captures"][0]["tip_battle"]["title"].ToString();
+            var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && b.Parties.Count > 0 && enemyName.ToLower().Contains(b.Name.ToLower()));
+            if (enemyEntry != null)
+            {
+                return enemyEntry.Parties[0];
+            }
+
+            // Use configured party option
             switch (Lab.Config.PartyIndex)
             {
                 case LabConfiguration.PartyIndexOption.Team1:

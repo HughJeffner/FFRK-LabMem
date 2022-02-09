@@ -372,10 +372,13 @@ namespace FFRK_LabMem.Machines
             CheckFatigueResult fatigueResult = new CheckFatigueResult();
 
             // Need to check fatigue here because of insta-battle
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle) fatigueResult = await CheckFatigue(false);
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle) fatigueResult = await CheckFatigue(this.CurrentPainting?["dungeon"], false);
 
-            // Only insta-battle if tears not needed
-            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle && !fatigueResult.NeedsTears && (FatigueInfo.Count > 0 || !fatigueResult.Checked))
+            // Only insta-battle if tears or party switch not needed
+            if (Config.PartyIndex == LabConfiguration.PartyIndexOption.InstaBattle 
+                && fatigueResult.PartyIndex == this.SelectedPartyIndex
+                && !fatigueResult.NeedsTears 
+                && (FatigueInfo.Count > 0 || !fatigueResult.Checked))
             {
                 // Insta-battle
                 button = await DelayedTapButton("Pre-BattleInfo", BUTTON_ORANGE, 1250, 13.8, 77, 93, 25, -1, 1);
@@ -420,10 +423,10 @@ namespace FFRK_LabMem.Machines
             if (button != null)
             {
                 // Check fatigue values and select party
-                var fatigueResult = await CheckFatigue(true);
+                var fatigueResult = await CheckFatigue(d, true);
                 if (fatigueResult.NeedsTears)
                 {
-                    await UseLetheTears();
+                    await UseLetheTears(fatigueResult.PartyIndex);
                     await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 }
                 if (await SelectParty(fatigueResult.PartyIndex)) 
@@ -454,7 +457,7 @@ namespace FFRK_LabMem.Machines
             public bool Checked { get; set; } = false;
         }
 
-        private async Task<CheckFatigueResult> CheckFatigue(bool waitEvent)
+        private async Task<CheckFatigueResult> CheckFatigue(JToken dungeon, bool waitEvent)
         {
 
             var ret = new CheckFatigueResult();
@@ -477,13 +480,13 @@ namespace FFRK_LabMem.Machines
                 {
 
                     // Get the party index with fatigue levels available
-                    ret.PartyIndex = selector.GetPartyIndex();
+                    ret.PartyIndex = selector.GetPartyIndex(dungeon);
 
                     // Fatigue level check for tears
                     ret.NeedsTears = (needsLetheTears &&
-                        SelectedPartyIndex < FatigueInfo.Count &&
-                        FatigueInfo[SelectedPartyIndex].Any(f =>
-                            (Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4 - FatigueInfo[SelectedPartyIndex].IndexOf(f))) != 0 &&
+                        ret.PartyIndex < FatigueInfo.Count &&
+                        FatigueInfo[ret.PartyIndex].Any(f =>
+                            (Config.LetheTearsSlots[ret.PartyIndex] & (1 << 4 - FatigueInfo[ret.PartyIndex].IndexOf(f))) != 0 &&
                             f.Fatigue >= Config.LetheTearsFatigue
                         )
                     );
@@ -499,7 +502,7 @@ namespace FFRK_LabMem.Machines
             else
             {
                 // Just select the party Index
-                ret.PartyIndex = selector.GetPartyIndex();
+                ret.PartyIndex = selector.GetPartyIndex(dungeon);
             }
             return ret;
         }
@@ -579,10 +582,10 @@ namespace FFRK_LabMem.Machines
             await LabTimings.Delay("Post-ConfirmPortal", this.CancellationToken);
         }
 
-        private async Task<bool> UseLetheTears()
+        private async Task<bool> UseLetheTears(int party)
         {
 
-            int numberUsed = Convert.ToString(Config.LetheTearsSlots[SelectedPartyIndex], 2).ToCharArray().Count(c => c == '1');
+            int numberUsed = Convert.ToString(Config.LetheTearsSlots[party], 2).ToCharArray().Count(c => c == '1');
 
             // Check remaining qty
             if (numberUsed > CurrentTears){
@@ -596,11 +599,11 @@ namespace FFRK_LabMem.Machines
             await DelayedTapPct("Pre-LetheTears", 88.88, 17.18);
 
             // Each unit if selected
-            var partyY = 32.33333 + (16.66666 * SelectedPartyIndex);
+            var partyY = 32.33333 + (16.66666 * party);
             var selectedUnits = new List<int>();
             for (int i = 0; i < 5; i++)
             {
-                if ((Config.LetheTearsSlots[SelectedPartyIndex] & (1 << 4-i)) != 0)
+                if ((Config.LetheTearsSlots[party] & (1 << 4-i)) != 0)
                 {
                     selectedUnits.Add(i);
                     await DelayedTapPct("Inter-LetheTears-Unit", 11.11 + (i * 15.55), partyY);
@@ -620,7 +623,7 @@ namespace FFRK_LabMem.Machines
                         if (await DelayedTapButton("Inter-LetheTears", BUTTON_BLUE, 3000, 38.8, 55, 70, 5, -1, 1))
                         {
                             // Update fatigue (set to 0)
-                            FatigueInfo.UpdateTears(SelectedPartyIndex, selectedUnits);
+                            FatigueInfo.UpdateTears(party, selectedUnits);
 
                             // Update counters
                             this.CurrentTears -= numberUsed;
