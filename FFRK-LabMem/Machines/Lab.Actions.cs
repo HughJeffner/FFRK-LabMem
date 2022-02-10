@@ -475,9 +475,9 @@ namespace FFRK_LabMem.Machines
             var ret = new CheckPartyResult(this);
 
             // Do we need fatigue values to proceed?
-            var needsLetheTears = Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2); // Using tears AND Not MasterOnly option or a master painting
+            var letheTearsEnabled = Config.UseLetheTears && (!Config.LetheTearsMasterOnly || (int)(this.CurrentPainting?["type"] ?? 0) == 2); // Using tears AND Not MasterOnly option or a master painting
             var needsPartyIndex = Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigueAny || Config.PartyIndex == LabConfiguration.PartyIndexOption.LowestFatigue12;
-            if (needsLetheTears || needsPartyIndex)
+            if (letheTearsEnabled || needsPartyIndex)
             {
                 // Wait for fatigue values downloaded on another thread
                 bool gotFatigueValues = true;
@@ -495,13 +495,7 @@ namespace FFRK_LabMem.Machines
                     ret.PartyIndex = selector.GetPartyIndex(dungeon);
 
                     // Fatigue level check for tears
-                    ret.NeedsTears = (needsLetheTears &&
-                        ret.PartyIndex < FatigueInfo.Count &&
-                        FatigueInfo[ret.PartyIndex].Any(f =>
-                            (Config.LetheTearsSlots[ret.PartyIndex] & (1 << 4 - FatigueInfo[ret.PartyIndex].IndexOf(f))) != 0 &&
-                            f.Fatigue >= Config.LetheTearsFatigue
-                        )
-                    );
+                    ret.NeedsTears = letheTearsEnabled && FatigueInfo.IsOverThreshold(ret.PartyIndex, Config.LetheTearsSlots, Config.LetheTearsFatigue);
                     ret.CheckedFatigue = true;
 
                 }
