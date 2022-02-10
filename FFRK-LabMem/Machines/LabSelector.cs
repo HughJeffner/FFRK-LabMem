@@ -131,6 +131,14 @@ namespace FFRK_LabMem.Machines
                 return maxPriority +1;
             }
 
+            // Restoration boost
+            if (type.Equals("7") && Config.BoostRestoreEnabled && Lab.FatigueInfo.IsOverThreshold(Lab.SelectedPartyIndex, Config.BoostRestoreFatigue))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Boosting restore due to option");
+                return Config.PaintingPriorityMap["4"] - 1;
+
+            }
+
             // Lookup or default
             if (Config.PaintingPriorityMap.ContainsKey(type))
             {

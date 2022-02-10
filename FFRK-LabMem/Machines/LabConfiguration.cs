@@ -78,6 +78,8 @@ namespace FFRK_LabMem.Machines
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyPriority> EnemyPriorityList { get; set; } = new List<EnemyPriority>();
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
+        public bool BoostRestoreEnabled { get; set; } = false;
+        public int BoostRestoreFatigue { get; set; } = 7;
 
         public LabConfiguration() {
 

@@ -424,7 +424,7 @@ namespace FFRK_LabMem.Machines
                 var partyResult = await CheckParty(dungeon, true);
                 if (partyResult.NeedsTears)
                 {
-                    await UseLetheTears(partyResult.PartyIndex);
+                    if (!await UseLetheTears(partyResult.PartyIndex)) return;
                     await LabTimings.Delay("Inter-StartBattle", this.CancellationToken);
                 }
                 if (await SelectParty(partyResult.PartyIndex)) 

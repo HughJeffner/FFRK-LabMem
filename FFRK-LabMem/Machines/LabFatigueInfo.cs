@@ -93,13 +93,29 @@ namespace FFRK_LabMem.Machines
         public bool IsOverThreshold(int selectedPartyIndex, List<byte> selectedUnits, int fatigueThreshold)
         {
             // No data
-            if (selectedPartyIndex < this.Count) return false;
+            if (selectedPartyIndex >= this.Count) return false;
 
             // Any of the specified units for the party above threshold?
             return this[selectedPartyIndex].Any(buddy =>
                 (selectedUnits[selectedPartyIndex] & (1 << 4 - this[selectedPartyIndex].IndexOf(buddy))) != 0 &&
                 buddy.Fatigue >= fatigueThreshold
             );
+        }
+
+        public bool IsOverThreshold(int selectedPartyIndex, int fatigueThreshold)
+        {
+            // No data
+            if (selectedPartyIndex >= this.Count) return false;
+
+            // Average of the party above threshold?
+            return this[selectedPartyIndex].Average(buddy => buddy.Fatigue) >= fatigueThreshold;
+
+        }
+
+        public bool IsOverThreshold(int fatigueThreshold)
+        {
+            // Average of all units above threshold?
+            return this.SelectMany(p => p).Average(buddy => buddy.Fatigue) >= fatigueThreshold;
         }
 
         public override string ToString()
