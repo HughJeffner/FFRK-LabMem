@@ -329,6 +329,8 @@ namespace FFRK_LabMem.Config.UI
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
+            labConfig.BoostRestoreEnabled = checkBoxBoostRestore.Checked;
+            labConfig.BoostRestoreFatigue = (int)numericUpDownRestoreFatigue.Value;
 
             // Paintings
             labConfig.PaintingPriorityMap.Clear();
@@ -485,6 +487,8 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
+            checkBoxBoostRestore.Checked = labConfig.BoostRestoreEnabled;
+            numericUpDownRestoreFatigue.Value = labConfig.BoostRestoreFatigue;
 
             // Painting priorities
             listViewPaintings.Items.Clear();
@@ -1112,6 +1116,11 @@ namespace FFRK_LabMem.Config.UI
                 if (response == DialogResult.No)
                     e.Cancel = true;
             }
+        }
+
+        private void CheckBoxBoostRestore_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownRestoreFatigue.Enabled = checkBoxBoostRestore.Checked;
         }
     }
 }

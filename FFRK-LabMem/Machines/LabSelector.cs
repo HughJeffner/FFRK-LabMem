@@ -135,7 +135,7 @@ namespace FFRK_LabMem.Machines
             if (type.Equals("7") && Config.BoostRestoreEnabled && Lab.FatigueInfo.IsOverThreshold(Lab.SelectedPartyIndex, Config.BoostRestoreFatigue))
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Boosting restore due to option");
-                return Config.PaintingPriorityMap["4"] - 1;
+                return (Config.PaintingPriorityMap["3"] * 10) + 1; // Just below treasure
 
             }
 
