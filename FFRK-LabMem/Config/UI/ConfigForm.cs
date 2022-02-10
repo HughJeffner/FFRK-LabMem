@@ -727,11 +727,10 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownFatigue.Enabled = checkBoxLabUseLetheTears.Checked;
-            flowLayoutPanelTeam1.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 1 && comboBoxLabParty.SelectedIndex != 2;
-            flowLayoutPanelTeam2.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 2;
-            flowLayoutPanelTeam3.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 1;
+            flowLayoutPanelTeam1.Enabled = checkBoxLabUseLetheTears.Checked;
+            flowLayoutPanelTeam2.Enabled = checkBoxLabUseLetheTears.Checked;
+            flowLayoutPanelTeam3.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxLetheTearsMasterOnly.Enabled = checkBoxLabUseLetheTears.Checked;
-
         }
 
         private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
