@@ -119,6 +119,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
             numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangSeconds", 120);
             numericUpDownWatchdogHangWarning.Value = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60);
+            numericUpDownHangLoopThreshold.Value = configHelper.GetInt("lab.watchdogHangWarningLoopThreshold", 60);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
@@ -268,6 +269,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangSeconds", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogHangWarningSeconds", (int)numericUpDownWatchdogHangWarning.Value);
+            configHelper.SetValue("lab.watchdogHangWarningLoopThreshold", (int)numericUpDownHangLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
@@ -413,6 +415,7 @@ namespace FFRK_LabMem.Config.UI
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
                 HangSeconds = (int)numericUpDownWatchdogHang.Value,
                 HangWarningSeconds = (int)numericUpDownWatchdogHangWarning.Value,
+                HangWarningLoopThreshold = (int)numericUpDownHangLoopThreshold.Value,
                 HangScreenshot = checkBoxWatchdogScreenshot.Checked,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,

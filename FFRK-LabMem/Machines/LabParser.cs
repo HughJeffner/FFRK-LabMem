@@ -56,6 +56,9 @@ namespace FFRK_LabMem.Machines
                     int newFloor = (int)floor;
                     if (newFloor != Lab.CurrentFloor)
                     {
+                        // New floor indicates we not in hang state
+                        Lab.Watchdog.HangReset();
+
                         if (Lab.CurrentFloor != 0)
                         {
                             ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);

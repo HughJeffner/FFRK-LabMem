@@ -368,6 +368,7 @@ namespace FFRK_LabMem.Machines
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
                 recoverStopwatch.Stop();
+                Watchdog.HangReset(); // Started battle indicates we not in hang state
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);

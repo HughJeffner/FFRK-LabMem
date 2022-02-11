@@ -23,6 +23,7 @@ namespace FFRK_LabMem.Machines
             public int RestartLoopThreshold { get; set; } = 6;
             public int RestartLoopWindowMinutes { get; set; } = 60;
             public int BattleMaxRetries { get; set; } = 5;
+            public int HangWarningLoopThreshold { get; set; } = 10;
         }
 
         private readonly Timer watchdogHangTimer = new Timer(Int32.MaxValue);
@@ -31,6 +32,7 @@ namespace FFRK_LabMem.Machines
         private readonly Timer watchdogCrashTimer = new Timer(Int32.MaxValue);
         private List<DateTime> pastRestarts = new List<DateTime>();
         private int battleTries = 0;
+        private int hangWarningTries = 0;
         private Lab Lab { get; set; }
         public bool Enabled { get; set; } = false;
         public Configuration Config { get; private set; } = new Configuration();
@@ -118,6 +120,15 @@ namespace FFRK_LabMem.Machines
         }
 
         /// <summary>
+        /// Resets the hang warning retry counter
+        /// This should be done when either entering a battle or starting a new floor
+        /// </summary>
+        public void HangReset()
+        {
+            hangWarningTries = 0;
+        }
+
+        /// <summary>
         /// Enables the watchdog, but does not start the timers until kicked
         /// </summary>
         public void Enable(bool start = false)
@@ -184,7 +195,18 @@ namespace FFRK_LabMem.Machines
         {
             // Ignore if in battle
             if (Lab.StateMachine.State == Lab.State.Battle) return;
-   
+
+            // Check loop threshold
+            hangWarningTries++;
+            if (hangWarningTries >= Config.HangWarningLoopThreshold)
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Watchdog, $"Number of consecutive hangs exceeded: {hangWarningTries}/{Config.HangWarningLoopThreshold}");
+                watchdogHangTimer.Stop();
+                hangWarningTries = 0;
+                InvokeTimeout(sender, WatchdogEventArgs.TYPE.Hang, e);
+                return;
+            }
+
             Warning?.Invoke(sender, new WatchdogEventArgs() { ElapsedEventArgs = e, Type = WatchdogEventArgs.TYPE.Hang });
 
         }
