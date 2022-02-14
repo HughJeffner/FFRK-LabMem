@@ -119,6 +119,7 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownScreenBottom.Value = configHelper.GetInt("screen.bottomOffset", -1);
             numericUpDownWatchdogHang.Value = configHelper.GetInt("lab.watchdogHangSeconds", 120);
             numericUpDownWatchdogHangWarning.Value = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60);
+            numericUpDownHangLoopThreshold.Value = configHelper.GetInt("lab.watchdogHangWarningLoopThreshold", 60);
             numericUpDownWatchdogBattle.Value = configHelper.GetInt("lab.watchdogBattleMinutes", 15);
             numericUpDownWatchdogCrash.Value = configHelper.GetInt("lab.watchdogCrashSeconds", 30);
             numericUpDownRestartLoopThreshold.Value = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6);
@@ -268,6 +269,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.configFile", ConfigFile.FromObject(comboBoxLab.SelectedItem).Path);
             configHelper.SetValue("lab.watchdogHangSeconds", (int)numericUpDownWatchdogHang.Value);
             configHelper.SetValue("lab.watchdogHangWarningSeconds", (int)numericUpDownWatchdogHangWarning.Value);
+            configHelper.SetValue("lab.watchdogHangWarningLoopThreshold", (int)numericUpDownHangLoopThreshold.Value);
             configHelper.SetValue("lab.watchdogBattleMinutes", (int)numericUpDownWatchdogBattle.Value);
             configHelper.SetValue("lab.watchdogCrashSeconds", (int)numericUpDownWatchdogCrash.Value);
             configHelper.SetValue("lab.watchdogLoopDetectionThreshold", (int)numericUpDownRestartLoopThreshold.Value);
@@ -329,6 +331,8 @@ namespace FFRK_LabMem.Config.UI
             labConfig.ScreenshotRadiantPainting = checkBoxLabScreenshotRadiant.Checked;
             labConfig.EnemyBlocklistAvoidOptionOverride = checkBoxLabBlockListOverride.Checked;
             labConfig.AutoStart = checkBoxLabAutoStart.Checked;
+            labConfig.BoostRestoreEnabled = checkBoxBoostRestore.Checked;
+            labConfig.BoostRestoreFatigue = (int)numericUpDownRestoreFatigue.Value;
 
             // Paintings
             labConfig.PaintingPriorityMap.Clear();
@@ -349,11 +353,17 @@ namespace FFRK_LabMem.Config.UI
 
             // Enemy blocklist
             labConfig.EnemyPriorityList.Clear();
-            foreach (ListViewItem item in listViewEnemies.Items)
+            foreach (DataGridViewRow item in dataGridViewEnemies.Rows)
             {
-                LabConfiguration.EnemyPriority entry = (LabConfiguration.EnemyPriority)item.Tag;
-                entry.Enabled = item.Checked;
-                labConfig.EnemyPriorityList.Add(entry);
+                if (!String.IsNullOrEmpty(item.Cells[3].Value?.ToString()))
+                {
+                    var entry = new LabConfiguration.EnemyPriority();
+                    if (item.Cells[0].Value != null) entry.Enabled = (bool)item.Cells[0].Value;
+                    if (item.Cells[1].Value != null) entry.PriorityAdjust = ((DataGridViewComboBoxCell)item.Cells[1]).Items.IndexOf(item.Cells[1].Value) - 3;
+                    if (item.Cells[2].Value != null && !item.Cells[2].Value.Equals("Default")) entry.Parties.Add(((DataGridViewComboBoxCell)item.Cells[2]).Items.IndexOf(item.Cells[2].Value) - 1);
+                    entry.Name = item.Cells[3].Value.ToString();
+                    labConfig.EnemyPriorityList.Add(entry);
+                }
             }
 
             // Save Lab to .json
@@ -405,6 +415,7 @@ namespace FFRK_LabMem.Config.UI
                 CrashSeconds = (int)numericUpDownWatchdogCrash.Value,
                 HangSeconds = (int)numericUpDownWatchdogHang.Value,
                 HangWarningSeconds = (int)numericUpDownWatchdogHangWarning.Value,
+                HangWarningLoopThreshold = (int)numericUpDownHangLoopThreshold.Value,
                 HangScreenshot = checkBoxWatchdogScreenshot.Checked,
                 BattleMinutes = (int)numericUpDownWatchdogBattle.Value,
                 RestartLoopThreshold = (int)numericUpDownRestartLoopThreshold.Value,
@@ -479,6 +490,8 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabScreenshotRadiant.Checked = labConfig.ScreenshotRadiantPainting;
             checkBoxLabBlockListOverride.Checked = labConfig.EnemyBlocklistAvoidOptionOverride;
             checkBoxLabAutoStart.Checked = labConfig.AutoStart;
+            checkBoxBoostRestore.Checked = labConfig.BoostRestoreEnabled;
+            numericUpDownRestoreFatigue.Value = labConfig.BoostRestoreFatigue;
 
             // Painting priorities
             listViewPaintings.Items.Clear();
@@ -509,22 +522,18 @@ namespace FFRK_LabMem.Config.UI
             treasuresLoaded = true;
 
             // Enemy blocklist
-            listViewEnemies.Items.Clear();
+            dataGridViewEnemies.Rows.Clear();
             foreach (LabConfiguration.EnemyPriority entry in labConfig.EnemyPriorityList)
             {
-                var newItem = new ListViewItem();
-                int priorityIndex = entry.PriorityAdjust + 3;
-                var priorityText = (priorityIndex <= comboBoxEnemyPriority.Items.Count) ? comboBoxEnemyPriority.Items[priorityIndex].ToString() : "???";
-                newItem.Text = "";
-                newItem.SubItems.Add(priorityText);
-                newItem.SubItems.Add(entry.Name);
-                newItem.Checked = entry.Enabled;
-                newItem.Tag = entry;
-                newItem.ImageIndex = 2;
-                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.ToolTipText = Lookups.Blocklist[entry.Name];
-                listViewEnemies.Items.Add(newItem);
+                var newItem = dataGridViewEnemies.Rows[dataGridViewEnemies.Rows.Add()];
+                var priorityItems = ((DataGridViewComboBoxCell)newItem.Cells[1]).Items;
+                var partyItems = ((DataGridViewComboBoxCell)newItem.Cells[2]).Items;
+                newItem.Cells[0].Value = entry.Enabled;
+                newItem.Cells[1].Value = priorityItems[entry.PriorityAdjust + 3];
+                newItem.Cells[2].Value = entry.Parties.Count == 0 ? partyItems[0] : partyItems[entry.Parties[0] + 1];
+                newItem.Cells[3].Value = entry.Name;
+                if (Lookups.Blocklist.ContainsKey(entry.Name)) newItem.Cells[3].ToolTipText = Lookups.Blocklist[entry.Name];
             }
-            buttonRemoveBlocklist.Enabled = listViewEnemies.Items.Count > 0;
 
         }
 
@@ -725,11 +734,10 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownFatigue.Enabled = checkBoxLabUseLetheTears.Checked;
-            flowLayoutPanelTeam1.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 1 && comboBoxLabParty.SelectedIndex != 2;
-            flowLayoutPanelTeam2.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 2;
-            flowLayoutPanelTeam3.Enabled = checkBoxLabUseLetheTears.Checked && comboBoxLabParty.SelectedIndex != 0 && comboBoxLabParty.SelectedIndex != 1;
+            flowLayoutPanelTeam1.Enabled = checkBoxLabUseLetheTears.Checked;
+            flowLayoutPanelTeam2.Enabled = checkBoxLabUseLetheTears.Checked;
+            flowLayoutPanelTeam3.Enabled = checkBoxLabUseLetheTears.Checked;
             checkBoxLetheTearsMasterOnly.Enabled = checkBoxLabUseLetheTears.Checked;
-
         }
 
         private void DataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -809,34 +817,6 @@ namespace FFRK_LabMem.Config.UI
                 MessageBox.Show(this, "This version is up-to-date!", "Check For Updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
-        }
-
-        private void ButtonAddBlocklist_Click(object sender, EventArgs e)
-        {
-            var input = Interaction.InputBox("Enter enemy name (does not have to inlude Labyrinth)", "Add Enemy Entry");
-            if (!String.IsNullOrEmpty(input))
-            {
-                var entry = new LabConfiguration.EnemyPriority() { Name = input, Enabled = true, PriorityAdjust = 0 };
-                var newItem = new ListViewItem();
-                newItem.Text = "";
-                newItem.SubItems.Add(comboBoxEnemyPriority.Items[3].ToString());
-                newItem.SubItems.Add(entry.Name);
-                newItem.Checked = entry.Enabled;
-                newItem.Tag = entry;
-                newItem.ImageIndex = 2;
-                listViewEnemies.Items.Add(newItem);
-                buttonRemoveBlocklist.Enabled = true;
-            }
-        }
-
-        private void ButtonRemoveBlocklist_Click(object sender, EventArgs e)
-        {
-            if (listViewEnemies.SelectedItems[0] == null) return;
-            var result = MessageBox.Show(this, "Are you sure?", "Remove Blocklist Entry", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                listViewEnemies.Items.Remove(listViewEnemies.SelectedItems[0]);
-            }
         }
 
         private void ButtonLabConfigurations_Click(object sender, EventArgs e)
@@ -1117,36 +1097,6 @@ namespace FFRK_LabMem.Config.UI
             labelFindAccuracy.Text = $"{trackBarFindAccuracy.Value+1}";
         }
 
-        private void ComboBoxEnemyPriority_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listViewEnemies.SelectedItems.Count == 0) return;
-            var entry = (LabConfiguration.EnemyPriority)listViewEnemies.SelectedItems[0].Tag;
-            listViewEnemies.SelectedItems[0].SubItems[1].Text = comboBoxEnemyPriority.Text;
-            entry.PriorityAdjust = comboBoxEnemyPriority.SelectedIndex - 3;
-            comboBoxEnemyPriority.Visible = false;
-        }
-
-        private void ComboBoxEnemyPriority_Leave(object sender, EventArgs e)
-        {
-            comboBoxEnemyPriority.Visible = false;
-        }
-
-        private void ListViewEnemies_MouseUp(object sender, MouseEventArgs e)
-        {
-            var lvItem = this.listViewEnemies.GetItemAt(e.X, e.Y);
-            if (lvItem == null) return;
-            var entry = (LabConfiguration.EnemyPriority)lvItem.Tag;
-            comboBoxEnemyPriority.SelectedIndex = entry.PriorityAdjust + 3;
-            comboBoxEnemyPriority.Size = lvItem.SubItems[1].Bounds.Size;
-            comboBoxEnemyPriority.Bounds = lvItem.SubItems[1].Bounds;
-            comboBoxEnemyPriority.Left += listViewEnemies.Left;
-            comboBoxEnemyPriority.Top += listViewEnemies.Top;
-            comboBoxEnemyPriority.Visible = true;
-            comboBoxEnemyPriority.BringToFront();
-            comboBoxEnemyPriority.Focus();
-
-        }
-
         private void NumericUpDownWatchdogHangWarning_ValueChanged(object sender, EventArgs e)
         {
             checkBoxWatchdogScreenshot.Enabled = numericUpDownWatchdogHangWarning.Value > 0;
@@ -1156,6 +1106,24 @@ namespace FFRK_LabMem.Config.UI
         {
             numericUpDownWatchdogHangWarning.Maximum = (numericUpDownWatchdogHang.Value == 0)? 6000 : numericUpDownWatchdogHang.Value * 0.75M;
         }
-        
+
+        private void DataGridViewEnemies_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (!e.Row.IsNewRow)
+            {
+                DialogResult response = MessageBox.Show($"Are you sure you wish to delete {e.Row.Cells[3].Value}?", "Confirm Delete",
+                                  MessageBoxButtons.YesNo,
+                                  MessageBoxIcon.Question,
+                                  MessageBoxDefaultButton.Button2);
+
+                if (response == DialogResult.No)
+                    e.Cancel = true;
+            }
+        }
+
+        private void CheckBoxBoostRestore_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownRestoreFatigue.Enabled = checkBoxBoostRestore.Checked;
+        }
     }
 }

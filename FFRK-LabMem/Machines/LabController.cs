@@ -88,6 +88,7 @@ namespace FFRK_LabMem.Machines
             {
                 HangSeconds = configHelper.GetInt("lab.watchdogHangSeconds", 120),
                 HangWarningSeconds = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60),
+                HangWarningLoopThreshold = configHelper.GetInt("lab.watchdogHangWarningLoopThreshold", 10),
                 HangScreenshot = configHelper.GetBool("lab.watchdogHangScreenshot", false),
                 BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
                 CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),

@@ -31,15 +31,17 @@ namespace FFRK_LabMem.Config.UI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("General", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Recovery", 1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Proxy", 2);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Android", 3);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Lab", 4);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Timings", 5);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Schedule", 6);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Counters", 7);
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Notifications", 8);
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("General", 0);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Recovery", 1);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Proxy", 2);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Android", 3);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Lab", 4);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Timings", 5);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Schedule", 6);
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Counters", 7);
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("Notifications", 8);
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -159,6 +161,8 @@ namespace FFRK_LabMem.Config.UI
             this.numericUpDownFatigue = new System.Windows.Forms.NumericUpDown();
             this.checkBoxLabUseLetheTears = new System.Windows.Forms.CheckBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.numericUpDownRestoreFatigue = new System.Windows.Forms.NumericUpDown();
+            this.checkBoxBoostRestore = new System.Windows.Forms.CheckBox();
             this.checkBoxLabAvoidMasterMore = new System.Windows.Forms.CheckBox();
             this.checkBoxLabAvoidMasterExplore = new System.Windows.Forms.CheckBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -189,14 +193,12 @@ namespace FFRK_LabMem.Config.UI
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage10 = new System.Windows.Forms.TabPage();
-            this.comboBoxEnemyPriority = new System.Windows.Forms.ComboBox();
-            this.listViewEnemies = new System.Windows.Forms.ListView();
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.dataGridViewEnemies = new System.Windows.Forms.DataGridView();
+            this.Enabled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Priority = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Party = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.EnemyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkBoxLabBlockListOverride = new System.Windows.Forms.CheckBox();
-            this.buttonRemoveBlocklist = new System.Windows.Forms.Button();
-            this.buttonAddBlocklist = new System.Windows.Forms.Button();
             this.comboBoxLab = new System.Windows.Forms.ComboBox();
             this.tabPage13 = new System.Windows.Forms.TabPage();
             this.buttonTimingDefaults = new System.Windows.Forms.Button();
@@ -251,6 +253,8 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
+            this.label39 = new System.Windows.Forms.Label();
+            this.numericUpDownHangLoopThreshold = new System.Windows.Forms.NumericUpDown();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -283,9 +287,11 @@ namespace FFRK_LabMem.Config.UI
             this.flowLayoutPanelTeam2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).BeginInit();
             this.tabPage8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRestoreFatigue)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
             this.tabPage10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEnemies)).BeginInit();
             this.tabPage13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage11.SuspendLayout();
@@ -299,6 +305,7 @@ namespace FFRK_LabMem.Config.UI
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHangLoopThreshold)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
@@ -515,6 +522,8 @@ namespace FFRK_LabMem.Config.UI
             // tabPage14
             // 
             this.tabPage14.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage14.Controls.Add(this.label39);
+            this.tabPage14.Controls.Add(this.numericUpDownHangLoopThreshold);
             this.tabPage14.Controls.Add(this.label36);
             this.tabPage14.Controls.Add(this.numericUpDownBattleMaxRetries);
             this.tabPage14.Controls.Add(this.label37);
@@ -537,16 +546,16 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage14.Controls.Add(this.label7);
             this.tabPage14.Controls.Add(this.label8);
             this.tabPage14.Controls.Add(this.numericUpDownWatchdogHang);
-            this.tabPage14.Location = new System.Drawing.Point(4, 22);
+            this.tabPage14.Location = new System.Drawing.Point(4, 24);
             this.tabPage14.Name = "tabPage14";
             this.tabPage14.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage14.Size = new System.Drawing.Size(504, 468);
+            this.tabPage14.Size = new System.Drawing.Size(504, 466);
             this.tabPage14.TabIndex = 8;
             this.tabPage14.Text = "Recovery";
             // 
             // label36
             // 
-            this.label36.Location = new System.Drawing.Point(214, 259);
+            this.label36.Location = new System.Drawing.Point(214, 291);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(234, 23);
             this.label36.TabIndex = 21;
@@ -555,7 +564,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownBattleMaxRetries
             // 
-            this.numericUpDownBattleMaxRetries.Location = new System.Drawing.Point(153, 261);
+            this.numericUpDownBattleMaxRetries.Location = new System.Drawing.Point(153, 293);
             this.numericUpDownBattleMaxRetries.Maximum = new decimal(new int[] {
             300,
             0,
@@ -568,7 +577,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label37
             // 
-            this.label37.Location = new System.Drawing.Point(0, 259);
+            this.label37.Location = new System.Drawing.Point(0, 291);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(146, 23);
             this.label37.TabIndex = 19;
@@ -622,7 +631,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label29
             // 
-            this.label29.Location = new System.Drawing.Point(214, 218);
+            this.label29.Location = new System.Drawing.Point(214, 250);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(234, 23);
             this.label29.TabIndex = 18;
@@ -631,7 +640,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownRestartMaxRetries
             // 
-            this.numericUpDownRestartMaxRetries.Location = new System.Drawing.Point(153, 220);
+            this.numericUpDownRestartMaxRetries.Location = new System.Drawing.Point(153, 252);
             this.numericUpDownRestartMaxRetries.Maximum = new decimal(new int[] {
             300,
             0,
@@ -645,7 +654,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label28
             // 
-            this.label28.Location = new System.Drawing.Point(112, 218);
+            this.label28.Location = new System.Drawing.Point(112, 250);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(35, 23);
             this.label28.TabIndex = 16;
@@ -654,7 +663,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label27
             // 
-            this.label27.Location = new System.Drawing.Point(215, 190);
+            this.label27.Location = new System.Drawing.Point(215, 222);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(233, 23);
             this.label27.TabIndex = 15;
@@ -663,7 +672,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownRestartLoopWindow
             // 
-            this.numericUpDownRestartLoopWindow.Location = new System.Drawing.Point(153, 192);
+            this.numericUpDownRestartLoopWindow.Location = new System.Drawing.Point(153, 224);
             this.numericUpDownRestartLoopWindow.Maximum = new decimal(new int[] {
             300,
             0,
@@ -676,7 +685,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label26
             // 
-            this.label26.Location = new System.Drawing.Point(214, 163);
+            this.label26.Location = new System.Drawing.Point(214, 195);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(234, 23);
             this.label26.TabIndex = 13;
@@ -685,7 +694,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownRestartLoopThreshold
             // 
-            this.numericUpDownRestartLoopThreshold.Location = new System.Drawing.Point(153, 165);
+            this.numericUpDownRestartLoopThreshold.Location = new System.Drawing.Point(153, 197);
             this.numericUpDownRestartLoopThreshold.Maximum = new decimal(new int[] {
             300,
             0,
@@ -698,7 +707,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label25
             // 
-            this.label25.Location = new System.Drawing.Point(0, 163);
+            this.label25.Location = new System.Drawing.Point(0, 195);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(146, 23);
             this.label25.TabIndex = 11;
@@ -757,7 +766,7 @@ namespace FFRK_LabMem.Config.UI
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(215, 71);
+            this.label8.Location = new System.Drawing.Point(215, 69);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(176, 15);
             this.label8.TabIndex = 6;
@@ -968,9 +977,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage3.Controls.Add(this.trackBarFindAccuracy);
             this.tabPage3.Controls.Add(this.trackBarTapDelay);
             this.tabPage3.Controls.Add(this.trackBarTapDuration);
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(504, 466);
+            this.tabPage3.Size = new System.Drawing.Size(504, 468);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Adb";
             // 
@@ -1296,7 +1305,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl1.Location = new System.Drawing.Point(3, 35);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(500, 400);
+            this.tabControl1.Size = new System.Drawing.Size(500, 428);
             this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
@@ -1313,7 +1322,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(492, 372);
+            this.tabPage5.Size = new System.Drawing.Size(492, 400);
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1427,7 +1436,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage15.Controls.Add(this.checkBoxLabUseLetheTears);
             this.tabPage15.Location = new System.Drawing.Point(4, 22);
             this.tabPage15.Name = "tabPage15";
-            this.tabPage15.Size = new System.Drawing.Size(492, 374);
+            this.tabPage15.Size = new System.Drawing.Size(492, 402);
             this.tabPage15.TabIndex = 6;
             this.tabPage15.Text = "Party";
             this.tabPage15.UseVisualStyleBackColor = true;
@@ -1708,7 +1717,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // numericUpDownFatigue
             // 
-            this.numericUpDownFatigue.Location = new System.Drawing.Point(259, 37);
+            this.numericUpDownFatigue.Location = new System.Drawing.Point(249, 37);
             this.numericUpDownFatigue.Maximum = new decimal(new int[] {
             10,
             0,
@@ -1742,6 +1751,8 @@ namespace FFRK_LabMem.Config.UI
             // 
             // tabPage8
             // 
+            this.tabPage8.Controls.Add(this.numericUpDownRestoreFatigue);
+            this.tabPage8.Controls.Add(this.checkBoxBoostRestore);
             this.tabPage8.Controls.Add(this.checkBoxLabAvoidMasterMore);
             this.tabPage8.Controls.Add(this.checkBoxLabAvoidMasterExplore);
             this.tabPage8.Controls.Add(this.label33);
@@ -1755,15 +1766,52 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage8.Controls.Add(this.checkBoxLabDoors);
             this.tabPage8.Location = new System.Drawing.Point(4, 22);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(492, 374);
+            this.tabPage8.Size = new System.Drawing.Size(492, 402);
             this.tabPage8.TabIndex = 3;
             this.tabPage8.Text = "Options";
             this.tabPage8.UseVisualStyleBackColor = true;
             // 
+            // numericUpDownRestoreFatigue
+            // 
+            this.numericUpDownRestoreFatigue.Enabled = false;
+            this.numericUpDownRestoreFatigue.Location = new System.Drawing.Point(371, 58);
+            this.numericUpDownRestoreFatigue.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDownRestoreFatigue.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownRestoreFatigue.Name = "numericUpDownRestoreFatigue";
+            this.numericUpDownRestoreFatigue.Size = new System.Drawing.Size(56, 21);
+            this.numericUpDownRestoreFatigue.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.numericUpDownRestoreFatigue, "Average party fatigue that must be reached before boosting priority of restore pa" +
+        "intings");
+            this.numericUpDownRestoreFatigue.Value = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            // 
+            // checkBoxBoostRestore
+            // 
+            this.checkBoxBoostRestore.AutoSize = true;
+            this.checkBoxBoostRestore.Location = new System.Drawing.Point(7, 58);
+            this.checkBoxBoostRestore.Name = "checkBoxBoostRestore";
+            this.checkBoxBoostRestore.Size = new System.Drawing.Size(358, 19);
+            this.checkBoxBoostRestore.TabIndex = 11;
+            this.checkBoxBoostRestore.Text = "Boost restore painting priority when avg party fatigue reaches:";
+            this.toolTip1.SetToolTip(this.checkBoxBoostRestore, "Restore painting will be boosted to just below treasure painting priority");
+            this.checkBoxBoostRestore.UseVisualStyleBackColor = true;
+            this.checkBoxBoostRestore.CheckedChanged += new System.EventHandler(this.CheckBoxBoostRestore_CheckedChanged);
+            // 
             // checkBoxLabAvoidMasterMore
             // 
             this.checkBoxLabAvoidMasterMore.AutoSize = true;
-            this.checkBoxLabAvoidMasterMore.Location = new System.Drawing.Point(27, 238);
+            this.checkBoxLabAvoidMasterMore.Location = new System.Drawing.Point(27, 266);
             this.checkBoxLabAvoidMasterMore.Name = "checkBoxLabAvoidMasterMore";
             this.checkBoxLabAvoidMasterMore.Size = new System.Drawing.Size(213, 19);
             this.checkBoxLabAvoidMasterMore.TabIndex = 9;
@@ -1775,7 +1823,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxLabAvoidMasterExplore
             // 
             this.checkBoxLabAvoidMasterExplore.AutoSize = true;
-            this.checkBoxLabAvoidMasterExplore.Location = new System.Drawing.Point(27, 213);
+            this.checkBoxLabAvoidMasterExplore.Location = new System.Drawing.Point(27, 241);
             this.checkBoxLabAvoidMasterExplore.Name = "checkBoxLabAvoidMasterExplore";
             this.checkBoxLabAvoidMasterExplore.Size = new System.Drawing.Size(230, 19);
             this.checkBoxLabAvoidMasterExplore.TabIndex = 8;
@@ -1786,7 +1834,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label33
             // 
-            this.label33.Location = new System.Drawing.Point(6, 163);
+            this.label33.Location = new System.Drawing.Point(6, 191);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(351, 22);
             this.label33.TabIndex = 6;
@@ -1796,7 +1844,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxLabAvoidMaster
             // 
             this.checkBoxLabAvoidMaster.AutoSize = true;
-            this.checkBoxLabAvoidMaster.Location = new System.Drawing.Point(27, 188);
+            this.checkBoxLabAvoidMaster.Location = new System.Drawing.Point(27, 216);
             this.checkBoxLabAvoidMaster.Name = "checkBoxLabAvoidMaster";
             this.checkBoxLabAvoidMaster.Size = new System.Drawing.Size(208, 19);
             this.checkBoxLabAvoidMaster.TabIndex = 7;
@@ -1808,7 +1856,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxLabAvoidPortalMore
             // 
             this.checkBoxLabAvoidPortalMore.AutoSize = true;
-            this.checkBoxLabAvoidPortalMore.Location = new System.Drawing.Point(27, 130);
+            this.checkBoxLabAvoidPortalMore.Location = new System.Drawing.Point(27, 158);
             this.checkBoxLabAvoidPortalMore.Name = "checkBoxLabAvoidPortalMore";
             this.checkBoxLabAvoidPortalMore.Size = new System.Drawing.Size(213, 19);
             this.checkBoxLabAvoidPortalMore.TabIndex = 5;
@@ -1820,7 +1868,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxLabAvoidPortalExplore
             // 
             this.checkBoxLabAvoidPortalExplore.AutoSize = true;
-            this.checkBoxLabAvoidPortalExplore.Location = new System.Drawing.Point(27, 105);
+            this.checkBoxLabAvoidPortalExplore.Location = new System.Drawing.Point(27, 133);
             this.checkBoxLabAvoidPortalExplore.Name = "checkBoxLabAvoidPortalExplore";
             this.checkBoxLabAvoidPortalExplore.Size = new System.Drawing.Size(230, 19);
             this.checkBoxLabAvoidPortalExplore.TabIndex = 4;
@@ -1831,7 +1879,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             // label24
             // 
-            this.label24.Location = new System.Drawing.Point(6, 55);
+            this.label24.Location = new System.Drawing.Point(6, 83);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(351, 22);
             this.label24.TabIndex = 2;
@@ -1852,7 +1900,7 @@ namespace FFRK_LabMem.Config.UI
             // checkBoxLabAvoidPortal
             // 
             this.checkBoxLabAvoidPortal.AutoSize = true;
-            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(27, 80);
+            this.checkBoxLabAvoidPortal.Location = new System.Drawing.Point(27, 108);
             this.checkBoxLabAvoidPortal.Name = "checkBoxLabAvoidPortal";
             this.checkBoxLabAvoidPortal.Size = new System.Drawing.Size(208, 19);
             this.checkBoxLabAvoidPortal.TabIndex = 3;
@@ -1892,7 +1940,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(492, 374);
+            this.tabPage6.Size = new System.Drawing.Size(492, 402);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Paintings";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1903,7 +1951,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSwap.AutoSize = true;
             this.checkBoxSwap.Checked = true;
             this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(374, 339);
+            this.checkBoxSwap.Location = new System.Drawing.Point(374, 367);
             this.checkBoxSwap.Name = "checkBoxSwap";
             this.checkBoxSwap.Size = new System.Drawing.Size(109, 19);
             this.checkBoxSwap.TabIndex = 3;
@@ -1913,7 +1961,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveUp
             // 
             this.buttonPaintingMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 331);
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 359);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveUp.TabIndex = 1;
@@ -1924,7 +1972,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveDown
             // 
             this.buttonPaintingMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 331);
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 359);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveDown.TabIndex = 2;
@@ -1945,7 +1993,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(7, 7);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(476, 314);
+            this.listViewPaintings.Size = new System.Drawing.Size(476, 342);
             this.listViewPaintings.SmallImageList = this.imageList2;
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
@@ -1977,7 +2025,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage7.Controls.Add(this.listViewTreasures);
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(492, 374);
+            this.tabPage7.Size = new System.Drawing.Size(492, 402);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Treasures";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -1986,7 +2034,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(201, 337);
+            this.label9.Location = new System.Drawing.Point(201, 365);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 15);
             this.label9.TabIndex = 3;
@@ -2001,7 +2049,7 @@ namespace FFRK_LabMem.Config.UI
             "0",
             "1",
             "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(342, 333);
+            this.comboBoxKeys.Location = new System.Drawing.Point(342, 361);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(140, 23);
             this.comboBoxKeys.TabIndex = 4;
@@ -2010,7 +2058,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureUp
             // 
             this.buttonTreasureUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 331);
+            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 359);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureUp.TabIndex = 1;
@@ -2021,7 +2069,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureDown
             // 
             this.buttonTreasureDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 331);
+            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 359);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureDown.TabIndex = 2;
@@ -2045,7 +2093,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(7, 7);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(476, 314);
+            this.listViewTreasures.Size = new System.Drawing.Size(476, 342);
             this.listViewTreasures.SmallImageList = this.imageList2;
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
@@ -2074,26 +2122,47 @@ namespace FFRK_LabMem.Config.UI
             // 
             // tabPage10
             // 
-            this.tabPage10.Controls.Add(this.comboBoxEnemyPriority);
-            this.tabPage10.Controls.Add(this.listViewEnemies);
+            this.tabPage10.Controls.Add(this.dataGridViewEnemies);
             this.tabPage10.Controls.Add(this.checkBoxLabBlockListOverride);
-            this.tabPage10.Controls.Add(this.buttonRemoveBlocklist);
-            this.tabPage10.Controls.Add(this.buttonAddBlocklist);
             this.tabPage10.Location = new System.Drawing.Point(4, 22);
             this.tabPage10.Name = "tabPage10";
             this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(492, 374);
+            this.tabPage10.Size = new System.Drawing.Size(492, 402);
             this.tabPage10.TabIndex = 5;
             this.tabPage10.Text = "Enemies";
             this.tabPage10.UseVisualStyleBackColor = true;
             // 
-            // comboBoxEnemyPriority
+            // dataGridViewEnemies
             // 
-            this.comboBoxEnemyPriority.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBoxEnemyPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxEnemyPriority.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.comboBoxEnemyPriority.FormattingEnabled = true;
-            this.comboBoxEnemyPriority.Items.AddRange(new object[] {
+            this.dataGridViewEnemies.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewEnemies.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridViewEnemies.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewEnemies.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Enabled,
+            this.Priority,
+            this.Party,
+            this.EnemyName});
+            this.dataGridViewEnemies.Location = new System.Drawing.Point(7, 6);
+            this.dataGridViewEnemies.MultiSelect = false;
+            this.dataGridViewEnemies.Name = "dataGridViewEnemies";
+            this.dataGridViewEnemies.Size = new System.Drawing.Size(476, 365);
+            this.dataGridViewEnemies.TabIndex = 5;
+            this.dataGridViewEnemies.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.DataGridViewEnemies_UserDeletingRow);
+            // 
+            // Enabled
+            // 
+            this.Enabled.HeaderText = "";
+            this.Enabled.Name = "Enabled";
+            this.Enabled.Width = 30;
+            // 
+            // Priority
+            // 
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(1);
+            this.Priority.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Priority.HeaderText = "Priority";
+            this.Priority.Items.AddRange(new object[] {
             "Prefer +3",
             "Prefer +2",
             "Prefer",
@@ -2101,57 +2170,34 @@ namespace FFRK_LabMem.Config.UI
             "Avoid",
             "Avoid +2",
             "Avoid +3"});
-            this.comboBoxEnemyPriority.Location = new System.Drawing.Point(194, 331);
-            this.comboBoxEnemyPriority.Name = "comboBoxEnemyPriority";
-            this.comboBoxEnemyPriority.Size = new System.Drawing.Size(140, 23);
-            this.comboBoxEnemyPriority.TabIndex = 3;
-            this.comboBoxEnemyPriority.Visible = false;
-            this.comboBoxEnemyPriority.SelectedIndexChanged += new System.EventHandler(this.ComboBoxEnemyPriority_SelectedIndexChanged);
-            this.comboBoxEnemyPriority.Leave += new System.EventHandler(this.ComboBoxEnemyPriority_Leave);
+            this.Priority.Name = "Priority";
+            this.Priority.Width = 80;
             // 
-            // listViewEnemies
+            // Party
             // 
-            this.listViewEnemies.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewEnemies.CheckBoxes = true;
-            this.listViewEnemies.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader10,
-            this.columnHeader11,
-            this.columnHeader13});
-            this.listViewEnemies.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listViewEnemies.FullRowSelect = true;
-            this.listViewEnemies.HideSelection = false;
-            this.listViewEnemies.Location = new System.Drawing.Point(7, 7);
-            this.listViewEnemies.Name = "listViewEnemies";
-            this.listViewEnemies.ShowItemToolTips = true;
-            this.listViewEnemies.Size = new System.Drawing.Size(476, 314);
-            this.listViewEnemies.SmallImageList = this.imageList2;
-            this.listViewEnemies.TabIndex = 0;
-            this.listViewEnemies.UseCompatibleStateImageBehavior = false;
-            this.listViewEnemies.View = System.Windows.Forms.View.Details;
-            this.listViewEnemies.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ListViewEnemies_MouseUp);
+            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(1);
+            this.Party.DefaultCellStyle = dataGridViewCellStyle4;
+            this.Party.HeaderText = "Party";
+            this.Party.Items.AddRange(new object[] {
+            "Default",
+            "Party 1",
+            "Party 2",
+            "Party 3"});
+            this.Party.Name = "Party";
+            this.Party.Width = 80;
             // 
-            // columnHeader10
+            // EnemyName
             // 
-            this.columnHeader10.Text = "";
-            this.columnHeader10.Width = 40;
-            // 
-            // columnHeader11
-            // 
-            this.columnHeader11.Text = "Priority";
-            this.columnHeader11.Width = 82;
-            // 
-            // columnHeader13
-            // 
-            this.columnHeader13.Text = "Enemy Name";
-            this.columnHeader13.Width = 317;
+            this.EnemyName.HeaderText = "Name";
+            this.EnemyName.MinimumWidth = 200;
+            this.EnemyName.Name = "EnemyName";
+            this.EnemyName.Width = 220;
             // 
             // checkBoxLabBlockListOverride
             // 
             this.checkBoxLabBlockListOverride.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 333);
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 377);
             this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
             this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(147, 19);
             this.checkBoxLabBlockListOverride.TabIndex = 4;
@@ -2159,29 +2205,6 @@ namespace FFRK_LabMem.Config.UI
             this.toolTip1.SetToolTip(this.checkBoxLabBlockListOverride, "When enabled, the enemy blocklist takes priority over the avoidance options in th" +
         "e Options tab");
             this.checkBoxLabBlockListOverride.UseVisualStyleBackColor = true;
-            // 
-            // buttonRemoveBlocklist
-            // 
-            this.buttonRemoveBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonRemoveBlocklist.Enabled = false;
-            this.buttonRemoveBlocklist.Location = new System.Drawing.Point(101, 331);
-            this.buttonRemoveBlocklist.Name = "buttonRemoveBlocklist";
-            this.buttonRemoveBlocklist.Size = new System.Drawing.Size(87, 27);
-            this.buttonRemoveBlocklist.TabIndex = 2;
-            this.buttonRemoveBlocklist.Text = "Remove";
-            this.buttonRemoveBlocklist.UseVisualStyleBackColor = true;
-            this.buttonRemoveBlocklist.Click += new System.EventHandler(this.ButtonRemoveBlocklist_Click);
-            // 
-            // buttonAddBlocklist
-            // 
-            this.buttonAddBlocklist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonAddBlocklist.Location = new System.Drawing.Point(7, 331);
-            this.buttonAddBlocklist.Name = "buttonAddBlocklist";
-            this.buttonAddBlocklist.Size = new System.Drawing.Size(87, 27);
-            this.buttonAddBlocklist.TabIndex = 1;
-            this.buttonAddBlocklist.Text = "Add";
-            this.buttonAddBlocklist.UseVisualStyleBackColor = true;
-            this.buttonAddBlocklist.Click += new System.EventHandler(this.ButtonAddBlocklist_Click);
             // 
             // comboBoxLab
             // 
@@ -2210,7 +2233,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTimingDefaults
             // 
             this.buttonTimingDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 416);
+            this.buttonTimingDefaults.Location = new System.Drawing.Point(0, 414);
             this.buttonTimingDefaults.Name = "buttonTimingDefaults";
             this.buttonTimingDefaults.Size = new System.Drawing.Size(140, 27);
             this.buttonTimingDefaults.TabIndex = 1;
@@ -2233,7 +2256,7 @@ namespace FFRK_LabMem.Config.UI
             this.Jitter});
             this.dataGridView1.Location = new System.Drawing.Point(3, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(495, 408);
+            this.dataGridView1.Size = new System.Drawing.Size(495, 406);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1_CellValidating);
@@ -2689,15 +2712,15 @@ namespace FFRK_LabMem.Config.UI
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listView1.HideSelection = false;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9});
+            listViewItem10,
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16,
+            listViewItem17,
+            listViewItem18});
             this.listView1.LabelWrap = false;
             this.listView1.LargeImageList = this.imageList1;
             this.listView1.Location = new System.Drawing.Point(0, 5);
@@ -2797,6 +2820,32 @@ namespace FFRK_LabMem.Config.UI
             this.openFileDialogSound.Filter = "WAV files|*.wav";
             this.openFileDialogSound.Title = "Choose sound file";
             // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(215, 150);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(161, 15);
+            this.label39.TabIndex = 23;
+            this.label39.Text = "consecutive hang recoveries";
+            // 
+            // numericUpDownHangLoopThreshold
+            // 
+            this.numericUpDownHangLoopThreshold.Location = new System.Drawing.Point(153, 148);
+            this.numericUpDownHangLoopThreshold.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownHangLoopThreshold.Name = "numericUpDownHangLoopThreshold";
+            this.numericUpDownHangLoopThreshold.Size = new System.Drawing.Size(56, 21);
+            this.numericUpDownHangLoopThreshold.TabIndex = 22;
+            this.numericUpDownHangLoopThreshold.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
             // ConfigForm
             // 
             this.AcceptButton = this.buttonOk;
@@ -2860,12 +2909,14 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFatigue)).EndInit();
             this.tabPage8.ResumeLayout(false);
             this.tabPage8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRestoreFatigue)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
             this.tabPage10.ResumeLayout(false);
             this.tabPage10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewEnemies)).EndInit();
             this.tabPage13.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage11.ResumeLayout(false);
@@ -2883,6 +2934,7 @@ namespace FFRK_LabMem.Config.UI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHangLoopThreshold)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2949,8 +3001,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxLabDoors;
         private System.Windows.Forms.Button buttonCheckForUpdates;
         private System.Windows.Forms.TabPage tabPage10;
-        private System.Windows.Forms.Button buttonRemoveBlocklist;
-        private System.Windows.Forms.Button buttonAddBlocklist;
         private System.Windows.Forms.CheckBox checkBoxLabBlockListOverride;
         private System.Windows.Forms.Button buttonLabConfigurations;
         private System.Windows.Forms.CheckBox checkBoxLabAutoStart;
@@ -3075,11 +3125,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.CheckBox checkBoxLabAvoidMasterExplore;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.CheckBox checkBoxLabAvoidMaster;
-        private System.Windows.Forms.ComboBox comboBoxEnemyPriority;
-        private System.Windows.Forms.ListView listViewEnemies;
-        private System.Windows.Forms.ColumnHeader columnHeader10;
-        private System.Windows.Forms.ColumnHeader columnHeader11;
-        private System.Windows.Forms.ColumnHeader columnHeader13;
         private System.Windows.Forms.CheckBox checkBoxWatchdogScreenshot;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label label35;
@@ -3100,5 +3145,14 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Label labelFindPrecision;
         private System.Windows.Forms.TrackBar trackBarFindPrecision;
         private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.DataGridView dataGridViewEnemies;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Enabled;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Priority;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Party;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EnemyName;
+        private System.Windows.Forms.NumericUpDown numericUpDownRestoreFatigue;
+        private System.Windows.Forms.CheckBox checkBoxBoostRestore;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.NumericUpDown numericUpDownHangLoopThreshold;
     }
 }

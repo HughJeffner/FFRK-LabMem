@@ -78,6 +78,8 @@ namespace FFRK_LabMem.Machines
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public List<EnemyPriority> EnemyPriorityList { get; set; } = new List<EnemyPriority>();
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
+        public bool BoostRestoreEnabled { get; set; } = false;
+        public int BoostRestoreFatigue { get; set; } = 7;
 
         public LabConfiguration() {
 
@@ -133,6 +135,7 @@ namespace FFRK_LabMem.Machines
             public string Name { get; set; }
             public bool Enabled { get; set; } = false;
             public int PriorityAdjust { get; set; } = 1;
+            public List<int> Parties { get; set; } = new List<int>();
             public override string ToString()
             {
                 return Name;

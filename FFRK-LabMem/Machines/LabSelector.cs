@@ -44,9 +44,13 @@ namespace FFRK_LabMem.Machines
                     await Adb.SaveScreenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), Lab.CancellationToken);
                 }
                 await Counters.FoundRadiantPainting();
-                var rPriority = 0;
-                if (Config.PaintingPriorityMap.ContainsKey("R")) rPriority = Config.PaintingPriorityMap["R"];
-                return rPriority * 10;
+
+                // Priority calculation
+                if (type.Equals("1")) type += "." + painting["display_type"].ToString();// Combatant sub-type 
+                var rPriority = Config.PaintingPriorityMap[type];                       // Default priority
+                if (Config.PaintingPriorityMap.ContainsKey("R")) 
+                    rPriority = Math.Min(rPriority, Config.PaintingPriorityMap["R"]);   // Take the lower of the two
+                return (rPriority * 10) - 5;                                            // Break tie between 2 of the same type of painting
             }
 
             // Combatant (1)
@@ -59,7 +63,7 @@ namespace FFRK_LabMem.Machines
                 var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && enemyName.ToLower().Contains(b.Name.ToLower()));
                 if (enemyEntry != null)
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Adjusting priority {0:+#;-#;0} due to blocklist: {1}",
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Adjusting priority {0:+#;-#;0} due to enemy list: {1}",
                         enemyEntry.PriorityAdjust,
                         enemyName);
                     var combatants = Config.PaintingPriorityMap.Where(p => p.Key.StartsWith("1."));
@@ -131,6 +135,14 @@ namespace FFRK_LabMem.Machines
                 return maxPriority +1;
             }
 
+            // Restoration boost
+            if (type.Equals("7") && Config.BoostRestoreEnabled && Lab.FatigueInfo.IsOverThreshold(Lab.SelectedPartyIndex, Config.BoostRestoreFatigue))
+            {
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Boosting restore due to option");
+                return (Config.PaintingPriorityMap["3"] * 10) + 1; // Just below treasure
+
+            }
+
             // Lookup or default
             if (Config.PaintingPriorityMap.ContainsKey(type))
             {
@@ -161,9 +173,18 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public int GetPartyIndex()
+        public int GetPartyIndex(JToken dungeon)
         {
 
+            // Check for enemy priority list
+            var enemyName = dungeon["captures"][0]["tip_battle"]["title"].ToString();
+            var enemyEntry = Config.EnemyPriorityList.FirstOrDefault(b => b.Enabled && b.Parties.Count > 0 && enemyName.ToLower().Contains(b.Name.ToLower()));
+            if (enemyEntry != null)
+            {
+                return enemyEntry.Parties[0];
+            }
+
+            // Use configured party option
             switch (Lab.Config.PartyIndex)
             {
                 case LabConfiguration.PartyIndexOption.Team1:

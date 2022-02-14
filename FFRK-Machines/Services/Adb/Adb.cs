@@ -21,7 +21,6 @@ namespace FFRK_Machines.Services.Adb
         private int cachedApiLevel = 0;
         private string cachedAbi = string.Empty;
         private Size cachedScreenSize = null;
-        private String host;
         private Random rng = new Random();
         private DeviceMonitor deviceMonitor = null;
         private InputManager inputManager;
@@ -62,6 +61,7 @@ namespace FFRK_Machines.Services.Adb
                 return string.Format("{0}: {1} {2}", Image, Simalarity, Location);
             }
         }
+        public string Host { get; private set; }
         public DeviceData Device { get; set; }
         public double TopOffset { get; set; }
         public double BottomOffset { get; set; }
@@ -87,7 +87,7 @@ namespace FFRK_Machines.Services.Adb
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Starting server");
             AdbServer server = new AdbServer();
             var result = server.StartServer(path, restartServerIfNewer: true);
-            this.host = host;
+            this.Host = host;
             this.TopOffset = topOffset;
             this.BottomOffset = bottomOffset;
 
@@ -127,10 +127,10 @@ namespace FFRK_Machines.Services.Adb
             if (this.Device == null)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
-                await RunProcessAsync("cmd.exe", "/c adb connect " + this.host);
+                await RunProcessAsync("cmd.exe", "/c adb connect " + this.Host);
             }
 
-            AdbClient.Instance.Connect(this.host);
+            AdbClient.Instance.Connect(this.Host);
             this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {

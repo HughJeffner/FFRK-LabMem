@@ -68,7 +68,8 @@ namespace FFRK_LabMem.Machines
         public int SelectedPartyIndex { get; set; } = 0;
         public int RestartLabCounter { get; set; } = -1;
         public LabWatchdog Watchdog { get; }
-        public readonly AsyncAutoResetEvent AutoResetEventFatigue = new AsyncAutoResetEvent(false);
+        public LabFatigueInfo FatigueInfo { get; set; } = new LabFatigueInfo();
+
         public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
         private bool disableSafeRequested = false;
         private readonly Stopwatch battleStopwatch = new Stopwatch();
@@ -76,14 +77,6 @@ namespace FFRK_LabMem.Machines
         private int restartTries = 0;
         private LabParser parser;
         private LabSelector selector;
-
-        public class BuddyInfo
-        {
-            public int BuddyId { get; set; }
-            public int Fatigue { get; set; } = 3;
-        }
-
-        public List<List<BuddyInfo>> FatigueInfo = new List<List<BuddyInfo>>();
 
         public Lab(Adb adb, LabConfiguration config, LabWatchdog.Configuration watchdogConfig)
         {
@@ -232,8 +225,10 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-            ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+            // Message only if not from self
+            if (sender != this) ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            // Counters
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Crash) await Counters.FFRKCrashed();
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang) await Counters.FFRKHang(Watchdog.Config.HangWarningSeconds > 0);
 
@@ -375,6 +370,7 @@ namespace FFRK_LabMem.Machines
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
                 recoverStopwatch.Stop();
+                Watchdog.HangReset(); // Started battle indicates we not in hang state
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
             }) ;
             Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);
@@ -415,7 +411,6 @@ namespace FFRK_LabMem.Machines
             this.SelectedPartyIndex = 0;
             this.RestartLabCounter = -1;
             this.FatigueInfo.Clear();
-            AutoResetEventFatigue.Reset();
             AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;
@@ -439,13 +434,13 @@ namespace FFRK_LabMem.Machines
             }
             return Task.FromResult(false);
         }
-
+        
         public async Task ManualFFRKRestart(bool showMessage = true)
         {
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
             await Task.Run(()=>
             {
-                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Crash });
+                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Manual });
             });
             
         }

@@ -56,6 +56,9 @@ namespace FFRK_LabMem.Machines
                     int newFloor = (int)floor;
                     if (newFloor != Lab.CurrentFloor)
                     {
+                        // New floor indicates we not in hang state
+                        Lab.Watchdog.HangReset();
+
                         if (Lab.CurrentFloor != 0)
                         {
                             ColorConsole.WriteLine(ConsoleColor.DarkCyan, "Welcome to Floor {0}!", floor);
@@ -193,6 +196,7 @@ namespace FFRK_LabMem.Machines
                         break;
                     case 5:  // Spring
                         ColorConsole.WriteLine("Discovered a mysterious spring");
+                        ParseAbrasionMap(data);
                         await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     case 10: // Fatigue
@@ -244,11 +248,11 @@ namespace FFRK_LabMem.Machines
                     var party = parties.Where(p => (string)p["party_no"] == (partySlot + 1).ToString()).FirstOrDefault();
                     if (party != null)
                     {
-                        Lab.FatigueInfo.Add(new List<BuddyInfo>());
+                        Lab.FatigueInfo.Add(new LabFatigueInfo.BuddyInfoList(0));
 
                         foreach (JProperty item in party["slot_to_buddy_id"].Children<JProperty>().OrderBy(i => i.Name))
                         {
-                            Lab.FatigueInfo[partySlot].Add(new BuddyInfo() { BuddyId = (int)item.Value });
+                            Lab.FatigueInfo[partySlot].Add(new LabFatigueInfo.BuddyInfo() { BuddyId = (int)item.Value });
                         }
                     }
                 }
@@ -268,6 +272,7 @@ namespace FFRK_LabMem.Machines
                 var value = map[item.BuddyId.ToString()];
                 if (value != null) item.Fatigue = (int)value["value"];
             }
+            Lab.FatigueInfo.Set("EVENT");
             return true;
         }
 
@@ -283,8 +288,7 @@ namespace FFRK_LabMem.Machines
                     if (value != null) item.Fatigue = (int)value["memory_abrasion"];
                 }
             }
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values WRITE: {0}", Lab.AutoResetEventFatigue);
-            Lab.AutoResetEventFatigue.Set();
+            Lab.FatigueInfo.Set("PARTY");
             await Task.CompletedTask;
         }
 
@@ -331,18 +335,12 @@ namespace FFRK_LabMem.Machines
             } else
             {
                 // Create default 3 parties, 5 units, with 3 fatigue
-                Lab.FatigueInfo = Enumerable.Range(0, 3).Select(l1 =>
-                {
-                    return Enumerable.Range(0, 5).Select(l2 =>
-                    {
-                        return new BuddyInfo() { Fatigue = 3 };
-                    }).ToList();
-                }).ToList();
+                Lab.FatigueInfo = new LabFatigueInfo(3, 5);
+                
             }
 
             // Pre-set the downloaded signal
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Fatigue values set to DEFAULT: {0}", Lab.AutoResetEventFatigue);
-            Lab.AutoResetEventFatigue.Set();
+            Lab.FatigueInfo.Set("DEFAULT");
 
             // Parse lab info
             await ParseAllData(data, url);

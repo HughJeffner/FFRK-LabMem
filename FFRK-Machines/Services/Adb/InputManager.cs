@@ -15,6 +15,8 @@ namespace FFRK_Machines.Services.Adb
         private readonly Adb adb;
         private CancellationToken minicapTaskToken = new CancellationToken();
         private Minitouch minitouch;
+        private ulong tapCount = 0;
+        private Tuple<int, int> lastTap = null;
 
         private const String MINITOUCH_PATH = "/data/local/tmp/";
 
@@ -133,12 +135,24 @@ namespace FFRK_Machines.Services.Adb
 
         }
 
+        private bool IsMeMU()
+        {
+            return adb.Host.Length >= 5
+                && adb.Host.EndsWith("3")
+                && adb.Host.Substring(adb.Host.Length - 5, 3).Equals("215");
+        }
+
         public async Task Tap(int X, int Y, CancellationToken cancellationToken)
         {
+            // Internal tap counter
+            tapCount++;
 
+            // Debug
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Tapping screen [{adb.Input}] at: [{X},{Y}]");
             var inputStopWatch = new Stopwatch();
             inputStopWatch.Start();
+
+            // Do tap based on input type
             if (adb.Input == InputType.Minitouch)
             {
                 await Task.Delay(adb.TapDelay, cancellationToken);
@@ -150,9 +164,26 @@ namespace FFRK_Machines.Services.Adb
                 if (adb.TapDuration > 0) cmd = $"input swipe {X} {Y} {X} {Y} {adb.TapDuration}";
                 await client.ExecuteRemoteCommandAsync(cmd, device, null, cancellationToken, adb.TapDuration + 1000);
             }
+
+            // Debug
             inputStopWatch.Stop();
             ColorConsole.Debug(ColorConsole.DebugCategory.Timings, $"Input [{adb.Input}] delay: {inputStopWatch.ElapsedMilliseconds}ms");
 
+            // Retain last tap
+            lastTap = Tuple.Create(X, Y);
+
+            // Need duplicate tap for MeMU
+            // See: https://github.com/HughJeffner/FFRK-LabMem/issues/177
+            if (adb.Input == InputType.Minitouch && tapCount == 12 && IsMeMU())
+            {
+                await RedoTap(cancellationToken);
+            }
+
+        }
+
+        public async Task RedoTap(CancellationToken cancellationToken)
+        {
+            if (lastTap != null) await Tap(lastTap.Item1, lastTap.Item2, cancellationToken);
         }
 
     }

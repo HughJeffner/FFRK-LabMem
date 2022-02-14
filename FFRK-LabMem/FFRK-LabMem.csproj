@@ -116,6 +116,7 @@
     <Compile Include="Machines\LabConfiguration.cs" />
     <Compile Include="Machines\LabController.cs" />
     <Compile Include="Machines\Lab.cs" />
+    <Compile Include="Machines\LabFatigueInfo.cs" />
     <Compile Include="Machines\LabParser.cs" />
     <Compile Include="Machines\LabSelector.cs" />
     <Compile Include="Machines\LabStateJob.cs" />
