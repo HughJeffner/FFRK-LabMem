@@ -44,9 +44,13 @@ namespace FFRK_LabMem.Machines
                     await Adb.SaveScreenshot(String.Format("radiant_{0}.png", DateTime.Now.ToString("yyyyMMddHHmmss")), Lab.CancellationToken);
                 }
                 await Counters.FoundRadiantPainting();
-                var rPriority = 0;
-                if (Config.PaintingPriorityMap.ContainsKey("R")) rPriority = Config.PaintingPriorityMap["R"];
-                return rPriority * 10;
+
+                // Priority calculation
+                if (type.Equals("1")) type += "." + painting["display_type"].ToString();// Combatant sub-type 
+                var rPriority = Config.PaintingPriorityMap[type];                       // Default priority
+                if (Config.PaintingPriorityMap.ContainsKey("R")) 
+                    rPriority = Math.Min(rPriority, Config.PaintingPriorityMap["R"]);   // Take the lower of the two
+                return (rPriority * 10) - 5;                                            // Break tie between 2 of the same type of painting
             }
 
             // Combatant (1)
