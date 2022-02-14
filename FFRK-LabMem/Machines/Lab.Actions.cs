@@ -971,6 +971,9 @@ namespace FFRK_LabMem.Machines
             await this.Adb.StopPackage(Adb.FFRK_PACKAGE_NAME, this.CancellationToken);
             await LabTimings.Delay("Inter-RestartFFRK", this.CancellationToken);
 
+            // Backspace to dismiss any Crash/ANR dialogs
+            await this.Adb.NavigateBack(this.CancellationToken);
+
             // Launch app
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Launching app");
             await this.Adb.StartActivity(Adb.FFRK_PACKAGE_NAME, Adb.FFRK_ACTIVITY_NAME, this.CancellationToken);
