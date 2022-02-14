@@ -225,8 +225,10 @@ namespace FFRK_LabMem.Machines
 
         private async void Watchdog_Timeout(object sender, LabWatchdog.WatchdogEventArgs e)
         {
-            ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
+            // Message only if not from self
+            if (sender != this) ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            // Counters
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Crash) await Counters.FFRKCrashed();
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang) await Counters.FFRKHang(Watchdog.Config.HangWarningSeconds > 0);
 
@@ -438,7 +440,7 @@ namespace FFRK_LabMem.Machines
             if (showMessage) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Manually activated FFRK restart");
             await Task.Run(()=>
             {
-                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Crash });
+                Watchdog_Timeout(this, new LabWatchdog.WatchdogEventArgs() { Type = LabWatchdog.WatchdogEventArgs.TYPE.Manual });
             });
             
         }

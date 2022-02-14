@@ -46,7 +46,8 @@ namespace FFRK_LabMem.Machines
             public enum TYPE {
                 Hang,
                 Crash,
-                LongBattle
+                LongBattle,
+                Manual
             }
             public ElapsedEventArgs ElapsedEventArgs { get; set; }
             public TYPE Type { get; set; }
