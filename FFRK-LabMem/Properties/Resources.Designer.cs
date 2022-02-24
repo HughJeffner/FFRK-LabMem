@@ -73,6 +73,16 @@ namespace FFRK_LabMem.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap button_android_ok {
+            get {
+                object obj = ResourceManager.GetObject("button_android_ok", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button_blue_play {
             get {
                 object obj = ResourceManager.GetObject("button_blue_play", resourceCulture);

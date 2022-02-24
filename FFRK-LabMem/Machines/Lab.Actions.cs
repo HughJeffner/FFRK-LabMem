@@ -986,6 +986,7 @@ namespace FFRK_LabMem.Machines
             List<Adb.ImageDef> items = new List<Adb.ImageDef>();
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_android_ok, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
 
             // Stopwatch to limit how long we try to find buttons
