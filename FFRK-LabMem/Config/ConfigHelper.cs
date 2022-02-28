@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 
 namespace FFRK_LabMem.Config
 {
@@ -8,6 +9,7 @@ namespace FFRK_LabMem.Config
 
         private Configuration config = null;
         private KeyValueConfigurationCollection appSettings = null;
+        private CultureInfo invariantCulture = CultureInfo.InvariantCulture;
 
         public ConfigHelper() : this(null) { }
 
@@ -63,17 +65,17 @@ namespace FFRK_LabMem.Config
         }
         public void SetValue(String key, int value)
         {
-            SetValue(key, value.ToString());
+            SetValue(key, value.ToString(invariantCulture));
         }
 
         public void SetValue(String key, decimal value)
         {
-            SetValue(key, value.ToString());
+            SetValue(key, value.ToString(invariantCulture));
         }
 
         public void SetValue(String key, double value)
         {
-            SetValue(key, value.ToString());
+            SetValue(key, value.ToString(invariantCulture));
         }
 
         public void SetValue(String key, bool value)
@@ -90,19 +92,19 @@ namespace FFRK_LabMem.Config
         public int GetInt(String key, int defaultValue)
         {
             if (this[key] == null) return defaultValue;
-            return Int32.Parse(this[key]);
+            return Int32.Parse(this[key],invariantCulture);
         }
         
         public short GetShort(String key, short defaultValue)
         {
             if (this[key] == null) return defaultValue;
-            return short.Parse(this[key]);
+            return short.Parse(this[key], invariantCulture);
         }
 
         public double GetDouble(String key, double defaultValue)
         {
             if (this[key] == null) return defaultValue;
-            return double.Parse(this[key]);
+            return double.Parse(this[key], invariantCulture);
         }
 
         public bool GetBool(String key, bool defaultValue)

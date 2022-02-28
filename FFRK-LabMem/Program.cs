@@ -15,10 +15,6 @@ namespace FFRK_LabMem
         static void Main(string[] args)
         {
 
-            // Invariant culture to prevent issues for other system regional formatting
-            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
-            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-
             // Listen for console exit
             ConsoleTasks.ListenForExit(OnConsoleExit);
             ConsoleTasks.DisableQuickEditMode();
