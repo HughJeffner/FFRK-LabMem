@@ -9,7 +9,7 @@ namespace FFRK_LabMem.Config
 
         private Configuration config = null;
         private KeyValueConfigurationCollection appSettings = null;
-        private CultureInfo invariantCulture = CultureInfo.InvariantCulture;
+        private readonly CultureInfo invariantCulture = CultureInfo.InvariantCulture;
 
         public ConfigHelper() : this(null) { }
 

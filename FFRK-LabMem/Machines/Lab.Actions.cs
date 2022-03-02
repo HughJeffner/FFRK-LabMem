@@ -862,7 +862,7 @@ namespace FFRK_LabMem.Machines
                 else
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
-                    if (await Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null)
+                    if (await Adb.FindButton(BUTTON_BROWN, 2000, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
                         await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
