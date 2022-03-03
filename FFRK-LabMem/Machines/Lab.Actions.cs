@@ -382,6 +382,9 @@ namespace FFRK_LabMem.Machines
 
                 // Confirmation
                 await Adb.FindButtonAndTap(BUTTON_BLUE, 2050, 58.3, 57, 71.8, 5, this.CancellationToken, -1, 1);
+
+                // Check for inventory full 
+                if (Config.UseTeleportStoneOnMasterPainting && this.CurrentFloor <= 1) await CheckInventoryFull();
             } else
             {
                 // Informational message
@@ -443,7 +446,10 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
-            
+
+            // Check for inventory full 
+            if (Config.UseTeleportStoneOnMasterPainting && this.CurrentFloor <= 1) await CheckInventoryFull();
+
             await LabTimings.Delay("Post-StartBattle", this.CancellationToken);
 
         }
@@ -861,19 +867,8 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
-                    if (await Adb.FindButton(BUTTON_BROWN, 2000, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
-                        OnMachineFinished();
-                    } else
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
-                    }
-                    
+                    if (!await CheckInventoryFull()) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
                 }
-
             }
             else
             {
@@ -914,6 +909,24 @@ namespace FFRK_LabMem.Machines
 
             }
             return ret;
+        }
+
+        private async Task<bool> CheckInventoryFull()
+        {
+
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
+            if (await Adb.FindButton(BUTTON_BROWN, 1500, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
+                await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
+                OnMachineFinished();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         private async Task<bool> UseStaminaPotion()
