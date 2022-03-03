@@ -305,6 +305,7 @@ namespace FFRK_LabMem.Machines
                     ColorConsole.WriteLine(ConsoleColor.DarkGray, "Navigating back");
                     for (int i = 0; i < 3; i++)
                     {
+                        if (StateMachine.State == State.Battle) break;
                         await Adb.NavigateBack(this.CancellationToken);
                         await Task.Delay(500);
                     }
