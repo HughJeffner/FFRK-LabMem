@@ -69,6 +69,7 @@ namespace FFRK_LabMem.Machines
         public int RestartLabCounter { get; set; } = -1;
         public LabWatchdog Watchdog { get; }
         public LabFatigueInfo FatigueInfo { get; set; } = new LabFatigueInfo();
+        public LabStaminaInfo StaminaInfo { get; set; } = new LabStaminaInfo();
 
         public readonly AsyncAutoResetEvent AutoResetEventQuickExplore = new AsyncAutoResetEvent(false);
         private bool disableSafeRequested = false;
@@ -412,6 +413,7 @@ namespace FFRK_LabMem.Machines
             this.SelectedPartyIndex = 0;
             this.RestartLabCounter = -1;
             this.FatigueInfo.Clear();
+            this.StaminaInfo.Clear();
             AutoResetEventQuickExplore.Reset();
             restartTries = 0;
             disableSafeRequested = false;

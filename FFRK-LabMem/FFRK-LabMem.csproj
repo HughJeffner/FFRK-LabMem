@@ -122,6 +122,7 @@
     <Compile Include="Machines\LabFatigueInfo.cs" />
     <Compile Include="Machines\LabParser.cs" />
     <Compile Include="Machines\LabSelector.cs" />
+    <Compile Include="Machines\LabStaminaInfo.cs" />
     <Compile Include="Machines\LabStateJob.cs" />
     <Compile Include="Machines\LabTimings.cs" />
     <Compile Include="Machines\LabWatchdog.cs" />

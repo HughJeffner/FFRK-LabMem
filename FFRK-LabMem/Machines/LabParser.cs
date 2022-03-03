@@ -304,6 +304,12 @@ namespace FFRK_LabMem.Machines
                     Lab.FinalFloor = maxFloor;
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Final floor set to {0}", Lab.FinalFloor);
                 }
+                Lab.StaminaInfo.Cost = (int)info["stamina"];
+            }
+            var user = data["user"];
+            if (user != null)
+            {
+                Lab.StaminaInfo.SetStamina((int)user["stamina_recovery_remaining_time"], (int)user["max_stamina"]);
             }
             await Task.CompletedTask;
         }
