@@ -100,6 +100,9 @@
     </Compile>
     <Compile Include="Config\UI\Lookups.cs" />
     <Compile Include="Config\UI\Sorters.cs" />
+    <Compile Include="Controls\ListViewExtended.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Data\CounterComparers.cs" />
     <Compile Include="Data\CounterInference.cs" />
     <Compile Include="Data\Counters.cs" />
