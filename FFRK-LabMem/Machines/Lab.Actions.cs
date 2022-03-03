@@ -641,7 +641,10 @@ namespace FFRK_LabMem.Machines
                             // Update counters
                             this.CurrentTears -= numberUsed;
                             await Counters.UsedTears(numberUsed);
-                            
+
+                            // This might have taken a bit of time so kick watchdog
+                            Watchdog.Kick();
+
                             // Post delay
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
                             return true;
