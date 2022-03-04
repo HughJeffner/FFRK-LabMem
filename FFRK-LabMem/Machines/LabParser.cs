@@ -294,6 +294,7 @@ namespace FFRK_LabMem.Machines
 
         public async Task ParseAllData(JObject data, string url)
         {
+            // Dungeon info
             var info = data["labyrinth_dungeon"];
             if (info != null)
             {
@@ -306,11 +307,15 @@ namespace FFRK_LabMem.Machines
                 }
                 Lab.StaminaInfo.Cost = (int)info["stamina"];
             }
+
+            // Stamina info
             var user = data["user"];
-            if (user != null)
-            {
-                Lab.StaminaInfo.SetStamina((int)user["stamina_recovery_remaining_time"], (int)user["max_stamina"]);
-            }
+            if (user != null) Lab.StaminaInfo.SetStamina((int)user["stamina_recovery_remaining_time"], (int)user["max_stamina"]);
+            
+            // Potions info
+            var potions = data["user_stamina_recovery_agents"];
+            if (potions != null) Lab.StaminaInfo.Potions = (int)potions["num"];
+   
             await Task.CompletedTask;
         }
 

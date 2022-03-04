@@ -8,6 +8,7 @@ namespace FFRK_LabMem.Machines
         public int Cost { get; set; }
         public DateTime FullTime { get; private set; } = DateTime.MaxValue;
         public int MaxStamina { get; private set; }
+        public int? Potions { get; set; } = null;
 
         public double CurrentStamina
         {
@@ -36,6 +37,7 @@ namespace FFRK_LabMem.Machines
             this.Cost = 0;
             this.FullTime = DateTime.MaxValue;
             this.MaxStamina = 0;
+            this.Potions = null;
         }
     }
 }
