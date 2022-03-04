@@ -80,7 +80,7 @@ namespace FFRK_LabMem.Machines
         public CompleteMissionOption CompleteDailyMission { get; set; } = CompleteMissionOption.None;
         public bool BoostRestoreEnabled { get; set; } = false;
         public int BoostRestoreFatigue { get; set; } = 7;
-
+        public bool WaitForStamina { get; set; } = false;
         public LabConfiguration() {
 
             // Defaults
