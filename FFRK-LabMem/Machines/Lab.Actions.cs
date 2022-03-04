@@ -20,6 +20,7 @@ namespace FFRK_LabMem.Machines
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
         private const string BUTTON_ORANGE = "#c85f07";
+        private const string BUTTON_GREY = "#282727";
         private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
@@ -775,8 +776,14 @@ namespace FFRK_LabMem.Machines
 
         private async Task RestartLabCountdown(TimeSpan duration, params double[] notifyAt)
         {
+            if (duration.TotalSeconds > 60)
+            {
+                ColorConsole.WriteLine($"Restarting Lab in {duration}...");
+            } else
+            {
+                ColorConsole.WriteLine($"Restarting Lab in {duration.TotalSeconds} seconds...");
+            }
             var notifies = new List<double>(notifyAt);
-            ColorConsole.WriteLine("Restarting Lab in {0} seconds...", duration.TotalSeconds);
             if (notifies.Contains(duration.TotalSeconds)) notifies.Remove(duration.TotalSeconds);
             var timer = new Stopwatch();
             timer.Start();
@@ -785,20 +792,47 @@ namespace FFRK_LabMem.Machines
                 await Task.Delay(500, this.CancellationToken);
                 int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
                 var notify = notifies.Where(n => n == seconds).FirstOrDefault();
-                if (notify > 0)
+                if (notify >= 60)
                 {
-                    ColorConsole.WriteLine("Restarting Lab in {0} seconds...", seconds);
+                    ColorConsole.WriteLine($"Restarting Lab in {TimeSpan.FromSeconds(seconds)}...");
+                    notifies.Remove(notify);
+                }
+                else if (notify > 0)
+                {
+                    ColorConsole.WriteLine($"Restarting Lab in {seconds} seconds...");
                     notifies.Remove(notify);
                 }
             }
         }
 
-        private async Task RestartLab()
+        private async Task RestartLab(DateTime? atTime = null)
         {
 
-            // Inital delay
+            // Inital delay or scheduled time
             Watchdog.Kick(false);
-            await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
+            if (atTime.HasValue && atTime.Value > DateTime.Now)
+            {
+                // Schedule based countdown
+                ColorConsole.WriteLine($"Waiting for enough stamina at {atTime.Value:G}");
+                var duration = atTime.Value - DateTime.Now;
+                var notifyAt = new List<double>();
+                int notifyInterval = 600;
+                for (int i = notifyInterval; i < duration.TotalSeconds; i+=notifyInterval)
+                {
+                    notifyAt.Add(i);
+                }
+                notifyAt.Add(60);
+                notifyAt.Add(30);
+                notifyAt.Add(10);
+                await RestartLabCountdown(duration, notifyAt.ToArray());
+
+            } else
+            {
+                // Timer based countdown
+                await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
+            }
+
+            // Delay complete, let us restart
             this.CancellationToken.ThrowIfCancellationRequested();
             Watchdog.Kick(true);
             ColorConsole.WriteLine("Restarting Lab");
@@ -838,6 +872,15 @@ namespace FFRK_LabMem.Machines
                     {
                         // Enter button 2 again
                         await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20); 
+                    }
+                    else if (staminaResult.NeedsWait)
+                    {
+                        // We need to start over, navigate back twice and re-enter with scheduled time
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await Task.Delay(500, this.CancellationToken);
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await RestartLab(StaminaInfo.GetTargetTime());
+                        return;
                     }
                     else
                     {
@@ -884,6 +927,7 @@ namespace FFRK_LabMem.Machines
         {
             public bool StaminaDialogPresent { get; set; } = false;
             public bool PotionUsed { get; set; } = false;
+            public bool NeedsWait { get; set; } = false;
         }
 
         private async Task<CheckRestoreStaminaResult> CheckRestoreStamina()
@@ -891,6 +935,7 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for restore stamina dialog");
             var ret = new CheckRestoreStaminaResult();
 
+            // Potions Available
             var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
             if (staminaButton != null)
             {
@@ -904,13 +949,46 @@ namespace FFRK_LabMem.Machines
                     ret.PotionUsed = await UseStaminaPotion();
                     return ret;
                 }
+                else if (Config.WaitForStamina)
+                {
+                    ret.NeedsWait = StaminaInfo.GetTargetTime() > DateTime.Now;
+                    if (ret.NeedsWait == false) ColorConsole.WriteLine(ConsoleColor.Yellow, "Unable to determine current stamina!");
+                    return ret;
+                }
                 else
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
+                    await Notify(Notifications.EventType.LAB_FAULT, "Out of stamina");
                     OnMachineFinished();
                 }
 
             }
+
+            // Out of potions
+            var grayStaminaButton = await Adb.FindButton(BUTTON_GREY, 2000, 50, 36, 50, 0, this.CancellationToken);
+            if (grayStaminaButton != null)
+            {
+                ret.StaminaDialogPresent = true;
+                if (Config.WaitForStamina)
+                {
+                    ret.NeedsWait = StaminaInfo.GetTargetTime() > DateTime.Now;
+                    if (ret.NeedsWait == false) ColorConsole.WriteLine(ConsoleColor.Yellow, "Unable to determine current stamina!");
+                    return ret;
+                }
+                else if (Config.UsePotions)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough potions!");
+                    await Notify(Notifications.EventType.LAB_FAULT, "Out of potions!");
+                    OnMachineFinished();
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
+                    await Notify(Notifications.EventType.LAB_FAULT, "Out of stamina");
+                    OnMachineFinished();
+                }
+            }
+
             return ret;
         }
 
