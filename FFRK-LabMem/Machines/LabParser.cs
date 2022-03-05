@@ -314,7 +314,7 @@ namespace FFRK_LabMem.Machines
             
             // Potions info
             var potions = data["user_stamina_recovery_agents"];
-            if (potions != null) Lab.StaminaInfo.Potions = (int)potions["num"];
+            if (potions != null) Lab.StaminaInfo.Potions = (int)potions[0]["num"];
    
             await Task.CompletedTask;
         }
