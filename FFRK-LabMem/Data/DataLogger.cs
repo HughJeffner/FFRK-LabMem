@@ -123,7 +123,7 @@ namespace FFRK_LabMem.Data
                     {
                         var row = CreateDataRow(lab);
                         row.Add(item.First["name"].ToString());
-                        row.Add(qtyMap[item.First["item_id"].ToString()].ToString());
+                        row.Add((qtyMap[item.First["item_id"].ToString()] ?? "1").ToString());
                         WriteCSVLine(writer, row.ToArray(), row.Count);
 
                         ColorConsole.WriteLine(ConsoleColor.DarkGreen, " Drop: {0} x{1}",
