@@ -774,29 +774,50 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task RestartLabCountdown(TimeSpan duration, params double[] notifyAt)
+        private async Task RestartLabCountdown(TimeSpan duration)
         {
+            // Build list of notification times
+            // At 10, 30, 60 seconds, 5 minutes, and every 10 minutes thereafter
+            var notifyAt = new List<double>();
+            int notifyInterval = 600;
+            for (int i = notifyInterval; i < duration.TotalSeconds; i += notifyInterval)
+            {
+                notifyAt.Add(i);
+            }
+            if (duration.TotalSeconds > 300) notifyAt.Add(300);
+            notifyAt.AddRange(new List<double> { 60, 30, 10 });
+
+            // Initial notification
             if (duration.TotalSeconds > 60)
             {
-                ColorConsole.WriteLine($"Restarting Lab in {duration}...");
+                ColorConsole.WriteLine($"Restarting Lab in {duration:hh\\:mm\\:ss}...");
             } else
             {
                 ColorConsole.WriteLine($"Restarting Lab in {duration.TotalSeconds} seconds...");
             }
+
+            // Remove if already shown by the inital notification
             var notifies = new List<double>(notifyAt);
             if (notifies.Contains(duration.TotalSeconds)) notifies.Remove(duration.TotalSeconds);
+
+            // Start the stopwatch
             var timer = new Stopwatch();
             timer.Start();
             while (timer.Elapsed <= duration)
             {
+                // Every 500ms so we don't miss a second
                 await Task.Delay(500, this.CancellationToken);
-                int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
-                var notify = notifies.Where(n => n == seconds).FirstOrDefault();
-                if (notify >= 61)
+                int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);  // Whole-number of seconds remaining
+                var notify = notifies.Where(n => n == seconds).FirstOrDefault();                    // Does it exist in our notifiactions?
+                
+                // Show formatted timespan if over a minute
+                if (notify > 60)
                 {
                     ColorConsole.WriteLine($"Restarting Lab in {TimeSpan.FromSeconds(seconds)}...");
                     notifies.Remove(notify);
                 }
+
+                // Show number of seconds if under a minute
                 else if (notify > 0)
                 {
                     ColorConsole.WriteLine($"Restarting Lab in {seconds} seconds...");
@@ -808,31 +829,24 @@ namespace FFRK_LabMem.Machines
         private async Task RestartLab(DateTime? atTime = null)
         {
 
-            // Inital delay or scheduled time
+            // Disable watchdog for the countdown
             Watchdog.Kick(false);
+
+            // Inital delay or scheduled time
             if (atTime.HasValue && atTime.Value > DateTime.Now)
             {
-                // Schedule based countdown
+                // Schedule-based countdown
                 ColorConsole.WriteLine($"Waiting for enough stamina at {atTime.Value:G}");
                 var duration = atTime.Value - DateTime.Now;
-                var notifyAt = new List<double>();
-                int notifyInterval = 600;
-                for (int i = notifyInterval; i < duration.TotalSeconds; i+=notifyInterval)
-                {
-                    notifyAt.Add(i);
-                }
-                notifyAt.Add(60);
-                notifyAt.Add(30);
-                notifyAt.Add(10);
-                await RestartLabCountdown(duration, notifyAt.ToArray());
+                await RestartLabCountdown(duration);
 
             } else
             {
-                // Timer based countdown
-                await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
+                // Timing-based countdown
+                await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"));
             }
 
-            // Delay complete, let us restart
+            // Countdown complete, let us restart
             this.CancellationToken.ThrowIfCancellationRequested();
             Watchdog.Kick(true);
             ColorConsole.WriteLine("Restarting Lab");
