@@ -935,12 +935,14 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for restore stamina dialog");
             var ret = new CheckRestoreStaminaResult();
 
-            // Potions Available
-            var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
-            if (staminaButton != null)
+            // Orange gems button present
+            if (await Adb.FindButton(BUTTON_ORANGE, 2000, 50, 62.5, 78.1, 3, this.CancellationToken) != null)
             {
                 ret.StaminaDialogPresent = true;
-                if (Config.UsePotions)
+
+                // Brown use potion button
+                Adb.FindButtonResult staminaButton = null;
+                if (Config.UsePotions && (staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 0, this.CancellationToken)) != null)
                 {
                     // Select potions
                     await Adb.TapPct(staminaButton.button.Item1, staminaButton.button.Item2, this.CancellationToken);
@@ -962,31 +964,6 @@ namespace FFRK_LabMem.Machines
                     OnMachineFinished();
                 }
 
-            }
-
-            // Out of potions
-            var grayStaminaButton = await Adb.FindButton(BUTTON_GREY, 2000, 50, 36, 50, 0, this.CancellationToken);
-            if (grayStaminaButton != null)
-            {
-                ret.StaminaDialogPresent = true;
-                if (Config.WaitForStamina)
-                {
-                    ret.NeedsWait = StaminaInfo.GetTargetTime() > DateTime.Now;
-                    if (ret.NeedsWait == false) ColorConsole.WriteLine(ConsoleColor.Yellow, "Unable to determine current stamina!");
-                    return ret;
-                }
-                else if (Config.UsePotions)
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough potions!");
-                    await Notify(Notifications.EventType.LAB_FAULT, "Out of potions!");
-                    OnMachineFinished();
-                }
-                else
-                {
-                    ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
-                    await Notify(Notifications.EventType.LAB_FAULT, "Out of stamina");
-                    OnMachineFinished();
-                }
             }
 
             return ret;
