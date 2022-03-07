@@ -792,7 +792,7 @@ namespace FFRK_LabMem.Machines
                 await Task.Delay(500, this.CancellationToken);
                 int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
                 var notify = notifies.Where(n => n == seconds).FirstOrDefault();
-                if (notify >= 60)
+                if (notify >= 61)
                 {
                     ColorConsole.WriteLine($"Restarting Lab in {TimeSpan.FromSeconds(seconds)}...");
                     notifies.Remove(notify);
