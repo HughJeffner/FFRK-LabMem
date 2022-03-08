@@ -1,4 +1,5 @@
 ﻿using FFRK_LabMem.Config.UI;
+using FFRK_LabMem.Controls;
 using FFRK_LabMem.Machines;
 using FFRK_Machines;
 using FFRK_Machines.Threading;
@@ -54,7 +55,7 @@ namespace FFRK_LabMem.Data.UI
             comboBoxQE.SelectedIndex = 0;
             LoadPassives();
             LoadLabs();
-            
+            listViewCounters.SetGroupState(ListViewGroupState.Collapsible);
         }
 
         private void CountersForm_FormClosed(object sender, FormClosedEventArgs e)

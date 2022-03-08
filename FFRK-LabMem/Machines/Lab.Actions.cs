@@ -20,6 +20,7 @@ namespace FFRK_LabMem.Machines
         private const string BUTTON_BLUE = "#2060ce";
         private const string BUTTON_BROWN = "#6c3518";
         private const string BUTTON_ORANGE = "#c85f07";
+        private const string BUTTON_GREY = "#282727";
         private const string BUTTON_SKIP = "#d4d8f6";
 
         private readonly Dictionary<string, string> Combatant_Color = new Dictionary<string, string> { 
@@ -382,6 +383,9 @@ namespace FFRK_LabMem.Machines
 
                 // Confirmation
                 await Adb.FindButtonAndTap(BUTTON_BLUE, 2050, 58.3, 57, 71.8, 5, this.CancellationToken, -1, 1);
+
+                // Check for inventory full 
+                if (Config.UseTeleportStoneOnMasterPainting && this.CurrentFloor <= 1) await CheckInventoryFull();
             } else
             {
                 // Informational message
@@ -443,7 +447,10 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find button");
                 await this.StateMachine.FireAsync(Trigger.MissedButton);
             }
-            
+
+            // Check for inventory full 
+            if (Config.UseTeleportStoneOnMasterPainting && this.CurrentFloor <= 1) await CheckInventoryFull();
+
             await LabTimings.Delay("Post-StartBattle", this.CancellationToken);
 
         }
@@ -635,7 +642,10 @@ namespace FFRK_LabMem.Machines
                             // Update counters
                             this.CurrentTears -= numberUsed;
                             await Counters.UsedTears(numberUsed);
-                            
+
+                            // This might have taken a bit of time so kick watchdog
+                            Watchdog.Kick();
+
                             // Post delay
                             await LabTimings.Delay("Post-LetheTears", this.CancellationToken);
                             return true;
@@ -764,32 +774,79 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        private async Task RestartLabCountdown(TimeSpan duration, params double[] notifyAt)
+        private async Task RestartLabCountdown(TimeSpan duration)
         {
+            // Build list of notification times
+            // At 10, 30, 60 seconds, 5 minutes, and every 10 minutes thereafter
+            var notifyAt = new List<double>();
+            int notifyInterval = 600;
+            for (int i = notifyInterval; i < duration.TotalSeconds; i += notifyInterval)
+            {
+                notifyAt.Add(i);
+            }
+            if (duration.TotalSeconds > 300) notifyAt.Add(300);
+            notifyAt.AddRange(new List<double> { 60, 30, 10 });
+
+            // Initial notification
+            if (duration.TotalSeconds > 60)
+            {
+                ColorConsole.WriteLine($"Restarting Lab in {duration:hh\\:mm\\:ss}...");
+            } else
+            {
+                ColorConsole.WriteLine($"Restarting Lab in {duration.TotalSeconds} seconds...");
+            }
+
+            // Remove if already shown by the inital notification
             var notifies = new List<double>(notifyAt);
-            ColorConsole.WriteLine("Restarting Lab in {0} seconds...", duration.TotalSeconds);
             if (notifies.Contains(duration.TotalSeconds)) notifies.Remove(duration.TotalSeconds);
+
+            // Start the stopwatch
             var timer = new Stopwatch();
             timer.Start();
             while (timer.Elapsed <= duration)
             {
+                // Every 500ms so we don't miss a second
                 await Task.Delay(500, this.CancellationToken);
-                int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);
-                var notify = notifies.Where(n => n == seconds).FirstOrDefault();
-                if (notify > 0)
+                int seconds = (int)Math.Floor(duration.TotalSeconds - timer.Elapsed.TotalSeconds);  // Whole-number of seconds remaining
+                var notify = notifies.Where(n => n == seconds).FirstOrDefault();                    // Does it exist in our notifiactions?
+                
+                // Show formatted timespan if over a minute
+                if (notify > 60)
                 {
-                    ColorConsole.WriteLine("Restarting Lab in {0} seconds...", seconds);
+                    ColorConsole.WriteLine($"Restarting Lab in {TimeSpan.FromSeconds(seconds)}...");
+                    notifies.Remove(notify);
+                }
+
+                // Show number of seconds if under a minute
+                else if (notify > 0)
+                {
+                    ColorConsole.WriteLine($"Restarting Lab in {seconds} seconds...");
                     notifies.Remove(notify);
                 }
             }
         }
 
-        private async Task RestartLab()
+        private async Task RestartLab(DateTime? atTime = null)
         {
 
-            // Inital delay
+            // Disable watchdog for the countdown
             Watchdog.Kick(false);
-            await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"), 60, 30, 10);
+
+            // Inital delay or scheduled time
+            if (atTime.HasValue && atTime.Value > DateTime.Now)
+            {
+                // Schedule-based countdown
+                ColorConsole.WriteLine($"Waiting for enough stamina at {atTime.Value:G}");
+                var duration = atTime.Value - DateTime.Now;
+                await RestartLabCountdown(duration);
+
+            } else
+            {
+                // Timing-based countdown
+                await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"));
+            }
+
+            // Countdown complete, let us restart
             this.CancellationToken.ThrowIfCancellationRequested();
             Watchdog.Kick(true);
             ColorConsole.WriteLine("Restarting Lab");
@@ -830,6 +887,15 @@ namespace FFRK_LabMem.Machines
                         // Enter button 2 again
                         await DelayedTapButton("Inter-RestartLab", BUTTON_BLUE, 2000, 50, 80, 90, 20); 
                     }
+                    else if (staminaResult.NeedsWait)
+                    {
+                        // We need to start over, navigate back twice and re-enter with scheduled time
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await Task.Delay(500, this.CancellationToken);
+                        await Adb.NavigateBack(this.CancellationToken);
+                        await RestartLab(StaminaInfo.GetTargetTime());
+                        return;
+                    }
                     else
                     {
                         if (staminaResult.StaminaDialogPresent) return;
@@ -861,19 +927,8 @@ namespace FFRK_LabMem.Machines
                 }
                 else
                 {
-                    ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
-                    if (await Adb.FindButton(BUTTON_BROWN, 3000, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null)
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
-                        await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
-                        OnMachineFinished();
-                    } else
-                    {
-                        ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
-                    }
-                    
+                    if (!await CheckInventoryFull()) ColorConsole.WriteLine(ConsoleColor.DarkRed, "Failed to find Enter button 2");
                 }
-
             }
             else
             {
@@ -886,6 +941,7 @@ namespace FFRK_LabMem.Machines
         {
             public bool StaminaDialogPresent { get; set; } = false;
             public bool PotionUsed { get; set; } = false;
+            public bool NeedsWait { get; set; } = false;
         }
 
         private async Task<CheckRestoreStaminaResult> CheckRestoreStamina()
@@ -893,11 +949,14 @@ namespace FFRK_LabMem.Machines
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for restore stamina dialog");
             var ret = new CheckRestoreStaminaResult();
 
-            var staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 5, this.CancellationToken);
-            if (staminaButton != null)
+            // Orange gems button present
+            if (await Adb.FindButton(BUTTON_ORANGE, 2000, 50, 62.5, 78.1, 3, this.CancellationToken) != null)
             {
                 ret.StaminaDialogPresent = true;
-                if (Config.UsePotions)
+
+                // Brown use potion button
+                Adb.FindButtonResult staminaButton = null;
+                if (Config.UsePotions && (staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 0, this.CancellationToken)) != null)
                 {
                     // Select potions
                     await Adb.TapPct(staminaButton.button.Item1, staminaButton.button.Item2, this.CancellationToken);
@@ -906,14 +965,43 @@ namespace FFRK_LabMem.Machines
                     ret.PotionUsed = await UseStaminaPotion();
                     return ret;
                 }
+                else if (Config.WaitForStamina)
+                {
+                    ret.NeedsWait = StaminaInfo.GetTargetTime() > DateTime.Now;
+                    if (ret.NeedsWait == false) ColorConsole.WriteLine(ConsoleColor.Yellow, "Unable to determine current stamina!");
+                    return ret;
+                }
                 else
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
+                    await Notify(Notifications.EventType.LAB_FAULT, "Out of stamina");
                     OnMachineFinished();
                 }
 
             }
+
             return ret;
+        }
+
+        private async Task<bool> CheckInventoryFull()
+        {
+
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for inventory full");
+            if (
+                await Adb.FindButton(BUTTON_BROWN, 1500, 40.2, 88.3, 97.7, 3, this.CancellationToken) != null &&    // Brown button at bottom
+                await Adb.FindButton(BUTTON_BLUE, 2000, 59, 77, 93, 0, this.CancellationToken) == null              // No blue button
+            )
+            {
+                ColorConsole.WriteLine(ConsoleColor.Yellow, "Inventory full!");
+                await Notify(Notifications.EventType.LAB_FAULT, "Inventory full");
+                OnMachineFinished();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         private async Task<bool> UseStaminaPotion()
@@ -986,6 +1074,7 @@ namespace FFRK_LabMem.Machines
             List<Adb.ImageDef> items = new List<Adb.ImageDef>();
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_play, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_brown_ok, Simalarity = 0.95f });
+            items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_android_ok, Simalarity = 0.95f });
             items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
 
             // Stopwatch to limit how long we try to find buttons

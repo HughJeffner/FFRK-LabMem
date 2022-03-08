@@ -258,6 +258,9 @@ namespace FFRK_LabMem.Machines
         private bool CheckRestartLoopWindow(WatchdogEventArgs args)
         {
 
+            // Disable if set to 0
+            if (Config.RestartLoopThreshold == 0) return false;
+
             // Ignore crash detection events
             if (args.Type == WatchdogEventArgs.TYPE.Crash) return false;
 

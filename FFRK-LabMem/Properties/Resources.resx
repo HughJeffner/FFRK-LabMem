@@ -121,6 +121,9 @@
   <data name="battle_commands" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\battle_commands.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="button_android_ok" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button_android_ok.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="button_blue_play" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_blue_play.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

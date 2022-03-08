@@ -38,7 +38,7 @@ namespace FFRK_LabMem.Data.UI
             this.buttonCountersResetSession = new System.Windows.Forms.Button();
             this.buttonCountersResetLab = new System.Windows.Forms.Button();
             this.buttonCountersResetAll = new System.Windows.Forms.Button();
-            this.listViewCounters = new System.Windows.Forms.ListView();
+            this.listViewCounters = new Controls.ListViewExtended();
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -335,7 +335,7 @@ namespace FFRK_LabMem.Data.UI
         private System.Windows.Forms.Button buttonCountersResetSession;
         private System.Windows.Forms.Button buttonCountersResetLab;
         private System.Windows.Forms.Button buttonCountersResetAll;
-        private System.Windows.Forms.ListView listViewCounters;
+        private Controls.ListViewExtended listViewCounters;
         private System.Windows.Forms.ColumnHeader columnHeader10;
         private System.Windows.Forms.ColumnHeader columnHeader12;
         private System.Windows.Forms.ColumnHeader columnHeader11;

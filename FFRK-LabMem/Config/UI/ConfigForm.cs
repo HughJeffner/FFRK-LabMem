@@ -305,6 +305,7 @@ namespace FFRK_LabMem.Config.UI
             labConfig.StopOnMasterPainting = checkBoxLabStopOnMasterPainting.Checked;
             labConfig.RestartLab = checkBoxLabRestart.Checked;
             labConfig.UsePotions = checkBoxLabUsePotions.Checked;
+            labConfig.WaitForStamina = checkBoxLabWaitForStamina.Checked;
             labConfig.UseLetheTears = checkBoxLabUseLetheTears.Checked;
             labConfig.LetheTearsFatigue = (int)numericUpDownFatigue.Value;
             labConfig.LetheTearsSlots[0] = 0;
@@ -466,6 +467,7 @@ namespace FFRK_LabMem.Config.UI
             checkBoxLabRestart.Checked = labConfig.RestartLab;
             CheckBoxLabRestart_CheckedChanged(sender, e);
             checkBoxLabUsePotions.Checked = labConfig.UsePotions;
+            checkBoxLabWaitForStamina.Checked = labConfig.WaitForStamina;
             checkBoxLabUseLetheTears.Checked = labConfig.UseLetheTears;
             CheckBoxLabUseLetheTears_CheckedChanged(sender, e);
             numericUpDownFatigue.Value = labConfig.LetheTearsFatigue;
@@ -729,6 +731,7 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxLabRestart_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxLabUsePotions.Enabled = (checkBoxLabRestart.Checked && !checkBoxLabStopOnMasterPainting.Checked);
+            checkBoxLabWaitForStamina.Enabled = checkBoxLabUsePotions.Enabled;
         }
 
         private void CheckBoxLabUseLetheTears_CheckedChanged(object sender, EventArgs e)
