@@ -950,7 +950,7 @@ namespace FFRK_LabMem.Machines
             var ret = new CheckRestoreStaminaResult();
 
             // Orange gems button present
-            if (await Adb.FindButton(BUTTON_ORANGE, 2000, 50, 62.5, 78.1, 3, this.CancellationToken) != null)
+            if (await Adb.FindButton(BUTTON_ORANGE, 2000, 34.7, 62.5, 78.1, 3, this.CancellationToken,-1, 1) != null)
             {
                 ret.StaminaDialogPresent = true;
 
@@ -963,13 +963,13 @@ namespace FFRK_LabMem.Machines
 
                     // Use potion
                     ret.PotionUsed = await UseStaminaPotion();
-                    return ret;
+
                 }
                 else if (Config.WaitForStamina)
                 {
                     ret.NeedsWait = StaminaInfo.GetTargetTime() > DateTime.Now;
                     if (ret.NeedsWait == false) ColorConsole.WriteLine(ConsoleColor.Yellow, "Unable to determine current stamina!");
-                    return ret;
+
                 }
                 else
                 {
