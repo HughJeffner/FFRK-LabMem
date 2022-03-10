@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using FFRK_Machines.Services.Notifications;
+using System.ComponentModel;
 
 namespace FFRK_LabMem.Config.UI
 {
@@ -30,7 +31,7 @@ namespace FFRK_LabMem.Config.UI
             {"1", "5* Orbs, 5* Motes"}
         };
 
-        public static List<AdbHostItem> AdbHosts = new List<AdbHostItem>() {
+        public static BindingList<AdbHostItem> AdbHosts = new BindingList<AdbHostItem>() {
             new AdbHostItem { Name = "MuMu", Value = "127.0.0.1:7555"} ,
             new AdbHostItem { Name = "Nox", Value = "127.0.0.1:62001"} ,
             new AdbHostItem { Name = "Nox Alt 1", Value = "127.0.0.1:62025"} ,

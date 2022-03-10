@@ -103,27 +103,33 @@ namespace FFRK_Machines.Services.Adb
         private void OnDeviceChanged(object sender, DeviceDataEventArgs e)
         {
             ColorConsole.WriteLine("Device changed: {1}:{0}", e.Device, e.Device.State);
-            if (e.Device.State == DeviceState.Online) DeviceAvailable?.Invoke(sender, e);
-            if (e.Device.State == DeviceState.Offline) DeviceUnavailable?.Invoke(sender, e);
+            if (e.Device.Serial.Equals(this.Host))
+            {
+                if (e.Device.State == DeviceState.Online) DeviceAvailable?.Invoke(sender, e);
+                if (e.Device.State == DeviceState.Offline) DeviceUnavailable?.Invoke(sender, e);
+
+            }
         }
 
         private void OnDeviceDisconnected(object sender, DeviceDataEventArgs e)
         {
             ColorConsole.WriteLine("Device unavailable: {0}", e.Device);
-            DeviceUnavailable?.Invoke(sender, e);
+            if (e.Device.Serial.Equals(this.Host)) DeviceUnavailable?.Invoke(sender, e);
         }
 
         private void OnDeviceConnected(object sender, DeviceDataEventArgs e)
         {
             ColorConsole.WriteLine("Device available: {0}", e.Device);
-            DeviceAvailable?.Invoke(sender, e);
+            if (e.Device.Serial.Equals(this.Host)) DeviceAvailable?.Invoke(sender, e);
         }
 
         public async Task<bool> Connect()
         {
 
             ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Connecting to device");
-            this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
+
+            // Choose from multiple connected devices
+            this.Device = AdbClient.Instance.GetDevices().Where(d => d.Serial.Equals(this.Host)).FirstOrDefault();
             if (this.Device == null)
             {
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
@@ -131,7 +137,7 @@ namespace FFRK_Machines.Services.Adb
             }
 
             AdbClient.Instance.Connect(this.Host);
-            this.Device = AdbClient.Instance.GetDevices().LastOrDefault();
+            this.Device = AdbClient.Instance.GetDevices().Where(d => d.Serial.Equals(this.Host)).FirstOrDefault();
             if (this.Device != null && this.Device.State == DeviceState.Online)
             {
                 var deviceName = this.Device.Name;
@@ -147,6 +153,11 @@ namespace FFRK_Machines.Services.Adb
             }
 
 
+        }
+
+        public Task<List<String>> GetDevices()
+        {
+            return Task.FromResult(AdbClient.Instance.GetDevices().Select(d => d.Serial).ToList());
         }
 
         public async Task InstallCertificate(String pfxPath, CancellationToken cancellationToken)

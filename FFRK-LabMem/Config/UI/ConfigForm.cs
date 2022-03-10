@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using FFRK_Machines;
-using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
 using System.Threading;
 using System.Linq;
@@ -1127,6 +1126,21 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxBoostRestore_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownRestoreFatigue.Enabled = checkBoxBoostRestore.Checked;
+        }
+
+        private async void ComboBoxAdbHost_DropDown(object sender, EventArgs e)
+        {
+            // Get all non-tcp (usb) devices
+            var devices = (await controller.Adb.GetDevices()).Where(d => !d.Contains("."));
+
+            foreach (var item in devices)
+            {
+                if (!Lookups.AdbHosts.Any(h => h.Value.Equals(item)))
+                {
+                    Lookups.AdbHosts.Add(new AdbHostItem() { Name = $"USB", Value = item });
+                }
+            }
+
         }
     }
 }
