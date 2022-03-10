@@ -44,7 +44,8 @@ namespace FFRK_LabMem.Data
             EQUIPMENT_SP_MATERIAL = 1 << 5,
             HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL = 1 << 6,
             GROW_EGG = 1 << 7,
-            BEAST_FOOD = 1 << 8
+            BEAST_FOOD = 1 << 8,
+            RECORD_MATERIA = 1 << 9
         }
 
         // Public properties
@@ -226,7 +227,7 @@ namespace FFRK_LabMem.Data
                 {
                     // Filter materials drops
                     if (rarity == 0) rarity = CounterInference.InferRarity(category, name);
-                    if (!(DropCategory.LABYRINTH_ITEM | DropCategory.COMMON).HasFlag(category) && rarity > 0 && rarity < _instance.MaterialsRarityFilter) return;
+                    if (!(DropCategory.LABYRINTH_ITEM | DropCategory.COMMON | DropCategory.RECORD_MATERIA).HasFlag(category) && rarity > 0 && rarity < _instance.MaterialsRarityFilter) return;
                     
                     _instance.IncrementDrop(name, qty, isQE);
                     await _instance.Save();

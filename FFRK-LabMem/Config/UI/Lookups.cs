@@ -95,7 +95,8 @@ namespace FFRK_LabMem.Config.UI
             {Data.Counters.DropCategory.EQUIPMENT_SP_MATERIAL,"Upgrade Materials" },
             {Data.Counters.DropCategory.HISTORIA_CRYSTAL_ENHANCEMENT_MATERIAL, "Rat Tails" },
             {Data.Counters.DropCategory.GROW_EGG, "Growth Eggs" },
-            {Data.Counters.DropCategory.BEAST_FOOD, "Arcana" }
+            {Data.Counters.DropCategory.BEAST_FOOD, "Arcana" },
+            {Data.Counters.DropCategory.RECORD_MATERIA, "Record Materia" }
         };
 
         public static Dictionary<String, Counters.DropCategory> DropCategoriesInverse = DropCategories.ToDictionary((i) => i.Value, (i) => i.Key);
