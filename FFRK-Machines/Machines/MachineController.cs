@@ -145,7 +145,6 @@ namespace FFRK_Machines.Machines
                         }
                     }
                     await item.Registration.Handler(data, item.Registration.UrlMatch.ToString());
-                    data = null;
 
                 }
                 catch (OperationCanceledException) { }
