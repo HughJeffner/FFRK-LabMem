@@ -138,6 +138,7 @@
     <Compile Include="Services\ConsoleTasks.cs" />
     <Compile Include="Services\Scheduler.cs" />
     <Compile Include="Services\Tray.cs" />
+    <Compile Include="Services\Tyro.cs" />
     <Compile Include="Services\Updates.cs" />
   </ItemGroup>
   <ItemGroup>

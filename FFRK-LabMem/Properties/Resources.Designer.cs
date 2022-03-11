@@ -167,5 +167,20 @@ namespace FFRK_LabMem.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to                                      ...                                      
+        ///                                 (/**(((#//*(                                   
+        ///                              //****(*  .*///*#                                 
+        ///                            ,#******(.(*% ////*(                                
+        ///                           //*******/&amp;***,.(////#                               
+        ///                          */*********%***/%,,,////                              
+        ///                          (* [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Tyro7 {
+            get {
+                return ResourceManager.GetString("Tyro7", resourceCulture);
+            }
+        }
     }
 }
