@@ -234,7 +234,7 @@ namespace FFRK_Machines.Services.Adb
                 if (ret == null)
                 {
                     minicapTimeouts += 1;
-                    if (minicapTimeouts >= 10)
+                    if (minicapTimeouts >= 20)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "Minicap timed out reverting to ADB screencap");
                         adb.Capture = CaptureType.ADB;
