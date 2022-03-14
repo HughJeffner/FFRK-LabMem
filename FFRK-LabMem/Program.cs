@@ -57,7 +57,7 @@ namespace FFRK_LabMem
                 // Ad-hoc command loop
                 Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
                 Console.WriteLine("Type ? for help");
-                Tyro.Check(controller);
+                Tyro.Register(controller);
 
                 while (true)
                 {

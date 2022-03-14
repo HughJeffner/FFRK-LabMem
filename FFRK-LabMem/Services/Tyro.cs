@@ -10,15 +10,28 @@ namespace FFRK_LabMem.Services
 {
     class Tyro
     {
-        public static void Check(LabController controller)
+        private static bool check7 = false;
+        private static bool Check7(LabController controller)
         {
-            if (!controller.Enabled) return;
-            var now = DateTime.UtcNow;
-            if (new DateTime(2022, 3, 25) <= now && now <= new DateTime(2022, 3, 27))
+            if (controller.Enabled)
             {
-                Console.WriteLine(Properties.Resources.Tyro7);
-                Sound.Play(Sound.FF1_Event);
+                var now = DateTime.UtcNow;
+                var target = new DateTime(2022, 3, 25);
+                if (target <= now && now <= target.AddDays(2) && !check7)
+                {
+                    Console.WriteLine(Properties.Resources.Tyro7);
+                    Sound.Play(Sound.FF1_Event);
+                    check7 = true;
+                    return true;
+                }
             }
+            return false;
+        }
+
+        public static void Register(LabController controller)
+        {
+            if (!Check7(controller))
+                controller.OnEnabled += (s, e) => Tyro.Check7(controller);
         }
     }
 }
