@@ -41,6 +41,7 @@ namespace FFRK_Machines.Machines
             public Adb.InputType Input { get; set; } = Adb.InputType.Minitouch;
             public string ConfigFile { get; set; }
             public int Consumers { get; set; } = 2;
+            public String ScreenshotFolder { get; set; } = "";
         }
 
         private const char BOMChar = (char)65279;
@@ -82,6 +83,7 @@ namespace FFRK_Machines.Machines
             this.Adb.TapDelay = args.TapDelay;
             this.Adb.TapDuration = args.TapDuration;
             this.Adb.TapPressure = args.TapPressure;
+            this.Adb.ScreenshotFolder = args.ScreenshotFolder;
 
             // Proxy Server
             Proxy = new Proxy(args.ProxyPort, args.ProxySecure, args.ProxyBlocklist, args.ProxyConnectionPooling);

@@ -67,7 +67,8 @@ namespace FFRK_LabMem.Machines
                 TapDelay = config.GetInt("adb.tapDelay", 30),
                 TapDuration = config.GetInt("adb.tapDuration", 0),
                 TapPressure = config.GetInt("adb.tapPressure", 50),
-                Consumers = 2
+                Consumers = 2,
+                ScreenshotFolder = config.GetString("adb.screenshotFolder", "")
             };
             await ret.Start(args);
 

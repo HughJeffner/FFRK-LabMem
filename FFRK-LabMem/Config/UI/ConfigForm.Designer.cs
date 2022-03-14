@@ -46,6 +46,12 @@ namespace FFRK_LabMem.Config.UI
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.textBoxScreenshotFolder = new System.Windows.Forms.TextBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.buttonScreenshotFolder = new System.Windows.Forms.Button();
+            this.textBoxLogFolder = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.buttonLogFolder = new System.Windows.Forms.Button();
             this.checkBoxLogging = new System.Windows.Forms.CheckBox();
             this.buttonDebug = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
@@ -256,6 +262,7 @@ namespace FFRK_LabMem.Config.UI
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonApply = new System.Windows.Forms.Button();
             this.openFileDialogSound = new System.Windows.Forms.OpenFileDialog();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScreenBottom)).BeginInit();
@@ -353,6 +360,12 @@ namespace FFRK_LabMem.Config.UI
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.textBoxScreenshotFolder);
+            this.tabPage1.Controls.Add(this.label45);
+            this.tabPage1.Controls.Add(this.buttonScreenshotFolder);
+            this.tabPage1.Controls.Add(this.textBoxLogFolder);
+            this.tabPage1.Controls.Add(this.label43);
+            this.tabPage1.Controls.Add(this.buttonLogFolder);
             this.tabPage1.Controls.Add(this.checkBoxLogging);
             this.tabPage1.Controls.Add(this.buttonDebug);
             this.tabPage1.Controls.Add(this.label12);
@@ -371,6 +384,64 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage1.Size = new System.Drawing.Size(504, 466);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
+            // 
+            // textBoxScreenshotFolder
+            // 
+            this.textBoxScreenshotFolder.Location = new System.Drawing.Point(149, 246);
+            this.textBoxScreenshotFolder.Name = "textBoxScreenshotFolder";
+            this.textBoxScreenshotFolder.Size = new System.Drawing.Size(280, 21);
+            this.textBoxScreenshotFolder.TabIndex = 16;
+            this.toolTip1.SetToolTip(this.textBoxScreenshotFolder, "Sets the folder where screenshots will be saved (if enabled)\r\nLeave blank to use " +
+        "the default folder (.)\r\n");
+            // 
+            // label45
+            // 
+            this.label45.Location = new System.Drawing.Point(-3, 246);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(146, 23);
+            this.label45.TabIndex = 15;
+            this.label45.Text = "Screenshot folder:";
+            this.label45.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonScreenshotFolder
+            // 
+            this.buttonScreenshotFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonScreenshotFolder.Image = global::FFRK_LabMem.Properties.Resources.folder;
+            this.buttonScreenshotFolder.Location = new System.Drawing.Point(437, 245);
+            this.buttonScreenshotFolder.Name = "buttonScreenshotFolder";
+            this.buttonScreenshotFolder.Size = new System.Drawing.Size(29, 23);
+            this.buttonScreenshotFolder.TabIndex = 17;
+            this.buttonScreenshotFolder.UseVisualStyleBackColor = true;
+            this.buttonScreenshotFolder.Click += new System.EventHandler(this.ButtonScreenshotFolder_Click);
+            // 
+            // textBoxLogFolder
+            // 
+            this.textBoxLogFolder.Location = new System.Drawing.Point(149, 219);
+            this.textBoxLogFolder.Name = "textBoxLogFolder";
+            this.textBoxLogFolder.Size = new System.Drawing.Size(280, 21);
+            this.textBoxLogFolder.TabIndex = 13;
+            this.toolTip1.SetToolTip(this.textBoxLogFolder, "Sets the folder where log files will be saved (if enabled)\r\nLeave blank to use th" +
+        "e default folder (.\\Logs)");
+            // 
+            // label43
+            // 
+            this.label43.Location = new System.Drawing.Point(-3, 219);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(146, 23);
+            this.label43.TabIndex = 12;
+            this.label43.Text = "Log folder:";
+            this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonLogFolder
+            // 
+            this.buttonLogFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonLogFolder.Image = global::FFRK_LabMem.Properties.Resources.folder;
+            this.buttonLogFolder.Location = new System.Drawing.Point(437, 218);
+            this.buttonLogFolder.Name = "buttonLogFolder";
+            this.buttonLogFolder.Size = new System.Drawing.Size(29, 23);
+            this.buttonLogFolder.TabIndex = 14;
+            this.buttonLogFolder.UseVisualStyleBackColor = true;
+            this.buttonLogFolder.Click += new System.EventHandler(this.ButtonLogFolder_Click);
             // 
             // checkBoxLogging
             // 
@@ -1004,9 +1075,9 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage3.Controls.Add(this.trackBarFindAccuracy);
             this.tabPage3.Controls.Add(this.trackBarTapDelay);
             this.tabPage3.Controls.Add(this.trackBarTapDuration);
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(504, 466);
+            this.tabPage3.Size = new System.Drawing.Size(504, 468);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Adb";
             // 
@@ -1333,7 +1404,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabControl1.Location = new System.Drawing.Point(3, 35);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(500, 426);
+            this.tabControl1.Size = new System.Drawing.Size(500, 424);
             this.tabControl1.TabIndex = 2;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.TabControl1_SelectedIndexChanged);
             // 
@@ -1351,7 +1422,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(492, 398);
+            this.tabPage5.Size = new System.Drawing.Size(492, 396);
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Control";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1476,7 +1547,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage15.Controls.Add(this.checkBoxLabUseLetheTears);
             this.tabPage15.Location = new System.Drawing.Point(4, 22);
             this.tabPage15.Name = "tabPage15";
-            this.tabPage15.Size = new System.Drawing.Size(492, 400);
+            this.tabPage15.Size = new System.Drawing.Size(492, 398);
             this.tabPage15.TabIndex = 6;
             this.tabPage15.Text = "Party";
             this.tabPage15.UseVisualStyleBackColor = true;
@@ -1806,7 +1877,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage8.Controls.Add(this.checkBoxLabDoors);
             this.tabPage8.Location = new System.Drawing.Point(4, 22);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(492, 400);
+            this.tabPage8.Size = new System.Drawing.Size(492, 398);
             this.tabPage8.TabIndex = 3;
             this.tabPage8.Text = "Options";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -1980,7 +2051,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(492, 400);
+            this.tabPage6.Size = new System.Drawing.Size(492, 398);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Paintings";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1991,7 +2062,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkBoxSwap.AutoSize = true;
             this.checkBoxSwap.Checked = true;
             this.checkBoxSwap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSwap.Location = new System.Drawing.Point(374, 365);
+            this.checkBoxSwap.Location = new System.Drawing.Point(374, 363);
             this.checkBoxSwap.Name = "checkBoxSwap";
             this.checkBoxSwap.Size = new System.Drawing.Size(109, 19);
             this.checkBoxSwap.TabIndex = 3;
@@ -2001,7 +2072,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveUp
             // 
             this.buttonPaintingMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 357);
+            this.buttonPaintingMoveUp.Location = new System.Drawing.Point(7, 355);
             this.buttonPaintingMoveUp.Name = "buttonPaintingMoveUp";
             this.buttonPaintingMoveUp.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveUp.TabIndex = 1;
@@ -2012,7 +2083,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonPaintingMoveDown
             // 
             this.buttonPaintingMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 357);
+            this.buttonPaintingMoveDown.Location = new System.Drawing.Point(101, 355);
             this.buttonPaintingMoveDown.Name = "buttonPaintingMoveDown";
             this.buttonPaintingMoveDown.Size = new System.Drawing.Size(87, 27);
             this.buttonPaintingMoveDown.TabIndex = 2;
@@ -2033,7 +2104,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewPaintings.HideSelection = false;
             this.listViewPaintings.Location = new System.Drawing.Point(7, 7);
             this.listViewPaintings.Name = "listViewPaintings";
-            this.listViewPaintings.Size = new System.Drawing.Size(476, 340);
+            this.listViewPaintings.Size = new System.Drawing.Size(476, 338);
             this.listViewPaintings.SmallImageList = this.imageList2;
             this.listViewPaintings.TabIndex = 0;
             this.listViewPaintings.UseCompatibleStateImageBehavior = false;
@@ -2065,7 +2136,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage7.Controls.Add(this.listViewTreasures);
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(492, 400);
+            this.tabPage7.Size = new System.Drawing.Size(492, 398);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "Treasures";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -2074,7 +2145,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(201, 363);
+            this.label9.Location = new System.Drawing.Point(201, 361);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 15);
             this.label9.TabIndex = 3;
@@ -2089,7 +2160,7 @@ namespace FFRK_LabMem.Config.UI
             "0",
             "1",
             "3"});
-            this.comboBoxKeys.Location = new System.Drawing.Point(342, 359);
+            this.comboBoxKeys.Location = new System.Drawing.Point(342, 357);
             this.comboBoxKeys.Name = "comboBoxKeys";
             this.comboBoxKeys.Size = new System.Drawing.Size(140, 23);
             this.comboBoxKeys.TabIndex = 4;
@@ -2098,7 +2169,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureUp
             // 
             this.buttonTreasureUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 357);
+            this.buttonTreasureUp.Location = new System.Drawing.Point(7, 355);
             this.buttonTreasureUp.Name = "buttonTreasureUp";
             this.buttonTreasureUp.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureUp.TabIndex = 1;
@@ -2109,7 +2180,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonTreasureDown
             // 
             this.buttonTreasureDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 357);
+            this.buttonTreasureDown.Location = new System.Drawing.Point(101, 355);
             this.buttonTreasureDown.Name = "buttonTreasureDown";
             this.buttonTreasureDown.Size = new System.Drawing.Size(87, 27);
             this.buttonTreasureDown.TabIndex = 2;
@@ -2133,7 +2204,7 @@ namespace FFRK_LabMem.Config.UI
             this.listViewTreasures.HideSelection = false;
             this.listViewTreasures.Location = new System.Drawing.Point(7, 7);
             this.listViewTreasures.Name = "listViewTreasures";
-            this.listViewTreasures.Size = new System.Drawing.Size(476, 340);
+            this.listViewTreasures.Size = new System.Drawing.Size(476, 338);
             this.listViewTreasures.SmallImageList = this.imageList2;
             this.listViewTreasures.TabIndex = 0;
             this.listViewTreasures.UseCompatibleStateImageBehavior = false;
@@ -2167,7 +2238,7 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage10.Location = new System.Drawing.Point(4, 22);
             this.tabPage10.Name = "tabPage10";
             this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(492, 400);
+            this.tabPage10.Size = new System.Drawing.Size(492, 398);
             this.tabPage10.TabIndex = 5;
             this.tabPage10.Text = "Enemies";
             this.tabPage10.UseVisualStyleBackColor = true;
@@ -2187,7 +2258,7 @@ namespace FFRK_LabMem.Config.UI
             this.dataGridViewEnemies.Location = new System.Drawing.Point(7, 6);
             this.dataGridViewEnemies.MultiSelect = false;
             this.dataGridViewEnemies.Name = "dataGridViewEnemies";
-            this.dataGridViewEnemies.Size = new System.Drawing.Size(476, 363);
+            this.dataGridViewEnemies.Size = new System.Drawing.Size(476, 361);
             this.dataGridViewEnemies.TabIndex = 5;
             this.dataGridViewEnemies.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.DataGridViewEnemies_UserDeletingRow);
             // 
@@ -2237,7 +2308,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.checkBoxLabBlockListOverride.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxLabBlockListOverride.AutoSize = true;
-            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 375);
+            this.checkBoxLabBlockListOverride.Location = new System.Drawing.Point(336, 373);
             this.checkBoxLabBlockListOverride.Name = "checkBoxLabBlockListOverride";
             this.checkBoxLabBlockListOverride.Size = new System.Drawing.Size(147, 19);
             this.checkBoxLabBlockListOverride.TabIndex = 4;
@@ -2446,7 +2517,7 @@ namespace FFRK_LabMem.Config.UI
             // buttonShowCounters
             // 
             this.buttonShowCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonShowCounters.Location = new System.Drawing.Point(6, 416);
+            this.buttonShowCounters.Location = new System.Drawing.Point(6, 414);
             this.buttonShowCounters.Name = "buttonShowCounters";
             this.buttonShowCounters.Size = new System.Drawing.Size(108, 27);
             this.buttonShowCounters.TabIndex = 4;
@@ -2464,7 +2535,7 @@ namespace FFRK_LabMem.Config.UI
             this.checkedListBoxDropCategories.IntegralHeight = false;
             this.checkedListBoxDropCategories.Location = new System.Drawing.Point(3, 61);
             this.checkedListBoxDropCategories.Name = "checkedListBoxDropCategories";
-            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 347);
+            this.checkedListBoxDropCategories.Size = new System.Drawing.Size(495, 345);
             this.checkedListBoxDropCategories.TabIndex = 3;
             // 
             // checkBoxCountersLogDropsTotal
@@ -2488,10 +2559,10 @@ namespace FFRK_LabMem.Config.UI
             this.tabPage9.Controls.Add(this.checkBoxNotificationSound);
             this.tabPage9.Controls.Add(this.buttonNotificationTest);
             this.tabPage9.Controls.Add(this.comboBoxNotificationEvents);
-            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Location = new System.Drawing.Point(4, 24);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(504, 468);
+            this.tabPage9.Size = new System.Drawing.Size(504, 466);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Notifications";
             this.tabPage9.UseVisualStyleBackColor = true;
@@ -3169,5 +3240,12 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.NumericUpDown numericUpDownHangLoopThreshold;
         private System.Windows.Forms.CheckBox checkBoxLabWaitForStamina;
+        private System.Windows.Forms.TextBox textBoxScreenshotFolder;
+        private System.Windows.Forms.Label label45;
+        internal System.Windows.Forms.Button buttonScreenshotFolder;
+        private System.Windows.Forms.TextBox textBoxLogFolder;
+        private System.Windows.Forms.Label label43;
+        internal System.Windows.Forms.Button buttonLogFolder;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }

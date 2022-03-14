@@ -73,6 +73,7 @@ namespace FFRK_Machines.Services.Adb
         public int TapDelay { get; set; } = 30;
         public int TapDuration { get; set; } = 0;
         public int TapPressure { get; set; } = 50;
+        public String ScreenshotFolder { get; set; } = "";
         public bool HasDevice
         {
             get
@@ -388,7 +389,7 @@ namespace FFRK_Machines.Services.Adb
         {
             using (var framebuffer = await GetFrame(cancellationToken))
             {
-                framebuffer.Save(fileName, ImageFormat.Png);
+                framebuffer.Save(System.IO.Path.Combine(ScreenshotFolder, fileName), ImageFormat.Png);
             }
         }
 
