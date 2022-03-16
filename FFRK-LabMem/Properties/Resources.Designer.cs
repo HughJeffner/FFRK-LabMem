@@ -161,20 +161,25 @@ namespace FFRK_LabMem.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lab_outpost {
+        internal static System.Drawing.Bitmap lab_segment {
             get {
-                object obj = ResourceManager.GetObject("lab_outpost", resourceCulture);
+                object obj = ResourceManager.GetObject("lab_segment", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to                                      ...                                      
+        ///                                 (/**(((#//*(                                   
+        ///                              //****(*  .*///*#                                 
+        ///                            ,#******(.(*% ////*(                                
+        ///                           //*******/&amp;***,.(////#                               
+        ///                          */*********%***/%,,,////                              
+        ///                          (* [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static System.Drawing.Bitmap lab_segment {
+        internal static string Tyro7 {
             get {
-                object obj = ResourceManager.GetObject("lab_segment", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("Tyro7", resourceCulture);
             }
         }
     }

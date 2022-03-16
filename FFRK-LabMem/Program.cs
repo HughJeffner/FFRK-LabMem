@@ -31,6 +31,8 @@ namespace FFRK_LabMem
             ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
             ColorConsole.LogBuffer.Enabled = config.GetBool("console.logging", false);
+            ColorConsole.LogBuffer.UpdateFolderOrDefault(config.GetString("console.logFolder", ""));
+            ColorConsole.LogBuffer.BufferSize = config.GetInt("console.logBuffer", 10);
 
             // Config arg switch
             if (args.Contains("-c"))
@@ -57,6 +59,8 @@ namespace FFRK_LabMem
                 // Ad-hoc command loop
                 Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
                 Console.WriteLine("Type ? for help");
+                Tyro.Register(controller);
+
                 while (true)
                 {
                     var key = Console.ReadKey(true);

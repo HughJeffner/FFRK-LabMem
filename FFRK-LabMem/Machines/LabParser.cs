@@ -353,6 +353,9 @@ namespace FFRK_LabMem.Machines
             // Pre-set the downloaded signal
             Lab.FatigueInfo.Set("DEFAULT");
 
+            // Reset current lab counters
+            await Counters.Reset("CurrentLab", CounterSet.DataType.All);
+
             // Parse lab info
             await ParseAllData(data, url);
 

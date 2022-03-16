@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using FFRK_Machines;
-using Microsoft.VisualBasic;
 using FFRK_LabMem.Services;
 using System.Threading;
 using System.Linq;
@@ -149,6 +148,8 @@ namespace FFRK_LabMem.Config.UI
             numericUpDownTapPressure.Value = configHelper.GetInt("adb.tapPressure", 50);
             checkBoxCountersLogDropsTotal.Checked = configHelper.GetBool("counters.logDropsToTotal", false);
             numericUpDownCountersRarity.Value = configHelper.GetInt("counters.materialsRarityFilter", 6);
+            textBoxLogFolder.Text = configHelper.GetString("console.logFolder", "");
+            textBoxScreenshotFolder.Text = configHelper.GetString("adb.screenshotFolder", "");
 
             // Load lab .json
             LoadConfigs();
@@ -240,8 +241,10 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("console.timestamps", checkBoxTimestamps.Checked);
             configHelper.SetValue("console.logging", checkBoxLogging.Checked);
             configHelper.SetValue("console.debugCategories", (short)buttonDebug.Tag);
+            configHelper.SetValue("console.logFolder", textBoxLogFolder.Text);
             ColorConsole.Timestamps = checkBoxTimestamps.Checked;
             ColorConsole.LogBuffer.Enabled = checkBoxLogging.Checked;
+            ColorConsole.LogBuffer.UpdateFolderOrDefault(textBoxLogFolder.Text);
             ColorConsole.DebugCategories = (ColorConsole.DebugCategory)buttonDebug.Tag;
 
             // Other setting
@@ -279,6 +282,7 @@ namespace FFRK_LabMem.Config.UI
             configHelper.SetValue("lab.watchdogHangScreenshot", checkBoxWatchdogScreenshot.Checked);
             configHelper.SetValue("counters.logDropsToTotal", checkBoxCountersLogDropsTotal.Checked);
             configHelper.SetValue("counters.materialsRarityFilter", numericUpDownCountersRarity.Value);
+            configHelper.SetValue("adb.screenshotFolder", textBoxScreenshotFolder.Text);
 
             // Drop categories
             Counters.DropCategory cats = 0;
@@ -408,6 +412,7 @@ namespace FFRK_LabMem.Config.UI
                 controller.Adb.TapPressure = (int)numericUpDownTapPressure.Value;
                 controller.Adb.Capture = (Adb.CaptureType)comboBoxCapture.SelectedIndex;
                 controller.Adb.Input = (Adb.InputType)comboBoxInput.SelectedIndex;
+                controller.Adb.ScreenshotFolder = textBoxScreenshotFolder.Text;
             }
 
             // Watchdog
@@ -1127,6 +1132,43 @@ namespace FFRK_LabMem.Config.UI
         private void CheckBoxBoostRestore_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownRestoreFatigue.Enabled = checkBoxBoostRestore.Checked;
+        }
+
+        private async void ComboBoxAdbHost_DropDown(object sender, EventArgs e)
+        {
+            // Get all non-tcp (usb) devices
+            var devices = (await controller.Adb.GetDevices()).Where(d => !d.Contains("."));
+
+            foreach (var item in devices)
+            {
+                if (!Lookups.AdbHosts.Any(h => h.Value.Equals(item)))
+                {
+                    Lookups.AdbHosts.Add(new AdbHostItem() { Name = $"USB", Value = item });
+                }
+            }
+
+        }
+
+        private void ButtonLogFolder_Click(object sender, EventArgs e)
+        {
+            var folder = new DirectoryInfo(Path.GetFullPath(ColorConsole.LogBuffer.LogDirectory));
+            folderBrowserDialog1.SelectedPath = folder.FullName;
+            var result = folderBrowserDialog1.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                textBoxLogFolder.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void ButtonScreenshotFolder_Click(object sender, EventArgs e)
+        {
+            var folder = new DirectoryInfo(Path.GetFullPath(String.IsNullOrEmpty(textBoxScreenshotFolder.Text)? Application.StartupPath : textBoxScreenshotFolder.Text));
+            folderBrowserDialog1.SelectedPath = folder.FullName;
+            var result = folderBrowserDialog1.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                textBoxScreenshotFolder.Text = folderBrowserDialog1.SelectedPath;
+            }
         }
     }
 }

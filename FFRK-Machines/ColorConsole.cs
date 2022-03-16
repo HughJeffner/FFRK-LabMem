@@ -269,6 +269,17 @@ namespace FFRK_Machines
 
             }
 
+            public void UpdateFolderOrDefault(String newFolder)
+            {
+                if (String.IsNullOrEmpty(newFolder))
+                {
+                    LogDirectory = @".\Logs";
+                } else
+                {
+                    LogDirectory = newFolder;
+                }
+            }
+
             public void Flush()
             {
                 // Do nothing if disabled
