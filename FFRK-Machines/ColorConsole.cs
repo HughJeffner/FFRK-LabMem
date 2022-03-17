@@ -14,8 +14,7 @@ namespace FFRK_Machines
         public static LogFileBuffer LogBuffer { get; set; } = new LogFileBuffer();
         public static DebugCategory DebugCategories { get; set; }
         private static bool stamped = false;
-        private static object stampLock = new object();
-        private static object colorLock = new object();
+        private static readonly object consoleLock = new object();
         
 
         [Flags]
@@ -31,7 +30,7 @@ namespace FFRK_Machines
 
         public static void Write(ConsoleColor color, string format, params object[] arg)
         {
-            lock (colorLock)
+            lock (consoleLock)
             {
                 var current = Console.ForegroundColor;
                 Console.ForegroundColor = color;
@@ -42,7 +41,7 @@ namespace FFRK_Machines
 
         public static void Write(ConsoleColor color, string value)
         {
-            lock (colorLock)
+            lock (consoleLock)
             {
                 var current = Console.ForegroundColor;
                 Console.ForegroundColor = color;
@@ -54,7 +53,7 @@ namespace FFRK_Machines
 
         public static void Write(string format, params object[] arg)
         {
-            lock (stampLock)
+            lock (consoleLock)
             {
                 DoTimestamp(false);
                 Console.Write(format, arg);
@@ -64,7 +63,7 @@ namespace FFRK_Machines
 
         public static void Write(string value)
         {
-            lock (stampLock)
+            lock (consoleLock)
             {
                 DoTimestamp(false);
                 Console.Write(value);
@@ -80,7 +79,7 @@ namespace FFRK_Machines
 
         public static void WriteLine(ConsoleColor color, string format, params object[] arg)
         {
-            lock (colorLock)
+            lock (consoleLock)
             {
                 var current = Console.ForegroundColor;
                 Console.ForegroundColor = color;
@@ -96,7 +95,7 @@ namespace FFRK_Machines
 
         public static void WriteLine(ConsoleColor color, string value)
         {
-            lock (colorLock)
+            lock (consoleLock)
             {
                 var current = Console.ForegroundColor;
                 Console.ForegroundColor = color;
@@ -107,7 +106,7 @@ namespace FFRK_Machines
 
         public static void WriteLine(string value)
         {
-            lock (stampLock)
+            lock (consoleLock)
             {
                 DoTimestamp(true);
                 Console.WriteLine(value);
@@ -118,7 +117,7 @@ namespace FFRK_Machines
 
         public static void WriteLine(string format, params object[] arg)
         {
-            lock (stampLock)
+            lock (consoleLock)
             {
                 DoTimestamp(true);
                 Console.WriteLine(format, arg);
@@ -133,7 +132,7 @@ namespace FFRK_Machines
             {
                 if (!stamped)
                 {
-                    lock (colorLock)
+                    lock (consoleLock)
                     {
                         var current = Console.ForegroundColor;
                         Console.ForegroundColor = ConsoleColor.DarkGray;
