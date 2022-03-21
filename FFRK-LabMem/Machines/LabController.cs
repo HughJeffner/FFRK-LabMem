@@ -31,6 +31,8 @@ namespace FFRK_LabMem.Machines
                 ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", configFilePath);
                 return ret;
             }
+            var findPrecision = config.GetDouble("adb.findPrecision", 0.5);
+            if (findPrecision < 0 || findPrecision > 1) config.SetValue("adb.findPrecision", 0.5);
 
             // Services
             await DataLogger.Initalize(config);
