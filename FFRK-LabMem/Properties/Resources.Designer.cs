@@ -121,6 +121,22 @@ namespace FFRK_LabMem.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @@
+        ///                                    @@@@@@@/                               @@% @
+        ///                           @@@@@@/           @@@@@/                      @@    @
+        ///                      @@@                            @@@              @@       @
+        ///                  @@                                     @@@       @@         @@
+        ///               @@            (@@@@@@@@@@@@@@@@@             @@@ (@(           @ 
+        ///            @@          @@@.   @@@@@         @@  .@@&amp;          @@            @@ 
+        ///          @@     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EPK {
+            get {
+                return ResourceManager.GetString("EPK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap error {

@@ -80,7 +80,7 @@ namespace FFRK_LabMem
                     if (key.Key == ConsoleKey.OemMinus) controller.SetRestartCount(-1);
                     if (key.KeyChar == '?') Console.WriteLine(Properties.Resources.HelpString);
                     if (key.Key == ConsoleKey.B) Benchmark.FrameCapture(controller);
-
+                    Tyro.ReadConsole(key);
                 }
             }
             catch(Exception ex)

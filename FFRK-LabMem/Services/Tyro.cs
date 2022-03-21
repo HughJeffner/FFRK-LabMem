@@ -11,6 +11,7 @@ namespace FFRK_LabMem.Services
     class Tyro
     {
         private static bool check7 = false;
+        private static readonly List<ConsoleKey> keyBuffer = new List<ConsoleKey>();
         private static bool Check7(LabController controller)
         {
             if (controller.Enabled)
@@ -27,11 +28,24 @@ namespace FFRK_LabMem.Services
             }
             return false;
         }
+        private static void CheckBuffer()
+        {
+            var bufferString = String.Concat(keyBuffer);
+            if (bufferString.Equals("EPK")) Console.WriteLine(Properties.Resources.EPK);
+        }
 
         public static void Register(LabController controller)
         {
             if (!Check7(controller))
                 controller.OnEnabled += (s, e) => Tyro.Check7(controller);
         }
+
+        public static void ReadConsole(ConsoleKeyInfo key)
+        {
+            keyBuffer.Add(key.Key);
+            if (keyBuffer.Count > 3) keyBuffer.RemoveAt(0);
+            CheckBuffer();
+        }
+
     }
 }
