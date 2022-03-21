@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="ColorConsole.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Machines\InvalidStateException.cs" />
     <Compile Include="Machines\Machine.cs" />
     <Compile Include="Machines\MachineConfiguration.cs" />
     <Compile Include="Machines\MachineController.cs" />

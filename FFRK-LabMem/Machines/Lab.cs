@@ -429,6 +429,25 @@ namespace FFRK_LabMem.Machines
 
         }
 
+        protected async override void OnMachineError(Exception e)
+        {
+            if (e is InvalidStateException<Trigger,State>)
+            {
+                // Notification
+                ColorConsole.WriteLine(ConsoleColor.Red, e.Message);
+                await Notify(Notifications.EventType.LAB_FAULT, "Unexpected state");
+                
+                // Handle invalid states by brute-force reset of FFRK
+                await ManualFFRKRestart(false);
+
+            }
+            else
+            {
+                base.OnMachineError(e);
+            }
+            
+        }
+
         private Task<bool> CheckDisableSafeRequested()
         {
             if (disableSafeRequested)
