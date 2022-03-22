@@ -1128,7 +1128,7 @@ namespace FFRK_LabMem.Machines
                     ColorConsole.WriteLine(ConsoleColor.DarkRed, "Restarting...");
                     await DelayedTapPct("Pre-RestartBattle", 50, 72);
                     await DelayedTapPct("Inter-RestartBattle", 25, 55);
-                    await CheckAutoBattle();
+                    _ = Task.Run(() => CheckAutoBattle());
                 }
             }
             else
@@ -1250,6 +1250,7 @@ namespace FFRK_LabMem.Machines
         {
 
             await LabTimings.Delay("Pre-CheckAutoBattle", this.CancellationToken);
+
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for auto-battle");
             List<Adb.ImageDef> items = new List<Adb.ImageDef>
             {
@@ -1264,13 +1265,31 @@ namespace FFRK_LabMem.Machines
                     // Tap it
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Auto-battle disabled, attempting to enable it now!");
                     await Adb.TapPct(9.1, 77.2, CancellationToken);
-                    return;
+                    break;
                 } else
                 {
                     ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Did not find disabled auto-battle state");
                 }
                 await Task.Delay(Adb.CaptureRate, this.CancellationToken);
             }
+
+            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for abilities and soul breaks enabled");
+            items = new List<Adb.ImageDef>
+            {
+                new Adb.ImageDef() { Image = Properties.Resources.button_a_off, Simalarity = 0.90f },
+                new Adb.ImageDef() { Image = Properties.Resources.button_s_off, Simalarity = 0.90f }
+            };
+
+            for (int i = 0; i < 8; i++)
+            {
+                var ret = await Adb.FindImages(items, 2, this.CancellationToken);
+                if (ret != null)
+                {
+                    await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, CancellationToken);
+                }
+                await Task.Delay(Adb.CaptureRate, this.CancellationToken);
+            }
+
             await LabTimings.Delay("Post-CheckAutoBattle", this.CancellationToken);
 
         }

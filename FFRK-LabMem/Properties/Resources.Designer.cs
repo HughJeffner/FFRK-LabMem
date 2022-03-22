@@ -73,6 +73,16 @@ namespace FFRK_LabMem.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap button_a_off {
+            get {
+                object obj = ResourceManager.GetObject("button_a_off", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button_android_ok {
             get {
                 object obj = ResourceManager.GetObject("button_android_ok", resourceCulture);
@@ -106,6 +116,16 @@ namespace FFRK_LabMem.Properties {
         internal static System.Drawing.Bitmap button_inventory {
             get {
                 object obj = ResourceManager.GetObject("button_inventory", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap button_s_off {
+            get {
+                object obj = ResourceManager.GetObject("button_s_off", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
