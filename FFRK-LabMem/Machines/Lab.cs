@@ -92,7 +92,6 @@ namespace FFRK_LabMem.Machines
             this.Watchdog.BattleLoop += Watchdog_BattleLoop;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
-
         }
 
         public override void ConfigureStateMachine()
@@ -375,10 +374,18 @@ namespace FFRK_LabMem.Machines
                 recoverStopwatch.Stop();
                 Watchdog.HangReset(); // Started battle indicates we not in hang state
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
-            }) ;
+            });
             Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);
             Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
-            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
+            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", async(data, url) => {
+                // Data is null during maintenance
+                if (data == null)
+                {
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Maintenance ongoing, disabling...");
+                    OnMachineFinished();
+                }
+                await parser.ParseAllData(data, url);
+            });
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
             Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
             Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (data, url) =>
