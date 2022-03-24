@@ -45,21 +45,14 @@ namespace FFRK_LabMem.Config.UI
                 
                 Task mytask = Utility.StartSTATask(async () =>
                 {
-                    // Disable Lab
-                    //if (controller.Enabled) controller.Disable();
-                    var defaultScheduler = Scheduler.Default(controller);
-                    await defaultScheduler.Stop();
-
                     var form = new ConfigForm
                     {
                         configHelper = configHelper,
                         controller = controller,
-                        scheduler = defaultScheduler,
+                        scheduler = Scheduler.Default,
                         initalTabIndex = initalTabIndex
                     };
                     form.ShowDialog();
-
-                    await defaultScheduler.Start();
 
                 });
             }
@@ -390,7 +383,7 @@ namespace FFRK_LabMem.Config.UI
                 var schedule = (Scheduler.Schedule)item.Tag;
                 scheduler.Schedules.Add(schedule);
             }
-            await scheduler.Save();
+            _ = scheduler.Save(); // No await here or it causes a deadlock on the UI thread
 
             // Save Notifications
             ComboBoxNotificationEvents_SelectedIndexChanged(sender, e);

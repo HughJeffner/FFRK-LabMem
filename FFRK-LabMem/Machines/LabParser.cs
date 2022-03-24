@@ -292,8 +292,10 @@ namespace FFRK_LabMem.Machines
             await Task.CompletedTask;
         }
 
-        public async Task ParseAllData(JObject data, string url)
+        public Task<bool> ParseAllData(JObject data, string url)
         {
+            if (data == null) return Task.FromResult(false);
+
             // Dungeon info
             var info = data["labyrinth_dungeon"];
             if (info != null)
@@ -315,8 +317,8 @@ namespace FFRK_LabMem.Machines
             // Potions info
             var potions = data["user_stamina_recovery_agents"];
             if (potions != null) Lab.StaminaInfo.Potions = (int)potions[0]["num"];
-   
-            await Task.CompletedTask;
+
+            return Task.FromResult(true);
         }
 
         public async Task ParseQEData(JObject data, string url)

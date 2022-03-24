@@ -17,22 +17,31 @@ namespace FFRK_LabMem.Services
         private const string CONFIG_PATH = "./Config/schedules.json";
 
         private static Scheduler _instance = null;
-
-        StdSchedulerFactory factory = new StdSchedulerFactory();
+        readonly StdSchedulerFactory factory = new StdSchedulerFactory();
         IScheduler scheduler;
         IJobDetail job;
 
         public List<Schedule> Schedules { get; set; }
+        public int MaintenanceDoneHourUtc { get; set; } = 13;
 
         private Scheduler(LabController controller)
         {
             _ = Initalize(controller);
         }
 
-        public static Scheduler Default(LabController controller)
+        public static async Task Init(LabController controller)
         {
-            if (_instance == null) _instance = new Scheduler(controller);
-            return _instance;
+            _instance = new Scheduler(controller);
+            await _instance.Start();
+        }
+
+        public static Scheduler Default
+        {
+            get
+            {
+                if (_instance == null) throw new InvalidOperationException("Please call Init before using the default instance property");
+                return _instance;
+            }
         }
 
         private async Task Initalize(LabController controller)
@@ -114,7 +123,7 @@ namespace FFRK_LabMem.Services
             if (Schedules.Count > 0)
             {
                 // Need a delay before getting the next trigger time so any misfires can be handled and triggers get updated accordingly
-                await Task.Delay(50);
+                await Task.Delay(50).ConfigureAwait(false);
 
                 // Get all triggers for our job and filter out the next one
                 var triggs = await scheduler.GetTriggersOfJob(job.Key);
@@ -147,8 +156,40 @@ namespace FFRK_LabMem.Services
 
         public async Task Save()
         {
+            // Stop temporarily while we save
+            await Stop();
+
+            // Persist to disk
             File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(this.Schedules, Formatting.Indented));
-            await Task.CompletedTask;
+
+            // Re-start
+            await Start();
+        }
+
+        public async Task AddPostMaintenanceSchedule()
+        {
+
+            // Return if option invalid or disabled
+            if (this.MaintenanceDoneHourUtc < 0 || this.MaintenanceDoneHourUtc > 23) return;
+
+            var nowUtc = DateTime.UtcNow;
+            var maintenanceDoneUtc = new DateTime(nowUtc.Year, nowUtc.Month, nowUtc.Day, this.MaintenanceDoneHourUtc, 0, 0, 0, DateTimeKind.Utc);
+            var name = $"Post-Maintenance ({nowUtc.ToShortDateString()})";
+
+            // Return if in the past or already added
+            if (maintenanceDoneUtc < nowUtc || this.Schedules.Any(s => s.Name.Equals(name))) return;
+
+            this.Schedules.Add(new Schedule()
+            {
+                Name = name,
+                EnableDate = maintenanceDoneUtc.ToLocalTime(),
+                EnableHardStart = true,
+                EnableEnabled = true,
+                DisableDate = DateTime.Now
+            });
+
+            await Save();
+
         }
 
         public class Schedule

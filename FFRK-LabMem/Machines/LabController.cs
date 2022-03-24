@@ -81,8 +81,9 @@ namespace FFRK_LabMem.Machines
             }
 
             // Scheduler
-            await Services.Scheduler.Default(ret).Start();
-            
+            await Services.Scheduler.Init(ret);
+            Services.Scheduler.Default.MaintenanceDoneHourUtc = config.GetInt("scheduler.maintenanceDoneHourUtc", 13);
+
             return ret;
         }
         protected override Lab CreateMachine(LabConfiguration config)
