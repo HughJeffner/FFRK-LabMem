@@ -73,6 +73,7 @@ namespace FFRK_Machines.Services.Adb
                     await client.ExecuteRemoteCommandAsync(cmd, device, null, minicapTaskToken, 0);
                 }
                 catch (OperationCanceledException) { }
+                catch (SharpAdbClient.Exceptions.ShellCommandUnresponsiveException) { }
                 catch (Exception ex)
                 {
                     ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
