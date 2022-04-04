@@ -30,10 +30,11 @@ Compression=lzma
 SolidCompression=yes
 AppendDefaultDirName=False
 WizardStyle=modern
-CloseApplications=force
+CloseApplications=no
 UsedUserAreasWarning=no
 SetupIconFile=setup.ico
 UninstallDisplayIcon={app}\FFRK-LabMem.exe
+RestartApplications=False
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

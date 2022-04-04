@@ -110,7 +110,7 @@ namespace FFRK_Machines.Machines
             // Invalid state handling
             StateMachine.OnUnhandledTrigger((state, trigger) =>
             {
-                OnMachineError(new InvalidOperationException(string.Format("Trigger {0} not permitted for state {1}", trigger, state)));
+                OnMachineError(new InvalidStateException<T,S>(trigger, state));
             });
 
             // Console output

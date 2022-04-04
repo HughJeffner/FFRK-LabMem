@@ -92,7 +92,6 @@ namespace FFRK_LabMem.Machines
             this.Watchdog.BattleLoop += Watchdog_BattleLoop;
             this.parser = new LabParser(this);
             this.selector = new LabSelector(this);
-
         }
 
         public override void ConfigureStateMachine()
@@ -375,10 +374,18 @@ namespace FFRK_LabMem.Machines
                 recoverStopwatch.Stop();
                 Watchdog.HangReset(); // Started battle indicates we not in hang state
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
-            }) ;
+            });
             Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);
             Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
-            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", parser.ParseAllData);
+            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", async(data, url) => {
+                if (!await parser.ParseAllData(data, url))
+                {
+                    // Data is null during maintenance
+                    ColorConsole.WriteLine(ConsoleColor.Red, "Maintenance ongoing, disabling...");
+                    await Services.Scheduler.Default.AddPostMaintenanceSchedule();
+                    OnMachineFinished();
+                }
+            });
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
             Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
             Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (data, url) =>
@@ -427,6 +434,25 @@ namespace FFRK_LabMem.Machines
 
             await parser.ParseDataChanged(data);
 
+        }
+
+        protected async override void OnMachineError(Exception e)
+        {
+            if (e is InvalidStateException<Trigger,State>)
+            {
+                // Notification
+                ColorConsole.WriteLine(ConsoleColor.Red, e.Message);
+                await Notify(Notifications.EventType.LAB_FAULT, "Unexpected state");
+                
+                // Handle invalid states by brute-force reset of FFRK
+                await ManualFFRKRestart(false);
+
+            }
+            else
+            {
+                base.OnMachineError(e);
+            }
+            
         }
 
         private Task<bool> CheckDisableSafeRequested()

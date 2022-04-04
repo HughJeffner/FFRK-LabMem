@@ -176,6 +176,8 @@
     <None Include="Resources\button_skip.bmp" />
     <None Include="Resources\battle_commands.bmp" />
     <Content Include="Resources\button_android_ok.bmp" />
+    <None Include="Resources\button_a_off.bmp" />
+    <None Include="Resources\button_s_off.bmp" />
     <Content Include="Resources\drop.ico" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\error.png" />

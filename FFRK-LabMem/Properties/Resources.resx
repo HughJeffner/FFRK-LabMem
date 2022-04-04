@@ -124,6 +124,9 @@
   <data name="button_android_ok" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_android_ok.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="button_a_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button_a_off.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="button_blue_play" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_blue_play.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -135,6 +138,53 @@
   </data>
   <data name="button_skip" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\button_skip.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_s_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button_s_off.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EPK" xml:space="preserve">
+    <value>@@
+                                    @@@@@@@/                               @@% @
+                           @@@@@@/           @@@@@/                      @@    @
+                      @@@                            @@@              @@       @
+                  @@                                     @@@       @@         @@
+               @@            (@@@@@@@@@@@@@@@@@             @@@ (@(           @ 
+            @@          @@@.   @@@@@         @@  .@@&amp;          @@            @@ 
+          @@         @@   @@@@@@@@@@@###*   @@@@@@@@ .@@        @.          @@  
+        @@        @@       @@@@@@@@@@@@@@@@@@@@@@@@@@@  *@@   @@            @   
+       @@       @@       @@@@@@@@@@@@@@@@@@@@@@@@@@@@      @@@             @    
+      @@      @@  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   @@         @@@  @     
+     @@      @@ @@@@@@@@@@@@@@@@%            @@@@@@@@@@@@@         @@  @@@      
+    @@      @@ @@@@@@@@@@@@@@                   @@@@@@@         @@      @       
+    @      @@  @@@@@@@@@@@@@                      @@@         @@@       #@      
+   @@      @      @@@@@@@@#                     @@         @@@@@@@       @      
+   @@      @     @@@@@@@@@                   @@#        @@@@     @       @@     
+   @&amp;      @     @@@@@@@@@                @@@        /@@@@@@     @       @@     
+   @@      @  @@@@@@@@@@@@             @@@        &amp;@@@@@@@@@    @@       @      
+   (@      @@ @@@@@@@@@@@@@         @@         @@@@@@@@@@@@@@@  @       %@      
+    @,      @* @@@@@@@@@@@@@@   %@@         @@,  @@@@@@@@@@@@@ @@       @@      
+     @       @@ @@@@@@@@@@@@@@@/        @@@  ,@@@@@@@@@@@@@@@ @@       @@       
+     #@       @@     @@@@@@@        *@@@@@@@@@@@@@@@@@@@@@@@ @@       @@        
+       @        @@   @@@        #@@@@@@@@@@@@@@@@@@@@      @@        @@         
+     @@ @@       *@@        @@@@@@@@@@@@@@@@@@@@@@       @@         @/          
+   #@  @@ @(        @@&amp;%@@@@@@@@@@@@@@@@@@@@@@@@@@@   /@@         @@            
+  @@  @ &amp;@@&amp;@@         @@@&amp;  @@@         @@@@@@.   @@@          @@              
+ @         /@@@@            @@@@@%         (@@@@@            %@.                
+ @@@@@@@@        @@                                       @@(                   
+                    /@@@                              @@@                       
+                          @@@@/                @@@@@                            
+                                @@@@@@@@@@@@@/
+    ________   ____                       
+   / ____/ /  / __ \_______  __           
+  / __/ / /  / /_/ / ___/ / / /           
+ / /___/ /  / ____(__  ) /_/ /            
+/_____/_/  /_/   /____/\__, /             
+    __ __             /____/              
+   / //_/___  ____  ____ __________  ____ 
+  / ,&lt; / __ \/ __ \/ __ `/ ___/ __ \/ __ \
+ / /| / /_/ / / / / /_/ / /  / /_/ / /_/ /
+/_/ |_\____/_/ /_/\__, /_/   \____/\____/ 
+                 /____/</value>
   </data>
   <data name="error" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
