@@ -956,7 +956,7 @@ namespace FFRK_LabMem.Machines
 
                 // Brown use potion button
                 Adb.FindButtonResult staminaButton = null;
-                if (Config.UsePotions && (staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 0, this.CancellationToken)) != null)
+                if (Config.UsePotions && (staminaButton = await Adb.FindButton(BUTTON_BROWN, 2000, 50, 36, 50, 0, this.CancellationToken, -1, 0)) != null)
                 {
                     // Select potions
                     await Adb.TapPct(staminaButton.button.Item1, staminaButton.button.Item2, this.CancellationToken);
