@@ -229,6 +229,9 @@ namespace FFRK_LabMem.Machines
             // Message only if not from self
             if (sender != this) ColorConsole.WriteLine(ConsoleColor.DarkRed, "{0} detected!", e.Type);
 
+            // Auto-battle check for wait mode
+            if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.LongBattle) await CheckAutoBattle();
+            
             // Counters
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Crash) await Counters.FFRKCrashed();
             if (e.Type == LabWatchdog.WatchdogEventArgs.TYPE.Hang) await Counters.FFRKHang(Watchdog.Config.HangWarningSeconds > 0);
