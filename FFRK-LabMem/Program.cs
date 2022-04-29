@@ -104,8 +104,9 @@ namespace FFRK_LabMem
             // Kill adb option
             if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
 
-            // Flush log file buffer
+            // Flush buffers
             ColorConsole.LogBuffer.Flush();
+            Data.Counters.Flush().Wait();
         }
 
     }
