@@ -81,6 +81,7 @@ namespace FFRK_LabMem.Machines
                 items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_inventory, Simalarity = 0.90f });
                 items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_skip, Simalarity = 0.90f });
                 items.Add(new Adb.ImageDef() { Image = Properties.Resources.lab_segment, Simalarity = 0.85f });
+                if (Data == null) items.Add(new Adb.ImageDef() { Image = Properties.Resources.button_blue_enter, Simalarity = 0.95f });
 
                 // Find
                 var ret = await Adb.FindImages(items, 3, this.CancellationToken);
@@ -107,6 +108,12 @@ namespace FFRK_LabMem.Machines
                     if (ret.Equals(items[2]))
                     {
                         await Adb.TapPct(ret.Location.Item1, ret.Location.Item2, this.CancellationToken);
+                    }
+
+                    // Lab enter
+                    if (ret.Equals(items[3]))
+                    {
+                        await RestartLab(DateTime.Now.AddSeconds(-1));
                     }
 
                     ColorConsole.WriteLine(ConsoleColor.DarkGray, "Auto-start complete, Have fun!");
