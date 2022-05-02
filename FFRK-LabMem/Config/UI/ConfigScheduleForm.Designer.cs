@@ -61,6 +61,7 @@ namespace FFRK_LabMem.Config.UI
             this.dateTimePickerDisable = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
+            this.checkBoxForceStart = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.flowLayoutPanelEnable.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -71,7 +72,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(396, 427);
+            this.buttonCancel.Location = new System.Drawing.Point(396, 452);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 29);
             this.buttonCancel.TabIndex = 5;
@@ -82,7 +83,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOk.Location = new System.Drawing.Point(315, 427);
+            this.buttonOk.Location = new System.Drawing.Point(315, 452);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(75, 29);
             this.buttonOk.TabIndex = 4;
@@ -138,6 +139,7 @@ namespace FFRK_LabMem.Config.UI
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.checkBoxForceStart);
             this.groupBox1.Controls.Add(this.flowLayoutPanelEnable);
             this.groupBox1.Controls.Add(this.checkBoxHardStart);
             this.groupBox1.Controls.Add(this.comboBoxEnableRepeat);
@@ -146,7 +148,7 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox1.Controls.Add(this.dateTimePickerEnable);
             this.groupBox1.Location = new System.Drawing.Point(13, 37);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(458, 186);
+            this.groupBox1.Size = new System.Drawing.Size(458, 207);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Start Options";
@@ -260,7 +262,7 @@ namespace FFRK_LabMem.Config.UI
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.dateTimePickerDisable);
-            this.groupBox2.Location = new System.Drawing.Point(13, 229);
+            this.groupBox2.Location = new System.Drawing.Point(12, 260);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(458, 186);
             this.groupBox2.TabIndex = 12;
@@ -428,13 +430,24 @@ namespace FFRK_LabMem.Config.UI
             this.textBoxName.Size = new System.Drawing.Size(365, 20);
             this.textBoxName.TabIndex = 14;
             // 
+            // checkBoxForceStart
+            // 
+            this.checkBoxForceStart.AutoSize = true;
+            this.checkBoxForceStart.Enabled = false;
+            this.checkBoxForceStart.Location = new System.Drawing.Point(17, 179);
+            this.checkBoxForceStart.Name = "checkBoxForceStart";
+            this.checkBoxForceStart.Size = new System.Drawing.Size(162, 17);
+            this.checkBoxForceStart.TabIndex = 13;
+            this.checkBoxForceStart.Text = "Force start if already enabled";
+            this.checkBoxForceStart.UseVisualStyleBackColor = true;
+            // 
             // ConfigScheduleForm
             // 
             this.AcceptButton = this.buttonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(483, 468);
+            this.ClientSize = new System.Drawing.Size(483, 493);
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.groupBox2);
@@ -495,5 +508,6 @@ namespace FFRK_LabMem.Config.UI
         private System.Windows.Forms.DateTimePicker dateTimePickerDisable;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxName;
+        private System.Windows.Forms.CheckBox checkBoxForceStart;
     }
 }

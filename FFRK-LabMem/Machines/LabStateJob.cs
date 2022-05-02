@@ -18,18 +18,18 @@ namespace FFRK_LabMem.Machines
             JobDataMap dataMap = context.MergedJobDataMap;
             var enabled = dataMap.GetBoolean("enabled");
             var controller = (LabController)dataMap["controller"];
-
+            var schedule = (Services.Scheduler.Schedule)dataMap["schedule"];
 
             try
             {
                 if (enabled)
                 {
-                    if (controller.Enabled)
+                    if (controller.Enabled && !schedule.EnableForceStart)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "LabMem already running for schedule: {0}", context.Trigger.Description);
                         return;
                     }
-                    if (dataMap.GetBoolean("hardstart"))
+                    if (schedule.EnableHardStart)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Green, "Restarting FFRK due to schedule: {0}", context.Trigger.Description);
                         controller.Enable();
@@ -47,7 +47,7 @@ namespace FFRK_LabMem.Machines
                         ColorConsole.WriteLine(ConsoleColor.Yellow, "LabMem already stopped for schedule: {0}", context.Trigger.Description);
                         return;
                     }
-                    if (dataMap.GetBoolean("closeapp"))
+                    if (schedule.DisableCloseApp)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Red, "Closing FFRK due to schedule: {0}", context.Trigger.Description);
                         controller.Disable();

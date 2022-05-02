@@ -57,6 +57,7 @@ namespace FFRK_LabMem.Config.UI
             comboBoxEnableRepeat.SelectedIndex = GetRepeatType(schedule.EnableCronTab);
             SetCheckBoxes(flowLayoutPanelEnable, schedule.EnableCronTab);
             checkBoxHardStart.Checked = schedule.EnableHardStart;
+            checkBoxForceStart.Checked = schedule.EnableForceStart;
 
             dateTimePickerDisable.Value = schedule.DisableDate;
             dateTimePickerDisable.Checked = schedule.DisableEnabled;
@@ -70,6 +71,7 @@ namespace FFRK_LabMem.Config.UI
             comboBoxEnableRepeat.Enabled = dateTimePickerEnable.Checked;
             flowLayoutPanelEnable.Enabled = dateTimePickerEnable.Checked && comboBoxEnableRepeat.SelectedIndex == 2;
             checkBoxHardStart.Enabled = dateTimePickerEnable.Checked;
+            checkBoxForceStart.Enabled = dateTimePickerEnable.Checked;
 
             comboBoxDisableRepeat.Enabled = dateTimePickerDisable.Checked;
             flowLayoutPanelDisable.Enabled = dateTimePickerDisable.Checked && comboBoxDisableRepeat.SelectedIndex == 2;
@@ -139,6 +141,7 @@ namespace FFRK_LabMem.Config.UI
             schedule.EnableEnabled = dateTimePickerEnable.Checked;
             schedule.EnableDate = dateTimePickerEnable.Value.AddSeconds(-dateTimePickerEnable.Value.Second);
             schedule.EnableHardStart = checkBoxHardStart.Checked;
+            schedule.EnableForceStart = checkBoxForceStart.Checked;
             schedule.EnableCronTab = GetCron(comboBoxEnableRepeat.SelectedIndex, flowLayoutPanelEnable, dateTimePickerEnable.Value);
 
             schedule.DisableEnabled = dateTimePickerDisable.Checked;
