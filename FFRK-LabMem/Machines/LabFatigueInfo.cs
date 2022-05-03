@@ -90,6 +90,20 @@ namespace FFRK_LabMem.Machines
             Set("TEARS");
         }
 
+        public List<int> UnitsOverThreshold(int selectedPartyIndex, byte selectedUnits, int fatigueThreshold)
+        {
+
+            // No data
+            if (selectedPartyIndex >= this.Count) return new List<int>();
+
+            // Any of the specified units for the party above threshold?
+            return this[selectedPartyIndex].Where(buddy =>
+            (selectedUnits & (1 << 4 - this[selectedPartyIndex].IndexOf(buddy))) != 0 &&
+                buddy.Fatigue >= fatigueThreshold
+            ).Select(r => this[selectedPartyIndex].IndexOf(r)).ToList();
+
+        }
+
         public bool IsOverThreshold(int selectedPartyIndex, List<byte> selectedUnits, int fatigueThreshold)
         {
             // No data
