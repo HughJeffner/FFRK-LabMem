@@ -982,6 +982,12 @@ namespace FFRK_LabMem.Machines
                 {
                     ColorConsole.WriteLine(ConsoleColor.Yellow, "Not enough stamina!");
                     await Notify(Notifications.EventType.LAB_FAULT, "Out of stamina");
+
+                    // Back out to main screen
+                    await Adb.NavigateBack(this.CancellationToken);
+                    await Task.Delay(500, this.CancellationToken);
+                    await Adb.NavigateBack(this.CancellationToken);
+
                     OnMachineFinished();
                 }
 
