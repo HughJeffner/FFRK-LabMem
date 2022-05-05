@@ -53,6 +53,7 @@ namespace FFRK_LabMem.Config.UI
                         initalTabIndex = initalTabIndex
                     };
                     form.ShowDialog();
+                    await Task.CompletedTask;
 
                 });
             }

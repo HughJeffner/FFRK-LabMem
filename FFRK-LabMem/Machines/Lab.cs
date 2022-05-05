@@ -347,41 +347,41 @@ namespace FFRK_LabMem.Machines
         public override void RegisterWithProxy(Proxy Proxy)
         {
             Proxy.AddRegistration("get_display_paintings", parser.ParseDisplayPaintings);
-            Proxy.AddRegistration("select_painting", async (data, url) =>
+            Proxy.AddRegistration("select_painting", async (args) =>
             {
                 await Adb.StopTaps();
-                await parser.ParsePainting(data, url);
+                await parser.ParsePainting(args);
             });
             Proxy.AddRegistration("choose_explore_painting", parser.ParsePainting);
-            Proxy.AddRegistration("open_treasure_chest", async (data, url) =>
+            Proxy.AddRegistration("open_treasure_chest", async (args) =>
             {
-                this.Data = data;
+                this.Data = args.Data;
                 await this.StateMachine.FireAsync(Trigger.FoundTreasure);
             });
-            Proxy.AddRegistration("dungeon_recommend_info", async(data, url) => 
+            Proxy.AddRegistration("dungeon_recommend_info", async(args) => 
             {
                 await Adb.StopTaps();
                 if (this.Data != null) await this.StateMachine.FireAsync(Trigger.PickedCombatant); 
             });
-            Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(data, url) => 
+            Proxy.AddRegistration("labyrinth/[0-9]+/win_battle", async(args) => 
             {
-                this.Data = data;
+                this.Data = args.Data;
                 // Prevent unexpected state change if error present
-                if (data["error"] == null) await this.StateMachine.FireAsync(Trigger.BattleSuccess);
+                if (args.Data["error"] == null) await this.StateMachine.FireAsync(Trigger.BattleSuccess);
             });
-            Proxy.AddRegistration("continue/get_info", async(data, url) =>
+            Proxy.AddRegistration("continue/get_info", async(args) =>
             {
                 await this.StateMachine.FireAsync(Trigger.BattleFailed);
             });
-            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(data, url) => {
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_battle_init_data", async(args) => {
                 recoverStopwatch.Stop();
                 Watchdog.HangReset(); // Started battle indicates we not in hang state
                 await this.StateMachine.FireAsync(Trigger.StartBattle);
             });
             Proxy.AddRegistration("labyrinth/party/list", parser.ParsePartyList);
             Proxy.AddRegistration("labyrinth/buddy/info", parser.ParseFatigueInfo);
-            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", async(data, url) => {
-                if (!await parser.ParseAllData(data, url))
+            Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", async(args) => {
+                if (!await parser.ParseAllData(args))
                 {
                     // Data is null during maintenance
                     ColorConsole.WriteLine(ConsoleColor.Red, "Maintenance ongoing, disabling...");
@@ -391,7 +391,7 @@ namespace FFRK_LabMem.Machines
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
             Proxy.AddRegistration("labyrinth/[0-9]+/enter_labyrinth_dungeon", parser.ParseEnterLab);
-            Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (data, url) =>
+            Proxy.AddRegistration("labyrinth/[0-9]+/get_data", async (args) =>
             {
                 await this.StateMachine.FireAsync(Trigger.EnteredOutpost);
             });

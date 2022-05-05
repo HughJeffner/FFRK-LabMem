@@ -146,7 +146,12 @@ namespace FFRK_Machines.Machines
                             }
                         }
                     }
-                    await item.Registration.Handler(data, item.Registration.UrlMatch.ToString());
+                    await item.Registration.Handler(new Proxy.RegistrationHandlerArgs()
+                    {
+                        Data = data,
+                        Url = item.Registration.UrlMatch.ToString(),
+                        Body = item.Body
+                    });
 
                 }
                 catch (OperationCanceledException) { }
