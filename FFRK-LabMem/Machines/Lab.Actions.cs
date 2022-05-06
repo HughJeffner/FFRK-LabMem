@@ -847,7 +847,13 @@ namespace FFRK_LabMem.Machines
                 var duration = atTime.Value - DateTime.Now;
                 await RestartLabCountdown(duration);
 
-            } else
+            } 
+            else if (this.Data == null)
+            {
+                // Small countdown if just starting
+                await RestartLabCountdown(TimeSpan.FromSeconds(5));
+            }
+            else
             {
                 // Timing-based countdown
                 await RestartLabCountdown(await LabTimings.GetTimeSpan("Pre-RestartLab"));
@@ -859,16 +865,20 @@ namespace FFRK_LabMem.Machines
             ColorConsole.WriteLine("Restarting Lab");
 
             // Dungeon Complete
-            ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing dungeon complete dialog");
-            var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 5);
-            if (closeButton != null)
+            if (this.Data != null)
             {
-                await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
-            } else
-            {
-                ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Dungeon complete dialog not present");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Dismissing dungeon complete dialog");
+                var closeButton = await DelayedFindButton("Inter-RestartLab", BUTTON_BROWN, 2000, 39, 81, 91, 5);
+                if (closeButton != null)
+                {
+                    await Adb.TapPct(closeButton.Item1, closeButton.Item2, this.CancellationToken);
+                }
+                else
+                {
+                    ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Dungeon complete dialog not present");
+                }
             }
-
+            
             // Mission Complete
             Watchdog.Kick(true);
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Checking for mission complete dialog");
