@@ -178,6 +178,7 @@
     <Content Include="Resources\button_android_ok.bmp" />
     <None Include="Resources\button_a_off.bmp" />
     <None Include="Resources\button_s_off.bmp" />
+    <None Include="Resources\button_blue_enter.bmp" />
     <Content Include="Resources\drop.ico" />
     <None Include="Resources\folder.png" />
     <None Include="Resources\error.png" />

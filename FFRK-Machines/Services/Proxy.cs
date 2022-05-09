@@ -34,7 +34,14 @@ namespace FFRK_Machines.Services
         public class Registration
         {
             public Regex UrlMatch { get; set; }
-            public Func<JObject,string,Task> Handler { get; set; }
+            public Func<RegistrationHandlerArgs,Task> Handler { get; set; }
+        }
+
+        public class RegistrationHandlerArgs
+        {
+            public JObject Data { get; set; }
+            public string Url { get; set; }
+            public string Body { get; set; }
         }
 
         public class ProxyEventArgs{
@@ -115,7 +122,7 @@ namespace FFRK_Machines.Services
             proxyServer.Stop();
         }
 
-        public void AddRegistration(string UrlMatch, Func<JObject,string,Task> handler)
+        public void AddRegistration(string UrlMatch, Func<RegistrationHandlerArgs,Task> handler)
         {
             this.Registrations.Add(new Registration(){ 
                 UrlMatch = new Regex(UrlMatch),

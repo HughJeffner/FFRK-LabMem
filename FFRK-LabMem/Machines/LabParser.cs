@@ -2,12 +2,12 @@
 using FFRK_Machines;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static FFRK_LabMem.Machines.Lab;
+using static FFRK_Machines.Services.Proxy;
 
 namespace FFRK_LabMem.Machines
 {
@@ -85,16 +85,16 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public async Task ParseDisplayPaintings(JObject data, String url)
+        public async Task ParseDisplayPaintings(RegistrationHandlerArgs args)
         {
 
             // Handle error
-            if (await CheckError(data)) return;
+            if (await CheckError(args.Data)) return;
 
-            Lab.Data = data;
+            Lab.Data = args.Data;
 
             // Status
-            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
+            var status = args.Data["labyrinth_dungeon_session"]["current_painting_status"];
             if (status != null && (int)status == 0)
             {
                 await Lab.StateMachine.FireAsync(Trigger.ResetState);
@@ -118,28 +118,28 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public async Task ParsePainting(JObject data, string url)
+        public async Task ParsePainting(RegistrationHandlerArgs args)
         {
 
             // Handle error
-            if (await CheckError(data)) return;
+            if (await CheckError(args.Data)) return;
 
             // Final portal completes dungeon
-            if (data["labyrinth_dungeon_result"] != null)
+            if (args.Data["labyrinth_dungeon_result"] != null)
             {
                 await Lab.StateMachine.FireAsync(Trigger.FinishedLab);
                 return;
             }
 
             // Data
-            Lab.Data = data;
+            Lab.Data = args.Data;
 
             // Event results
-            var eventdata = data["labyrinth_dungeon_session"]["explore_painting_event"];
-            var status = data["labyrinth_dungeon_session"]["current_painting_status"];
+            var eventdata = args.Data["labyrinth_dungeon_session"]["explore_painting_event"];
+            var status = args.Data["labyrinth_dungeon_session"]["current_painting_status"];
 
             // Data logging
-            await DataLogger.LogExploreRate(Lab, eventdata, status, url.Contains("choose_explore_painting"));
+            await DataLogger.LogExploreRate(Lab, eventdata, status, args.Url.Contains("choose_explore_painting"));
 
             // Check status first
             if (status != null && (int)status == 0)
@@ -196,11 +196,11 @@ namespace FFRK_LabMem.Machines
                         break;
                     case 5:  // Spring
                         ColorConsole.WriteLine("Discovered a mysterious spring");
-                        ParseAbrasionMap(data);
+                        ParseAbrasionMap(args.Data);
                         await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
                     case 10: // Fatigue
-                        ParseAbrasionMap(data);
+                        ParseAbrasionMap(args.Data);
                         ColorConsole.WriteLine("Strayed into an area teeming with twisted memories");
                         await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                         break;
@@ -216,14 +216,14 @@ namespace FFRK_LabMem.Machines
             }
 
             // Abrasion map presence
-            if (ParseAbrasionMap(data))
+            if (ParseAbrasionMap(args.Data))
             {
                 await Lab.StateMachine.FireAsync(Trigger.FoundThing);
                 return;
             }
 
             // Last buffs presence
-            var lastAddonRM = data["labyrinth_dungeon_session"]["last_addon_record_materia"];
+            var lastAddonRM = args.Data["labyrinth_dungeon_session"]["last_addon_record_materia"];
             if (lastAddonRM != null)
             {
                 await Lab.StateMachine.FireAsync(Trigger.FoundThing);
@@ -232,11 +232,11 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public async Task ParsePartyList(JObject data, string url)
+        public async Task ParsePartyList(RegistrationHandlerArgs args)
         {
 
             // If we have party data
-            var parties = data["parties"];
+            var parties = args.Data["parties"];
             if (parties != null)
             {
                 eventPartyList.Reset();
@@ -276,9 +276,9 @@ namespace FFRK_LabMem.Machines
             return true;
         }
 
-        public async Task ParseFatigueInfo(JObject data, string url)
+        public async Task ParseFatigueInfo(RegistrationHandlerArgs args)
         {
-            var values = (JArray)data["labyrinth_buddy_info"]["memory_abrasions"];
+            var values = (JArray)args.Data["labyrinth_buddy_info"]["memory_abrasions"];
             if (values != null)
             {
                 eventPartyList.WaitOne(TimeSpan.FromSeconds(10));
@@ -292,12 +292,12 @@ namespace FFRK_LabMem.Machines
             await Task.CompletedTask;
         }
 
-        public Task<bool> ParseAllData(JObject data, string url)
+        public Task<bool> ParseAllData(RegistrationHandlerArgs args)
         {
-            if (data == null) return Task.FromResult(false);
+            if (args.Data == null) return Task.FromResult(false);
 
             // Dungeon info
-            var info = data["labyrinth_dungeon"];
+            var info = args.Data["labyrinth_dungeon"];
             if (info != null)
             {
                 Counters.SetCurrentLab(info["node_id"].ToString(), info["name"].ToString());
@@ -311,23 +311,23 @@ namespace FFRK_LabMem.Machines
             }
 
             // Stamina info
-            var user = data["user"];
+            var user = args.Data["user"];
             if (user != null) Lab.StaminaInfo.SetStamina((int)user["stamina_recovery_remaining_time"], (int)user["max_stamina"]);
             
             // Potions info
-            var potions = data["user_stamina_recovery_agents"];
+            var potions = args.Data["user_stamina_recovery_agents"];
             if (potions != null) Lab.StaminaInfo.Potions = (int)potions[0]["num"];
 
             return Task.FromResult(true);
         }
 
-        public async Task ParseQEData(JObject data, string url)
+        public async Task ParseQEData(RegistrationHandlerArgs args)
         {
 
-            var node = data["current_node"];
+            var node = args.Data["current_node"];
             if (node != null)
             {
-                Lab.Data = data;
+                Lab.Data = args.Data;
                 await Counters.QuickExplore(node["id"].ToString(), node["name"].ToString());
                 ColorConsole.WriteLine(ConsoleColor.Green, $"Quick Explore: {node["name"]}");
                 await DataLogger.LogQEDrops(Lab);
@@ -337,7 +337,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public async Task ParseEnterLab(JObject data, string url)
+        public async Task ParseEnterLab(RegistrationHandlerArgs args)
         {
             // Update or create fatigue info
             if (Lab.FatigueInfo.Count == 3)
@@ -359,7 +359,7 @@ namespace FFRK_LabMem.Machines
             await Counters.Reset("CurrentLab", CounterSet.DataType.All);
 
             // Parse lab info
-            await ParseAllData(data, url);
+            await ParseAllData(args);
 
         }
 

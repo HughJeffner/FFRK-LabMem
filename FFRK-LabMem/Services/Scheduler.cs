@@ -56,7 +56,6 @@ namespace FFRK_LabMem.Services
                 .StoreDurably(true)
                 .Build();
             job.JobDataMap.Put("controller", controller);
-
             // Load from disk
             await Load();
 
@@ -70,6 +69,10 @@ namespace FFRK_LabMem.Services
             foreach(var schedule in Schedules)
             {
 
+                // Data Map
+                JobDataMap jobDataMap = new JobDataMap();
+                jobDataMap.Add("schedule", schedule);
+
                 // Only if in the future or schedule present
                 if (schedule.EnableEnabled && (schedule.EnableDate > DateTime.Now || !String.IsNullOrEmpty(schedule.EnableCronTab)))
                 {
@@ -79,8 +82,8 @@ namespace FFRK_LabMem.Services
                         .WithIdentity(schedule.Name + "_enable")
                         .ForJob(job)
                         .StartAt(schedule.EnableDate)
+                        .UsingJobData(jobDataMap)
                         .UsingJobData("enabled", true)
-                        .UsingJobData("hardstart", schedule.EnableHardStart)
                         .WithDescription(schedule.Name);
 
                     // Repeat
@@ -100,8 +103,8 @@ namespace FFRK_LabMem.Services
                         .WithIdentity(schedule.Name + "_disable")
                         .ForJob(job)
                         .StartAt(schedule.DisableDate)
+                        .UsingJobData(jobDataMap)
                         .UsingJobData("enabled", false)
-                        .UsingJobData("closeapp", schedule.DisableCloseApp)
                         .WithDescription(schedule.Name);
 
                     // Repeat
@@ -199,6 +202,7 @@ namespace FFRK_LabMem.Services
             public DateTime EnableDate { get; set; }
             public String EnableCronTab { get; set; }
             public Boolean EnableHardStart { get; set; }
+            public Boolean EnableForceStart { get; set; }
             public bool DisableEnabled { get; set; }
             public DateTime DisableDate { get; set; }
             public String DisableCronTab { get; set; }
