@@ -383,10 +383,16 @@ namespace FFRK_LabMem.Machines
             Proxy.AddRegistration(@"/dff/\?timestamp=[0-9]+", async(args) => {
                 if (!await parser.ParseAllData(args))
                 {
-                    // Data is null during maintenance
-                    ColorConsole.WriteLine(ConsoleColor.Red, "Maintenance ongoing, disabling...");
-                    await Services.Scheduler.Default.AddPostMaintenanceSchedule();
-                    OnMachineFinished();
+                    if (args.Body.IndexOf("maintenance", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        // Data is null during maintenance
+                        ColorConsole.WriteLine(ConsoleColor.Red, "Maintenance ongoing, disabling...");
+                        await Services.Scheduler.Default.AddPostMaintenanceSchedule();
+                        OnMachineFinished();
+                    } else
+                    {
+                        ColorConsole.WriteLine(ConsoleColor.Red, "System error...");
+                    }
                 }
             });
             Proxy.AddRegistration("labyrinth/[0-9]+/do_simple_explore", parser.ParseQEData);
