@@ -32,6 +32,7 @@ namespace FFRK_LabMem.Machines
                     if (schedule.EnableHardStart)
                     {
                         ColorConsole.WriteLine(ConsoleColor.Green, "Restarting FFRK due to schedule: {0}", context.Trigger.Description);
+                        controller.Machine.Data = new Newtonsoft.Json.Linq.JObject();
                         controller.Enable();
                         await controller.Machine.ManualFFRKRestart(false);
                     } else
@@ -73,6 +74,7 @@ namespace FFRK_LabMem.Machines
         {   
             var autoStart = controller.Machine.Config.AutoStart;
             controller.Machine.Config.AutoStart = true;
+            controller.Machine.Data = new Newtonsoft.Json.Linq.JObject();
             controller.Enable();
             await Task.Delay(1000);
             controller.Machine.Config.AutoStart = autoStart;
