@@ -3,4 +3,21 @@
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Config\UI\ConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Config\UI\ConfigListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Config\UI\ConfigScheduleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Controls\ListViewExtended.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Data\UI\CountersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

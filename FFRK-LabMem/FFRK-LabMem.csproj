@@ -1,213 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0EE6C01A-C8DD-4210-A630-8D083D998C9C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>FFRK_LabMem</RootNamespace>
     <AssemblyName>FFRK-LabMem</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ImplicitlyExpandTargetFramework>false</ImplicitlyExpandTargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Resources\drop.ico</ApplicationIcon>
+    <StartupObject>FFRK_LabMem.Program</StartupObject>
+    <ApplicationIcon />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Config\UI\AdbHostItem.cs" />
-    <Compile Include="Config\UI\ConfigFile.cs" />
-    <Compile Include="Config\UI\ConfigForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Config\UI\ConfigForm.Designer.cs">
-      <DependentUpon>ConfigForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Config\ConfigHelper.cs" />
-    <Compile Include="Config\UI\ConfigListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Config\UI\ConfigListForm.Designer.cs">
-      <DependentUpon>ConfigListForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Config\UI\ConfigScheduleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Config\UI\ConfigScheduleForm.Designer.cs">
-      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Config\UI\Lookups.cs" />
-    <Compile Include="Config\UI\Sorters.cs" />
-    <Compile Include="Controls\ListViewExtended.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Data\CounterComparers.cs" />
-    <Compile Include="Data\CounterInference.cs" />
-    <Compile Include="Data\Counters.cs" />
-    <Compile Include="Data\CounterSet.cs" />
-    <Compile Include="Data\DataLogger.cs" />
-    <Compile Include="Data\ExcludeSessionDictionaryItemConverter.cs" />
-    <Compile Include="Data\UI\CountersForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Data\UI\CountersForm.Designer.cs">
-      <DependentUpon>CountersForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Machines\Lab.Actions.cs" />
-    <Compile Include="Machines\LabConfiguration.cs" />
-    <Compile Include="Machines\LabController.cs" />
-    <Compile Include="Machines\Lab.cs" />
-    <Compile Include="Machines\LabFatigueInfo.cs" />
-    <Compile Include="Machines\LabParser.cs" />
-    <Compile Include="Machines\LabSelector.cs" />
-    <Compile Include="Machines\LabStaminaInfo.cs" />
-    <Compile Include="Machines\LabStateJob.cs" />
-    <Compile Include="Machines\LabTimings.cs" />
-    <Compile Include="Machines\LabWatchdog.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Services\Benchmark.cs" />
-    <Compile Include="Services\Clipboard.cs" />
-    <Compile Include="Services\ConsoleTasks.cs" />
-    <Compile Include="Services\Scheduler.cs" />
-    <Compile Include="Services\Tray.cs" />
-    <Compile Include="Services\Tyro.cs" />
-    <Compile Include="Services\Updates.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Config\lab.farm.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Config\lab.balanced.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Config\lab.full.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Config\lab.quick.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Config\readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Data\readme.md" />
-    <None Include="ILRepack.targets" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="blocklist.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Resources\lab_segment.bmp" />
-    <None Include="Resources\button_blue_play.bmp" />
-    <None Include="Resources\button_brown_ok.bmp" />
-    <None Include="Resources\button_inventory.bmp" />
-    <None Include="Resources\button_skip.bmp" />
-    <None Include="Resources\battle_commands.bmp" />
-    <Content Include="Resources\button_android_ok.bmp" />
-    <None Include="Resources\button_a_off.bmp" />
-    <None Include="Resources\button_s_off.bmp" />
-    <None Include="Resources\button_blue_enter.bmp" />
-    <Content Include="Resources\drop.ico" />
-    <None Include="Resources\folder.png" />
-    <None Include="Resources\error.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="Resources\adb.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>adb.exe</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="Resources\AdbWinApi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>AdbWinApi.dll</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="Resources\AdbWinUsbApi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>AdbWinUsbApi.dll</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FFRK-Machines\FFRK-Machines.csproj">
-      <Project>{a17e3da3-25a3-4710-a032-495ada9b9c16}</Project>
-      <Name>FFRK-Machines</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Config\UI\ConfigForm.resx">
-      <DependentUpon>ConfigForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Config\UI\ConfigListForm.resx">
-      <DependentUpon>ConfigListForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Config\UI\ConfigScheduleForm.resx">
-      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Data\UI\CountersForm.resx">
-      <DependentUpon>CountersForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <ProjectReference Include="..\FFRK-Machines\FFRK-Machines.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ILRepack.Lib.MSBuild.Task">
@@ -229,31 +34,44 @@
       <Version>5.11.0</Version>
     </PackageReference>
     <PackageReference Include="Syroot.Windows.IO.KnownFolders">
-      <Version>1.2.1</Version>
+      <Version>1.3.0</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="PostBuildMacros" BeforeTargets="ILRepacker" Condition="'$(Configuration)' == 'Release'">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="Targets" />
-    </GetAssemblyIdentity>
-    <ItemGroup>
-      <VersionNumber Include="$([System.Text.RegularExpressions.Regex]::Replace(&quot;%(Targets.Version)&quot;, &quot;^(.+?)(\.0+)$&quot;, &quot;$1&quot;))" />
-    </ItemGroup>
-  </Target>
-  <PropertyGroup>
-    <PostBuildEventDependsOn>
-      $(PostBuildEventDependsOn);
-      ILRepacker;
-    </PostBuildEventDependsOn>
-    <PostBuildEvent>if $(ConfigurationName) == Release (powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(TargetDir)*' -DestinationPath '$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-Beta.zip' -Force)
-if $(ConfigurationName) == Release ("%25programfiles%25\Inno Setup 6\iscc.exe" /O"$(SolutionDir)publish\" /F"$(ProjectName)-@(VersionNumber)-Beta-Installer" /DMyAppVersion=@(VersionNumber)-Beta "$(SolutionDir)setup/setup-ffrk-labmem.iss")</PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Config\UI\ConfigForm.resx">
+      <DependentUpon>ConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Config\UI\ConfigListForm.resx">
+      <DependentUpon>ConfigListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Config\UI\ConfigScheduleForm.resx">
+      <DependentUpon>ConfigScheduleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Data\UI\CountersForm.resx">
+      <DependentUpon>CountersForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Config\lab.balanced.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\lab.farm.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\lab.full.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\lab.quick.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

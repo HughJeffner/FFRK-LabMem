@@ -45,7 +45,7 @@ namespace FFRK_Machines.Services.Adb
                     // Root Cert in filesystem
                     var rootCert = new X509Certificate2(pfxPath, "")
                     {
-                        PrivateKey = null
+                        //PrivateKey = null
                     };
 
                     // If needs install
