@@ -25,7 +25,7 @@ namespace FFRK_Machines.Threading
                     tcs.SetException(e);
                 }
             });
-            thread.SetApartmentState(ApartmentState.STA);
+            if (OperatingSystem.IsWindows()) thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             return tcs.Task;
         }

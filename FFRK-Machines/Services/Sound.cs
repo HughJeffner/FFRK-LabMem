@@ -20,6 +20,7 @@ namespace FFRK_Machines.Services
 
         public static async Task Initalize()
         {
+            if (!OperatingSystem.IsWindows()) return;
             player = new SoundPlayer(Properties.Resources.Silent);
             player.Play();
             await Task.CompletedTask;
@@ -27,8 +28,11 @@ namespace FFRK_Machines.Services
 
         public static void Play(string pathToWav)
         {
-            player.SoundLocation = pathToWav;
-            player.Play();
+            if (OperatingSystem.IsWindows()){
+                player.SoundLocation = pathToWav;
+                player.Play();
+            }
+            
         }
 
     }
