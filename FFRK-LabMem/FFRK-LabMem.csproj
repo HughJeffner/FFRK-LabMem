@@ -10,14 +10,27 @@
     <AssemblyName>FFRK-LabMem</AssemblyName>
     <StartupObject>FFRK_LabMem.Program</StartupObject>
     <ApplicationIcon />
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include="Resources\adb.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>adb.exe</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources\AdbWinApi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>AdbWinApi.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources\AdbWinUsbApi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>AdbWinUsbApi.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FFRK-Machines\FFRK-Machines.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task">
-      <Version>2.0.18.2</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
       <Version>2.1.1</Version>
     </PackageReference>
@@ -61,6 +74,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Update="blocklist.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Config\lab.balanced.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

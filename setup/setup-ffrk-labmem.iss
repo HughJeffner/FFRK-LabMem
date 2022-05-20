@@ -1,6 +1,6 @@
 #define MyAppName "FFRK-LabMem"
 #ifndef MyAppVersion
-#define MyAppVersion GetFileVersion('..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe') + '-Beta'
+#define MyAppVersion GetFileVersion('..\publish\output\FFRK-LabMem.dll') + '-Beta'
 #endif
 #define MyAppPublisher "HughJeffner"
 #define MyAppURL "https://github.com/HughJeffner/FFRK-LabMem"
@@ -44,17 +44,18 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\adb.exe"; DestDir: "{app}"; Flags: onlyifdoesntexist
-Source: "..\FFRK-LabMem\bin\Release\AdbWinApi.dll"; DestDir: "{app}"
-Source: "..\FFRK-LabMem\bin\Release\AdbWinUsbApi.dll"; DestDir: "{app}"
-Source: "..\FFRK-LabMem\bin\Release\blocklist.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
-Source: "..\FFRK-LabMem\bin\Release\FFRK-LabMem.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\FFRK-LabMem\bin\Release\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist; Check: not IsUpgrade
-Source: "..\FFRK-LabMem\bin\Release\Sounds\*.*"; DestDir: "{app}\Sounds"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
-Source: "..\FFRK-LabMem\bin\Release\Minicap\*.*"; DestDir: "{app}\Minicap"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
-Source: "{app}\DataLog\*"; DestDir: "{app}\Data\"; Flags: external skipifsourcedoesntexist onlyifdoesntexist
+Source: "..\publish\output\FFRK-LabMem.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\output\adb.exe"; DestDir: "{app}"; Flags: onlyifdoesntexist
+Source: "..\publish\output\*.dll"; DestDir: "{app}"
+Source: "..\FFRK-LabMem\bin\Release\net5.0-windows\FFRK-LabMem.deps.json"; DestDir: "{app}"; Flags:ignoreversion
+Source: "..\publish\output\FFRK-LabMem.runtimeconfig.json"; DestDir: "{app}"; Flags:ignoreversion
+Source: "..\publish\output\blocklist.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\output\FFRK-LabMem.dll.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
+Source: "..\publish\output\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\output\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\output\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist; Check: not IsUpgrade
+Source: "..\publish\output\Sounds\*.*"; DestDir: "{app}\Sounds"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
+Source: "..\publish\output\Minicap\*.*"; DestDir: "{app}\Minicap"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
