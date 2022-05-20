@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFRK-LabMem", "FFRK-LabMem\FFRK-LabMem.csproj", "{0EE6C01A-C8DD-4210-A630-8D083D998C9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFRK-LabMem", "FFRK-LabMem\FFRK-LabMem.csproj", "{0EE6C01A-C8DD-4210-A630-8D083D998C9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFRK-Machines", "FFRK-Machines\FFRK-Machines.csproj", "{A17E3DA3-25A3-4710-A032-495ADA9B9C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFRK-Machines", "FFRK-Machines\FFRK-Machines.csproj", "{A17E3DA3-25A3-4710-A032-495ADA9B9C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
