@@ -9,7 +9,7 @@
     <RootNamespace>FFRK_LabMem</RootNamespace>
     <AssemblyName>FFRK-LabMem</AssemblyName>
     <StartupObject>FFRK_LabMem.Program</StartupObject>
-    <ApplicationIcon />
+    <ApplicationIcon>Resources\drop.ico</ApplicationIcon>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
