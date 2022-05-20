@@ -63,7 +63,7 @@ namespace FFRK_LabMem.Services
                     notifyIcon = new NotifyIcon();
                     notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
                     notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-                    notifyIcon.Text = Console.Title;
+                    notifyIcon.Text = Updates.GetName();
                     var contextMenu = new ContextMenuStrip();
                     contextMenu.Items.Add("Unhide", null, (s, e) => { NotifyIcon_DoubleClick(s, e); });
                     contextMenu.Items.Add("Stats", null, (s, e) => {
@@ -80,7 +80,7 @@ namespace FFRK_LabMem.Services
                     notifyIcon.Visible = true;
 
                     // Lock/unlock events
-                    SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+                    if (OperatingSystem.IsWindows()) SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
 
                     // From this point forward a message loop will run on this thread that owns the notifyIcon
                     System.Threading.Thread.CurrentThread.Name = "Message Pump";
@@ -110,6 +110,7 @@ namespace FFRK_LabMem.Services
 
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         private static void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
         {
             // Work-around for showing in taskbar when workstation unlocked

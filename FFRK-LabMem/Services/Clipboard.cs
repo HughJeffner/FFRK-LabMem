@@ -16,7 +16,7 @@ namespace FFRK_LabMem.Services
                 System.Windows.Forms.Clipboard.SetText(Proxy.PROXY_BYPASS);
                 ColorConsole.WriteLine(ConsoleColor.Gray, "Copied proxy bypass to clipboard");
             });
-            thread.SetApartmentState(ApartmentState.STA);
+            if (OperatingSystem.IsWindows()) thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
 
         }

@@ -147,7 +147,9 @@ namespace FFRK_LabMem.Controls
             }
             finally
             {
+#pragma warning disable CS8073 // The result of the expression is always the same since a value of this type is never equal to 'null'
                 if (ip != null) Marshal.FreeHGlobal(ip);
+#pragma warning restore CS8073 // The result of the expression is always the same since a value of this type is never equal to 'null'
             }
         }
     }
