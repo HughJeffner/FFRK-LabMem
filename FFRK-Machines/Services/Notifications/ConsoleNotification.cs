@@ -9,7 +9,7 @@ namespace FFRK_Machines.Services.Notifications
         public async override Task Notify(Notifications.NotificationArgs args)
         {
             ColorConsole.Debug(ColorConsole.DebugCategory.Notifcation, "Playing console beeps");
-            Task mytask = Task.Run(() =>
+            Task mytask = Task.Run(async () =>
             {
                 if (OperatingSystem.IsWindows())
                 {
@@ -22,7 +22,26 @@ namespace FFRK_Machines.Services.Notifications
                     Console.Beep(523, 300);
                     Console.Beep(466, 250);
                     Console.Beep(523, 800);
-                }
+                } else
+                {
+                    Console.Beep();
+                    await Task.Delay(50);
+                    Console.Beep();
+                    await Task.Delay(50);
+                    Console.Beep();
+                    await Task.Delay(50);
+                    Console.Beep();
+                    await Task.Delay(125); 
+                    Console.Beep();
+                    await Task.Delay(125);
+                    Console.Beep();
+                    await Task.Delay(125);
+                    Console.Beep();
+                    await Task.Delay(75);
+                    Console.Beep();
+                    await Task.Delay(66);
+                    Console.Beep();
+                  }
             });
 
             await mytask;
