@@ -13,7 +13,7 @@ namespace FFRK_LabMem.Services
         {
 
             Thread thread = new Thread(() => {
-                System.Windows.Forms.Clipboard.SetText(Proxy.PROXY_BYPASS);
+                //System.Windows.Forms.Clipboard.SetText(Proxy.PROXY_BYPASS);
                 ColorConsole.WriteLine(ConsoleColor.Gray, "Copied proxy bypass to clipboard");
             });
             if (OperatingSystem.IsWindows()) thread.SetApartmentState(ApartmentState.STA);

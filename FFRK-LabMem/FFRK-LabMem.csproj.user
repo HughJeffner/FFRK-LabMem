@@ -2,24 +2,8 @@
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-    <_LastSelectedProfileId>C:\usr\hughjeffner\FFRK-LabMem\FFRK-LabMem\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+    <_LastSelectedProfileId>C:\usr\hughjeffner\FFRK-LabMem\FFRK-LabMem\Properties\PublishProfiles\MacOS.pubxml</_LastSelectedProfileId>
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="Config\UI\ConfigForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Config\UI\ConfigListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Config\UI\ConfigScheduleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Controls\ListViewExtended.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Data\UI\CountersForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
+  <ItemGroup />
 </Project>

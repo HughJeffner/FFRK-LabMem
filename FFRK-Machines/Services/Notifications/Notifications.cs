@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace FFRK_Machines.Services.Notifications
     public class Notifications
     {
 
-        private const string CONFIG_PATH = "./Config/notifications.json";
+        private static string CONFIG_PATH = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Config/notifications.json";
         private static Notifications _instance = null;
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
         {
@@ -81,11 +82,11 @@ namespace FFRK_Machines.Services.Notifications
 
         }
 
-        public static Task<EventList> GetEvents(string path = CONFIG_PATH)
+        public static Task<EventList> GetEvents()
         {
             try
             {
-                return Task.FromResult(JsonConvert.DeserializeObject<EventList>(File.ReadAllText(path), jsonSerializerSettings));
+                return Task.FromResult(JsonConvert.DeserializeObject<EventList>(File.ReadAllText(CONFIG_PATH), jsonSerializerSettings));
             }
             catch (FileNotFoundException) { }
             catch (Exception e)

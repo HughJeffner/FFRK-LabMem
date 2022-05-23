@@ -133,8 +133,11 @@ namespace FFRK_Machines.Services.Adb
             this.Device = AdbClient.Instance.GetDevices().Where(d => d.Serial.Equals(this.Host)).FirstOrDefault();
             if (this.Device == null)
             {
-                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
-                await RunProcessAsync("cmd.exe", "/c adb connect " + this.Host);
+                if (OperatingSystem.IsWindows())
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "First time connect, using cmd.exe");
+                    await RunProcessAsync("cmd.exe", "/c adb connect " + this.Host);
+                }
             }
 
             AdbClient.Instance.Connect(this.Host);
