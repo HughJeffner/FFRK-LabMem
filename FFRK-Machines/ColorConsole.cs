@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace FFRK_Machines
@@ -253,7 +254,7 @@ namespace FFRK_Machines
 
             public int BufferSize { get; set; } = 10;
             public bool Enabled { get; set; } = true;
-            public string LogDirectory { get; set; } = @".\Logs";
+            public string LogDirectory { get; set; } = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Logs");
 
             public void Add(string value)
             {

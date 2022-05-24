@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static FFRK_Machines.Services.Adb.Adb;
@@ -111,7 +112,7 @@ namespace FFRK_Machines.Services.Adb
             // Push binary
             using (var service = Factories.SyncServiceFactory(device))
             {
-                var source = $"./minicap/{abi}/bin/minicap";
+                var source = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), $"minicap/{abi}/bin/minicap");
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
                 using (Stream stream = File.OpenRead(source))
                 {
@@ -121,7 +122,7 @@ namespace FFRK_Machines.Services.Adb
             // Push shared library
             using (var service = Factories.SyncServiceFactory(device))
             {
-                var source = $"./minicap/{abi}/lib/android-{apiLevel}/minicap.so";
+                var source = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), $"minicap/{abi}/lib/android-{apiLevel}/minicap.so");
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINICAP_PATH}");
                 using (Stream stream = File.OpenRead(source))
                 {
@@ -158,7 +159,7 @@ namespace FFRK_Machines.Services.Adb
                 {
                     emulatorName = emulatorName.Replace(c, '-');
                 }
-                filePath = $@".\minicap\verify_{emulatorName}.jpg";
+                filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), $@"minicap\verify_{emulatorName}.jpg");
 
                 // If verification image present then immedately return true
                 if (File.Exists(filePath)) return true;

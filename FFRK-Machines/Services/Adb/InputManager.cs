@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static FFRK_Machines.Services.Adb.Adb;
@@ -113,7 +114,7 @@ namespace FFRK_Machines.Services.Adb
             // Push binary
             using (var service = Factories.SyncServiceFactory(device))
             {
-                var source = $"./minicap/{abi}/bin/minitouch";
+                var source = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), $"minicap/{abi}/bin/minitouch");
                 ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Copying {source} to {MINITOUCH_PATH}");
                 using (Stream stream = File.OpenRead(source))
                 {

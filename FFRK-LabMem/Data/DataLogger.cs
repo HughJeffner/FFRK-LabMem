@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Data
@@ -13,7 +14,7 @@ namespace FFRK_LabMem.Data
     {
 
         private static bool enabled = false;
-        private static readonly string folder = @"./Data";
+        private static readonly string folder = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data");
         private static readonly string fileSuffix = "_v02.csv";
 
         public static Task Initalize(ConfigHelper config)

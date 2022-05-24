@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,10 +13,10 @@ namespace FFRK_Machines.Services
     public class Sound
     {
 
-        public const string FF1_Victory = "./Sounds/FF1-Victory.wav";
-        public const string FF1_Event = "./Sounds/FF1-Event.wav";
-        public const string FF1_Inn = "./Sounds/FF1-Inn.wav";
-        public const string FF1_Treasure = "./Sounds/FF1-Treasure.wav";
+        public static readonly string FF1_Victory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Victory.wav");
+        public static readonly string FF1_Event = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Event.wav");
+        public static readonly string FF1_Inn = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Inn.wav");
+        public static readonly string FF1_Treasure = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Treasure.wav");
 
         private static SoundPlayer player;
 
