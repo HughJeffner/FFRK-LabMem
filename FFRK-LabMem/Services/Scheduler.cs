@@ -15,7 +15,7 @@ namespace FFRK_LabMem.Services
 {
     public class Scheduler
     {
-        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config/schedules.json");
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config", "schedules.json");
 
         private static Scheduler _instance = null;
         readonly StdSchedulerFactory factory = new StdSchedulerFactory();

@@ -13,7 +13,7 @@ namespace FFRK_LabMem.Machines
 {
     public class LabTimings
     {
-        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config/timings.json");
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config", "timings.json");
         private static LabTimings _instance = null;
         private static readonly Random rng = new Random();
         private TimingDictionary timings { get; set; } = new TimingDictionary(DefaultTimings);

@@ -273,7 +273,7 @@ namespace FFRK_Machines
             {
                 if (String.IsNullOrEmpty(newFolder))
                 {
-                    LogDirectory = @".\Logs";
+                    LogDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Logs");
                 } else
                 {
                     LogDirectory = newFolder;

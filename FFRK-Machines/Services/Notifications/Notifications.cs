@@ -12,7 +12,7 @@ namespace FFRK_Machines.Services.Notifications
     public class Notifications
     {
 
-        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config/notifications.json");
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config","notifications.json");
         private static Notifications _instance = null;
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
         {

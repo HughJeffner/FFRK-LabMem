@@ -19,7 +19,7 @@ namespace FFRK_LabMem.Data
         // Singleton instance
         private static Counters _instance = null;
         // Constants
-        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data/counters.json");
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data","counters.json");
         public static readonly ReadOnlyDictionary<string, CounterSet> DefaultCounterSets = new ReadOnlyDictionary<string, CounterSet>(
             new Dictionary<string, CounterSet>
             {

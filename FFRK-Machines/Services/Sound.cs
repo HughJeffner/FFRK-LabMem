@@ -13,10 +13,10 @@ namespace FFRK_Machines.Services
     public class Sound
     {
 
-        public static readonly string FF1_Victory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Victory.wav");
-        public static readonly string FF1_Event = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Event.wav");
-        public static readonly string FF1_Inn = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Inn.wav");
-        public static readonly string FF1_Treasure = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds/FF1-Treasure.wav");
+        public static readonly string FF1_Victory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds","FF1-Victory.wav");
+        public static readonly string FF1_Event = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds","FF1-Event.wav");
+        public static readonly string FF1_Inn = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds","FF1-Inn.wav");
+        public static readonly string FF1_Treasure = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Sounds","FF1-Treasure.wav");
 
         private static SoundPlayer player;
 
