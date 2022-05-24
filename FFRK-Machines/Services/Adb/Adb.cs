@@ -13,6 +13,7 @@ using System.Drawing.Imaging;
 
 namespace FFRK_Machines.Services.Adb
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     public class Adb
     {
 
@@ -306,7 +307,7 @@ namespace FFRK_Machines.Services.Adb
             } while (tappingStopwatch.ElapsedMilliseconds < duration.TotalMilliseconds && tappingStopwatch.IsRunning);
 
         }
-
+                
         public async Task<ImageDef> FindImages(List<ImageDef> images, int scaleFactor, CancellationToken cancellationToken)
         {
             ImageDef ret = null;
