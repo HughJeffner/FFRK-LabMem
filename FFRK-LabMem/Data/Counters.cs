@@ -372,8 +372,12 @@ namespace FFRK_LabMem.Data
             {
                 JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), CounterSets);
             }
-            catch (FileNotFoundException) { }
-            catch (DirectoryNotFoundException) { }
+            catch (FileNotFoundException) {
+                SaveEmpty();
+            }
+            catch (DirectoryNotFoundException) {
+                SaveEmpty();
+            }
             catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Yellow, "Error loading counters file: {0}", ex);
@@ -455,6 +459,18 @@ namespace FFRK_LabMem.Data
         public static async Task Flush()
         {
             await _instance.Save(true);
+        }
+
+        private void SaveEmpty()
+        {
+            // Ensure directory created
+            new FileInfo(CONFIG_PATH).Directory.Create();
+
+            // Write empty file
+            File.WriteAllText(CONFIG_PATH,
+                JsonConvert.SerializeObject(this.CounterSets,
+                Formatting.Indented,
+                new ExcludeSessionDictionaryItemConverter<IDictionary<string, CounterSet>, CounterSet>()));
         }
         
     }
