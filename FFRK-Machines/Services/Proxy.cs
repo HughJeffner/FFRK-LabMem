@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -57,6 +58,21 @@ namespace FFRK_Machines.Services
         private bool secure;
         public int Port { get; set; }
         private List<string> Blocklist { get; set; } = new List<string>();
+        public string CertificateFilePath
+        {
+            get
+            {
+                if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
+                {
+                   return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/rootCert.pfx";
+                }
+                else
+                {
+                    return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "\\rootCert.pfx";
+                }
+            }
+        }
+        public ProxyServer Server => proxyServer;
 
         public Proxy (int port, bool secure) : this(port, secure, null, false) { }
 
@@ -70,8 +86,10 @@ namespace FFRK_Machines.Services
             proxyServer.EnableConnectionPool = connectionPooling;
 
             // Proxy Root Cert - Long lived
+            if (OperatingSystem.IsMacOS()) proxyServer.CertificateManager.PfxPassword = "notasecret";
             proxyServer.CertificateManager.CertificateValidDays = 365 * 10;
-            proxyServer.CertificateManager.CreateRootCertificate();
+            proxyServer.CertificateManager.RootCertificateName = "FFRK-LabMem Root CA";
+            proxyServer.CertificateManager.CreateRootCertificate(true);
 
             // Generated Certificates - Short Lived
             proxyServer.CertificateManager.CertificateValidDays = 30;

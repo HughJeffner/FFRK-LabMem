@@ -12,8 +12,11 @@ namespace FFRK_Machines.Services.Adb
         private readonly IAdbClient client;
         private readonly DeviceData device;
         private readonly Adb adb;
-        private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/3dcac768.0";
-        private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/3dcac768.0";
+        private readonly Proxy proxy;
+        private const String CERTIFICATE_NAME_LEGACY = "3dcac768.0";
+        private const String CERTIFICATE_NAME = "c67d87c0.0";
+        private const String CERTIFICATE_USER_PATH = "/data/misc/user/0/cacerts-added/";
+        private const String CERTIFICATE_SYSTEM_PATH = "/system/etc/security/cacerts/";
         private const String CERTIFICATE_CRT_PATH = "/sdcard/LabMem_Root_Cert.crt";
 
         public class RootCertInstalledStatus
@@ -22,28 +25,57 @@ namespace FFRK_Machines.Services.Adb
             public bool UserExists { get; set; }
             public bool SystemExists { get; set; }
         }
-        public CertificateManager(Adb adb)
+
+        private string getCertificateUserPath()
+        {
+            if (proxy.Server.CertificateManager.RootCertificate.Subject.Contains("FFRK"))
+            {
+                return Path.Combine(CERTIFICATE_USER_PATH, CERTIFICATE_NAME);
+            } else
+            {
+                return Path.Combine(CERTIFICATE_USER_PATH, CERTIFICATE_NAME_LEGACY);
+            }
+        }
+
+        private string getCertificateSystemPath()
+        {
+            if (proxy.Server.CertificateManager.RootCertificate.Subject.Contains("FFRK"))
+            {
+                return Path.Combine(CERTIFICATE_SYSTEM_PATH, CERTIFICATE_NAME);
+            }
+            else
+            {
+                return Path.Combine(CERTIFICATE_SYSTEM_PATH, CERTIFICATE_NAME_LEGACY);
+            }
+        }
+
+        public CertificateManager(Adb adb, Proxy proxy)
         {
             this.client = AdbClient.Instance;
             this.device = adb.Device;
             this.adb = adb;
+            this.proxy = proxy;
         }
         public async Task InstallRootCert(String pfxPath, CancellationToken cancellationToken)
         {
 
             // Get API level
             int apiLevel = await adb.GetAPILevel(cancellationToken);
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Android API Level: {apiLevel}");
 
             // Lollipop or higher
             if (apiLevel >= 21)
             {
+
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Checking root cert in container: {pfxPath}");
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Root cert subject: {proxy.Server.CertificateManager.RootCertificate.Subject}");
 
                 // If pfx file exists
                 if (File.Exists(pfxPath))
                 {
 
                     // Root Cert in filesystem
-                    var rootCert = new X509Certificate2(pfxPath, "")
+                    var rootCert = new X509Certificate2(pfxPath, proxy.Server.CertificateManager.PfxPassword)
                     {
                         //PrivateKey = null
                     };
@@ -63,6 +95,9 @@ namespace FFRK_Machines.Services.Adb
 
                     }
 
+                } else
+                {
+                    ColorConsole.Debug(ColorConsole.DebugCategory.Adb, "Root cert pfx not found!");
                 }
 
             }
@@ -95,14 +130,18 @@ namespace FFRK_Machines.Services.Adb
         }
         public async Task<RootCertInstalledStatus> CheckIfRootCertInstalled(int apiLevel)
         {
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Root cert user path: {getCertificateUserPath()}");
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Root cert system path: {getCertificateSystemPath()}");
+
             using (var service = Factories.SyncServiceFactory(device))
             {
                 var ret = new RootCertInstalledStatus
                 {
-                    UserExists = service.Stat(CERTIFICATE_USER_PATH).FileMode != 0,
-                    SystemExists = service.Stat(CERTIFICATE_SYSTEM_PATH).FileMode != 0
+                    UserExists = service.Stat(getCertificateUserPath()).FileMode != 0,
+                    SystemExists = service.Stat(getCertificateSystemPath()).FileMode != 0
                 };
                 ret.Installed = ((ret.UserExists && apiLevel <= 23) || ret.SystemExists);
+                ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Root cert status, user: {ret.UserExists}, system:{ret.SystemExists}, installed:{ret.Installed}");
                 return await Task.FromResult(ret);
             }
 
@@ -132,7 +171,7 @@ namespace FFRK_Machines.Services.Adb
         public async Task<X509Certificate2> GetInstalledRootCert(bool isSystemCert, CancellationToken cancellationToken)
         {
 
-            var pathToCert = (isSystemCert) ? CERTIFICATE_SYSTEM_PATH : CERTIFICATE_USER_PATH;
+            var pathToCert = (isSystemCert) ? getCertificateSystemPath() : getCertificateUserPath();
             X509Certificate2 ret;
 
             using (var service = Factories.SyncServiceFactory(device))
@@ -202,6 +241,7 @@ namespace FFRK_Machines.Services.Adb
             var installedRootCert = await GetInstalledRootCert(isSystemCert, cancellationToken);
 
             // Thumbprint check
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Validating root cert thumbprint (installed -> running): {installedRootCert.Thumbprint} -> {rootCert.Thumbprint}");
             if (!installedRootCert.Thumbprint.Equals(rootCert.Thumbprint))
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE MISMATCH **");
@@ -212,6 +252,7 @@ namespace FFRK_Machines.Services.Adb
 
             // Expired
             TimeSpan timeLeft = installedRootCert.NotAfter - DateTime.Now;
+            ColorConsole.Debug(ColorConsole.DebugCategory.Adb, $"Validating root cert date range: {timeLeft.TotalDays} days");
             if (timeLeft.TotalMinutes <= 0)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, "** CERTIFICATE EXPIRED **");

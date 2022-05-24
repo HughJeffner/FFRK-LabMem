@@ -83,7 +83,7 @@
       <VersionNumber Include="$([System.Text.RegularExpressions.Regex]::Replace(&quot;%(Targets.Version)&quot;, &quot;^(.+?)(\.0+)$&quot;, &quot;$1&quot;))" />
     </ItemGroup>
   </Target>
-  <Target Name="PostPublish" AfterTargets="Publish">
+  <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
     <Exec Command="powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(PublishDir)*' -DestinationPath '$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-Beta.zip' -Force" />
     <Exec Command="&quot;%25programfiles%25\Inno Setup 6\iscc.exe&quot; /O&quot;$(SolutionDir)publish\&quot; /F&quot;$(ProjectName)-@(VersionNumber)-Beta-Installer&quot; /DMyAppVersion=@(VersionNumber)-Beta &quot;$(SolutionDir)setup/setup-ffrk-labmem.iss&quot;" />
   </Target>

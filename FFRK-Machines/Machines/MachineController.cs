@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FFRK_Machines.Services;
@@ -167,7 +169,7 @@ namespace FFRK_Machines.Machines
         private async Task EngageMachine()
         {
             Machine.RegisterWithProxy(Proxy);
-            if (startArguments.ProxySecure) await Adb.InstallCertificate("rootCert.pfx", CancellationToken.None);
+            if (startArguments.ProxySecure) await Adb.InstallCertificate(Proxy, CancellationToken.None);
             if (startArguments.ProxyAutoConfig) await Adb.SetProxySettings(this.Proxy.Port, CancellationToken.None);
             await Adb.CaptureSetup(CancellationToken.None);
             await Adb.InputSetup(CancellationToken.None);

@@ -164,10 +164,10 @@ namespace FFRK_Machines.Services.Adb
             return Task.FromResult(AdbClient.Instance.GetDevices().Select(d => d.Serial).ToList());
         }
 
-        public async Task InstallCertificate(String pfxPath, CancellationToken cancellationToken)
+        public async Task InstallCertificate(Proxy proxy, CancellationToken cancellationToken)
         {
-            var certificateManager = new CertificateManager(this);
-            await certificateManager.InstallRootCert(pfxPath, cancellationToken);
+            var certificateManager = new CertificateManager(this, proxy);
+            await certificateManager.InstallRootCert(proxy.CertificateFilePath, cancellationToken);
         }
 
         public async Task<bool> SetProxySettings(int proxyPort, CancellationToken cancellationToken)
