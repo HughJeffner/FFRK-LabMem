@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace FFRK_LabMem.Machines
 {
     public class LabTimings
     {
-        private const string CONFIG_PATH = "./Config/timings.json";
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config/timings.json");
         private static LabTimings _instance = null;
         private static readonly Random rng = new Random();
         private TimingDictionary timings { get; set; } = new TimingDictionary(DefaultTimings);
@@ -57,12 +58,12 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         /// <param name="path">The path of the .json file to load</param>
         /// <returns></returns>
-        public static async Task Load(string path = CONFIG_PATH)
+        public static async Task Load()
         {
             try
             {
                 var t = (await GetInstance()).timings;
-                JsonConvert.PopulateObject(File.ReadAllText(path), t);
+                JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), t);
             }
             catch (Exception)
             {
@@ -75,9 +76,9 @@ namespace FFRK_LabMem.Machines
         /// </summary>
         /// <param name="path">The path of the file to save to in .json format</param>
         /// <returns></returns>
-        public static async Task Save(string path = CONFIG_PATH)
+        public static async Task Save()
         {
-            File.WriteAllText(path, JsonConvert.SerializeObject(LabTimings.Timings, Formatting.Indented));
+            File.WriteAllText(CONFIG_PATH, JsonConvert.SerializeObject(LabTimings.Timings, Formatting.Indented));
             await Task.CompletedTask;
         }
         /// <summary>

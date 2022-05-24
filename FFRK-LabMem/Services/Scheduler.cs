@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace FFRK_LabMem.Services
 {
     public class Scheduler
     {
-        private const string CONFIG_PATH = "./Config/schedules.json";
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Config/schedules.json");
 
         private static Scheduler _instance = null;
         readonly StdSchedulerFactory factory = new StdSchedulerFactory();

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace FFRK_LabMem.Data
@@ -18,7 +19,7 @@ namespace FFRK_LabMem.Data
         // Singleton instance
         private static Counters _instance = null;
         // Constants
-        private const string CONFIG_PATH = "./Data/counters.json";
+        private static string CONFIG_PATH = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data/counters.json");
         public static readonly ReadOnlyDictionary<string, CounterSet> DefaultCounterSets = new ReadOnlyDictionary<string, CounterSet>(
             new Dictionary<string, CounterSet>
             {
@@ -101,7 +102,7 @@ namespace FFRK_LabMem.Data
         }
         private async void Controller_OnDisabled(object sender, EventArgs e)
         {
-            await Save(CONFIG_PATH, true);
+            await Save(true);
             runtimeStopwatch.Stop();
             ClearCurrentLab();
         }
@@ -365,11 +366,11 @@ namespace FFRK_LabMem.Data
             _instance.CurrentLabId = null;
             ColorConsole.Debug(ColorConsole.DebugCategory.Lab, "Current lab cleared");
         }
-        public async Task Load(string path = CONFIG_PATH)
+        public async Task Load()
         {
             try
             {
-                JsonConvert.PopulateObject(File.ReadAllText(path), CounterSets);
+                JsonConvert.PopulateObject(File.ReadAllText(CONFIG_PATH), CounterSets);
             }
             catch (FileNotFoundException) { }
             catch (DirectoryNotFoundException) { }
@@ -379,7 +380,7 @@ namespace FFRK_LabMem.Data
             }
             await Task.CompletedTask;
         }
-        public async Task Save(string path = CONFIG_PATH, bool noBuffer = false)
+        public async Task Save(bool noBuffer = false)
         {
             if (runtimeStopwatch.IsRunning)
             {
@@ -398,18 +399,18 @@ namespace FFRK_LabMem.Data
             try
             {
                 // Ensure directory created
-                new FileInfo(path).Directory.Create();
+                new FileInfo(CONFIG_PATH).Directory.Create();
                 
                 // Write to temp file
-                File.WriteAllText(path + ".tmp", 
+                File.WriteAllText(CONFIG_PATH + ".tmp", 
                     JsonConvert.SerializeObject(this.CounterSets, 
                     Formatting.Indented, 
                     new ExcludeSessionDictionaryItemConverter<IDictionary<string, CounterSet>, CounterSet>()));
 
                 // Swap temp to live file
-                File.Replace(path + ".tmp", path, null);
+                File.Replace(CONFIG_PATH + ".tmp", CONFIG_PATH, null);
                 bufferWrites = 0;
-                Debug.WriteLine($"{path} wrote to disk");
+                Debug.WriteLine($"{CONFIG_PATH} wrote to disk");
             }
             catch (Exception)
             {
@@ -453,7 +454,7 @@ namespace FFRK_LabMem.Data
 
         public static async Task Flush()
         {
-            await _instance.Save(CONFIG_PATH, true);
+            await _instance.Save(true);
         }
         
     }
