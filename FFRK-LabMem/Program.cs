@@ -14,8 +14,8 @@ namespace FFRK_LabMem
         {
 
             // Listen for console exit
-            //ConsoleTasks.ListenForExit(OnConsoleExit);
-            //ConsoleTasks.DisableQuickEditMode();
+            ConsoleTasks.ListenForExit(new EventHandler(CurrentDomain_ProcessExit));
+            ConsoleTasks.DisableQuickEditMode();
             Console.TreatControlCAsInput = true;
 
             // Get Configuration
@@ -78,12 +78,11 @@ namespace FFRK_LabMem
             {
                 // Stop
                 if (controller != null) controller.Stop();
-                OnConsoleExit();
             }
 
         }
 
-        private static void OnConsoleExit()
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             // Kill adb option
             if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();

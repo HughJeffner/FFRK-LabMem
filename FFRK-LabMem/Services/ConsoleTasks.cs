@@ -24,15 +24,14 @@ namespace FFRK_LabMem.Services
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
 
-        private static ConsoleEventDelegate handler;   // Keeps it from getting garbage collected
+        private static EventHandler handler;   // Keeps it from getting garbage collected
         private delegate bool ConsoleEventDelegate(int eventType);
         public static event Action OnConsoleExit;
 
-        public static void ListenForExit(Action action)
+        public static void ListenForExit(EventHandler eventHandler)
         {
-            handler = new ConsoleEventDelegate(ConsoleEventCallback);
-            SetConsoleCtrlHandler(handler, true);
-            OnConsoleExit = action;
+            handler = eventHandler;
+            AppDomain.CurrentDomain.ProcessExit += handler;
         }
         static bool ConsoleEventCallback(int eventType)
         {
@@ -45,6 +44,8 @@ namespace FFRK_LabMem.Services
 
         public static bool DisableQuickEditMode()
         {
+
+            if (!OperatingSystem.IsWindows()) return false;
 
             IntPtr consoleHandle = GetStdHandle(STD_INPUT_HANDLE);
 
