@@ -82,7 +82,9 @@ namespace FFRK_Machines.Services
                 client.Dispose();
                 semaphore.Release();
                 // Get frame and send to TCS
+#pragma warning disable CA1416 // Validate platform compatibility
                 tcs.TrySetResult(Image.FromStream(new MemoryStream(f)));
+#pragma warning restore CA1416 // Validate platform compatibility
             };
 
             // Only one at a time plz

@@ -146,6 +146,7 @@ namespace FFRK_Machines.Services.Adb
 
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         private async Task<bool> MinicapVerify(CancellationToken cancellationToken)
         {
 
