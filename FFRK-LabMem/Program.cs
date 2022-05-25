@@ -5,6 +5,9 @@ using FFRK_LabMem.Services;
 using FFRK_Machines;
 using System.Linq;
 using FFRK_Machines.Services.Adb;
+using Avalonia;
+using FFRK_Machines.Threading;
+using FFRK_LabMem.Config.UI;
 
 namespace FFRK_LabMem
 {
@@ -54,6 +57,12 @@ namespace FFRK_LabMem
                 // Controller
                 controller = LabController.CreateAndStart(config).Result;
 
+                // User Interface
+                _ = Utility.StartSTATask(() =>
+                {
+                    BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnExplicitShutdown);
+                });
+
                 // Ad-hoc command loop
                 Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
                 Console.WriteLine("Type ? for help");
@@ -66,7 +75,7 @@ namespace FFRK_LabMem
                     if (key.Key == ConsoleKey.E) controller.Enable();
                     if (key.Key == ConsoleKey.D) controller.Disable();
                     if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
-                    //if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
+                    if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigWindow.CreateAndShow(config, controller);
                     if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
                     //if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
                     if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) if (Updates.DownloadInstallerAndRun(config.Updates.IncludePrerelease).Result) break;
@@ -92,6 +101,7 @@ namespace FFRK_LabMem
             {
                 // Stop
                 if (controller != null) controller.Stop();
+                App.Shutdown();
             }
 
         }
@@ -105,6 +115,12 @@ namespace FFRK_LabMem
             ColorConsole.LogBuffer.Flush();
             Data.Counters.Flush().Wait();
         }
+
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .LogToTrace();
 
     }
 }

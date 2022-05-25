@@ -126,6 +126,7 @@ namespace FFRK_Machines.Machines
             Thread.CurrentThread.Name = "Machine Worker";
             foreach (var item in queue.GetConsumingEnumerable())
             {
+                if (item == null) return;
                 try
                 {
                     JObject data = null;
@@ -246,6 +247,10 @@ namespace FFRK_Machines.Machines
         {
             Disable();
             Proxy.Stop();
+            for (int i = 0; i < startArguments.Consumers; i++)
+            {
+                queue.Add(null);
+            }
         }
 
         public void Refresh()
