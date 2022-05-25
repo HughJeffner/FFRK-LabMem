@@ -13,26 +13,24 @@ namespace FFRK_LabMem.Machines
     public class LabController : MachineController<Lab, Lab.State, Lab.Trigger, LabConfiguration>
     {
 
-        private ConfigHelper configHelper;
+        private AppConfig appConfig;
         private bool isQuickExploring = false;
-        public static async Task<LabController> Create(ConfigHelper config)
+        public static async Task<LabController> Create(AppConfig config)
         {
 
             // Create instance
             var ret = new LabController
             {
-                configHelper = config
+                appConfig = config
             };
 
             // Validate config file
-            var configFilePath = config.GetString("lab.configFile", "Config/lab.balanced.json");
-            if (!File.Exists(configFilePath))
+            if (!File.Exists(config.Lab.ConfigFile))
             {
-                ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", configFilePath);
+                ColorConsole.WriteLine(ConsoleColor.Red, "Could not load {0}!", config.Lab.ConfigFile);
                 return ret;
             }
-            var findPrecision = config.GetDouble("adb.findPrecision", 0.5);
-            if (findPrecision < 0 || findPrecision > 1) config.SetValue("adb.findPrecision", 0.5);
+            if (config.Adb.FindPrecision < 0 || config.Adb.FindPrecision > 1) config.Adb.FindPrecision = 0.5;
 
             // Services
             await DataLogger.Initalize(config);
@@ -43,7 +41,7 @@ namespace FFRK_LabMem.Machines
 
         }
 
-        public static async Task<LabController> CreateAndStart(ConfigHelper config)
+        public static async Task<LabController> CreateAndStart(AppConfig config)
         {
 
             var ret = await Create(config);
@@ -51,38 +49,38 @@ namespace FFRK_LabMem.Machines
             // Start it
             var args = new StartArguments()
             {
-                AdbPath = config.GetString("adb.path", "adb.exe"),
-                AdbHost = config.GetString("adb.host", "127.0.0.1:7555"),
-                ProxyPort = config.GetInt("proxy.port", 8081),
-                ProxySecure = config.GetBool("proxy.secure", false),
-                ProxyBlocklist = config.GetString("proxy.blocklist", ""),
-                ProxyConnectionPooling = config.GetBool("proxy.connectionPooling", false),
-                ProxyAutoConfig = config.GetBool("proxy.autoconfig", false),
-                ConfigFile = config.GetString("lab.configFile", "Config/lab.balanced.json"),
-                TopOffset = config.GetInt("screen.topOffset", -1),
-                BottomOffset = config.GetInt("screen.bottomOffset", -1),
-                Capture = config.GetEnum("adb.capture", Adb.CaptureType.Minicap),
-                CaptureRate = config.GetInt("adb.captureRate", 200),
-                FindPrecision = config.GetDouble("adb.findPrecision", 0.5),
-                FindAccuracy = config.GetInt("adb.findAccuracy", 0),
-                Input = config.GetEnum("adb.input", Adb.InputType.Minitouch),
-                TapDelay = config.GetInt("adb.tapDelay", 30),
-                TapDuration = config.GetInt("adb.tapDuration", 0),
-                TapPressure = config.GetInt("adb.tapPressure", 50),
+                AdbPath = config.Adb.Path,
+                AdbHost = config.Adb.Host,
+                ProxyPort = config.Proxy.Port,
+                ProxySecure = config.Proxy.Secure,
+                ProxyBlocklist = config.Proxy.Blocklist,
+                ProxyConnectionPooling = config.Proxy.ConnectionPooling,
+                ProxyAutoConfig = config.Proxy.AutoConfig,
+                ConfigFile = config.Lab.ConfigFile,
+                TopOffset = config.Screen.TopOffset,
+                BottomOffset = config.Screen.BottomOffset,
+                Capture = config.Adb.Capture,
+                CaptureRate = config.Adb.CaptureRate,
+                FindPrecision = config.Adb.FindPrecision,
+                FindAccuracy = config.Adb.FindAccuracy,
+                Input = config.Adb.Input,
+                TapDelay = config.Adb.TapDelay,
+                TapDuration = config.Adb.TapDuration,
+                TapPressure = config.Adb.TapPressure,
                 Consumers = 2,
-                ScreenshotFolder = config.GetString("adb.screenshotFolder", "")
+                ScreenshotFolder = config.Adb.ScreenshotFolder
             };
             await ret.Start(args);
 
             // Auto-detect offsets
-            if (ret.Adb != null && ret.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
+            if (ret.Adb != null && ret.Adb.HasDevice && config.Screen.TopOffset == -1)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Screen offsets not set up, press [Alt+O] to detect them once FFRK is on the Home screen");
             }
 
             // Scheduler
             await Services.Scheduler.Init(ret);
-            Services.Scheduler.Default.MaintenanceDoneHourUtc = config.GetInt("scheduler.maintenanceDoneHourUtc", 13);
+            Services.Scheduler.Default.MaintenanceDoneHourUtc = config.Scheduler.MaintenanceDoneHourUTC;
 
             return ret;
         }
@@ -90,31 +88,32 @@ namespace FFRK_LabMem.Machines
         {
             var watchdogConfig = new LabWatchdog.Configuration()
             {
-                HangSeconds = configHelper.GetInt("lab.watchdogHangSeconds", 120),
-                HangWarningSeconds = configHelper.GetInt("lab.watchdogHangWarningSeconds", 60),
-                HangWarningLoopThreshold = configHelper.GetInt("lab.watchdogHangWarningLoopThreshold", 10),
-                HangScreenshot = configHelper.GetBool("lab.watchdogHangScreenshot", false),
-                BattleMinutes = configHelper.GetInt("lab.watchdogBattleMinutes", 15),
-                CrashSeconds = configHelper.GetInt("lab.watchdogCrashSeconds", 30),
-                MaxRetries = configHelper.GetInt("lab.watchdogMaxRetries", 5),
-                RestartLoopThreshold = configHelper.GetInt("lab.watchdogLoopDetectionThreshold", 6),
-                RestartLoopWindowMinutes = configHelper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60),
-                BattleMaxRetries = configHelper.GetInt("lab.watchdogBattleMaxRetries", 5)
+                HangSeconds = appConfig.Lab.WatchdogHangSeconds,
+                HangWarningSeconds = appConfig.Lab.WatchdogHangWarningSeconds,
+                HangWarningLoopThreshold = appConfig.Lab.WatchdogHangWarningLoopThreshold,
+                HangScreenshot = appConfig.Lab.WatchdogHangScreenshot,
+                BattleMinutes = appConfig.Lab.WatchdogBattleMinutes,
+                CrashSeconds = appConfig.Lab.WatchdogCrashSeconds,
+                MaxRetries = appConfig.Lab.WatchdogMaxRetries,
+                RestartLoopThreshold = appConfig.Lab.WatchdogRestartLoopThreshold,
+                RestartLoopWindowMinutes = appConfig.Lab.WatchdogRestartLoopWindowMinutes,
+                BattleMaxRetries = appConfig.Lab.WatchdogBattleMaxRetries
             };
             return new Lab(this.Adb, config, watchdogConfig);
         }
 
-        public async void AutoDetectOffsets(ConfigHelper config) {
+        public async void AutoDetectOffsets(AppConfig config) {
 
-            if (this.Adb != null && this.Adb.HasDevice && config.GetInt("screen.topOffset", -1) == -1)
+            if (this.Adb != null && this.Adb.HasDevice && config.Screen.TopOffset == -1)
             {
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detecting screen offsets...");
                 var offsets = await this.Adb.GetOffsets("#151515", 2000, System.Threading.CancellationToken.None);
                 ColorConsole.WriteLine(ConsoleColor.DarkYellow, "Detected offset t:{0}, b:{1}, saving to .config", offsets.Item1, offsets.Item2);
                 this.Adb.TopOffset = offsets.Item1;
                 this.Adb.BottomOffset = offsets.Item2;
-                config.SetValue("screen.topOffset", offsets.Item1);
-                config.SetValue("screen.bottomOffset", offsets.Item2);
+                config.Screen.TopOffset = offsets.Item1;
+                config.Screen.BottomOffset = offsets.Item2;
+                config.Save();
             }
             else
             {

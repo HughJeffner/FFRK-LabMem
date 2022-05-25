@@ -83,15 +83,15 @@ namespace FFRK_LabMem.Data
                 return _instance;
             }
         }
-        public static async Task Initalize(ConfigHelper config, LabController controller)
+        public static async Task Initalize(AppConfig config, LabController controller)
         {
             if (_instance == null)
             {
                 _instance = new Counters(controller);
                 await _instance.Load();
-                _instance.DropCategories = (Counters.DropCategory)config.GetInt("counters.dropCategories", 15);
-                _instance.LogDropsToTotalCounters = config.GetBool("counters.logDropsToTotal", false);
-                _instance.MaterialsRarityFilter = config.GetInt("counters.materialsRarityFilter", 6);
+                _instance.DropCategories = config.Counters.DropCategories;
+                _instance.LogDropsToTotalCounters = config.Counters.LogDropsToTotalCounters;
+                _instance.MaterialsRarityFilter = config.Counters.MaterialsRarityFilter;
             }
 
         }

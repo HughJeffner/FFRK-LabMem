@@ -10,6 +10,9 @@ namespace FFRK_LabMem
 {
     class Program
     {
+
+        static AppConfig config;
+
         static void Main(string[] args)
         {
 
@@ -20,22 +23,30 @@ namespace FFRK_LabMem
 
             // Get Configuration
             var configFile = (args.Length > 0) ? args[0] : null;
-            var config = new ConfigHelper(configFile);
+            config = new AppConfig(configFile);
 
             // Console
-            ColorConsole.Timestamps = config.GetBool("console.timestamps", true);
-            ColorConsole.DebugCategories = (ColorConsole.DebugCategory)config.GetInt("console.debugCategories", 0);
-            ColorConsole.LogBuffer.Enabled = config.GetBool("console.logging", false);
-            ColorConsole.LogBuffer.UpdateFolderOrDefault(config.GetString("console.logFolder", ""));
-            ColorConsole.LogBuffer.BufferSize = config.GetInt("console.logBuffer", 10);
+            ColorConsole.Timestamps = config.Console.Timestamps;
+            ColorConsole.DebugCategories = config.Console.DebugCategories;
+            ColorConsole.LogBuffer.Enabled = config.Console.Logging;
+            ColorConsole.LogBuffer.UpdateFolderOrDefault(config.Console.LogFolder);
+            ColorConsole.LogBuffer.BufferSize = config.Console.BufferSize;
+
+            // Config arg switch
+            if (args.Contains("-c"))
+            {
+                //ConfigForm.CreateAndShow(config, LabController.Create(config).Result);
+                Tray.Hide();
+                return;
+            }
 
             // Version check
             var versionCode = Updates.GetVersionCode("beta");
             var versionTitle = String.Format("{0} {1}", Updates.GetName(), versionCode);
             ColorConsole.WriteLine(versionTitle);
             Console.Title = versionTitle;
-            if (config.GetBool("updates.checkForUpdates", false))
-                _ = Updates.Check(config.GetBool("updates.includePrerelease", false));
+            if (config.Updates.CheckForUpdates)
+                _ = Updates.Check(config.Updates.IncludePrerelease);
 
             LabController controller = null;
             try
@@ -44,7 +55,7 @@ namespace FFRK_LabMem
                 controller = LabController.CreateAndStart(config).Result;
 
                 // Ad-hoc command loop
-                Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'Ctrl+X' to Exit");
+                Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
                 Console.WriteLine("Type ? for help");
                 Tyro.Register(controller);
 
@@ -55,8 +66,10 @@ namespace FFRK_LabMem
                     if (key.Key == ConsoleKey.E) controller.Enable();
                     if (key.Key == ConsoleKey.D) controller.Disable();
                     if (key.Key == ConsoleKey.H) Tray.MinimizeTo(key.Modifiers, controller);
+                    //if (key.Key == ConsoleKey.C && key.Modifiers == 0) ConfigForm.CreateAndShow(config, controller);
                     if (key.Key == ConsoleKey.C && key.Modifiers == ConsoleModifiers.Control) Console.Clear();
-                    if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) if (Updates.DownloadInstallerAndRun(config.GetBool("updates.includePrerelease", false)).Result) break;
+                    //if (key.Key == ConsoleKey.S) CountersForm.CreateAndShow(controller);
+                    if (key.Key == ConsoleKey.U && key.Modifiers == ConsoleModifiers.Alt) if (Updates.DownloadInstallerAndRun(config.Updates.IncludePrerelease).Result) break;
                     if (key.Key == ConsoleKey.O && key.Modifiers == ConsoleModifiers.Alt) controller.AutoDetectOffsets(config);
                     if (key.Key == ConsoleKey.B && key.Modifiers == ConsoleModifiers.Control) Clipboard.CopyProxyBypassToClipboard();
                     if (key.Key == ConsoleKey.R && key.Modifiers == ConsoleModifiers.Alt) controller.ManualFFRKRestart();
@@ -86,7 +99,7 @@ namespace FFRK_LabMem
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             // Kill adb option
-            if (new ConfigHelper().GetBool("adb.closeOnExit", false)) Adb.KillAdb();
+            if (config.Adb.CloseOnExit) Adb.KillAdb();
 
             // Flush buffers
             ColorConsole.LogBuffer.Flush();

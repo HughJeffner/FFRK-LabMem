@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 
@@ -34,6 +35,25 @@ namespace FFRK_LabMem.Config
                 }
                 return appSettings[key].Value;
             }
+        }
+
+        public void SetValues(List<KeyValuePair<string, IConvertible>> values)
+        {
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            foreach (var item in values)
+            {
+                
+                if (config.AppSettings.Settings[item.Key] == null)
+                {
+                    config.AppSettings.Settings.Add(item.Key, item.Value.ToString(invariantCulture));
+                }
+                else
+                {
+                    config.AppSettings.Settings[item.Key].Value = item.Value.ToString(invariantCulture);
+                }
+            }
+            config.Save();
+            ConfigurationManager.RefreshSection("appSettings");
         }
 
         public void SetValue(String key, String value)

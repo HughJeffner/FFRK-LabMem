@@ -17,9 +17,9 @@ namespace FFRK_LabMem.Data
         private static readonly string folder = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data");
         private static readonly string fileSuffix = "_v02.csv";
 
-        public static Task Initalize(ConfigHelper config)
+        public static Task Initalize(AppConfig config)
         {
-            DataLogger.enabled = config.GetBool("datalogger.enabled", false);
+            DataLogger.enabled = config.DataLog.Enabled;
             if (DataLogger.enabled) ColorConsole.WriteLine(ConsoleColor.DarkGreen, "Data logging enabled, target folder: {0}", folder);
             return Task.CompletedTask;
         }
