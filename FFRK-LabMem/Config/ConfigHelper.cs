@@ -37,7 +37,7 @@ namespace FFRK_LabMem.Config
             }
         }
 
-        public void SetValues(List<KeyValuePair<string, IConvertible>> values)
+        public void SetValues(Dictionary<string, IConvertible> values)
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             foreach (var item in values)

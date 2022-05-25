@@ -11,7 +11,7 @@ namespace FFRK_LabMem.Config
 {
     public class AppConfig
     {
-        private ConfigHelper helper;
+        static ConfigHelper helper;
         public class ConsoleConfig
         {
             public bool Timestamps { get; set; } = true;
@@ -21,11 +21,22 @@ namespace FFRK_LabMem.Config
             public int BufferSize { get; set; } = 10;
             public ConsoleConfig(ConfigHelper helper)
             {
-                this.Timestamps = helper.GetBool("console.timestamps", true);
-                this.DebugCategories = (ColorConsole.DebugCategory)helper.GetInt("console.debugCategories", 0);
-                this.Logging = helper.GetBool("console.logging", false);
-                this.LogFolder = helper.GetString("console.logFolder", "");
-                this.BufferSize = helper.GetInt("console.logBuffer", 10);
+                Timestamps = helper.GetBool("console.timestamps", true);
+                DebugCategories = (ColorConsole.DebugCategory)helper.GetInt("console.debugCategories", 0);
+                Logging = helper.GetBool("console.logging", false);
+                LogFolder = helper.GetString("console.logFolder", "");
+                BufferSize = helper.GetInt("console.logBuffer", 10);
+            }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    { "console.timestamps", Timestamps },
+                    { "console.debugCategories", DebugCategories },
+                    { "console.logging", Logging },
+                    { "console.logFolder", LogFolder },
+                    { "console.logBuffer", BufferSize }
+                });
             }
         }
 
@@ -35,8 +46,16 @@ namespace FFRK_LabMem.Config
             public bool IncludePrerelease { get; set; } = false;
             public UpdateConfig(ConfigHelper helper)
             {
-                this.CheckForUpdates = helper.GetBool("updates.checkForUpdates", false);
-                this.IncludePrerelease = helper.GetBool("updates.includePrerelease", false);
+                CheckForUpdates = helper.GetBool("updates.checkForUpdates", false);
+                IncludePrerelease = helper.GetBool("updates.includePrerelease", false);
+            }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"updates.checkForUpdates", CheckForUpdates },
+                    {"updates.includePrerelease", IncludePrerelease }
+                });
             }
         }
 
@@ -46,15 +65,15 @@ namespace FFRK_LabMem.Config
             public int BottomOffset { get; set; } = -1;
             public ScreenConfig(ConfigHelper helper)
             {
-                this.TopOffset = helper.GetInt("screen.topOffset", -1);
-                this.BottomOffset = helper.GetInt("screen.bottomOffset", -1);
+                TopOffset = helper.GetInt("screen.topOffset", -1);
+                BottomOffset = helper.GetInt("screen.bottomOffset", -1);
             }
-            public void Save(ConfigHelper helper)
+            public void Save()
             {
-                helper.SetValues(new List<KeyValuePair<string, IConvertible>>()
+                helper.SetValues(new Dictionary<string, IConvertible>()
                 {
-                    new KeyValuePair<string, IConvertible>("screen.topOffset", TopOffset),
-                    new KeyValuePair<string, IConvertible>("screen.bottomOffset", BottomOffset)
+                    {"screen.topOffset", TopOffset },
+                    {"screen.bottomOffset", BottomOffset }
                 });
             }
         }
@@ -88,6 +107,24 @@ namespace FFRK_LabMem.Config
                 TapPressure = helper.GetInt("adb.tapPressure", 50);
                 ScreenshotFolder = helper.GetString("adb.screenshotFolder", "");
             }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"adb.closeOnExit", CloseOnExit },
+                    {"adb.path", Path },
+                    {"adb.host", Host },
+                    {"adb.capture", (int)Capture },
+                    {"adb.captureRate", CaptureRate },
+                    {"adb.findPrecision", FindPrecision },
+                    {"adb.findAccuracy", FindAccuracy },
+                    {"adb.input", (int)Input },
+                    {"adb.tapDelay", TapDelay },
+                    {"adb.tapDuration", TapDuration },
+                    {"adb.tapPressure", TapPressure },
+                    {"adb.screenshotFolder", ScreenshotFolder },
+                });
+            }
         }
 
         public class DataLogConfig
@@ -95,7 +132,11 @@ namespace FFRK_LabMem.Config
             public bool Enabled { get; set; } = false;
             public DataLogConfig(ConfigHelper helper)
             {
-                this.Enabled = helper.GetBool("datalogger.enabled", false);
+                Enabled = helper.GetBool("datalogger.enabled", false);
+            }
+            public void Save()
+            {
+                helper.SetValue("datalogger.enabled", Enabled);
             }
         }
 
@@ -109,6 +150,15 @@ namespace FFRK_LabMem.Config
                 DropCategories = (Counters.DropCategory)helper.GetInt("counters.dropCategories", 15);
                 LogDropsToTotalCounters = helper.GetBool("counters.logDropsToTotal", false);
                 MaterialsRarityFilter = helper.GetInt("counters.materialsRarityFilter", 6);
+            }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"counters.dropCategories", (int)DropCategories },
+                    {"counters.logDropsToTotal", LogDropsToTotalCounters },
+                    {"counters.materialsRarityFilter", MaterialsRarityFilter }
+                });
             }
         }
 
@@ -139,6 +189,23 @@ namespace FFRK_LabMem.Config
                 WatchdogRestartLoopWindowMinutes = helper.GetInt("lab.watchdogLoopDetectionWindowMinutes", 60);
                 WatchdogBattleMaxRetries = helper.GetInt("lab.watchdogBattleMaxRetries", 5);
             }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"lab.configFile", ConfigFile },
+                    {"lab.watchdogHangSeconds", WatchdogHangSeconds },
+                    {"lab.watchdogHangWarningSeconds", WatchdogHangWarningSeconds },
+                    {"lab.watchdogHangWarningLoopThreshold", WatchdogHangWarningLoopThreshold },
+                    {"lab.watchdogHangScreenshot", WatchdogHangScreenshot },
+                    {"lab.watchdogBattleMinutes", WatchdogBattleMinutes },
+                    {"lab.watchdogCrashSeconds", WatchdogCrashSeconds },
+                    {"lab.watchdogMaxRetries", WatchdogMaxRetries },
+                    {"lab.watchdogLoopDetectionThreshold", WatchdogRestartLoopThreshold },
+                    {"lab.watchdogLoopDetectionWindowMinutes", WatchdogRestartLoopWindowMinutes },
+                    {"lab.watchdogBattleMaxRetries", WatchdogBattleMaxRetries },
+                });
+            }
         }
 
         public class ProxyConfig
@@ -156,6 +223,17 @@ namespace FFRK_LabMem.Config
                 ConnectionPooling = helper.GetBool("proxy.connectionPooling", false);
                 AutoConfig = helper.GetBool("proxy.autoconfig", false);
             }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"proxy.port", Port },
+                    {"proxy.secure", Secure },
+                    {"proxy.blocklist", Blocklist },
+                    {"proxy.connectionPooling", ConnectionPooling },
+                    {"proxy.autoconfig", AutoConfig }
+                });
+            }
         }
 
         public class SchedulerConfig
@@ -164,6 +242,13 @@ namespace FFRK_LabMem.Config
             public SchedulerConfig(ConfigHelper helper)
             {
                 MaintenanceDoneHourUTC = helper.GetInt("scheduler.maintenanceDoneHourUtc", 13);
+            }
+            public void Save()
+            {
+                helper.SetValues(new Dictionary<string, IConvertible>()
+                {
+                    {"scheduler.maintenanceDoneHourUtc", MaintenanceDoneHourUTC }
+                });
             }
         }
 
@@ -180,21 +265,28 @@ namespace FFRK_LabMem.Config
         public AppConfig(String configFile)
         {
             helper = new ConfigHelper(configFile);
-            this.Console = new ConsoleConfig(helper);
-            this.Updates = new UpdateConfig(helper);
-            this.Screen = new ScreenConfig(helper);
-            this.Adb = new AdbConfig(helper);
-            this.DataLog = new DataLogConfig(helper);
-            this.Counters = new CountersConfig(helper);
-            this.Lab = new LabConfig(helper);
-            this.Proxy = new ProxyConfig(helper);
-            this.Scheduler = new SchedulerConfig(helper);
+            Console = new ConsoleConfig(helper);
+            Updates = new UpdateConfig(helper);
+            Screen = new ScreenConfig(helper);
+            Adb = new AdbConfig(helper);
+            DataLog = new DataLogConfig(helper);
+            Counters = new CountersConfig(helper);
+            Lab = new LabConfig(helper);
+            Proxy = new ProxyConfig(helper);
+            Scheduler = new SchedulerConfig(helper);
         }
 
-        public void Save()
+        public void SaveAll()
         {
-            Screen.Save(helper);
-            
+            Console.Save();
+            Updates.Save();
+            Screen.Save();
+            Adb.Save();
+            DataLog.Save();
+            Counters.Save();
+            Lab.Save();
+            Proxy.Save();
+            Scheduler.Save();
         }
 
     }

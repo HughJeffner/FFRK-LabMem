@@ -113,7 +113,7 @@ namespace FFRK_LabMem.Machines
                 this.Adb.BottomOffset = offsets.Item2;
                 config.Screen.TopOffset = offsets.Item1;
                 config.Screen.BottomOffset = offsets.Item2;
-                config.Save();
+                config.Screen.Save();
             }
             else
             {
