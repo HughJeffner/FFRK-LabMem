@@ -8,8 +8,12 @@
         Width="600"
         Height="550"
         FontSize="14"
-        Title="Configuration" 
-        SystemDecorations="Full" 
+        MinWidth="600"
+        MinHeight="550"
+        Title="Configuration"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1" 
         TransparencyLevelHint="AcrylicBlur" >
 
   <Window.Styles>
@@ -83,8 +87,12 @@
       <DockPanel HorizontalAlignment="Stretch">
         <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
           <ExperimentalAcrylicBorder.Material>
-            <ExperimentalAcrylicMaterial TintColor="Black" MaterialOpacity="0.85" TintOpacity="1" />
+            <ExperimentalAcrylicMaterial TintColor="Blue" MaterialOpacity="0.85" TintOpacity="1" />
           </ExperimentalAcrylicBorder.Material>
+          <StackPanel>
+            <TextBlock Text="FFRK-LabMem" Margin="20 20 0 0" FontSize="24"></TextBlock>
+            <TextBlock Text="Configuration" Margin="20 0 0 0" FontSize="24"></TextBlock>
+          </StackPanel>
         </ExperimentalAcrylicBorder>
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
           <ExperimentalAcrylicBorder.Material>
@@ -95,7 +103,7 @@
       </DockPanel>
       <TabControl x:Name="TabControl"
           Classes="sidebar"
-          Margin="0 00 0 00">
+          Margin="0 30 0 00">
         <TabItem Header="General">
       
         </TabItem>
@@ -126,9 +134,9 @@
                     HorizontalAlignment="Right"
                     Spacing="10"
                     VerticalAlignment="Bottom">
-        <Button Content="Save"></Button>
-        <Button Content="Cancel"></Button>
-        <Button Content="Apply"></Button>
+        <Button Content="Save" Padding="10"></Button>
+        <Button x:Name="ButtonCancel" Content="Cancel" Padding="10"></Button>
+        <Button Content="Apply" Padding="10"></Button>
       </StackPanel>
     </Panel>
 </Window>

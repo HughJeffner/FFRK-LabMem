@@ -16,7 +16,19 @@ namespace FFRK_LabMem
 
         static AppConfig config;
 
+        [STAThread]
         static void Main(string[] args)
+        {
+
+            // Command loop
+            _ = Task.Run(() => { CommandLoop(args); });
+
+            // User interface
+            _ = BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnExplicitShutdown);
+           
+        }
+
+        private static void CommandLoop(string[] args)
         {
 
             // Listen for console exit
@@ -58,24 +70,13 @@ namespace FFRK_LabMem
                 controller = LabController.CreateAndStart(config).Result;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
                 ColorConsole.WriteLine("Unhandled exception occured, press any key to exit");
                 ColorConsole.LogBuffer.Flush();
                 Console.ReadKey();
             }
-
-            // Command loop
-            Task.Run(() => { CommandLoop(controller); });
-
-            // User interface
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnExplicitShutdown);
-           
-        }
-
-        static void CommandLoop(LabController controller)
-        {
 
             try
             {

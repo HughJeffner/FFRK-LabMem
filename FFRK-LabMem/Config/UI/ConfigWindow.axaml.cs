@@ -23,6 +23,8 @@ namespace FFRK_LabMem.Config.UI
         {
             InitializeComponent();
             Closed += ConfigWindow_Closed;
+            var button = this.FindControl<Button>("ButtonCancel");
+            button.Click += (sender,e) => this.Close();
         }
 
         private void ConfigWindow_Closed(object sender, System.EventArgs e)
