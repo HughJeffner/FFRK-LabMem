@@ -109,16 +109,22 @@
     <Exec Command="rmdir /S /Q $(PublishDir)"></Exec>
   </Target>
   <Target Name="PostPublishWin64" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release' And '$(RuntimeIdentifier)' == 'win-x64'">
-    <Message Text="Creating zip file: '$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-win-x64.zip'" Importance="high"></Message>
-    <Exec Command="powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(PublishDir)*' -DestinationPath '$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-win-x64.zip' -Force" />
+    <PropertyGroup>
+      <OutputName>$(ProjectName)-@(VersionNumber)-win-x64</OutputName>
+      <OutputFile>$(SolutionDir)publish\$(OutputName)</OutputFile>
+    </PropertyGroup>
+    <Message Text="Creating zip file: '$(OutputFile).zip'" Importance="high"></Message>
+    <Exec Command="powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(PublishDir)*' -DestinationPath '$(OutputFile).zip' -Force" />
     <Message Text="Creating installer: '$(ProjectName)-@(VersionNumber)-win-x64-installer'" Importance="high"></Message>
-    <Exec Command="&quot;%25programfiles%25\Inno Setup 6\iscc.exe&quot; /O&quot;$(SolutionDir)publish\&quot; /F&quot;$(ProjectName)-@(VersionNumber)-win-x64-installer&quot; /DMyAppVersion=@(VersionNumber) &quot;$(SolutionDir)setup/setup-ffrk-labmem.iss&quot;" />
+    <Exec Command="&quot;%25programfiles%25\Inno Setup 6\iscc.exe&quot; /O&quot;$(SolutionDir)publish\&quot; /F&quot;$(OutputName)-installer&quot; /DMyAppVersion=@(VersionNumber) &quot;$(SolutionDir)setup/setup-ffrk-labmem.iss&quot;" />
   </Target>
   <Target Name="PostPublishOSX64" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release' And '$(RuntimeIdentifier)' == 'osx-x64'">
     <PropertyGroup>
-      <OutputFile>$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-$(RuntimeIdentifier).zip</OutputFile>
+      <OutputFile>$(SolutionDir)publish\$(ProjectName)-@(VersionNumber)-$(RuntimeIdentifier)</OutputFile>
     </PropertyGroup>
-    <Message Text="Creating zip file: '$(OutputFile)'" Importance="high"></Message>
-    <Exec Command="powershell.exe -Command $null=mkdir '$(SolutionDir)publish'; Compress-Archive -CompressionLevel Optimal -Path '$(PublishDir)*' -DestinationPath '$(OutputFile)' -Force" />
+    <Message Text="Cleaning up adb in: $(PublishDir)" Importance="high"></Message>
+    <Exec Command="del $(PublishDir)adb*.*"></Exec>
+    <Message Text="Creating tar file: '$(OutputFile).tar'" Importance="high"></Message>
+    <Exec Command="tar -C $(PublishDir) -cvzf $(OutputFile).tgz ." />
   </Target>
 </Project>
