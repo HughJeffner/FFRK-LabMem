@@ -6,8 +6,8 @@ using FFRK_Machines;
 using System.Linq;
 using FFRK_Machines.Services.Adb;
 using Avalonia;
-using FFRK_Machines.Threading;
 using FFRK_LabMem.Config.UI;
+using System.Threading.Tasks;
 
 namespace FFRK_LabMem
 {
@@ -57,11 +57,28 @@ namespace FFRK_LabMem
                 // Controller
                 controller = LabController.CreateAndStart(config).Result;
 
-                // User Interface
-                _ = Utility.StartSTATask(() =>
-                {
-                    BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnExplicitShutdown);
-                });
+            }
+            catch(Exception ex)
+            {
+                ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
+                ColorConsole.WriteLine("Unhandled exception occured, press any key to exit");
+                ColorConsole.LogBuffer.Flush();
+                Console.ReadKey();
+            }
+
+            // Command loop
+            Task.Run(() => { CommandLoop(controller); });
+
+            // User interface
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnExplicitShutdown);
+           
+        }
+
+        static void CommandLoop(LabController controller)
+        {
+
+            try
+            {
 
                 // Ad-hoc command loop
                 Console.WriteLine("Press 'D' to Disable, 'E' to Enable, 'C' for Config, 'S' for Stats, 'Ctrl+X' to Exit");
@@ -90,7 +107,7 @@ namespace FFRK_LabMem
                     Tyro.ReadConsole(key);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ColorConsole.WriteLine(ConsoleColor.Red, ex.ToString());
                 ColorConsole.WriteLine("Unhandled exception occured, press any key to exit");
