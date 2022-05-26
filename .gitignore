@@ -10,6 +10,6 @@
 /packages
 /publish
 /setup/Output
-/FFRK-LabMem/Properties/PublishProfiles/MacOS.pubxml.user
-/FFRK-LabMem/Properties/PublishProfiles/win-x64-profile.pubxml.user
 /FFRK-LabMem/FFRK-LabMem.csproj.user
+/FFRK-LabMem/Properties/PublishProfiles/win-x64.pubxml.user
+/FFRK-LabMem/Properties/PublishProfiles/osx-x64.pubxml.user
