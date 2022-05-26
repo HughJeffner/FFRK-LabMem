@@ -29,15 +29,15 @@
     <EmbeddedResource Remove="Config\UI\ConfigScheduleForm.resx" />
   </ItemGroup>
   <ItemGroup>
-    <ContentWithTargetPath Include="Resources\adb.exe">
+    <ContentWithTargetPath Include="Resources\adb\win\adb.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>adb.exe</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Resources\AdbWinApi.dll">
+    <ContentWithTargetPath Include="Resources\adb\win\AdbWinApi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>AdbWinApi.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Resources\AdbWinUsbApi.dll">
+    <ContentWithTargetPath Include="Resources\adb\win\AdbWinUsbApi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>AdbWinUsbApi.dll</TargetPath>
     </ContentWithTargetPath>
@@ -124,6 +124,7 @@
     </PropertyGroup>
     <Message Text="Cleaning up adb in: $(PublishDir)" Importance="high"></Message>
     <Exec Command="del $(PublishDir)adb*.*"></Exec>
+    <Exec Command="copy $(ProjectDir)Resources\adb\osx\adb $(PublishDir)adb"></Exec>
     <Message Text="Creating tar file: '$(OutputFile).tar'" Importance="high"></Message>
     <Exec Command="tar -C $(PublishDir) -cvzf $(OutputFile).tgz ." />
   </Target>
