@@ -1,6 +1,6 @@
 #define MyAppName "FFRK-LabMem"
 #ifndef MyAppVersion
-#define MyAppVersion GetFileVersion('..\publish\output\FFRK-LabMem.dll') + '-Beta'
+#define MyAppVersion GetFileVersion('..\publish\output\win-x64\FFRK-LabMem.dll')
 #endif
 #define MyAppPublisher "HughJeffner"
 #define MyAppURL "https://github.com/HughJeffner/FFRK-LabMem"
@@ -8,6 +8,7 @@
 #define AppId "{142A5A54-2A68-4F73-81AE-7DBF5EC860FC}"
 #define SetupReg "Software\Microsoft\Windows\CurrentVersion\Uninstall\" + AppId + "_is1"
 #define SetupAppPathReg "Inno Setup: App Path"
+#define PublishFolder "..\publish\output\win-x64"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -25,7 +26,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={userdocs}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-OutputBaseFilename=FFRK-LabMem-{#MyAppVersion}-Installer
+OutputBaseFilename=FFRK-LabMem-{#MyAppVersion}-win-x64-installer
 Compression=lzma
 SolidCompression=yes
 AppendDefaultDirName=False
@@ -44,18 +45,18 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "..\publish\output\FFRK-LabMem.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\output\adb.exe"; DestDir: "{app}"; Flags: onlyifdoesntexist
-Source: "..\publish\output\*.dll"; DestDir: "{app}"
-Source: "..\FFRK-LabMem\bin\Release\net5.0-windows\FFRK-LabMem.deps.json"; DestDir: "{app}"; Flags:ignoreversion
-Source: "..\publish\output\FFRK-LabMem.runtimeconfig.json"; DestDir: "{app}"; Flags:ignoreversion
-Source: "..\publish\output\blocklist.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\output\FFRK-LabMem.dll.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
-Source: "..\publish\output\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\output\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\output\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist; Check: not IsUpgrade
-Source: "..\publish\output\Sounds\*.*"; DestDir: "{app}\Sounds"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
-Source: "..\publish\output\Minicap\*.*"; DestDir: "{app}\Minicap"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
+Source: "{#PublishFolder}\FFRK-LabMem.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishFolder}\adb.exe"; DestDir: "{app}"; Flags: onlyifdoesntexist
+Source: "{#PublishFolder}\*.dll"; DestDir: "{app}"
+Source: "{#PublishFolder}\FFRK-LabMem.deps.json"; DestDir: "{app}"; Flags:ignoreversion
+Source: "{#PublishFolder}\FFRK-LabMem.runtimeconfig.json"; DestDir: "{app}"; Flags:ignoreversion
+Source: "{#PublishFolder}\blocklist.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishFolder}\FFRK-LabMem.dll.config"; DestDir: "{app}"; Flags: onlyifdoesntexist
+Source: "{#PublishFolder}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishFolder}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishFolder}\Config\*.json"; DestDir: "{app}\Config"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist; Check: not IsUpgrade
+Source: "{#PublishFolder}\Sounds\*.*"; DestDir: "{app}\Sounds"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
+Source: "{#PublishFolder}\Minicap\*.*"; DestDir: "{app}\Minicap"; Flags: recursesubdirs createallsubdirs onlyifdoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
