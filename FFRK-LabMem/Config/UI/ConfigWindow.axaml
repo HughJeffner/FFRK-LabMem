@@ -5,10 +5,10 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
         x:Class="FFRK_LabMem.Config.UI.ConfigWindow"
         WindowStartupLocation="CenterScreen"
-        Width="600"
+        Width="800"
         Height="550"
         FontSize="14"
-        MinWidth="600"
+        MinWidth="800"
         MinHeight="550"
         Title="Configuration"
         ExtendClientAreaToDecorationsHint="True"
@@ -103,9 +103,16 @@
       </DockPanel>
       <TabControl x:Name="TabControl"
           Classes="sidebar"
-          Margin="0 30 0 00">
+          Margin="0 40 0 0">
         <TabItem Header="General">
-      
+          <StackPanel Margin="20">
+            <CheckBox Content="Show timestamps"></CheckBox>
+            <CheckBox Content="Check for new versions on startup"></CheckBox>
+            <CheckBox Content="Include pre-release versions" Margin="20 0 0 0"></CheckBox>
+            <CheckBox Content="Log console output to file"></CheckBox>
+            <CheckBox Content="Log drops and other info to file"></CheckBox>
+          </StackPanel>
+
         </TabItem>
         <TabItem Header="Android">
       
