@@ -1,3 +1,6 @@
+# Notice
+**GL end of service has been announced for 9/29.**  Although new developement on this version has ended, I will continue to maintain it until EoS.  For a version that works with JP consider checking out the [HMB-FFRK-JP-LabMem](https://github.com/bover87/HMB-FFRK-JP-LabMem) fork!
+
 # FFRK-LabMem
 Full automation for labyrinth dungeons on Android FFRK and Windows using a proxy server and [adb](https://developer.android.com/studio/command-line/adb)
 
